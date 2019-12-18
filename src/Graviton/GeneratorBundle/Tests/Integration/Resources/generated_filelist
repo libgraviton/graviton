@@ -22,10 +22,6 @@ GravitonDyn/TestBBundle/Resources/config/serializer
 GravitonDyn/TestBBundle/Resources/config/serializer/Document.TestBBase.xml
 GravitonDyn/TestBBundle/Resources/config/serializer/Document.TestB.xml
 GravitonDyn/TestBBundle/Resources/config/serializer/Document.TestBEmbedded.xml
-GravitonDyn/TestBBundle/Resources/config/doctrine
-GravitonDyn/TestBBundle/Resources/config/doctrine/TestBEmbedded.mongodb.yml
-GravitonDyn/TestBBundle/Resources/config/doctrine/TestB.mongodb.yml
-GravitonDyn/TestBBundle/Resources/config/routing.yml
 GravitonDyn/TestBBundle/Resources/config/config.xml
 GravitonDyn/TestBBundle/DependencyInjection
 GravitonDyn/TestBBundle/DependencyInjection/GravitonDynTestBExtension.php
@@ -71,14 +67,6 @@ GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAExtrefEmbedded
 GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAEmbedBase.xml
 GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAEmbed.xml
 GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAEmbedEmbedded.xml
-GravitonDyn/TestABundle/Resources/config/doctrine
-GravitonDyn/TestABundle/Resources/config/doctrine/TestAEmbedded.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/doctrine/TestA.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/doctrine/TestAExtrefEmbedded.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/doctrine/TestAExtref.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/doctrine/TestAEmbedEmbedded.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/doctrine/TestAEmbed.mongodb.yml
-GravitonDyn/TestABundle/Resources/config/routing.yml
 GravitonDyn/TestABundle/Resources/config/config.xml
 GravitonDyn/TestABundle/DependencyInjection
 GravitonDyn/TestABundle/DependencyInjection/GravitonDynTestAExtension.php

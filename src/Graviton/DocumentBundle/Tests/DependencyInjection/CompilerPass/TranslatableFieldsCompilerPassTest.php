@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
@@ -22,9 +23,7 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
     public function testProcess()
     {
         $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/translatable')
-                ->name('*.mongodb.yml'),
+            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Translatable']),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/translatable')
                 ->name('*.xml'),
@@ -49,23 +48,26 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
             ->with(
                 'graviton.document.type.translatable.fields',
                 [
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A' => [
-                        'exposedTitleA',
-                        'achild.exposedTitleB',
-                        'achild.bchild.exposedTitleC',
-                        'achild.bchildren.0.exposedTitleC',
-                        'achildren.0.exposedTitleB',
-                        'achildren.0.bchild.exposedTitleC',
-                        'achildren.0.bchildren.0.exposedTitleC'
-                    ],
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B' => [
-                        'exposedTitleB',
-                        'bchild.exposedTitleC',
-                        'bchildren.0.exposedTitleC'
-                    ],
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C' => [
-                        'exposedTitleC'
-                    ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\A'
+                        => [
+                            'exposedTitleA',
+                            'achild.exposedTitleB',
+                            'achild.bchild.exposedTitleC',
+                            'achild.bchildren.0.exposedTitleC',
+                            'achildren.0.exposedTitleB',
+                            'achildren.0.bchild.exposedTitleC',
+                            'achildren.0.bchildren.0.exposedTitleC'
+                        ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\B'
+                        => [
+                            'exposedTitleB',
+                            'bchild.exposedTitleC',
+                            'bchildren.0.exposedTitleC'
+                        ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\C'
+                        => [
+                            'exposedTitleC'
+                        ]
                 ]
             );
 

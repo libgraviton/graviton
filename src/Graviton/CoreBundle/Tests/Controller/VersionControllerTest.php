@@ -36,8 +36,14 @@ class VersionControllerTest extends RestTestCase
         $secondDevRegExp = '^(.*)-dev@(.*)';
         $regExp = sprintf('/%s|%s|%s/', $tagRegExp, $branchRegExp, $secondDevRegExp);
 
-        $content = json_decode($response->getContent());
-        foreach ($content->versions as $packageId => $packageVersion) {
+        $content = json_decode($response->getContent(), true);
+
+        // no need to check php as there are many different variations
+        if (isset($content['versions']['php'])) {
+            unset($content['versions']['php']);
+        }
+
+        foreach ($content['versions'] as $packageId => $packageVersion) {
             $this->assertRegExp($regExp, $packageVersion);
         }
     }

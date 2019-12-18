@@ -5,7 +5,7 @@
 
 namespace Graviton\CacheBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * FilterResponseListener for adding a ETag header.
@@ -19,11 +19,11 @@ class ETagResponseListener
     /**
      * add a ETag header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $response = $event->getResponse();
 

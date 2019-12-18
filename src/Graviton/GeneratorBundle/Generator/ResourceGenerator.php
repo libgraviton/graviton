@@ -345,6 +345,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateDocument($parameters, $dir, $document)
     {
         // doctrine mapping normal class
+        /*
         $this->renderFile(
             'document/Document.mongodb.yml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml',
@@ -363,16 +364,27 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
+        */
 
         $this->renderFile(
             'document/Document.php.twig',
             $dir . '/Document/' . $document . '.php',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'isEmbedded' => false
+                ]
+            )
         );
         $this->renderFile(
             'document/DocumentEmbedded.php.twig',
             $dir . '/Document/' . $document . 'Embedded.php',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'isEmbedded' => true
+                ]
+            )
         );
         $this->renderFile(
             'document/DocumentBase.php.twig',
@@ -452,7 +464,7 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
 
         $this->addService(
@@ -468,7 +480,7 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
     }
 
@@ -595,7 +607,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    'noIdField' => true,
+                    //'noIdField' => true,
                     'realIdField' => true,
                     'isEmbedded' => true
                 ]
@@ -665,12 +677,12 @@ class ResourceGenerator extends AbstractGenerator
             $this->renderFile(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . '.json',
-                $parameters
+                array_merge($parameters, ['isEmbedded' => false])
             );
             $this->renderFile(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
-                array_merge($parameters, ['document' => $document.'Embedded'])
+                array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
             );
         }
 
@@ -769,7 +781,6 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateFixtures(array $parameters, $dir, $document)
     {
         $parameters['fixtures_json'] = addcslashes(json_encode($this->json->getFixtures()), "'");
-        $parameters['fixtureOrder'] = $this->json->getFixtureOrder();
 
         $this->renderFile(
             'fixtures/LoadFixtures.php.twig',

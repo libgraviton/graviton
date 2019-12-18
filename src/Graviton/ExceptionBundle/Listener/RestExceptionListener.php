@@ -6,7 +6,7 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use JMS\Serializer\SerializerInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
  * Base listener for rest exceptions
@@ -49,11 +49,11 @@ abstract class RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    abstract public function onKernelException(GetResponseForExceptionEvent $event);
+    abstract public function onKernelException(ExceptionEvent $event);
 
     /**
      * Serialize the given content

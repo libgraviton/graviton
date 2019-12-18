@@ -9,7 +9,7 @@ use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\SchemaBundle\Constraint\ConstraintUtils;
 use JsonSchema\Entity\JsonPointer;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -42,13 +42,13 @@ class ValidationExceptionListener extends RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof ValidationException) {
+        if (($exception = $event->getThrowable()) instanceof ValidationException) {
             $content = $this->getErrorMessages($exception->getErrors());
             // Set status code and content
             $response = new Response();

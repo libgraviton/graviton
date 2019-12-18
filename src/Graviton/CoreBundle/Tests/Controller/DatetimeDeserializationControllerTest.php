@@ -26,6 +26,7 @@ class DatetimeDeserializationControllerTest extends RestTestCase
         if (!class_exists(TestCaseDatetimeDeserialization::class)) {
             $this->markTestSkipped(sprintf('%s definition is not loaded', TestCaseDatetimeDeserialization::class));
         }
+        ini_set('date.timezone', 'UTC');
     }
 
     /**

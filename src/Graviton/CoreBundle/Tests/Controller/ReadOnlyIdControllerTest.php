@@ -6,8 +6,6 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
-use GravitonDyn\TestCaseIdReadOnlyBundle\Document\TestCaseIdReadOnly;
-use GravitonDyn\TestCaseIdReadOnlyBundle\Document\TestCaseIdReadOnlyObjectEmbedded;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -17,16 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ReadOnlyIdControllerTest extends RestTestCase
 {
-    /**
-     * load fixtures
-     *
-     * @return void
-     */
-    public function setUp() : void
-    {
-        $object = new TestCaseIdReadOnly();
-        $object = new TestCaseIdReadOnlyObjectEmbedded();
-    }
 
     /**
      * Test create

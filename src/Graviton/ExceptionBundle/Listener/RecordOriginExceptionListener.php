@@ -7,7 +7,7 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
  * Listener for recordOriginModified exceptions
@@ -22,13 +22,13 @@ class RecordOriginExceptionListener extends RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof RecordOriginModifiedException) {
+        if (($exception = $event->getThrowable()) instanceof RecordOriginModifiedException) {
             $content = array(
                 "propertyPath" => "recordOrigin",
                 "message"      => $exception->getMessage(),

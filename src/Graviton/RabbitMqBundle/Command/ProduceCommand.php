@@ -6,12 +6,12 @@
 
 namespace Graviton\RabbitMqBundle\Command;
 
-use Psr\Container\ContainerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Sends a given message to the message bus.
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputArgument;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ProduceCommand extends Command
+class ProduceCommand extends Command implements ContainerAwareInterface
 {
 
     /**
@@ -35,7 +35,7 @@ class ProduceCommand extends Command
      *
      * @return void
      */
-    public function setContainer(ContainerInterface $container): void
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }

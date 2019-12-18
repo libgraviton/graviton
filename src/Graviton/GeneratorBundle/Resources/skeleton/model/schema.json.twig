@@ -31,10 +31,8 @@
 {% set searchableFields = [] %}
 {% set readOnlyFields = [] %}
 
-{% if idField is defined %}
-      {% if idField.required is defined and idField.required == true %}
-      {% set requiredFields = requiredFields|merge(['id']) %}
-      {% endif %}
+{% if (not isEmbedded) or idFieldRequired %}
+    {% set requiredFields = requiredFields|merge(['id']) %}
 {% endif %}
 
 {% for field in fields | filter(v => v.hidden == false) %}

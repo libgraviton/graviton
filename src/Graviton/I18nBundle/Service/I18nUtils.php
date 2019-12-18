@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Translation;
 use Graviton\I18nBundle\Translator\Translator;
+use MongoDB\BSON\Regex;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -107,7 +108,7 @@ class I18nUtils
             ->field('language')->equals($sourceLocale);
 
         if ($useWildCard === true) {
-            $value = new \MongoRegex('/'.$value.'/');
+            $value = new Regex($value);
         }
 
         /*

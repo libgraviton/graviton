@@ -11,11 +11,12 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
+use MongoDB\BSON\Regex;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
@@ -153,11 +154,11 @@ class EventStatusLinkResponseListener
     /**
      * add a rel=eventStatus Link header to the response if necessary
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         /**
          * @var Response $response
@@ -328,7 +329,7 @@ class EventStatusLinkResponseListener
         // results in = /((\*|document)+)\.((\*|dude)+)\.((\*|config)+)\.((\*|update)+)/
         $routingArgs = explode('.', $queueEvent->getEvent());
         $regex =
-            '/'.
+            '^'.
             implode(
                 '\.',
                 array_map(
@@ -337,20 +338,25 @@ class EventStatusLinkResponseListener
                     },
                     $routingArgs
                 )
-            ).
-            '/';
+            )
+            .'$';
 
         // look up workers by class name
         $qb = $this->documentManager->createQueryBuilder($this->eventWorkerClassname);
-        $data = $qb
+        $query = $qb
             ->select('id')
             ->field('subscription.event')
-            ->equals(new \MongoRegex($regex))
-            ->getQuery()
-            ->execute()
-            ->toArray();
+            ->equals(new Regex($regex))
+            ->getQuery();
 
-        return array_keys($data);
+        $query->setHydrate(false);
+
+        return array_map(
+            function ($record) {
+                return $record['_id'];
+            },
+            $query->execute()->toArray()
+        );
     }
 
     /**

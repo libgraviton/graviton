@@ -5,81 +5,93 @@
 
 namespace {{ base }}Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
  * {{ base }}Document\{{ document }}Base
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
-* @license  https://opensource.org/licenses/MIT MIT License
-* @link     http://swisscom.ch
-*/
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ *
+ * @ODM\MappedSuperclass
+ */
 abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface, \ArrayAccess{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
 
-/*** arrayaccess stuff ***/
+    /*** arrayaccess stuff ***/
 
-public function offsetSet($offset, $value) {
-    $this->{$offset} = $value;
-}
+    public function offsetSet($offset, $value) {
+        $this->{$offset} = $value;
+    }
 
-public function offsetExists($offset) {
-    return isset($this->{$offset});
-}
+    public function offsetExists($offset) {
+        return isset($this->{$offset});
+    }
 
-public function offsetUnset($offset) {
-    // not supported
-}
+    public function offsetUnset($offset) {
+        // not supported
+    }
 
-public function offsetGet($offset) {
-    return isset($this->{$offset}) ? $this->{$offset} : null;
-}
+    public function offsetGet($offset) {
+        return isset($this->{$offset}) ? $this->{$offset} : null;
+    }
 
-/**
-* @var int $fieldsAddedCount
-*/
-private $fieldsAddedCount = {% if fields is iterable %}{{ fields|length }}{% else %}0{% endif %};
+    /**
+    * @var int $fieldsAddedCount
+    */
+    private $fieldsAddedCount = {% if fields is iterable %}{{ fields|length }}{% else %}0{% endif %};
 
-public function isEmptyExtRefObject() {
-  return (
-    $this->fieldsAddedCount === 1 &&
-    is_callable([$this, 'getRef']) &&
-    null === $this->getRef()
-  );
-}
+    public function isEmptyExtRefObject() {
+      return (
+        $this->fieldsAddedCount === 1 &&
+        is_callable([$this, 'getRef']) &&
+        null === $this->getRef()
+      );
+    }
 
-public function getFieldsAddedCount() {
-  return $this->fieldsAddedCount;
-}
+    public function getFieldsAddedCount() {
+      return $this->fieldsAddedCount;
+    }
 
-/**
-* @var Date $deletedDate
-*/
-protected $deletedDate;
+    /**
+    * @var Date $deletedDate
+    *
+    * @ODM\Field(type="date")
+    */
+    protected $deletedDate;
 
 {% if isrecordOriginFlagSet %}
     /**
     * @var string $recordOrigin
+    *
+    * @ODM\Field(type="string")
     */
     protected $recordOrigin;
 {% endif %}
 
 {% for field in fields %}
     /**
-    {% if 'Graviton' in field.type %}
-        * @var \{{ field.type }} ${{ field.fieldName }}
-    {% else %}
-        * @var {{ field.type }} ${{ field.fieldName }}
-    {% endif %}
+    {%~ if 'Graviton' in field.type %}
+     * @var \{{ field.type }} ${{ field.fieldName }}
+    {%~ else %}
+     * @var {{ field.type }} ${{ field.fieldName }}
+    {%~ endif %}
+     * {{ doctrineFieldAnnotation(field) }}
     */
-    {% if field.type == 'array' %}
-        protected ${{ field.fieldName }} = [];
-    {% else %}
-        protected ${{ field.fieldName }};
-    {% endif %}
+    {%~ if field.type == 'array' %}
+    protected ${{ field.fieldName }} = [];
+    {%~ else %}
+    protected ${{ field.fieldName }};
+    {%~ endif %}
 
 {% endfor %}
 
 {% for syntheticField in syntheticFields %}
-        protected ${{ syntheticField.name }};
+    /**
+     * {{ doctrineFieldAnnotation(syntheticField) }}
+     */
+    protected ${{ syntheticField.name }};
 {% endfor %}
 
 /**

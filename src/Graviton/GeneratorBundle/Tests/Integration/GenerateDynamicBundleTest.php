@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Test\Integration;
 
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
@@ -33,7 +34,7 @@ class GenerateDynamicBundleTest extends GravitonTestCase
     {
         $loaderDouble = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\Loader\\LoaderInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['load'])
+            ->onlyMethods(['load'])
             ->getMockForAbstractClass();
 
         $definitions = [
@@ -107,41 +108,6 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         );
         $this->assertSame('$c', (string) $serializerConf->class[0]->property[4]['serialized-name']);
 
-        // doctrine stuff
-        $doctrineConf = $this->getYmlFile(
-            $generationDir.'GravitonDyn/TestABundle/Resources/config/doctrine/TestA.mongodb.yml'
-        );
-        // * mapped superclass definition
-        $this->assertSame('mappedSuperclass', $doctrineConf['GravitonDyn\TestABundle\Document\TestABase']['type']);
-        // * basic definition
-        $this->assertSame('document', $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['type']);
-        $this->assertSame('TestA', $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['collection']);
-        $this->assertSame(
-            'COLLECTION_PER_CLASS',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['inheritanceType']
-        );
-        // * relations
-        $this->assertSame(
-            'GravitonDyn\TestABundle\Document\TestAEmbedEmbedded',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['embedOne']['embed']['targetDocument']
-        );
-        $this->assertSame(
-            'GravitonDyn\TestBBundle\Document\TestBEmbedded',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['embedOne']['testEmbed']['targetDocument']
-        );
-        $this->assertSame(
-            'GravitonDyn\TestABundle\Document\TestAExtrefEmbedded',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['embedOne']['extref']['targetDocument']
-        );
-        $this->assertSame(
-            'GravitonDyn\TestBBundle\Document\TestB',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['referenceOne']['testbRef']['targetDocument']
-        );
-        $this->assertSame(
-            'all',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestA']['referenceOne']['testbRef']['cascade']
-        );
-
         // id not set (noIdDefined)
         // * normal one is not excluded
         $serializerConf = $this->getSerializerFile(
@@ -158,15 +124,6 @@ class GenerateDynamicBundleTest extends GravitonTestCase
             $generationDir.'GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAExtref.xml'
         );
         $this->assertTrue((boolean) $serializerConf->class[0]->property[0]['exclude']);
-
-        // extref
-        $doctrineConf = $this->getYmlFile(
-            $generationDir.'GravitonDyn/TestABundle/Resources/config/doctrine/TestAExtref.mongodb.yml'
-        );
-        $this->assertSame(
-            'extref',
-            $doctrineConf['GravitonDyn\TestABundle\Document\TestAExtref']['fields']['ref']['type']
-        );
         // * expose as for extref
         $serializerConf = $this->getSerializerFile(
             $generationDir.'GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAExtref.xml'

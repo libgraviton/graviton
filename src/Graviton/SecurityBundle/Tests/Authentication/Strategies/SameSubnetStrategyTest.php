@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\RestTestCase;
-use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 /**
  * Class SameSubnetStrategyTest
@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 class SameSubnetStrategyTest extends RestTestCase
 {
     protected $strategy;
-    /** @var Client */
+    /** @var KernelBrowser */
     protected $client;
     protected $propertyKey;
 
@@ -48,7 +48,8 @@ class SameSubnetStrategyTest extends RestTestCase
      */
     public function testApplyHeader()
     {
-        $client = static::createClient([], ['HTTP_X-GRAVITON-AUTHENTICATION' => 'test-user-name']);
+        $client = clone static::createClient();
+        $client->setServerParameter('HTTP_X-GRAVITON-AUTHENTICATION', 'test-user-name');
         $this->strategy->setSubnetIp('127.0.0.0/7');
         $client->request('GET', '/');
 
@@ -64,8 +65,9 @@ class SameSubnetStrategyTest extends RestTestCase
      */
     public function testApplyHeaderReturnEmpty()
     {
-        $options = ['HTTP_X-GRAVITON-AUTHENTICATION' => 'test-user-name', 'REMOTE_ADDR' => '126.0.0.1'];
-        $client = static::createClient([], $options);
+        $client = clone static::createClient([]);
+        $client->setServerParameter('HTTP_X-GRAVITON-AUTHENTICATION', 'test-user-name');
+        $client->setServerParameter('REMOTE_ADDR', '126.0.0.1');
         $client->request('GET', '/');
 
         $this->assertSame('', $this->strategy->apply($client->getRequest()));

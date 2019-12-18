@@ -4,8 +4,8 @@
  */
 namespace Graviton\SecurityBundle\Service;
 
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Graviton\SecurityBundle\Entities\SecurityUser;
@@ -25,16 +25,16 @@ class SecurityUtils
     private $securityUser;
 
     /**
-     * @var TokenStorage
+     * @var TokenStorageInterface
      */
     private $tokenStorage;
 
     /**
      * StoreManager constructor.
-     * @param TokenStorage $tokenStorage Auth token storage
+     * @param TokenStorageInterface $tokenStorage Auth token storage
      */
     public function __construct(
-        TokenStorage $tokenStorage
+        TokenStorageInterface $tokenStorage
     ) {
         $this->tokenStorage = $tokenStorage;
     }
@@ -52,7 +52,7 @@ class SecurityUtils
 
         /** @var PreAuthenticatedToken $token */
         if (($token = $this->tokenStorage->getToken())
-            && ($user = $token->getUser()) instanceof UserInterface ) {
+            && ($user = $token->getUser()) instanceof UserInterface) {
             $this->securityUser = $user;
             return true;
         }

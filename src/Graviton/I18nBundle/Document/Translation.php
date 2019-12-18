@@ -5,16 +5,44 @@
 
 namespace Graviton\I18nBundle\Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
+ *
+ * @ODM\Document
  */
 class Translation
 {
+
+    /**
+     * @var string $id
+     *
+     * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
+     */
     private $id;
+
+    /**
+     * @var string $language
+     *
+     * @ODM\Field(type="string")
+     */
     private $language;
+
+    /**
+     * @var string $original
+     *
+     * @ODM\Field(type="string")
+     */
     private $original;
+
+    /**
+     * @var string $localized
+     *
+     * @ODM\Field(type="string")
+     */
     private $localized;
 
     /**

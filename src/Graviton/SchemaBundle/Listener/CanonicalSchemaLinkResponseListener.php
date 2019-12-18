@@ -7,8 +7,8 @@ namespace Graviton\SchemaBundle\Listener;
 
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 
@@ -37,11 +37,11 @@ class CanonicalSchemaLinkResponseListener
     /**
      * add a rel=self Link header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $request = $event->getRequest();
         if ($request->attributes->get('schemaRequest', false)) {

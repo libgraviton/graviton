@@ -144,7 +144,7 @@ class HashType extends Type
      *
      * @return string
      */
-    public function closureToPHP()
+    public function closureToPHP() : string
     {
         return '$return = \\'.static::class.'::convertToPhp($value);';
     }
@@ -165,7 +165,7 @@ class HashType extends Type
      *
      * @return string
      */
-    public function closureToMongo()
+    public function closureToMongo() : string
     {
         return '$return = \\'.static::class.'::convertToDb($value);';
     }

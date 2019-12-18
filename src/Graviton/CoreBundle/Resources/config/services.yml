@@ -96,7 +96,7 @@ services:
         tags:
             - { name: console.command }
         arguments:
-            - '@doctrine.odm.mongodb.document_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '%graviton.core.checkPackageName%'
 
     graviton.core.routing.loader:
@@ -109,8 +109,8 @@ services:
           name: "routing.loader"
 
     graviton.core.repository.dummy:
-      class: Doctrine\ODM\MongoDB\DocumentRepository
-      factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+      class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
+      factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
       arguments:
         - 'GravitonCoreBundle:Dummy'
 

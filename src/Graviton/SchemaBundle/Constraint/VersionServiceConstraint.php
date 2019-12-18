@@ -6,7 +6,7 @@
 namespace Graviton\SchemaBundle\Constraint;
 
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -141,10 +141,11 @@ class VersionServiceConstraint
     /**
      * Setting if needed the headers to let user know what was the new version.
      *
-     * @param FilterResponseEvent $event SF response event
+     * @param ResponseEvent $event SF response event
+     *
      * @return void
      */
-    public function setCurrentVersionHeader(FilterResponseEvent $event)
+    public function setCurrentVersionHeader(ResponseEvent $event)
     {
         if ($this->version) {
             $event->getResponse()->headers->set(self::HEADER_NAME, $this->version);

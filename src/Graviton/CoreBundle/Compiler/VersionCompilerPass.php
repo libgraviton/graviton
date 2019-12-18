@@ -65,6 +65,7 @@ class VersionCompilerPass implements CompilerPassInterface
             $versionInformation['self'] = $this->getPackageVersion($config['selfName']);
         }
 
+
         if (isset($config['desiredVersions']) && is_array($config['desiredVersions'])) {
             foreach ($config['desiredVersions'] as $name) {
                 $versionInformation[$name] = $this->getPackageVersion($name);
@@ -75,6 +76,18 @@ class VersionCompilerPass implements CompilerPassInterface
         $versionHeader = '';
         foreach ($versionInformation as $name => $version) {
             $versionHeader .= $name . ': ' . $version . '; ';
+        }
+
+        $versionInformation['php'] = PHP_VERSION;
+
+        // add stuff just for service, not header (exts)
+        if (isset($config['ext']) && is_array($config['ext'])) {
+            foreach ($config['ext'] as $name) {
+                $version = phpversion($name);
+                if ($version !== false) {
+                    $versionInformation['ext-'.$name] = $version;
+                }
+            }
         }
 
         $container->setParameter(

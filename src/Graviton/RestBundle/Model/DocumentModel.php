@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\RestBundle\Service\QueryService;
@@ -142,7 +142,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->manager->persist($this->dispatchPrePersistEvent($entity));
 
         if ($doFlush) {
-            $this->manager->flush($entity);
+            $this->manager->flush([$entity]);
         }
 
         // Fire ModelEvent
@@ -237,7 +237,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $entity = $this->manager->merge($entity);
 
         $this->manager->persist($entity);
-        $this->manager->flush($entity);
+        $this->manager->flush([$entity]);
         $this->manager->detach($entity);
 
         // Fire ModelEvent
