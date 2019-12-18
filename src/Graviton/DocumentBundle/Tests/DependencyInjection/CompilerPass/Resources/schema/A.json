@@ -1,5 +1,5 @@
 {
-  "x-documentClass": "GravitonTest\\DocumentBundle\\Document\\A",
+  "x-documentClass": "Graviton\\DocumentBundle\\Tests\\DependencyInjection\\CompilerPass\\Resources\\Document\\Extref\\A",
   "required": [],
   "searchable": [],
   "readOnlyFields": [],

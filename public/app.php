@@ -32,10 +32,9 @@ if (strpos($env, 'dev') !== false) {
 }
 
 if ($activateDebug) {
-    Debug::enable();
+    \Symfony\Component\ErrorHandler\Debug::enable();
 }
 $kernel = new AppKernel($env, $activateDebug);
-$kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 
 if (!$activateDebug) {
     $kernel = new AppCache($kernel);

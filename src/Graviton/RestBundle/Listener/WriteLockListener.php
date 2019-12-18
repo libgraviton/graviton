@@ -8,10 +8,10 @@ namespace Graviton\RestBundle\Listener;
 use Doctrine\Common\Cache\CacheProvider;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -112,11 +112,11 @@ class WriteLockListener
     /**
      * all "waiting" methods wait until no lock is around.. "writelock" methods wait and create a lock
      *
-     * @param FilterControllerEvent $event response listener event
+     * @param ControllerEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelController(ControllerEvent $event)
     {
         $currentMethod = $this->requestStack->getCurrentRequest()->getMethod();
 
@@ -162,11 +162,11 @@ class WriteLockListener
     /**
      * release the lock
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $this->releaseLock($event->getRequest());
     }
@@ -174,11 +174,11 @@ class WriteLockListener
     /**
      * release the lock on exceptions
      *
-     * @param GetResponseForExceptionEvent $event event
+     * @param ExceptionEvent $event event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         $this->releaseLock($event->getRequest());
     }

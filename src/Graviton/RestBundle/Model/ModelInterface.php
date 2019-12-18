@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Model;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

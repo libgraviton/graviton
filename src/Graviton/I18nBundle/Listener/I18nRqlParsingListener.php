@@ -13,6 +13,7 @@ use Graviton\RqlParser\Glob;
 use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
 use Graviton\RqlParser\Node\Query\LogicalOperator\OrNode;
 use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
+use MongoDB\BSON\Regex;
 
 /**
  * tries to alter rql queries in a way the user can search translatables in all languages
@@ -138,14 +139,12 @@ class I18nRqlParsingListener
     /**
      * gets the node value
      *
-     * @throws \MongoException
-     *
-     * @return \MongoRegex|string value
+     * @return Regex|string value
      */
     private function getNodeValue()
     {
         if ($this->node->getValue() instanceof Glob) {
-            return new \MongoRegex('/'.$this->node->getValue()->toRegex().'/');
+            return new Regex($this->node->getValue()->toRegex());
         }
 
         return $this->node->getValue();

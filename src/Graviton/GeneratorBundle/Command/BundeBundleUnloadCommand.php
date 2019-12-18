@@ -79,7 +79,7 @@ class BundeBundleUnloadCommand extends Command
      * @param InputInterface  $input  input
      * @param OutputInterface $output output
      *
-     * @return void
+     * @return int exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -100,19 +100,19 @@ class BundeBundleUnloadCommand extends Command
         $contentData = $this->getContentData($content);
         // if something not found, we do nothing
         if ($contentData['startStringPos'] === false || $contentData['endStringPos'] === false) {
-            return;
+            return 0;
         }
 
         $bundleList = explode(',', $contentData['bundleList']);
         if (empty($bundleList)) {
-            return;
+            return 0;
         }
 
         $newBundleList = $this->filterBundleList($bundleList);
 
         // all the same? don't do anything..
         if (count($bundleList) == count($newBundleList)) {
-            return;
+            return 0;
         }
 
         $output->writeln(
@@ -124,6 +124,8 @@ class BundeBundleUnloadCommand extends Command
             $bundleFilePath,
             $this->getNewContent($content, $newBundleList)
         );
+
+        return 0;
     }
 
     /**

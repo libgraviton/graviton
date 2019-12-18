@@ -4,8 +4,8 @@
  */
 namespace Graviton\RestBundle\Service;
 
-use Doctrine\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
@@ -141,10 +141,14 @@ class QueryService
                 ['q' => $this->queryBuilder->getQuery()->getQuery()]
             );
 
-            $query = $this->queryBuilder->getQuery();
-            $records = array_values($query->execute()->toArray());
+            // count queryBuilder
+            $countQueryBuilder = clone $this->queryBuilder;
+            $countQueryBuilder->count()->limit(0)->skip(0);
+            $totalCount = $countQueryBuilder->getQuery()->execute();
 
-            $request->attributes->set('totalCount', $query->count());
+            $records = array_values($this->queryBuilder->getQuery()->execute()->toArray());
+
+            $request->attributes->set('totalCount', $totalCount);
             $request->attributes->set('recordCount', count($records));
 
             $returnValue = $records;

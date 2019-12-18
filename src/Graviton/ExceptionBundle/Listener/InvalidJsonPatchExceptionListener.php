@@ -5,7 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 
@@ -21,13 +21,13 @@ class InvalidJsonPatchExceptionListener extends RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof InvalidJsonPatchException) {
+        if (($exception = $event->getThrowable()) instanceof InvalidJsonPatchException) {
 
             // Set status code and content
             $response = new Response();

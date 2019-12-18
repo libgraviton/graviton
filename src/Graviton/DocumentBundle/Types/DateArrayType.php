@@ -8,6 +8,7 @@ namespace Graviton\DocumentBundle\Types;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Graviton\DocumentBundle\Entity\Hash;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Date array type
@@ -31,7 +32,7 @@ class DateArrayType extends Type
         }
 
         // see DateType::convertToPHPValue()
-        $convertor = function ($value) {
+        $converter = function ($value) {
             try {
                 return DateType::getDateTime($value);
             } catch (\InvalidArgumentException $e) {
@@ -39,14 +40,14 @@ class DateArrayType extends Type
             }
         };
 
-        return array_values(array_filter(array_map($convertor, $value)));
+        return array_values(array_filter(array_map($converter, $value)));
     }
 
     /**
      * Convert PHP value to MongoDb representation
      *
      * @param mixed $value Value to convert
-     * @return \MongoDate[]
+     * @return UTCDateTime[]
      */
     public static function convertToDb($value)
     {
@@ -56,13 +57,12 @@ class DateArrayType extends Type
 
         // see DateType::convertToDatabaseValue()
         $convertor = function ($value) {
-            if ($value === null || $value instanceof \MongoDate) {
+            if ($value === null || $value instanceof UTCDateTime) {
                 return $value;
             }
 
             try {
-                $datetime = DateType::getDateTime($value);
-                return new \MongoDate($datetime->format('U'), $datetime->format('u'));
+                return new UTCDateTime(DateType::getDateTime($value));
             } catch (\InvalidArgumentException $e) {
                 return null;
             }
@@ -87,7 +87,7 @@ class DateArrayType extends Type
      *
      * @return string
      */
-    public function closureToPHP()
+    public function closureToPHP() : string
     {
         return '$return = \\'.static::class.'::convertToPhp($value);';
     }
@@ -108,7 +108,7 @@ class DateArrayType extends Type
      *
      * @return string
      */
-    public function closureToMongo()
+    public function closureToMongo() : string
     {
         return '$return = \\'.static::class.'::convertToDb($value);';
     }

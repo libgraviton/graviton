@@ -16,29 +16,30 @@
     "require": {
         "php": ">=7.3.0",
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.5.0",
+        "ext-mongodb": "^1.6.0",
 
-        "alcaeus/mongo-php-adapter": "^1.1.5",
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "~4",
-        "graviton/rql-parser-bundle": "^2.1.0",
+        "graviton/rql-parser-bundle": "~3",
         "graviton/json-schema": "^1.16.0",
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/deployment-service-bundle": "~0",
+        "graviton/mongodb-migrations-bundle": "~2",
 
-        "symfony/symfony": "~4.3.0",
+        "symfony/symfony": "~4.4.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "^1.0.0",
 
         "jms/serializer-bundle": "^2.4.1",
+        "twig/twig": "~2",
 
-        "doctrine/mongodb-odm-bundle": "^3.4.0",
+        "doctrine/mongodb-odm-bundle": "^4.1.0",
         "doctrine/doctrine-cache-bundle": "^1.3",
-        "doesntmattr/mongodb-migrations": "^2.0.0",
+
+        "monolog/monolog": "~1",
 
         "php-jsonpatch/php-jsonpatch": "~3.0",
         "php-amqplib/rabbitmq-bundle": "^1.13.0",
@@ -64,13 +65,10 @@
         "johnkary/phpunit-speedtrap": "~3",
 
         "graviton/test-services-bundle": "^2.4.1",
+        "graviton/mongodb-fixtures-bundle": "^1.0.1",
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^4.0",
-
-        "doctrine/data-fixtures": "^1.2",
-        "liip/test-fixtures-bundle": "^1",
-        "doctrine/doctrine-fixtures-bundle": "~3.1.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0"
     },
     "suggest": {
@@ -107,16 +105,12 @@
         ]
     },
     "config": {
-        "platform": {"ext-mongo": "1.6.14"},
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
-        "branch-alias": {
-            "dev-3.0-dev": "3.0-dev"
-        },
         "symfony-app-dir": "./bin",
         "symfony-web-dir": "./public",
         "incenteev-parameters": [

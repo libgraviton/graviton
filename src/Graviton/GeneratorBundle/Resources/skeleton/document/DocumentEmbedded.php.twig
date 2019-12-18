@@ -5,55 +5,61 @@
 
 namespace {{ base }}Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
-* @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
-* @license  https://opensource.org/licenses/MIT MIT License
-* @link     http://swisscom.ch
-*/
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ *
+ * @ODM\EmbeddedDocument
+ */
 class {{ document }}Embedded extends {{ document }}Base
 {
 
-/**
-* @var mixed $id
-*/
-protected $id;
+    /**
+    * @var mixed $id
+    *
+    * @ODM\Field(type="string")
+    */
+    protected $id;
 
-/**
-* @var MongoId $id
-*/
-protected $realId;
+    /**
+    * @var ObjectId $id
+    *
+    * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
+    */
+    protected $realId;
 
+    /**
+    * Get id
+    *
+    * @return string $id
+    */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-/**
-* Get id
-*
-* @return string $id
-*/
-public function getId()
-{
-return $this->id;
-}
+    /**
+    * Set id
+    *
+    * @param mixed $id id
+    *
+    * @return void
+    */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-/**
-* Set id
-*
-* @param mixed $id id
-*
-* @return void
-*/
-public function setId($id)
-{
-$this->id = $id;
-}
-
-/**
-* Get realId
-*
-* @return string $id
-*/
-public function getRealId()
-{
-return $this->realId;
-}
-
+    /**
+    * Get realId
+    *
+    * @return string $id
+    */
+    public function getRealId()
+    {
+        return $this->realId;
+    }
 }

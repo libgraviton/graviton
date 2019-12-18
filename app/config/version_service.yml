@@ -3,3 +3,5 @@
 selfName: graviton/graviton
 desiredVersions:
   - symfony/symfony
+ext:
+  - mongodb

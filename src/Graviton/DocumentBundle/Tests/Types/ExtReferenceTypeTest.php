@@ -40,7 +40,7 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     public function testConvertToDatabaseValue()
     {
         $this->assertEquals(
-            \MongoDBRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__)->jsonSerialize(),
             $this->type->convertToDatabaseValue(ExtReference::create(__METHOD__, __FILE__))
         );
         $this->assertEquals(
@@ -57,7 +57,7 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     public function testClosureToMongo()
     {
         $this->assertEqualsClosure(
-            \MongoDBRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__)->jsonSerialize(),
             ExtReference::create(__METHOD__, __FILE__),
             $this->type->closureToMongo()
         );
@@ -77,7 +77,7 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     {
         $this->assertEquals(
             ExtReference::create(__METHOD__, __FILE__),
-            $this->type->convertToPHPValue(\MongoDBRef::create(__METHOD__, __FILE__))
+            $this->type->convertToPHPValue(ExtReference::create(__METHOD__, __FILE__)->jsonSerialize())
         );
         $this->assertEquals(
             null,
@@ -94,7 +94,7 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     {
         $this->assertEqualsClosure(
             ExtReference::create(__METHOD__, __FILE__),
-            \MongoDBRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__)->jsonSerialize(),
             $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(

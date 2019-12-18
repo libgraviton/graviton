@@ -65,7 +65,6 @@ services:
     arguments:
     - "@graviton.document.service.extrefconverter"
     - "%graviton.document.extref.fields%"
-    - "@request_stack"
     tags:
     - name: kernel.event_listener
       event: rql.visit.node
@@ -91,7 +90,6 @@ services:
     public: true
     arguments:
     - "%graviton.document.rql.fields%"
-    - "@request_stack"
     tags:
     - name: kernel.event_listener
       event: rql.visit.node
@@ -128,3 +126,10 @@ services:
     - "@graviton.document.service.dateconverter"
     tags:
     - name: jms_serializer.subscribing_handler
+
+  graviton.document.serializer.subscriber.doctrineproxy:
+    class: "%graviton.document.serializer.subscriber.doctrineproxy.class%"
+    tags:
+      - name: jms_serializer.event_subscriber
+        type: Graviton\DocumentBundle\Entity\ExtReference
+        format: json

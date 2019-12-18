@@ -4,7 +4,7 @@
  */
 namespace Graviton\RestBundle\Restriction;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Restriction\Handler\HandlerInterface;
 use Graviton\RqlParser\Node\AbstractQueryNode;
 use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;

@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\GeneratorBundle\Twig\Extension;
+use Graviton\GeneratorBundle\Twig\GeneratorExtension;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -50,6 +51,7 @@ abstract class AbstractGenerator
                 'autoescape' => false
             ]
         );
+        $this->twig->addExtension(new GeneratorExtension());
     }
 
     /**

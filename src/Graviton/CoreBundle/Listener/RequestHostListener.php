@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle\Listener;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

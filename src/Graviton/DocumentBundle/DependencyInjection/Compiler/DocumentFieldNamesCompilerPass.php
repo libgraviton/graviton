@@ -37,6 +37,7 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
         foreach ($this->documentMap->getDocuments() as $document) {
             $map[$document->getClass()] = $this->getFieldNames($document);
         }
+
         $container->setParameter('graviton.document.field.names', $map);
     }
 

@@ -85,13 +85,5 @@ class BundleGenerator extends AbstractGenerator
                 $parameters
             );
         }
-
-        if ('annotation' != $format) {
-            $this->renderFile(
-                'bundle/routing.' . $format . '.twig',
-                $dir . '/Resources/config/routing.' . $format,
-                $parameters
-            );
-        }
     }
 }

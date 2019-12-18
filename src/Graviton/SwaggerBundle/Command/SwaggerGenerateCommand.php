@@ -116,7 +116,7 @@ class SwaggerGenerateCommand extends Command
      * @param InputInterface  $input  input
      * @param OutputInterface $output output
      *
-     * @return void
+     * @return int exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -147,5 +147,7 @@ class SwaggerGenerateCommand extends Command
         } else {
             echo 'swagger.json already up to date, no need to generate...'.PHP_EOL;
         }
+
+        return 0;
     }
 }

@@ -6,13 +6,12 @@
 namespace Graviton\TestBundle\Test;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
-use Graviton\BundleBundle\GravitonBundleBundle;
-use Graviton\BundleBundle\Loader\BundleLoader;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Graviton\MongoDB\Fixtures\FixturesTrait;
+use Graviton\TestBundle\Client;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -35,6 +34,44 @@ class GravitonTestCase extends WebTestCase
     use ArraySubsetAsserts;
 
     /**
+     * @var KernelBrowser
+     */
+    private static $testClient;
+
+    /**
+     * gets the kernel class name
+     *
+     * @return string kernel class name
+     */
+    public static function getKernelClass()
+    {
+        return AppKernel::class;
+    }
+
+    /**
+     * Create a Web Client.
+     *
+     * Creates a regular client first so we can profit from the bootstrapping code
+     * in parent::createRestClient and is otherwise API compatible with said method.
+     *
+     * @param array $options An array of options to pass to the createKernel class
+     * @param array $server  An array of server parameters
+     *
+     * @return Client A Client instance
+     */
+    protected static function createClient(array $options = [], array $server = array())
+    {
+        if (is_null(self::$testClient)) {
+            self::$testClient = parent::createClient($options, $server);
+        }
+
+        self::$testClient->getKernel()->boot();
+        self::$testClient->restart();
+
+        return new Client(self::$testClient);
+    }
+
+    /**
      * return our namespaced AppKernel
      *
      * Most symfony projects keep their AppKernel class in phps
@@ -50,19 +87,12 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
-        include_once __DIR__ . '/../../../../app/AppKernel.php';
-
-        $env = 'test';
-        $debug = false;
-
-        $kernel = new AppKernel($env, $debug);
-        $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
-        $kernel->boot();
-
-        //set error reporting for phpunit
-        ini_set('error_reporting', E_ALL);
-
-        return $kernel;
+        return parent::createKernel(
+            [
+                'environment' => 'test',
+                'debug' => false
+            ]
+        );
     }
 
     /**
@@ -86,15 +116,14 @@ class GravitonTestCase extends WebTestCase
      *
      * @param array $classNames class names to load
      *
-     * @return AbstractExecutor|null
+     * @return void
      */
     public function loadFixturesLocal(array $classNames = [])
     {
         return $this->loadFixtures(
             $classNames,
             false,
-            null,
-            'doctrine_mongodb'
+            'doctrine_mongodb.odm.default_document_manager'
         );
     }
 

@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
 

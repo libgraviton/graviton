@@ -5,12 +5,14 @@
 
 namespace Graviton\AnalyticsBundle\Manager;
 
-use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\AnalyticsBundle\ProcessorInterface;
 use Graviton\DocumentBundle\Service\DateConverter;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
+use MongoDB\Client;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -28,7 +30,7 @@ class AnalyticsManager
     private $documentManager;
 
     /**
-     * @var Connection
+     * @var Client
      */
     private $connection;
 
@@ -69,7 +71,7 @@ class AnalyticsManager
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->documentManager = $documentManager;
-        $this->connection = $documentManager->getConnection();
+        $this->connection = $documentManager->getClient();
         $this->databaseName = $databaseName;
         $this->dateConverter = $dateConverter;
         $this->eventDispatcher = $eventDispatcher;
@@ -185,11 +187,11 @@ class AnalyticsManager
                 $data[$key] = $this->convertData($val);
             }
             /** convert mongodate to text dates **/
-            if ($val instanceof \MongoDate) {
+            if ($val instanceof UTCDateTime) {
                 $data[$key] = $this->dateConverter->formatDateTime($val->toDateTime());
             }
             /** convert mongoid */
-            if ($val instanceof \MongoId) {
+            if ($val instanceof ObjectId) {
                 $data[$key] = (string) $val;
             }
         }
