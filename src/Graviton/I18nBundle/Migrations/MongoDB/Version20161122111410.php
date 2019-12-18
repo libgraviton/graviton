@@ -39,25 +39,6 @@ class Version20161122111410 extends AbstractMigration
      */
     public function up(Database $db)
     {
-        $collection = $db->selectCollection($this->collection);
-
-        // Remove index
-        $collection->dropIndex('domain_1_locale_1_original_1');
-
-        /** @var array $translatable */
-        foreach ($collection->find() as $translatable) {
-            $id = $translatable['_id'];
-            if (!ctype_xdigit($id)) {
-                $newId = sha1($id);
-                if ($collection->findOne(['_id' => $newId], ['id'])) {
-                    $collection->deleteOne(['_id' => $id]);
-                } else {
-                    $translatable['_id'] = $newId;
-                    $collection->insertOne($translatable);
-                    $collection->deleteOne(['_id' => $id]);
-                }
-            }
-        }
     }
 
     /**
