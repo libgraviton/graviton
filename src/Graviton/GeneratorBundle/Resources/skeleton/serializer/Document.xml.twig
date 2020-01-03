@@ -19,7 +19,7 @@
 {% endif %}
 
    <property name="fieldsAddedCount" type="int" accessor-getter="getFieldsAddedCount" exclude="true"/>
-{% for field in fields %}
+{% for field in fields|filter(v => not (v.fieldName in reservedFieldnames) ) %}
     {% if field.type == 'boolean' %}
       {% set getterMethod = "is#{field.fieldName|capitalize}" %}
     {% else %}

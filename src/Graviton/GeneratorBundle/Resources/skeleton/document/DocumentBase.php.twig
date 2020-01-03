@@ -70,7 +70,7 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     protected $recordOrigin;
 {% endif %}
 
-{% for field in fields %}
+{% for field in fields|filter(v => not (v.fieldName in reservedFieldnames) ) %}
     /**
     {%~ if 'Graviton' in field.type %}
      * @var \{{ field.type }} ${{ field.fieldName }}
@@ -150,7 +150,7 @@ return $this->deletedDate;
 {% endif %}
 
 
-{% for field in fields %}
+{% for field in fields|filter(v => not (v.fieldName in reservedFieldnames) ) %}
 
     /**
     * Get {{ field.fieldName }}
