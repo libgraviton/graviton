@@ -271,6 +271,14 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
+            ->setParameter(
+                'reservedFieldnames',
+                [
+                    'id',
+                    'deletedDate',
+                    'recordOrigin'
+                ]
+            )
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);
