@@ -80,6 +80,18 @@
                 "type": "varchar",
                 "title": "Value",
                 "description": "Actual value of configuration value."
+            },
+            {
+                "name": "description",
+                "type": "varchar",
+                "title": "Description",
+                "description": "Describes the key."
+            },
+            {
+                "name": "group",
+                "type": "varchar",
+                "title": "Group",
+                "description": "Defines to which group the key belongs to."
             }
         ]
     }
