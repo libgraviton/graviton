@@ -43,12 +43,11 @@ php:
   - 7.4
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial EXTMONGODB_VERSION=1.6.1
     - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.1
     - COMPOSER_CHECK=true
     - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.1
   exclude:
-    # skip composer checks on all others than 7.2
+    # skip composer checks on all others than 7.3
     - php: 7.4
       env: COMPOSER_CHECK=true
   allow_failures:
