@@ -237,6 +237,11 @@ class SolrQueryTest extends TestCase
                 'peter || segment:15 -segment:16',
                 '(peter || peter~) || segment:"15" && -segment:"16"',
                 true
+            ],
+            'word-and-bool' => [
+                'peter isBool:true noBool:false',
+                '(peter || peter~) && isBool:T && noBool:F',
+                true
             ]
         ];
     }
