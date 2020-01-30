@@ -289,6 +289,13 @@ class SolrQuery
      */
     private function getSingleTerm($term)
     {
+        // booleans
+        if ($term == 'true') {
+            return 'T';
+        } elseif ($term == 'false') {
+            return 'F';
+        }
+
         // we don't modify numbers
         if (ctype_digit($term)) {
             return '"'.$term.'"';
