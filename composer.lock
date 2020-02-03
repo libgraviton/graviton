@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7af90b650d6dba8ff4c5e22777a33745",
+    "content-hash": "37e9cd7382277c723b978e3b1c43a9e8",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -5455,16 +5455,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.4.1",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "fcbef58d992f8c993a11afc7d56f2f75df684fe0"
+                "reference": "0dda0f534dd20a367294629f742626cedbade464"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/fcbef58d992f8c993a11afc7d56f2f75df684fe0",
-                "reference": "fcbef58d992f8c993a11afc7d56f2f75df684fe0",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/0dda0f534dd20a367294629f742626cedbade464",
+                "reference": "0dda0f534dd20a367294629f742626cedbade464",
                 "shasum": ""
             },
             "require-dev": {
@@ -5488,7 +5488,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2019-05-22T15:31:45+00:00"
+            "time": "2020-02-03T10:05:39+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",

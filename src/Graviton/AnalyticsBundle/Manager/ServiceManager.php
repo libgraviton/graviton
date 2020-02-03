@@ -274,7 +274,13 @@ class ServiceManager
                         }
                         break;
                     case "boolean":
-                        $paramValue = boolval($paramValue);
+                        if ($paramValue === 'true') {
+                            $paramValue = true;
+                        } elseif ($paramValue === 'false') {
+                            $paramValue = false;
+                        } else {
+                            $paramValue = boolval($paramValue);
+                        }
                         break;
                     case "array":
                         $paramValue = explode(',', $paramValue);
