@@ -16,7 +16,7 @@
     "require": {
         "php": ">=7.3.0",
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.6.0",
+        "ext-mongodb": "^1.7.0",
 
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
