@@ -23,7 +23,7 @@
 
         "graviton/rql-parser-bundle": "~3",
         "graviton/json-schema": "^1.16.0",
-        "graviton/php-proxy": "^1.2.0",
+        "graviton/php-proxy": "~2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/deployment-service-bundle": "~0",
