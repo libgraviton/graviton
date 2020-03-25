@@ -35,7 +35,7 @@
     {% set requiredFields = requiredFields|merge(['id']) %}
 {% endif %}
 
-{% for field in fields | filter(v => v.hidden == false) %}
+{% for field in fields | filter(v => v.hidden == false and not (v.fieldName in reservedFieldnames)) %}
     "{{ field.fieldName }}": {
         "title": {{ field.title|json_encode() }},
 

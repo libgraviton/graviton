@@ -256,6 +256,12 @@ class FileManager
             }
             $metadata->setHash($hash);
             $metadata->setMime($file->getMimeType());
+
+            // special case -> if determined mime type is json, we need to change it..
+            if ($metadata->getMime() == 'application/json') {
+                $metadata->setMime('text/plain');
+            }
+
             $metadata->setSize($file->getSize());
             if (!$metadata->getFilename()) {
                 $fileName = $file->getClientOriginalName() ? $file->getClientOriginalName() : $file->getFilename();

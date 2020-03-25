@@ -253,6 +253,21 @@ class ResourceGenerator extends AbstractGenerator
             $this->mapper->buildFields($this->json)
         );
 
+        // prepare reserved field names
+        $reservedFieldNames = array_map(
+            function ($synthField) {
+                return $synthField['name'];
+            },
+            $this->syntheticFields
+        );
+
+        $reservedFieldNames = array_merge(
+            $reservedFieldNames,
+            [
+                'deletedDate'
+            ]
+        );
+
         $parameters = $this->parameterBuilder
             ->reset()
             ->setParameter('document', $document)
@@ -271,6 +286,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
+            ->setParameter('reservedFieldnames', $reservedFieldNames)
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);

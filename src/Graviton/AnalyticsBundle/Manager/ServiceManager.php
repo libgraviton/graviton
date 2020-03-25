@@ -10,6 +10,7 @@ use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\DocumentBundle\Service\DateConverter;
+use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\Filesystem\Filesystem;
@@ -273,7 +274,13 @@ class ServiceManager
                         }
                         break;
                     case "boolean":
-                        $paramValue = boolval($paramValue);
+                        if ($paramValue === 'true') {
+                            $paramValue = true;
+                        } elseif ($paramValue === 'false') {
+                            $paramValue = false;
+                        } else {
+                            $paramValue = boolval($paramValue);
+                        }
                         break;
                     case "array":
                         $paramValue = explode(',', $paramValue);
@@ -288,7 +295,7 @@ class ServiceManager
                         $paramValue = '^'.str_replace('*', '(.*)', $paramValue);
                         break;
                     case "mongoid":
-                        $paramValue = new \MongoId($paramValue);
+                        $paramValue = new ObjectId($paramValue);
                         break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));

@@ -39,13 +39,12 @@ before_script:
           composer install --ignore-platform-reqs --no-interaction --no-scripts;
       fi
 php:
-  - 7.3
+  - 7.4
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial EXTMONGODB_VERSION=1.6.1
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.1
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.7.3
     - COMPOSER_CHECK=true
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.1
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.7.3
 script:
   - >
       if [ "$COMPOSER_CHECK" = "false" ]; then

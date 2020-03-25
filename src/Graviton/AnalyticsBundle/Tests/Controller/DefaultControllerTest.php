@@ -470,4 +470,54 @@ class DefaultControllerTest extends RestTestCase
         $this->assertTrue(isset($results[1]->contacts[1]->type));
         $this->assertTrue(isset($results[1]->contacts[2]->type));
     }
+
+    /**
+     * test handling of boolean parameter
+     *
+     * @param string $parameter   parameter
+     * @param int    $recordCount record count
+     *
+     * @dataProvider booleanHandlingDataProvider
+     *
+     * @return void
+     */
+    public function testBooleanHandling($parameter, $recordCount)
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/appbool?showInMenu='.$parameter
+        );
+
+        $results = $client->getResults();
+
+        $this->assertEquals($recordCount, count($results));
+    }
+
+    /**
+     * data provider
+     *
+     * @return array data
+     */
+    public function booleanHandlingDataProvider()
+    {
+        return [
+            [
+                'false',
+                0
+            ],
+            [
+                'true',
+                2
+            ],
+            [
+                '0',
+                0
+            ],
+            [
+                '1',
+                2
+            ]
+        ];
+    }
 }

@@ -107,7 +107,7 @@ class GeneratorExtension implements ExtensionInterface
             // object type
             if (isset($field['relType']) && $field['relType'] == 'ref') {
                 $refType = 'Reference';
-                $addedProperties .= ', cascade={"all"}, orphanRemoval=false';
+                $addedProperties .= ', cascade={"persist","refresh","merge"}, orphanRemoval=false';
             } else {
                 $refType = 'Embed';
             }

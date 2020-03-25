@@ -232,7 +232,7 @@ class GenerateDynamicBundleCommand extends Command
      * @param InputInterface  $input  input
      * @param OutputInterface $output output
      *
-     * @return void
+     * @return int exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -351,6 +351,8 @@ class GenerateDynamicBundleCommand extends Command
 
         // generate bundlebundle
         $this->generateBundleBundleClass();
+
+        return 0;
     }
 
     /**
