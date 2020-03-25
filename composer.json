@@ -14,7 +14,7 @@
         "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4.0",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.7.0",
 
@@ -23,7 +23,7 @@
 
         "graviton/rql-parser-bundle": "~3",
         "graviton/json-schema": "^1.16.0",
-        "graviton/php-proxy": "^1.2.0",
+        "graviton/php-proxy": "~2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/deployment-service-bundle": "~0",

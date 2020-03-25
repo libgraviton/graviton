@@ -148,6 +148,13 @@ class MainController
             array_keys($optionRoutes)
         );
 
+        $services = array_filter(
+            $services,
+            function ($val) {
+                return !is_null($val);
+            }
+        );
+
         $sortArr = [];
         foreach ($services as $key => $val) {
             if ($this->isRelevantForMainPage($val) && !in_array($val['$ref'], $sortArr)) {
