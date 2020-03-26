@@ -51,8 +51,6 @@ matrix:
     # skip composer checks on all others than 7.3
     - php: 7.4
       env: COMPOSER_CHECK=true
-  allow_failures:
-    - php: 7.4
 script:
   - >
       if [ "$COMPOSER_CHECK" = "false" ]; then
