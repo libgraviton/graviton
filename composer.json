@@ -14,7 +14,7 @@
         "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
     },
     "require": {
-        "php": ">=7.4.0",
+        "php": ">=7.3.0",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.7.0",
 
@@ -105,6 +105,9 @@
         ]
     },
     "config": {
+        "platform": {
+            "php": "7.3.16"
+        },
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
