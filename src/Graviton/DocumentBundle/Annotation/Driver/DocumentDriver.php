@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Annotation\Driver;
 
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
@@ -15,6 +16,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Graviton\Graviton;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -23,6 +25,52 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
  */
 class DocumentDriver extends AnnotationDriver
 {
+
+    /**
+     * @var string cache location
+     */
+    private $cacheLocation;
+
+    /**
+     * @var array cache cache
+     */
+    private $classCache = [];
+
+    /**
+     * DocumentDriver constructor.
+     *
+     * @param Reader $reader reader
+     * @param null   $paths  paths
+     */
+    public function __construct($reader, $paths = null)
+    {
+        parent::__construct($reader, $paths);
+        $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
+        $this->loadCache();
+    }
+
+    /**
+     * get CacheLocation
+     *
+     * @return string CacheLocation
+     */
+    public function getCacheLocation()
+    {
+        return $this->cacheLocation;
+    }
+
+    /**
+     * loads annotation cache if it exists
+     *
+     * @return void
+     */
+    private function loadCache()
+    {
+        if (file_exists($this->cacheLocation)) {
+            $this->classCache = unserialize(file_get_contents($this->cacheLocation));
+        }
+    }
+
     /**
      * only return those that have the MongoDB Document annotation
      *
@@ -50,6 +98,10 @@ class DocumentDriver extends AnnotationDriver
      */
     public function getFields($className)
     {
+        if (isset($this->classCache[$className])) {
+            return $this->classCache[$className];
+        }
+
         $refClass = new \ReflectionClass($className);
         $map = [];
 

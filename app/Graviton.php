@@ -23,6 +23,16 @@ class Graviton
     }
 
     /**
+     * returns the "transient" cache dir - cache, that is the same and reused through different env
+     *
+     * @return string path
+     */
+    public static function getTransientCacheDir()
+    {
+        return self::ROOT_DIR.'var/cache/transient/';
+    }
+
+    /**
      * returns the path for all who want to 'scan' (like for a Finder) in all *bundles* that are
      * available.
      *
