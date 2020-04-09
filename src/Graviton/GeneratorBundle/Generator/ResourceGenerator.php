@@ -360,28 +360,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document)
     {
-        // doctrine mapping normal class
-        /*
-        $this->renderFile(
-            'document/Document.mongodb.yml.twig',
-            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml',
-            $parameters
-        );
-
-        // doctrine mapping embedded
-        $this->renderFile(
-            'document/Document.mongodb.yml.twig',
-            $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.yml',
-            array_merge(
-                $parameters,
-                [
-                    'document' => $document.'Embedded',
-                    'docType' => 'embeddedDocument'
-                ]
-            )
-        );
-        */
-
         $this->renderFile(
             'document/Document.php.twig',
             $dir . '/Document/' . $document . '.php',
