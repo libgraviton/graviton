@@ -13,7 +13,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-if (class_exists('Graviton\MongoDB\Fixtures\FixtureInterface')) {
+if (interface_exists('Graviton\MongoDB\Fixtures\FixtureInterface')) {
     class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
     {
         /**
