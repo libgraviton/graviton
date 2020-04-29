@@ -23,6 +23,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class RestrictionListener
 {
 
+    public const RESTRICTION_MODE_EQ = 'eq';
+    public const RESTRICTION_MODE_LTE = 'lte';
+
     /**
      * @var LoggerInterface
      */
@@ -39,17 +42,36 @@ class RestrictionListener
     private $requestStack;
 
     /**
+     * @var string
+     */
+    private $restrictionMode;
+
+    /**
+     * @var bool
+     */
+    private $persistRestrictions;
+
+    /**
      * HttpHeader constructor.
      *
-     * @param LoggerInterface $logger             logger
-     * @param array           $dataRestrictionMap data restriction configuration
-     * @param RequestStack    $requestStack       request stack
+     * @param LoggerInterface $logger              logger
+     * @param array           $dataRestrictionMap  data restriction configuration
+     * @param RequestStack    $requestStack        request stack
+     * @param string          $restrictionMode     restriction mode (EQ for equals check or LTE for lessthanequal)
+     * @param bool            $persistRestrictions true to save the restrictions value to the entity (default)
      */
-    public function __construct(LoggerInterface $logger, ?array $dataRestrictionMap, RequestStack $requestStack)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        ?array $dataRestrictionMap,
+        RequestStack $requestStack,
+        $restrictionMode = self::RESTRICTION_MODE_EQ,
+        $persistRestrictions = true
+    ) {
         $this->logger = $logger;
         $this->setDataRestrictionMap($dataRestrictionMap);
         $this->requestStack = $requestStack;
+        $this->restrictionMode = $restrictionMode;
+        $this->persistRestrictions = $persistRestrictions;
     }
 
     /**
@@ -104,11 +126,21 @@ class RestrictionListener
             $fieldName = $fieldSpec['name'];
             $fieldValue = [null, $headerValue];
 
-            $this->logger->info('RESTRICTION onModelQuery', ['field' => $fieldName, 'value' => $fieldValue]);
+            if ($this->restrictionMode == self::RESTRICTION_MODE_EQ) {
+                $builder->addAnd(
+                    $builder->expr()->field($fieldName)->in($fieldValue)
+                );
+            } else {
+                $builder->addAnd(
+                    $builder->expr()->addOr(
+                        $builder->expr()->field($fieldName)->equals(null),
+                        $builder->expr()->field($fieldName)->lte($headerValue)
+                    )
+                );
+            }
 
-            $builder->addAnd(
-                $builder->expr()->field($fieldName)->in($fieldValue)
-            );
+
+            $this->logger->info('RESTRICTION onModelQuery', ['field' => $fieldName, 'value' => $fieldValue]);
         }
 
         $event->setQueryBuilder($builder);
@@ -151,7 +183,9 @@ class RestrictionListener
             $this->logger->info('RESTRICTION onPrePersist', ['field' => $fieldName, 'value' => $currentTenant]);
 
             // persist tenant again!
-            $entity[$fieldName] = $currentTenant;
+            if ($this->persistRestrictions) {
+                $entity[$fieldName] = $currentTenant;
+            }
 
             if (is_null($fieldValue)) {
                 continue;

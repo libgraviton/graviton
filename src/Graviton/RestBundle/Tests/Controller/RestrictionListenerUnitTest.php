@@ -27,12 +27,14 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * gets the sut
      *
-     * @param string $clientId clientid
-     * @param array  $headers  more headers
+     * @param string $restrictionMode     restriction mode
+     * @param bool   $persistRestrictions persist restrictions
+     * @param string $clientId            clientid
+     * @param array  $headers             more headers
      *
      * @return RestrictionListener listener
      */
-    private function getSut($clientId = '1', $headers = [])
+    private function getSut($restrictionMode, $persistRestrictions, $clientId = '1', $headers = [])
     {
         $server = array_merge(
             $headers,
@@ -55,7 +57,34 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             'x-graviton-client' => 'int:clientId'
         ];
 
-        return new RestrictionListener($logger, $restrictionMap, $requestStack);
+        return new RestrictionListener(
+            $logger,
+            $restrictionMap,
+            $requestStack,
+            $restrictionMode,
+            $persistRestrictions
+        );
+    }
+
+    /**
+     * Data provider for restriction modes
+     *
+     * @return array[] modes
+     */
+    public function dataProviderModes()
+    {
+        return [
+            // in this mode, we make "EQ" comparisons with the client id..
+            'eqmode' => [
+                RestrictionListener::RESTRICTION_MODE_EQ,
+                true
+            ],
+            // in this mode, we make an LTE comparison
+            'ltemode' => [
+                RestrictionListener::RESTRICTION_MODE_LTE,
+                false // don't persist restriction values
+            ]
+        ];
     }
 
     /**
@@ -71,11 +100,16 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * test onModelQuery
      *
+     * @param string $restrictionMode     restriction mode
+     * @param bool   $persistRestrictions persist restrictions
+     *
+     * @dataProvider dataProviderModes
+     *
      * @return void
      */
-    public function testOnModelQuery()
+    public function testOnModelQuery($restrictionMode, $persistRestrictions)
     {
-        $sut = $this->getSut();
+        $sut = $this->getSut($restrictionMode, $persistRestrictions);
 
         $builder = new Builder($this->getDm(), App::class);
 
@@ -84,13 +118,30 @@ class RestrictionListenerUnitTest extends GravitonTestCase
 
         $sut->onModelQuery($event);
 
-        // normal EQUAL tenant mode
-        $this->assertEquals(
-            [
+        if ($restrictionMode == RestrictionListener::RESTRICTION_MODE_EQ) {
+            // normal EQ mode
+            $expectedQuery = [
                 '$and' => [
                     ['clientId' => ['$in' => [null, 1]]]
                 ]
-            ],
+            ];
+        } else {
+            // LTE mode
+            $expectedQuery = [
+                '$and' => [
+                    [
+                        '$or' => [
+                            ['clientId' => null],
+                            ['clientId' => ['$lte' => 1]]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        $event->getQueryBuilder()->getQuery()->execute()->toArray();
+        $this->assertEquals(
+            $expectedQuery,
             $event->getQueryBuilder()->getQueryArray()
         );
     }
@@ -98,9 +149,14 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * test onDeleteOrPersist
      *
+     * @param string $restrictionMode     restriction mode
+     * @param bool   $persistRestrictions persist restrictions
+     *
+     * @dataProvider dataProviderModes
+     *
      * @return void
      */
-    public function testOnDeleteOrPersist()
+    public function testOnDeleteOrPersist($restrictionMode, $persistRestrictions)
     {
         $repo = $this->getDm()->getRepository(App::class);
 
@@ -110,11 +166,15 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         $event->setEntity($app);
         $event->setRepository($repo);
 
-        $sut = $this->getSut();
+        $sut = $this->getSut($restrictionMode, $persistRestrictions);
         $sut->onEntityPrePersistOrDelete($event);
 
         // should be set to clientId before we save it!
-        $this->assertEquals('1', $event->getEntity()['clientId']);
+        if ($persistRestrictions) {
+            $this->assertEquals('1', $event->getEntity()['clientId']);
+        } else {
+            $this->assertNull($event->getEntity()['clientId']);
+        }
     }
 
     /**
@@ -127,7 +187,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         $event = new PreAggregateEvent();
         $event->setPipeline([]);
 
-        $sut = $this->getSut();
+        $sut = $this->getSut(RestrictionListener::RESTRICTION_MODE_EQ, true);
         $sut->onPreAggregate($event);
 
         $expectedPipeline = [
@@ -163,7 +223,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             new \SplStack()
         );
 
-        $sut = $this->getSut();
+        $sut = $this->getSut(RestrictionListener::RESTRICTION_MODE_EQ, true);
         $sut->onRqlSearch($event);
 
         $expectedTerms = [
