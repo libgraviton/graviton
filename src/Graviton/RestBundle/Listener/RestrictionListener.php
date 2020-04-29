@@ -70,6 +70,11 @@ class RestrictionListener
         $this->logger = $logger;
         $this->setDataRestrictionMap($dataRestrictionMap);
         $this->requestStack = $requestStack;
+
+        if ($restrictionMode != self::RESTRICTION_MODE_EQ && $restrictionMode != self::RESTRICTION_MODE_LTE) {
+            throw new \RuntimeException("Restriction Mode '".$restrictionMode."' is invalid!");
+        }
+
         $this->restrictionMode = $restrictionMode;
         $this->persistRestrictions = $persistRestrictions;
     }
