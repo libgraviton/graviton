@@ -96,7 +96,7 @@ class GravitonTestCase extends WebTestCase
     }
 
     /**
-     * Provides a test double for the named calss.
+     * Provides a test double for the named class.
      *
      * @param string $class   Full namespace of the class to be doubled
      * @param array  $methods List of methods to be doubled
