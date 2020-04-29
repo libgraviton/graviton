@@ -339,6 +339,8 @@ services:
         - "@logger"
         - "%graviton.rest.data_restriction.map%"
         - "@request_stack"
+        - "%graviton.rest.data_restriction.mode%"
+        - "%graviton.rest.data_restriction.persist%"
       tags:
         - name: kernel.event_listener
           event: document.model.event.query
