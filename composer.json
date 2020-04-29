@@ -99,9 +99,9 @@
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "check": [
-            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/"
+            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
         ]
     },
     "config": {
