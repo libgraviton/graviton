@@ -476,6 +476,70 @@ class ResourceGenerator extends AbstractGenerator
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
+
+        // are there any rest listeners defined?
+        if ($parameters['json']->getDef()->getService() != null) {
+            $listeners = $parameters['json']->getDef()->getService()->getListeners();
+
+            $restListenerEventMap = [
+                'prePersist' => [
+                    'eventName' => 'document.model.event.entity.pre_persist',
+                    'methodName' => 'prePersist'
+                ]
+            ];
+
+            foreach ($listeners as $className => $eventNames) {
+                $listenerBaseName = implode(
+                    '.',
+                    array(
+                        strtolower($shortName),
+                        strtolower($shortBundle),
+                        'restlistener',
+                        sha1($className)
+                    )
+                );
+
+                $this->addService(
+                    $listenerBaseName.'.instance',
+                    null,
+                    [],
+                    null,
+                    [],
+                    null,
+                    null,
+                    $className
+                );
+
+                // service tag, one for each eventName
+                $tags = [];
+                foreach ($eventNames as $eventName) {
+                    if (!isset($restListenerEventMap[$eventName])) {
+                        throw new \RuntimeException("Rest Listener event name '".$eventName."' is invalid!");
+                    }
+                    $tags[] = [
+                        'name' => 'kernel.event_listener',
+                        'event' => $restListenerEventMap[$eventName]['eventName'],
+                        'method' => $restListenerEventMap[$eventName]['methodName']
+                    ];
+                }
+
+                $this->addService(
+                    $listenerBaseName.'.listener',
+                    'graviton.rest.listener.abstract',
+                    [
+                        [
+                            'method' => 'setListenerClass',
+                            'service' => $listenerBaseName.'.instance'
+                        ]
+                    ],
+                    $tags,
+                    [],
+                    null,
+                    null,
+                    'Graviton\RestBundle\Listener\DynServiceRestListener'
+                );
+            }
+        }
     }
 
     /**
@@ -556,26 +620,32 @@ class ResourceGenerator extends AbstractGenerator
 
         // tags
         if ($tag) {
-            $thisTag = [
-                'name' => $tag
-            ];
+            if (!is_array($tag)) {
+                $thisTag = [
+                    'name' => $tag
+                ];
 
-            if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
-                $thisTag['collection'] = $this->json->getId();
+                if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
+                    $thisTag['collection'] = $this->json->getId();
 
-                // is this read only?
-                if ($this->json->isReadOnlyService()) {
-                    $thisTag['read-only'] = true;
+                    // is this read only?
+                    if ($this->json->isReadOnlyService()) {
+                        $thisTag['read-only'] = true;
+                    }
+
+                    // router base defined?
+                    $routerBase = $this->json->getRouterBase();
+                    if ($routerBase !== false) {
+                        $thisTag['router-base'] = $routerBase;
+                    }
                 }
 
-                // router base defined?
-                $routerBase = $this->json->getRouterBase();
-                if ($routerBase !== false) {
-                    $thisTag['router-base'] = $routerBase;
+                $service['tags'][] = $thisTag;
+            } else {
+                foreach ($tag as $tagData) {
+                    $service['tags'][] = $tagData;
                 }
             }
-
-            $service['tags'][] = $thisTag;
         }
 
         $this->services['services'][$id] = $service;
