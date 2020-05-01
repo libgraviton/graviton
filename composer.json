@@ -173,6 +173,7 @@
                     "graviton.rest.data_restriction.map": "DATA_RESTRICTION_MAP",
                     "graviton.rest.data_restriction.mode": "DATA_RESTRICTION_MODE",
                     "graviton.rest.data_restriction.persist": "DATA_RESTRICTION_PERSIST",
+                    "graviton.rest.data_restriction.solr": "DATA_RESTRICTION_SOLR",
                     "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
                     "graviton.analytics.cache_time.metadata": "ANALYTICS_CACHE_TIME_METADATA",
                     "graviton.sentry.dsn": "SENTRY_DSN",
