@@ -64,7 +64,7 @@
         "squizlabs/php_codesniffer": "~3",
         "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "^2.5.0",
+        "graviton/test-services-bundle": "dev-develop",
         "graviton/mongodb-fixtures-bundle": "^1.0.1",
         "libgraviton/codesniffer": "~2",
 
