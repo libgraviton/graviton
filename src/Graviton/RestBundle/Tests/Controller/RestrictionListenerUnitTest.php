@@ -29,12 +29,13 @@ class RestrictionListenerUnitTest extends GravitonTestCase
      *
      * @param string $restrictionMode     restriction mode
      * @param bool   $persistRestrictions persist restrictions
+     * @param bool   $restrictSolr        restrict solr?
      * @param string $clientId            clientid
      * @param array  $headers             more headers
      *
      * @return RestrictionListener listener
      */
-    private function getSut($restrictionMode, $persistRestrictions, $clientId = '1', $headers = [])
+    private function getSut($restrictionMode, $persistRestrictions, $restrictSolr, $clientId = '1', $headers = [])
     {
         $server = array_merge(
             $headers,
@@ -45,7 +46,6 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         );
 
         $request = new Request([], [], [], [], [], $server);
-
         $logger = $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock();
 
         $requestStack = $this->getMockBuilder(RequestStack::class)
@@ -62,7 +62,8 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             $restrictionMap,
             $requestStack,
             $restrictionMode,
-            $persistRestrictions
+            $persistRestrictions,
+            $restrictSolr
         );
     }
 
@@ -77,12 +78,14 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             // in this mode, we make "EQ" comparisons with the client id..
             'eqmode' => [
                 RestrictionListener::RESTRICTION_MODE_EQ,
-                true
+                true,
+                true // yes, restrict solr
             ],
             // in this mode, we make an LTE comparison
             'ltemode' => [
                 RestrictionListener::RESTRICTION_MODE_LTE,
-                false // don't persist restriction values
+                false, // don't persist restriction values
+                false // no, don't restrict solr
             ]
         ];
     }
@@ -102,14 +105,15 @@ class RestrictionListenerUnitTest extends GravitonTestCase
      *
      * @param string $restrictionMode     restriction mode
      * @param bool   $persistRestrictions persist restrictions
+     * @param bool   $restrictSolr        restrict solr?
      *
      * @dataProvider dataProviderModes
      *
      * @return void
      */
-    public function testOnModelQuery($restrictionMode, $persistRestrictions)
+    public function testOnModelQuery($restrictionMode, $persistRestrictions, $restrictSolr)
     {
-        $sut = $this->getSut($restrictionMode, $persistRestrictions);
+        $sut = $this->getSut($restrictionMode, $persistRestrictions, $restrictSolr);
 
         $builder = new Builder($this->getDm(), App::class);
 
@@ -151,12 +155,13 @@ class RestrictionListenerUnitTest extends GravitonTestCase
      *
      * @param string $restrictionMode     restriction mode
      * @param bool   $persistRestrictions persist restrictions
+     * @param bool   $restrictSolr        restrict solr?
      *
      * @dataProvider dataProviderModes
      *
      * @return void
      */
-    public function testOnDeleteOrPersist($restrictionMode, $persistRestrictions)
+    public function testOnDeleteOrPersist($restrictionMode, $persistRestrictions, $restrictSolr)
     {
         $repo = $this->getDm()->getRepository(App::class);
 
@@ -166,7 +171,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         $event->setEntity($app);
         $event->setRepository($repo);
 
-        $sut = $this->getSut($restrictionMode, $persistRestrictions);
+        $sut = $this->getSut($restrictionMode, $persistRestrictions, $restrictSolr);
         $sut->onEntityPrePersistOrDelete($event);
 
         // should be set to clientId before we save it!
@@ -180,30 +185,62 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * test onPreAggregate
      *
+     * @param string $restrictionMode     restriction mode
+     * @param bool   $persistRestrictions persist restrictions
+     * @param bool   $restrictSolr        restrict solr?
+     *
+     * @dataProvider dataProviderModes
+     *
      * @return void
      */
-    public function testOnPreAggregate()
+    public function testOnPreAggregate($restrictionMode, $persistRestrictions, $restrictSolr)
     {
         $event = new PreAggregateEvent();
         $event->setPipeline([]);
 
-        $sut = $this->getSut(RestrictionListener::RESTRICTION_MODE_EQ, true);
+        $sut = $this->getSut($restrictionMode, $persistRestrictions, $restrictSolr);
         $sut->onPreAggregate($event);
 
-        $expectedPipeline = [
-            [
-                '$match' => [
-                    'clientId' => [
-                        '$in' => [1, null]
-                    ]
+        if ($restrictionMode == RestrictionListener::RESTRICTION_MODE_EQ) {
+            $expectedPipeline = [
+                [
+                    '$match' => [
+                        '$and' => [
+                            [
+                                'clientId' => [
+                                    '$in' => [1, null]
+                                ]
+                            ]
+                        ]
+                    ],
                 ],
-            ],
-            [
-                '$project' => [
-                    'clientId' => 0
+                [
+                    '$project' => [
+                        'clientId' => 0
+                    ]
                 ]
-            ]
-        ];
+            ];
+        } else {
+            $expectedPipeline = [
+                [
+                    '$match' => [
+                        '$and' => [
+                            [
+                                '$or' => [
+                                    ['clientId' => null],
+                                    ['clientId' => ['$lte' => 1]],
+                                ]
+                            ]
+                        ]
+                    ],
+                ],
+                [
+                    '$project' => [
+                        'clientId' => 0
+                    ]
+                ]
+            ];
+        }
 
         $this->assertEquals($expectedPipeline, $event->getPipeline());
     }
@@ -211,9 +248,15 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * test onRqlSearch
      *
+     * @param string $restrictionMode     restriction mode
+     * @param bool   $persistRestrictions persist restrictions
+     * @param bool   $restrictSolr        restrict solr?
+     *
+     * @dataProvider dataProviderModes
+     *
      * @return void
      */
-    public function testOnRqlSearch()
+    public function testOnRqlSearch($restrictionMode, $persistRestrictions, $restrictSolr)
     {
         $searchNode = new SearchNode(['search', 'term']);
 
@@ -223,14 +266,21 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             new \SplStack()
         );
 
-        $sut = $this->getSut(RestrictionListener::RESTRICTION_MODE_EQ, true);
+        $sut = $this->getSut($restrictionMode, $persistRestrictions, $restrictSolr);
         $sut->onRqlSearch($event);
 
-        $expectedTerms = [
-            'search',
-            'term',
-            'clientId:1'
-        ];
+        if ($restrictSolr) {
+            $expectedTerms = [
+                'search',
+                'term',
+                'clientId:1'
+            ];
+        } else {
+            $expectedTerms = [
+                'search',
+                'term'
+            ];
+        }
 
         $this->assertEquals($expectedTerms, $event->getNode()->getSearchTerms());
     }

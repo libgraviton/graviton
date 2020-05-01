@@ -52,6 +52,11 @@ class RestrictionListener
     private $persistRestrictions;
 
     /**
+     * @var bool
+     */
+    private $restrictSolr;
+
+    /**
      * HttpHeader constructor.
      *
      * @param LoggerInterface $logger              logger
@@ -59,13 +64,15 @@ class RestrictionListener
      * @param RequestStack    $requestStack        request stack
      * @param string          $restrictionMode     restriction mode (EQ for equals check or LTE for lessthanequal)
      * @param bool            $persistRestrictions true to save the restrictions value to the entity (default)
+     * @param bool            $restrictSolr        if we should restrict on solr queries
      */
     public function __construct(
         LoggerInterface $logger,
         ?array $dataRestrictionMap,
         RequestStack $requestStack,
         $restrictionMode = self::RESTRICTION_MODE_EQ,
-        $persistRestrictions = true
+        $persistRestrictions = true,
+        $restrictSolr = true
     ) {
         $this->logger = $logger;
         $this->setDataRestrictionMap($dataRestrictionMap);
@@ -77,6 +84,7 @@ class RestrictionListener
 
         $this->restrictionMode = $restrictionMode;
         $this->persistRestrictions = $persistRestrictions;
+        $this->restrictSolr = $restrictSolr;
     }
 
     /**
@@ -131,21 +139,27 @@ class RestrictionListener
             $fieldName = $fieldSpec['name'];
             $fieldValue = [null, $headerValue];
 
-            if ($this->restrictionMode == self::RESTRICTION_MODE_EQ) {
-                $builder->addAnd(
-                    $builder->expr()->field($fieldName)->in($fieldValue)
-                );
-            } else {
+            if ($this->restrictionMode == self::RESTRICTION_MODE_LTE) {
                 $builder->addAnd(
                     $builder->expr()->addOr(
                         $builder->expr()->field($fieldName)->equals(null),
                         $builder->expr()->field($fieldName)->lte($headerValue)
                     )
                 );
+            } else {
+                $builder->addAnd(
+                    $builder->expr()->field($fieldName)->in($fieldValue)
+                );
             }
 
-
-            $this->logger->info('RESTRICTION onModelQuery', ['field' => $fieldName, 'value' => $fieldValue]);
+            $this->logger->info(
+                'RESTRICTION onModelQuery',
+                [
+                    'field' => $fieldName,
+                    'value' => $fieldValue,
+                    'mode' => $this->restrictionMode
+                ]
+            );
         }
 
         $event->setQueryBuilder($builder);
@@ -185,7 +199,14 @@ class RestrictionListener
                 throw new RestrictedIdCollisionException();
             }
 
-            $this->logger->info('RESTRICTION onPrePersist', ['field' => $fieldName, 'value' => $currentTenant]);
+            $this->logger->info(
+                'RESTRICTION onPrePersist',
+                [
+                    'field' => $fieldName,
+                    'value' => $currentTenant,
+                    'mode' => $this->restrictionMode
+                ]
+            );
 
             // persist tenant again!
             if ($this->persistRestrictions) {
@@ -217,7 +238,7 @@ class RestrictionListener
             return;
         }
 
-        $matchStage = [];
+        $matchConditions = [];
         $projectStage = [];
 
         foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
@@ -225,12 +246,28 @@ class RestrictionListener
             if (is_null($fieldValue)) {
                 continue;
             }
-            $matchStage[$fieldName] = ['$in' => [$fieldValue, null]];
+            if ($this->restrictionMode == self::RESTRICTION_MODE_LTE) {
+                $matchConditions[] = [
+                    '$or' => [
+                        [$fieldName => null],
+                        [$fieldName => ['$lte' => $fieldValue]],
+                    ]
+                ];
+            } else {
+                // eq
+                $matchConditions[] = [
+                    $fieldName => ['$in' => [$fieldValue, null]]
+                ];
+            }
         }
 
         $newPipeline = [];
-        if (!empty($matchStage)) {
-            $newPipeline[] = ['$match' => $matchStage];
+        if (!empty($matchConditions)) {
+            $newPipeline[] = [
+                '$match' => [
+                    '$and' => $matchConditions
+                ]
+            ];
         }
         if (!empty($projectStage)) {
             $newPipeline[] = ['$project' => $projectStage];
@@ -241,7 +278,13 @@ class RestrictionListener
             $event->getPipeline()
         );
 
-        $this->logger->info('RESTRICTION onPreAggregate', ['pipeline' => $newPipeline]);
+        $this->logger->info(
+            'RESTRICTION onPreAggregate',
+            [
+                'pipeline' => $newPipeline,
+                'mode' => $this->restrictionMode
+            ]
+        );
 
         $event->setPipeline($newPipeline);
 
@@ -261,6 +304,11 @@ class RestrictionListener
             return $event;
         }
 
+        if (!$this->restrictSolr) {
+            $this->logger->info('RESTRICTION onRqlSearch DISABLED');
+            return $event;
+        }
+
         /** @var $node SearchNode */
         $node = $event->getNode();
 
@@ -269,7 +317,14 @@ class RestrictionListener
                 continue;
             }
 
-            $this->logger->info('RESTRICTION onRqlSearch', ['field' => $fieldName, 'value' => $fieldValue]);
+            $this->logger->info(
+                'RESTRICTION onRqlSearch',
+                [
+                    'field' => $fieldName,
+                    'value' => $fieldValue,
+                    'mode' => $this->restrictionMode
+                ]
+            );
 
             $node->addSearchTerm($fieldName.':'.$fieldValue);
             $node->setVisited(false);
