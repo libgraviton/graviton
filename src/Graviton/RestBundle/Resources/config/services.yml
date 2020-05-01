@@ -40,6 +40,15 @@ services:
     graviton.rest.router:
         alias: router
 
+    #### abstract service for dynamic services rest listeners (than can react to rest events)
+    graviton.rest.listener.abstract:
+        abstract: true
+        arguments:
+          - "@logger"
+          - "@parameter_bag"
+          - "@request_stack"
+          - "@doctrine_mongodb.odm.default_document_manager"
+
     #Routing -->
     #Routing collection -->
     graviton.rest.routing.collection:
