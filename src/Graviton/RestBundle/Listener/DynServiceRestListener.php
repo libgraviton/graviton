@@ -48,6 +48,11 @@ class DynServiceRestListener
     private $listener;
 
     /**
+     * @var string
+     */
+    private $entityName;
+
+    /**
      * HttpHeader constructor.
      *
      * @param LoggerInterface       $logger       logger
@@ -122,6 +127,18 @@ class DynServiceRestListener
     }
 
     /**
+     * sets the entity class name for which this rest listener applies to
+     *
+     * @param string $entityName entity name
+     *
+     * @return void
+     */
+    public function setEntityName(string $entityName)
+    {
+        $this->entityName = $entityName;
+    }
+
+    /**
      * gets called before we persist an entity
      *
      * @param EntityPrePersistEvent $event event
@@ -130,7 +147,11 @@ class DynServiceRestListener
      */
     public function prePersist(EntityPrePersistEvent $event)
     {
-        $this->listener->setContext($this);
-        return $this->listener->prePersist($event);
+        // only call on class it applies to
+        if ($this->entityName == get_class($event->getEntity())) {
+            $this->listener->setContext($this);
+            return $this->listener->prePersist($event);
+        }
+        return $event;
     }
 }

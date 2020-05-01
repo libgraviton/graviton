@@ -414,8 +414,10 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
+        $documentName = $parameters['base'] . 'Document\\' . $parameters['document'];
+
         $this->addParameter(
-            $parameters['base'] . 'Document\\' . $parameters['document'],
+            $documentName,
             $docName . '.class'
         );
 
@@ -530,6 +532,10 @@ class ResourceGenerator extends AbstractGenerator
                         [
                             'method' => 'setListenerClass',
                             'service' => $listenerBaseName.'.instance'
+                        ],
+                        [
+                            'method' => 'setEntityName',
+                            'arguments' => [$documentName]
                         ]
                     ],
                     $tags,
@@ -612,10 +618,18 @@ class ResourceGenerator extends AbstractGenerator
 
         // calls
         foreach ($calls as $call) {
-            $service['calls'][] = [
-                $call['method'],
-                ['@'.$call['service']]
-            ];
+            if (isset($call['service'])) {
+                $service['calls'][] = [
+                    $call['method'],
+                    ['@'.$call['service']]
+                ];
+            }
+            if (isset($call['arguments'])) {
+                $service['calls'][] = [
+                    $call['method'],
+                    $call['arguments']
+                ];
+            }
         }
 
         // tags
