@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\RestListener;
 
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
-use Graviton\RestBundle\Listener\DynServiceRestListener;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -17,6 +17,11 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
 {
 
     /**
+     * @var SecurityUtils
+     */
+    private $securityUtils;
+
+    /**
      * @var string
      */
     private $entityName;
@@ -24,7 +29,29 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
     /**
      * @var string
      */
-    private $fieldName;
+    private $localField;
+
+    /**
+     * @var string
+     */
+    private $compareField;
+
+    /**
+     * @var mixed
+     */
+    private $compareValue;
+
+    /**
+     * set SecurityUtils
+     *
+     * @param SecurityUtils $securityUtils securityUtils
+     *
+     * @return void
+     */
+    public function setSecurityUtils($securityUtils)
+    {
+        $this->securityUtils = $securityUtils;
+    }
 
     /**
      * set EntityName
@@ -39,15 +66,39 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
     }
 
     /**
-     * set FieldName
+     * set EntityName
      *
-     * @param string $fieldName fieldName
+     * @param string $localField localField
      *
      * @return void
      */
-    public function setFieldName($fieldName)
+    public function setLocalField($localField)
     {
-        $this->fieldName = $fieldName;
+        $this->localField = $localField;
+    }
+
+    /**
+     * set RemoteField
+     *
+     * @param string $compareField compareField
+     *
+     * @return void
+     */
+    public function setCompareField($compareField)
+    {
+        $this->compareField = $compareField;
+    }
+
+    /**
+     * set CompareValue
+     *
+     * @param mixed $compareValue compareValue
+     *
+     * @return void
+     */
+    public function setCompareValue($compareValue)
+    {
+        $this->compareValue = $compareValue;
     }
 
     /**
@@ -59,6 +110,38 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
      */
     public function prePersist(EntityPrePersistEvent $event)
     {
+        // no restrictions?
+        if (!$this->securityUtils->hasDataRestrictions()) {
+            return $event;
+        }
+
+        $entity = $event->getEntity();
+        // can we lookup?
+        if (!$entity instanceof \ArrayAccess ||
+            !isset($entity[$this->localField]) ||
+            is_null($entity[$this->localField])
+        ) {
+            return $event;
+        }
+
+        $relatedEntity = $this->getContext()->getDm()->find($this->entityName, $entity[$this->localField]);
+
+        // can we check the property?
+        if (!$relatedEntity instanceof \ArrayAccess ||
+            !isset($relatedEntity[$this->compareField]) ||
+            is_null($relatedEntity[$this->compareField])
+        ) {
+            return $event;
+        }
+
+        // set the value
+        if ($relatedEntity[$this->compareField] == $this->compareValue) {
+            foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
+                $entity[$fieldName] = $fieldValue;
+            }
+            $event->setEntity($entity);
+        }
+
         return $event;
     }
 }

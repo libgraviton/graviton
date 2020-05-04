@@ -53,6 +53,10 @@ services:
         parent: graviton.rest.listener.abstract
         class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
         abstract: true
+        calls:
+          - method: setSecurityUtils
+            arguments:
+              - "@graviton.security.service.utils"
     Graviton\RestBundle\RestListener\WhoamiRestrictionListener:
         parent: graviton.rest.listener.abstract
         class: Graviton\RestBundle\RestListener\WhoamiRestrictionListener
