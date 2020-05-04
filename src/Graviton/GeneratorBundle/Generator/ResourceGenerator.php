@@ -7,6 +7,8 @@ namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\Schema\ServiceListener;
+use Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -490,7 +492,22 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             ];
 
-            foreach ($listeners as $className => $eventNames) {
+            /**
+             * @var ServiceListener $listener listener
+             */
+            $listener = null;
+
+            foreach ($listeners as $listener) {
+                // parent or service?
+                $parent = null;
+                $className = null;
+                if ($listener->getServiceName()) {
+                    $parent = $listener->getServiceName();
+                    $className = $parent;
+                } else {
+                    $className = $listener->getClassName();
+                }
+
                 $listenerBaseName = implode(
                     '.',
                     array(
@@ -503,8 +520,8 @@ class ResourceGenerator extends AbstractGenerator
 
                 $this->addService(
                     $listenerBaseName.'.instance',
-                    null,
-                    [],
+                    $parent,
+                    $listener->getCalls(),
                     null,
                     [],
                     null,
@@ -514,7 +531,7 @@ class ResourceGenerator extends AbstractGenerator
 
                 // service tag, one for each eventName
                 $tags = [];
-                foreach ($eventNames as $eventName) {
+                foreach ($listener->getEvents() as $eventName) {
                     if (!isset($restListenerEventMap[$eventName])) {
                         throw new \RuntimeException("Rest Listener event name '".$eventName."' is invalid!");
                     }
@@ -618,13 +635,17 @@ class ResourceGenerator extends AbstractGenerator
 
         // calls
         foreach ($calls as $call) {
-            if (isset($call['service'])) {
+            if ($call instanceof ServiceListenerCall) {
+                $service['calls'][] = [
+                    $call->getMethod(),
+                    $call->getArguments()
+                ];
+            } elseif (isset($call['service'])) {
                 $service['calls'][] = [
                     $call['method'],
                     ['@'.$call['service']]
                 ];
-            }
-            if (isset($call['arguments'])) {
+            } elseif (isset($call['arguments'])) {
                 $service['calls'][] = [
                     $call['method'],
                     $call['arguments']
