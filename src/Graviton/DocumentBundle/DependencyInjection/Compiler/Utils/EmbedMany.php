@@ -28,7 +28,6 @@ class EmbedMany extends AbstractField
      * @param bool     $readOnly              Read only
      * @param bool     $required              Is required
      * @param bool     $recordOriginException Is an exception to record origin
-     * @param array    $restrictions          restrictions
      */
     public function __construct(
         Document $document,
@@ -36,8 +35,7 @@ class EmbedMany extends AbstractField
         $exposedName,
         $readOnly,
         $required,
-        $recordOriginException,
-        $restrictions
+        $recordOriginException
     ) {
         $this->document = $document;
         parent::__construct(
@@ -46,8 +44,7 @@ class EmbedMany extends AbstractField
             $readOnly,
             $required,
             false,
-            $recordOriginException,
-            $restrictions
+            $recordOriginException
         );
     }
 

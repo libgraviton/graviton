@@ -29,7 +29,6 @@ class Field extends AbstractField
      * @param bool   $required              Is required
      * @param bool   $searchable            Is searchable
      * @param bool   $recordOriginException Is an exception to record origin
-     * @param array  $restrictions          restrictions
      */
     public function __construct(
         $type,
@@ -38,8 +37,7 @@ class Field extends AbstractField
         $readOnly,
         $required,
         $searchable,
-        $recordOriginException,
-        $restrictions
+        $recordOriginException
     ) {
         $this->type = $type;
         parent::__construct(
@@ -48,8 +46,7 @@ class Field extends AbstractField
             $readOnly,
             $required,
             $searchable,
-            $recordOriginException,
-            $restrictions
+            $recordOriginException
         );
     }
 
