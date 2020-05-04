@@ -35,7 +35,7 @@
                   type="array&lt;string,array&lt;string&gt;&gt;"
                   serialized-name="variations"/>
         <property name="listeners"
-                  type="array&lt;string,array&lt;string&gt;&gt;"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ServiceListener&gt;"
                   serialized-name="listeners"/>
     </class>
 </serializer>
