@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\RestListener;
 
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
+use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Listener\DynServiceRestListener;
 
 /**
@@ -41,6 +42,18 @@ abstract class RestListenerAbstract
     public function setContext($context)
     {
         $this->context = $context;
+    }
+
+    /**
+     * called when data is being queried
+     *
+     * @param ModelQueryEvent $event event
+     *
+     * @return ModelQueryEvent event
+     */
+    public function onQuery(ModelQueryEvent $event)
+    {
+        return $event;
     }
 
     /**

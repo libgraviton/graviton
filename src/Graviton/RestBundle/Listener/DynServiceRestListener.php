@@ -8,7 +8,9 @@
 namespace Graviton\RestBundle\Listener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
+use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\RestListener\RestListenerAbstract;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -105,6 +107,25 @@ class DynServiceRestListener
     public function setEntityName(string $entityName)
     {
         $this->entityName = $entityName;
+    }
+
+    /**
+     * called when data is being queried
+     *
+     * @param ModelQueryEvent $event event
+     *
+     * @return ModelQueryEvent event
+     */
+    public function onQuery(ModelQueryEvent $event)
+    {
+        // only call on class it applies to
+        if ($event->getQueryBuilder() instanceof Builder &&
+            $this->entityName == $event->getQueryBuilder()->getQuery()->getClass()->getName()
+        ) {
+            $this->listener->setContext($this);
+            return $this->listener->onQuery($event);
+        }
+        return $event;
     }
 
     /**

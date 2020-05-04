@@ -486,6 +486,10 @@ class ResourceGenerator extends AbstractGenerator
             $listeners = $parameters['json']->getDef()->getService()->getListeners();
 
             $restListenerEventMap = [
+                'onQuery' => [
+                    'eventName' => 'document.model.event.query',
+                    'methodName' => 'onQuery'
+                ],
                 'prePersist' => [
                     'eventName' => 'document.model.event.entity.pre_persist',
                     'methodName' => 'prePersist'
