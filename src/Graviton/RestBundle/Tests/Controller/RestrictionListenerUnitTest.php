@@ -10,11 +10,13 @@ use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Listener\RestrictionListener;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use GravitonDyn\AppBundle\Document\App;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -50,18 +52,25 @@ class RestrictionListenerUnitTest extends GravitonTestCase
 
         $requestStack = $this->getMockBuilder(RequestStack::class)
             ->getMock();
-
         $requestStack->expects($this->any())->method('getCurrentRequest')->willReturn($request);
 
         $restrictionMap = [
             'x-graviton-client' => 'int:clientId'
         ];
 
+        $tokenStorageMock = $this->getMockForAbstractClass(TokenStorageInterface::class);
+
+        $securityUtils = new SecurityUtils(
+            $tokenStorageMock,
+            $requestStack,
+            $restrictionMap,
+            $restrictionMode,
+        );
+
         return new RestrictionListener(
             $logger,
-            $restrictionMap,
+            $securityUtils,
             $requestStack,
-            $restrictionMode,
             $persistRestrictions,
             $restrictSolr
         );
@@ -77,13 +86,13 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         return [
             // in this mode, we make "EQ" comparisons with the client id..
             'eqmode' => [
-                RestrictionListener::RESTRICTION_MODE_EQ,
+                SecurityUtils::DATA_RESTRICTION_MODE_EQ,
                 true,
                 true // yes, restrict solr
             ],
             // in this mode, we make an LTE comparison
             'ltemode' => [
-                RestrictionListener::RESTRICTION_MODE_LTE,
+                SecurityUtils::DATA_RESTRICTION_MODE_LTE,
                 false, // don't persist restriction values
                 false // no, don't restrict solr
             ]
@@ -122,7 +131,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
 
         $sut->onModelQuery($event);
 
-        if ($restrictionMode == RestrictionListener::RESTRICTION_MODE_EQ) {
+        if ($restrictionMode == SecurityUtils::DATA_RESTRICTION_MODE_EQ) {
             // normal EQ mode
             $expectedQuery = [
                 '$and' => [
@@ -201,7 +210,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         $sut = $this->getSut($restrictionMode, $persistRestrictions, $restrictSolr);
         $sut->onPreAggregate($event);
 
-        if ($restrictionMode == RestrictionListener::RESTRICTION_MODE_EQ) {
+        if ($restrictionMode == SecurityUtils::DATA_RESTRICTION_MODE_EQ) {
             $expectedPipeline = [
                 [
                     '$match' => [

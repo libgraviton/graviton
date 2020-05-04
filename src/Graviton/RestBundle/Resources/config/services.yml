@@ -358,9 +358,8 @@ services:
       class: "%graviton.rest.listener.restriction.class%"
       arguments:
         - "@logger"
-        - "%graviton.rest.data_restriction.map%"
+        - "@graviton.security.service.utils"
         - "@request_stack"
-        - "%graviton.rest.data_restriction.mode%"
         - "%graviton.rest.data_restriction.persist%"
         - "%graviton.rest.data_restriction.solr%"
       tags:
