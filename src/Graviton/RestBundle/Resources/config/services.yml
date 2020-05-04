@@ -51,6 +51,7 @@ services:
     ######### PRE SHIPPED REST LISTENER ABSTRACT SERVICES -> here we use class names as service names
     Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener:
         parent: graviton.rest.listener.abstract
+        class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
         abstract: true
 
     #Routing -->
