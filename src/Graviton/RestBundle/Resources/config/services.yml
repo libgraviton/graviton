@@ -53,6 +53,14 @@ services:
         parent: graviton.rest.listener.abstract
         class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
         abstract: true
+    Graviton\RestBundle\RestListener\WhoamiRestrictionListener:
+        parent: graviton.rest.listener.abstract
+        class: Graviton\RestBundle\RestListener\WhoamiRestrictionListener
+        abstract: true
+        calls:
+          - method: setSecurityUtils
+            arguments:
+              - "@graviton.security.service.utils"
 
     #Routing -->
     #Routing collection -->
@@ -109,7 +117,6 @@ services:
         arguments:
           - "@logger"
           - "@graviton.rql.visitor.mongodb"
-          - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
 
@@ -373,21 +380,6 @@ services:
           event: rql.visit.node
           method: onRqlSearch
           priority: -100
-
-    graviton.rest.restriction.manager:
-        class: "%graviton.rest.restriction.manager.class%"
-        arguments:
-          - "%graviton.document.restriction.fields%"
-        calls:
-          -
-            method: registerHandler
-            arguments:
-              - "@graviton.rest.restriction.handler.whoami"
-
-    graviton.rest.restriction.handler.whoami:
-        class: "%graviton.rest.restriction.handler.whoami.class%"
-        arguments:
-          - "@graviton.security.service.utils"
 
   # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
