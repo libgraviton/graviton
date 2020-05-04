@@ -3,7 +3,7 @@
  * abstract class for dynamic service rest listeners
  */
 
-namespace Graviton\RestBundle\Listener\DynService;
+namespace Graviton\RestBundle\RestListener;
 
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Listener\DynServiceRestListener;
