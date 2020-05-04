@@ -45,9 +45,13 @@ services:
         abstract: true
         arguments:
           - "@logger"
-          - "@parameter_bag"
           - "@request_stack"
           - "@doctrine_mongodb.odm.default_document_manager"
+
+    ######### PRE SHIPPED REST LISTENER ABSTRACT SERVICES -> here we use class names as service names
+    Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener:
+        parent: graviton.rest.listener.abstract
+        abstract: true
 
     #Routing -->
     #Routing collection -->

@@ -9,9 +9,8 @@ namespace Graviton\RestBundle\Listener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
-use Graviton\RestBundle\Listener\DynService\RestListenerAbstract;
+use Graviton\RestBundle\RestListener\RestListenerAbstract;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -26,11 +25,6 @@ class DynServiceRestListener
      * @var LoggerInterface
      */
     private $logger;
-
-    /**
-     * @var ParameterBagInterface
-     */
-    private $parameters;
 
     /**
      * @var RequestStack
@@ -55,43 +49,18 @@ class DynServiceRestListener
     /**
      * HttpHeader constructor.
      *
-     * @param LoggerInterface       $logger       logger
-     * @param ParameterBagInterface $parameterBag parameters
-     * @param RequestStack          $requestStack request stack
-     * @param DocumentManager       $dm           document manager
+     * @param LoggerInterface $logger       logger
+     * @param RequestStack    $requestStack request stack
+     * @param DocumentManager $dm           document manager
      */
     public function __construct(
         LoggerInterface $logger,
-        ParameterBagInterface $parameterBag,
         RequestStack $requestStack,
         DocumentManager $dm
     ) {
         $this->logger = $logger;
-        $this->parameters = $parameterBag;
         $this->requestStack = $requestStack;
         $this->dm = $dm;
-    }
-
-    /**
-     * get Parameters
-     *
-     * @return ParameterBagInterface Parameters
-     */
-    public function getParameters()
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * set Parameters
-     *
-     * @param ParameterBagInterface $parameters parameters
-     *
-     * @return void
-     */
-    public function setParameters($parameters)
-    {
-        $this->parameters = $parameters;
     }
 
     /**
