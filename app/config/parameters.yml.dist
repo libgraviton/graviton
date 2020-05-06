@@ -44,7 +44,7 @@ parameters:
     graviton.rest.data_restriction.map: []
     graviton.rest.data_restriction.mode: eq
     # if true, then the mapped tenant is saved to the entity. if false, it mainly means that tenant stuff applies
-    # to loader stuff (and maybe persistentlisteners), but is not always saved
+    # to loader stuff (and maybe dynServiceListeners), but is not always saved
     graviton.rest.data_restriction.persist: true
     # if true, the requests to solr as restricted - if false, then not.
     graviton.rest.data_restriction.solr: true

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\ServiceListener">
+        <property name="serviceName"
+                  type="string"
+                  serialized-name="serviceName"/>
+        <property name="className"
+                  type="string"
+                  serialized-name="className"/>
+        <property name="events"
+                  type="array&lt;string&gt;"
+                  serialized-name="events"/>
+        <property name="calls"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall&gt;"
+                  serialized-name="calls"/>
+    </class>
+</serializer>

@@ -6,12 +6,12 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
-use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -23,28 +23,20 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class RestrictionListener
 {
 
-    public const RESTRICTION_MODE_EQ = 'eq';
-    public const RESTRICTION_MODE_LTE = 'lte';
-
     /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @var array
+     * @var SecurityUtils
      */
-    private $dataRestrictionMap = [];
+    private $securityUtils;
 
     /**
      * @var RequestStack
      */
     private $requestStack;
-
-    /**
-     * @var string
-     */
-    private $restrictionMode;
 
     /**
      * @var bool
@@ -60,54 +52,23 @@ class RestrictionListener
      * HttpHeader constructor.
      *
      * @param LoggerInterface $logger              logger
-     * @param array           $dataRestrictionMap  data restriction configuration
+     * @param SecurityUtils   $securityUtils       security utils
      * @param RequestStack    $requestStack        request stack
-     * @param string          $restrictionMode     restriction mode (EQ for equals check or LTE for lessthanequal)
      * @param bool            $persistRestrictions true to save the restrictions value to the entity (default)
      * @param bool            $restrictSolr        if we should restrict on solr queries
      */
     public function __construct(
         LoggerInterface $logger,
-        ?array $dataRestrictionMap,
+        SecurityUtils $securityUtils,
         RequestStack $requestStack,
-        $restrictionMode = self::RESTRICTION_MODE_EQ,
         $persistRestrictions = true,
         $restrictSolr = true
     ) {
         $this->logger = $logger;
-        $this->setDataRestrictionMap($dataRestrictionMap);
+        $this->securityUtils = $securityUtils;
         $this->requestStack = $requestStack;
-
-        if ($restrictionMode != self::RESTRICTION_MODE_EQ && $restrictionMode != self::RESTRICTION_MODE_LTE) {
-            throw new \RuntimeException("Restriction Mode '".$restrictionMode."' is invalid!");
-        }
-
-        $this->restrictionMode = $restrictionMode;
         $this->persistRestrictions = $persistRestrictions;
         $this->restrictSolr = $restrictSolr;
-    }
-
-    /**
-     * set DataRestrictionMap
-     *
-     * @param array $dataRestrictionMap dataRestrictionMap
-     *
-     * @return void
-     */
-    public function setDataRestrictionMap(?array $dataRestrictionMap)
-    {
-        if (!is_array($dataRestrictionMap)) {
-            return;
-        }
-
-        foreach ($dataRestrictionMap as $headerName => $fieldName) {
-            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
-            if (count($fieldSpec) != 1) {
-                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
-            }
-
-            $this->dataRestrictionMap[$headerName] = array_pop($fieldSpec);
-        }
     }
 
     /**
@@ -119,36 +80,29 @@ class RestrictionListener
      */
     public function onModelQuery(ModelQueryEvent $event)
     {
-        if (!is_array($this->dataRestrictionMap) || empty($this->dataRestrictionMap)) {
-            return null;
+        if (!$this->securityUtils->hasDataRestrictions()) {
+            return $event;
         }
 
         $builder = $event->getQueryBuilder();
 
-        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
-            $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
-
-            if ($headerValue == null) {
+        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
+            if ($fieldValue == null) {
                 continue;
             }
 
-            if ($fieldSpec['type'] == 'int') {
-                $headerValue = (int) $headerValue;
-            }
+            $inValue = [null, $fieldValue];
 
-            $fieldName = $fieldSpec['name'];
-            $fieldValue = [null, $headerValue];
-
-            if ($this->restrictionMode == self::RESTRICTION_MODE_LTE) {
+            if ($this->securityUtils->getDataRestrictionMode() == SecurityUtils::DATA_RESTRICTION_MODE_LTE) {
                 $builder->addAnd(
                     $builder->expr()->addOr(
                         $builder->expr()->field($fieldName)->equals(null),
-                        $builder->expr()->field($fieldName)->lte($headerValue)
+                        $builder->expr()->field($fieldName)->lte($fieldValue)
                     )
                 );
             } else {
                 $builder->addAnd(
-                    $builder->expr()->field($fieldName)->in($fieldValue)
+                    $builder->expr()->field($fieldName)->in($inValue)
                 );
             }
 
@@ -156,8 +110,8 @@ class RestrictionListener
                 'RESTRICTION onModelQuery',
                 [
                     'field' => $fieldName,
-                    'value' => $fieldValue,
-                    'mode' => $this->restrictionMode
+                    'value' => $inValue,
+                    'mode' => $this->securityUtils->getDataRestrictionMode()
                 ]
             );
         }
@@ -174,17 +128,23 @@ class RestrictionListener
      */
     public function onEntityPrePersistOrDelete(EntityPrePersistEvent $event)
     {
-        if (!is_array($this->dataRestrictionMap) ||
-            empty($this->dataRestrictionMap) ||
+        if (!$this->securityUtils->hasDataRestrictions() ||
             !($event->getEntity() instanceof \ArrayAccess)
         ) {
-            return;
+            return $event;
+        }
+
+        if (!$this->persistRestrictions) {
+            $this->logger->info(
+                'RESTRICTION onPrePersist DISABLED'
+            );
+            return $event;
         }
 
         $entity = $event->getEntity();
         $entityId = $entity['id'];
 
-        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
+        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
             $currentTenant = $fieldValue;
             if (!is_null($entityId)) {
                 $currentTenant = $this->getCurrentTenant($event, $entityId, $fieldName, $fieldValue);
@@ -204,14 +164,11 @@ class RestrictionListener
                 [
                     'field' => $fieldName,
                     'value' => $currentTenant,
-                    'mode' => $this->restrictionMode
+                    'mode' => $this->securityUtils->getDataRestrictionMode()
                 ]
             );
 
-            // persist tenant again!
-            if ($this->persistRestrictions) {
-                $entity[$fieldName] = $currentTenant;
-            }
+            $entity[$fieldName] = $currentTenant;
 
             if (is_null($fieldValue)) {
                 continue;
@@ -232,21 +189,19 @@ class RestrictionListener
      */
     public function onPreAggregate(PreAggregateEvent $event)
     {
-        if (!is_array($this->dataRestrictionMap) ||
-            empty($this->dataRestrictionMap)
-        ) {
-            return;
+        if (!$this->securityUtils->hasDataRestrictions()) {
+            return $event;
         }
 
         $matchConditions = [];
         $projectStage = [];
 
-        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
+        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
             $projectStage[$fieldName] = 0;
             if (is_null($fieldValue)) {
                 continue;
             }
-            if ($this->restrictionMode == self::RESTRICTION_MODE_LTE) {
+            if ($this->securityUtils->getDataRestrictionMode() == SecurityUtils::DATA_RESTRICTION_MODE_LTE) {
                 $matchConditions[] = [
                     '$or' => [
                         [$fieldName => null],
@@ -282,7 +237,7 @@ class RestrictionListener
             'RESTRICTION onPreAggregate',
             [
                 'pipeline' => $newPipeline,
-                'mode' => $this->restrictionMode
+                'mode' => $this->securityUtils->getDataRestrictionMode()
             ]
         );
 
@@ -300,7 +255,7 @@ class RestrictionListener
      */
     public function onRqlSearch(VisitNodeEvent $event)
     {
-        if (!$event->getNode() instanceof SearchNode) {
+        if (!$this->securityUtils->hasDataRestrictions() || !$event->getNode() instanceof SearchNode) {
             return $event;
         }
 
@@ -312,7 +267,7 @@ class RestrictionListener
         /** @var $node SearchNode */
         $node = $event->getNode();
 
-        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
+        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
             if (is_null($fieldValue)) {
                 continue;
             }
@@ -322,7 +277,7 @@ class RestrictionListener
                 [
                     'field' => $fieldName,
                     'value' => $fieldValue,
-                    'mode' => $this->restrictionMode
+                    'mode' => $this->securityUtils->getDataRestrictionMode()
                 ]
             );
 
@@ -334,25 +289,7 @@ class RestrictionListener
     }
 
     /**
-     * gets the restrictions in an finalized array structure
-     *
-     * @return array restrictions
-     */
-    private function getRestrictions()
-    {
-        $restrictions = [];
-        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
-            $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
-            if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
-                $headerValue = (int) $headerValue;
-            }
-            $restrictions[$fieldSpec['name']] = $headerValue;
-        }
-        return $restrictions;
-    }
-
-    /**
-     * gets the current tentant that is saved on the entity. if it doesn't exist, return $checkValue
+     * gets the current tenant that is saved on the entity. if it doesn't exist, return $checkValue
      *
      * @param EntityPrePersistEvent $event      event
      * @param mixed                 $entityId   entity id

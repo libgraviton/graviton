@@ -9,7 +9,6 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\RestrictionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
 use Graviton\DocumentBundle\Types\TypeLoader;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -94,11 +93,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         );
         $container->addCompilerPass(
             new ReadOnlyFieldsCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
-            new RestrictionFieldsCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             5
         );

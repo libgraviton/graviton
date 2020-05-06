@@ -171,7 +171,6 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'searchable'           => 0,
                     'recordOriginException' => false,
                     'hidden'               => false,
-                    'restrictions'         => [],
                     'onVariation'          => null
                 ]
             ),
@@ -211,7 +210,6 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'searchable'            => 0,
                     'recordOriginException' => false,
                     'hidden'               => false,
-                    'restrictions'         => [],
                     'onVariation'          => null
                 ]
             ),

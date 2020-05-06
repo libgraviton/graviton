@@ -1,0 +1,7 @@
+imports:
+    - { resource: config_test.yml }
+
+# in this environment, data restrictions are enabled
+parameters:
+    graviton.rest.data_restriction.map:
+        x-graviton-client: "int:clientId"

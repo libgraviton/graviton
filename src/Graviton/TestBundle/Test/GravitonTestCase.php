@@ -34,9 +34,9 @@ class GravitonTestCase extends WebTestCase
     use ArraySubsetAsserts;
 
     /**
-     * @var KernelBrowser
+     * @var KernelBrowser[]
      */
-    private static $testClient;
+    private static $testClients = [];
 
     /**
      * gets the kernel class name
@@ -61,14 +61,19 @@ class GravitonTestCase extends WebTestCase
      */
     protected static function createClient(array $options = [], array $server = array())
     {
-        if (is_null(self::$testClient)) {
-            self::$testClient = parent::createClient($options, $server);
+        $environment = 'test';
+        if (isset($options['environment'])) {
+            $environment = $options['environment'];
         }
 
-        self::$testClient->getKernel()->boot();
-        self::$testClient->restart();
+        if (!isset(self::$testClients[$environment])) {
+            self::$testClients[$environment] = parent::createClient($options, $server);
+        }
 
-        return new Client(self::$testClient);
+        self::$testClients[$environment]->getKernel()->boot();
+        self::$testClients[$environment]->restart();
+
+        return new Client(self::$testClients[$environment]);
     }
 
     /**
@@ -87,9 +92,17 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
+        $environment = 'test';
+        if (getenv('SYMFONY_ENV') !== false) {
+            $environment = getenv('SYMFONY_ENV');
+        }
+        if (isset($options['environment'])) {
+            $environment = $options['environment'];
+        }
+
         return parent::createKernel(
             [
-                'environment' => 'test',
+                'environment' => $environment,
                 'debug' => false
             ]
         );

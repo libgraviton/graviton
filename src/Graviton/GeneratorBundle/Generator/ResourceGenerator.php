@@ -7,6 +7,8 @@ namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\Schema\ServiceListener;
+use Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -414,8 +416,10 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
+        $documentName = $parameters['base'] . 'Document\\' . $parameters['document'];
+
         $this->addParameter(
-            $parameters['base'] . 'Document\\' . $parameters['document'],
+            $documentName,
             $docName . '.class'
         );
 
@@ -476,6 +480,93 @@ class ResourceGenerator extends AbstractGenerator
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
+
+        // are there any rest listeners defined?
+        if ($parameters['json']->getDef()->getService() != null) {
+            $listeners = $parameters['json']->getDef()->getService()->getListeners();
+
+            $restListenerEventMap = [
+                'onQuery' => [
+                    'eventName' => 'document.model.event.query',
+                    'methodName' => 'onQuery'
+                ],
+                'prePersist' => [
+                    'eventName' => 'document.model.event.entity.pre_persist',
+                    'methodName' => 'prePersist'
+                ]
+            ];
+
+            /**
+             * @var ServiceListener $listener listener
+             */
+            $listener = null;
+
+            foreach ($listeners as $listener) {
+                // parent or service?
+                $parent = null;
+                $className = null;
+                if ($listener->getServiceName()) {
+                    $parent = $listener->getServiceName();
+                    $className = $parent;
+                } else {
+                    $className = $listener->getClassName();
+                }
+
+                $listenerBaseName = implode(
+                    '.',
+                    array(
+                        strtolower($shortName),
+                        strtolower($shortBundle),
+                        'restlistener',
+                        sha1($className)
+                    )
+                );
+
+                $this->addService(
+                    $listenerBaseName.'.instance',
+                    $parent,
+                    $listener->getCalls(),
+                    null,
+                    [],
+                    null,
+                    null,
+                    $className
+                );
+
+                // service tag, one for each eventName
+                $tags = [];
+                foreach ($listener->getEvents() as $eventName) {
+                    if (!isset($restListenerEventMap[$eventName])) {
+                        throw new \RuntimeException("Rest Listener event name '".$eventName."' is invalid!");
+                    }
+                    $tags[] = [
+                        'name' => 'kernel.event_listener',
+                        'event' => $restListenerEventMap[$eventName]['eventName'],
+                        'method' => $restListenerEventMap[$eventName]['methodName']
+                    ];
+                }
+
+                $this->addService(
+                    $listenerBaseName.'.listener',
+                    'graviton.rest.listener.abstract',
+                    [
+                        [
+                            'method' => 'setListenerClass',
+                            'service' => $listenerBaseName.'.instance'
+                        ],
+                        [
+                            'method' => 'setEntityName',
+                            'arguments' => [$documentName]
+                        ]
+                    ],
+                    $tags,
+                    [],
+                    null,
+                    null,
+                    'Graviton\RestBundle\Listener\DynServiceRestListener'
+                );
+            }
+        }
     }
 
     /**
@@ -548,34 +639,52 @@ class ResourceGenerator extends AbstractGenerator
 
         // calls
         foreach ($calls as $call) {
-            $service['calls'][] = [
-                $call['method'],
-                ['@'.$call['service']]
-            ];
+            if ($call instanceof ServiceListenerCall) {
+                $service['calls'][] = [
+                    $call->getMethod(),
+                    $call->getArguments()
+                ];
+            } elseif (isset($call['service'])) {
+                $service['calls'][] = [
+                    $call['method'],
+                    ['@'.$call['service']]
+                ];
+            } elseif (isset($call['arguments'])) {
+                $service['calls'][] = [
+                    $call['method'],
+                    $call['arguments']
+                ];
+            }
         }
 
         // tags
         if ($tag) {
-            $thisTag = [
-                'name' => $tag
-            ];
+            if (!is_array($tag)) {
+                $thisTag = [
+                    'name' => $tag
+                ];
 
-            if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
-                $thisTag['collection'] = $this->json->getId();
+                if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
+                    $thisTag['collection'] = $this->json->getId();
 
-                // is this read only?
-                if ($this->json->isReadOnlyService()) {
-                    $thisTag['read-only'] = true;
+                    // is this read only?
+                    if ($this->json->isReadOnlyService()) {
+                        $thisTag['read-only'] = true;
+                    }
+
+                    // router base defined?
+                    $routerBase = $this->json->getRouterBase();
+                    if ($routerBase !== false) {
+                        $thisTag['router-base'] = $routerBase;
+                    }
                 }
 
-                // router base defined?
-                $routerBase = $this->json->getRouterBase();
-                if ($routerBase !== false) {
-                    $thisTag['router-base'] = $routerBase;
+                $service['tags'][] = $thisTag;
+            } else {
+                foreach ($tag as $tagData) {
+                    $service['tags'][] = $tagData;
                 }
             }
-
-            $service['tags'][] = $thisTag;
         }
 
         $this->services['services'][$id] = $service;

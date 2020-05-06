@@ -40,6 +40,35 @@ services:
     graviton.rest.router:
         alias: router
 
+    #### abstract service for dynamic services rest listeners (than can react to rest events)
+    graviton.rest.listener.abstract:
+        abstract: true
+        arguments:
+          - "@logger"
+          - "@request_stack"
+          - "@doctrine_mongodb.odm.default_document_manager"
+
+    ######### PRE SHIPPED REST LISTENER ABSTRACT SERVICES -> here we use class names as service names
+    Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener:
+        parent: graviton.rest.listener.abstract
+        class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
+        abstract: true
+        calls:
+          - method: setPersistRestrictions
+            arguments:
+              - "%graviton.rest.data_restriction.persist%"
+          - method: setSecurityUtils
+            arguments:
+              - "@graviton.security.service.utils"
+    Graviton\RestBundle\RestListener\WhoamiRestrictionListener:
+        parent: graviton.rest.listener.abstract
+        class: Graviton\RestBundle\RestListener\WhoamiRestrictionListener
+        abstract: true
+        calls:
+          - method: setSecurityUtils
+            arguments:
+              - "@graviton.security.service.utils"
+
     #Routing -->
     #Routing collection -->
     graviton.rest.routing.collection:
@@ -95,7 +124,6 @@ services:
         arguments:
           - "@logger"
           - "@graviton.rql.visitor.mongodb"
-          - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
 
@@ -337,9 +365,8 @@ services:
       class: "%graviton.rest.listener.restriction.class%"
       arguments:
         - "@logger"
-        - "%graviton.rest.data_restriction.map%"
+        - "@graviton.security.service.utils"
         - "@request_stack"
-        - "%graviton.rest.data_restriction.mode%"
         - "%graviton.rest.data_restriction.persist%"
         - "%graviton.rest.data_restriction.solr%"
       tags:
@@ -359,21 +386,6 @@ services:
           event: rql.visit.node
           method: onRqlSearch
           priority: -100
-
-    graviton.rest.restriction.manager:
-        class: "%graviton.rest.restriction.manager.class%"
-        arguments:
-          - "%graviton.document.restriction.fields%"
-        calls:
-          -
-            method: registerHandler
-            arguments:
-              - "@graviton.rest.restriction.handler.whoami"
-
-    graviton.rest.restriction.handler.whoami:
-        class: "%graviton.rest.restriction.handler.whoami.class%"
-        arguments:
-          - "@graviton.security.service.utils"
 
   # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
