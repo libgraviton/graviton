@@ -155,14 +155,7 @@ class SecurityUtils
             return;
         }
 
-        foreach ($dataRestrictionMap as $headerName => $fieldName) {
-            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
-            if (count($fieldSpec) != 1) {
-                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
-            }
-
-            $this->dataRestrictionMap[$headerName] = array_pop($fieldSpec);
-        }
+        $this->dataRestrictionMap = $dataRestrictionMap;
     }
 
     /**
