@@ -72,10 +72,6 @@ class Field
     /**
      * @var array
      */
-    private $restrictions = [];
-    /**
-     * @var array
-     */
     private $collection = [];
 
     /**
@@ -333,28 +329,6 @@ class Field
     {
         $this->constraints = $constraints;
         return $this;
-    }
-
-    /**
-     * get Restrictions
-     *
-     * @return array Restrictions
-     */
-    public function getRestrictions()
-    {
-        return $this->restrictions;
-    }
-
-    /**
-     * set Restrictions
-     *
-     * @param array $restrictions restrictions
-     *
-     * @return void
-     */
-    public function setRestrictions($restrictions)
-    {
-        $this->restrictions = $restrictions;
     }
 
     /**

@@ -4,6 +4,7 @@ imports:
 
 parameters:
     kernel.debug: false
+    debug.container.dump: true
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
     # in tests, we always use the array cache provider
@@ -19,8 +20,7 @@ parameters:
     graviton.translator.default.locale: en
 
     graviton.generator.synthetic_fields: 'int:clientId'
-    graviton.rest.data_restriction.map:
-        x-graviton-client: "int:clientId"
+    graviton.generator.synthetic_fields_expose_on: '/testcase/rest-listeners-cond-persister'
 
     # for testing WhoamiController and security features
     graviton.security.authentication.provider.model: gravitondyn.securityuser.model.securityuser

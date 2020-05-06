@@ -100,7 +100,6 @@ class JsonDefinitionRelTest extends BaseJsonDefinitionFieldTest
                     'searchable'            => 0,
                     'recordOriginException' => false,
                     'hidden'                => false,
-                    'restrictions'          => [],
                     'onVariation'           => null
                 ]
             ),

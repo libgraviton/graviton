@@ -80,7 +80,7 @@ class AppKernel extends Kernel
             new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
         );
 
-        if (in_array($this->getEnvironment(), ['dev', 'test'])) {
+        if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
         }

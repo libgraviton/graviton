@@ -121,7 +121,6 @@ class DefinitionElementTest extends GravitonTestCase
             'searchable' => 1,
             'recordOriginException' => false,
             'hidden' => false,
-            'restrictions' => [],
             'onVariation' => null
         );
 
