@@ -54,6 +54,9 @@ services:
         class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
         abstract: true
         calls:
+          - method: setPersistRestrictions
+            arguments:
+              - "%graviton.rest.data_restriction.persist%"
           - method: setSecurityUtils
             arguments:
               - "@graviton.security.service.utils"

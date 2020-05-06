@@ -17,6 +17,11 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
 {
 
     /**
+     * @var bool
+     */
+    private $persistRestrictions;
+
+    /**
      * @var SecurityUtils
      */
     private $securityUtils;
@@ -40,6 +45,18 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
      * @var mixed
      */
     private $compareValue;
+
+    /**
+     * set PersistRestrictions
+     *
+     * @param bool $persistRestrictions persistRestrictions
+     *
+     * @return void
+     */
+    public function setPersistRestrictions($persistRestrictions)
+    {
+        $this->persistRestrictions = $persistRestrictions;
+    }
 
     /**
      * set SecurityUtils
@@ -110,8 +127,8 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
      */
     public function prePersist(EntityPrePersistEvent $event)
     {
-        // no restrictions?
-        if (!$this->securityUtils->hasDataRestrictions()) {
+        // no restrictions or conditional mode disabled?
+        if (!$this->securityUtils->hasDataRestrictions() || $this->persistRestrictions) {
             return $event;
         }
 
