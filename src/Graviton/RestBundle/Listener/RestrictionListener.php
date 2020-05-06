@@ -134,6 +134,13 @@ class RestrictionListener
             return $event;
         }
 
+        if (!$this->persistRestrictions) {
+            $this->logger->info(
+                'RESTRICTION onPrePersist DISABLED'
+            );
+            return $event;
+        }
+
         $entity = $event->getEntity();
         $entityId = $entity['id'];
 
@@ -161,10 +168,7 @@ class RestrictionListener
                 ]
             );
 
-            // persist tenant again!
-            if ($this->persistRestrictions) {
-                $entity[$fieldName] = $currentTenant;
-            }
+            $entity[$fieldName] = $currentTenant;
 
             if (is_null($fieldValue)) {
                 continue;
