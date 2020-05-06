@@ -87,9 +87,17 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
+        $environment = 'test';
+        if (getenv('SYMFONY_ENV') !== false) {
+            $environment = getenv('SYMFONY_ENV');
+        }
+        if (isset($options['environment'])) {
+            $environment = $options['environment'];
+        }
+
         return parent::createKernel(
             [
-                'environment' => 'test',
+                'environment' => $environment,
                 'debug' => false
             ]
         );
