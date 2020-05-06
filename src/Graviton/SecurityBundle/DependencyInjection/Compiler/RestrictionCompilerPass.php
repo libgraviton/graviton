@@ -6,12 +6,8 @@
 namespace Graviton\SecurityBundle\DependencyInjection\Compiler;
 
 use Graviton\CoreBundle\Util\CoreUtils;
-use Graviton\DocumentBundle\Annotation\ClassScanner;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
-use Graviton\Graviton;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -41,6 +37,5 @@ class RestrictionCompilerPass implements CompilerPassInterface
         }
 
         $container->setParameter('graviton.rest.data_restriction.map.compiled', $restrictionMap);
-        var_dump($restrictionMap);
     }
 }
