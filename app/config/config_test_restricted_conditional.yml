@@ -1,0 +1,7 @@
+imports:
+    - { resource: config_test_restricted.yml }
+
+# in this environment, data restrictions are enabled, but not persisted by default, neither is solr
+parameters:
+    graviton.rest.data_restriction.persist: false
+    graviton.rest.data_restriction.solr: false
