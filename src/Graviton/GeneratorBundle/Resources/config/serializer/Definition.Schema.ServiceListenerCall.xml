@@ -5,7 +5,7 @@
                   type="string"
                   serialized-name="method"/>
         <property name="arguments"
-                  type="array&lt;string&gt;"
+                  type="array"
                   serialized-name="arguments"/>
     </class>
 </serializer>

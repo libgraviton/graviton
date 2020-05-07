@@ -20,7 +20,7 @@ class ServiceListenerCall
     private $method;
 
     /**
-     * @var string[]
+     * @var mixed[]
      */
     private $arguments;
 
@@ -49,7 +49,7 @@ class ServiceListenerCall
     /**
      * get Arguments
      *
-     * @return string[] Arguments
+     * @return mixed[] Arguments
      */
     public function getArguments()
     {
@@ -59,7 +59,7 @@ class ServiceListenerCall
     /**
      * set Arguments
      *
-     * @param string[] $arguments arguments
+     * @param mixed[] $arguments arguments
      *
      * @return void
      */
