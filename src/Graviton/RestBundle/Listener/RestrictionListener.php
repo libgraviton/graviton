@@ -85,6 +85,7 @@ class RestrictionListener
         }
 
         $builder = $event->getQueryBuilder();
+        $filterValue = [];
 
         foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
             if ($fieldValue == null) {
@@ -92,6 +93,7 @@ class RestrictionListener
             }
 
             $inValue = [null, $fieldValue];
+            $filterValue[$fieldName] = $inValue;
 
             if ($this->securityUtils->getDataRestrictionMode() == SecurityUtils::DATA_RESTRICTION_MODE_LTE) {
                 $builder->addAnd(
@@ -105,16 +107,15 @@ class RestrictionListener
                     $builder->expr()->field($fieldName)->in($inValue)
                 );
             }
-
-            $this->logger->info(
-                'RESTRICTION onModelQuery',
-                [
-                    'field' => $fieldName,
-                    'value' => $inValue,
-                    'mode' => $this->securityUtils->getDataRestrictionMode()
-                ]
-            );
         }
+
+        $this->logger->info(
+            'RESTRICTION onModelQuery',
+            [
+                'filter' => $filterValue,
+                'mode' => $this->securityUtils->getDataRestrictionMode()
+            ]
+        );
 
         $event->setQueryBuilder($builder);
     }
