@@ -75,7 +75,7 @@ class SecurityUtils
             throw new \RuntimeException("Restriction Mode '".$dataRestrictionMode."' is invalid!");
         }
 
-        $this->setDataRestrictionMap($dataRestrictionMap);
+        $this->dataRestrictionMap = $dataRestrictionMap;
         $this->dataRestrictionMode = $dataRestrictionMode;
     }
 
@@ -140,29 +140,6 @@ class SecurityUtils
             return (bool) $this->securityUser->hasRole($role);
         }
         throw new UsernameNotFoundException('No security user');
-    }
-
-    /**
-     * set DataRestrictionMap
-     *
-     * @param array $dataRestrictionMap dataRestrictionMap
-     *
-     * @return void
-     */
-    private function setDataRestrictionMap(array $dataRestrictionMap)
-    {
-        if (!is_array($dataRestrictionMap)) {
-            return;
-        }
-
-        foreach ($dataRestrictionMap as $headerName => $fieldName) {
-            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
-            if (count($fieldSpec) != 1) {
-                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
-            }
-
-            $this->dataRestrictionMap[$headerName] = array_pop($fieldSpec);
-        }
     }
 
     /**

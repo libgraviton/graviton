@@ -55,7 +55,10 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         $requestStack->expects($this->any())->method('getCurrentRequest')->willReturn($request);
 
         $restrictionMap = [
-            'x-graviton-client' => 'int:clientId'
+            'x-graviton-client' => [
+                'name' => 'clientId',
+                'type' => 'int'
+            ]
         ];
 
         $tokenStorageMock = $this->getMockForAbstractClass(TokenStorageInterface::class);

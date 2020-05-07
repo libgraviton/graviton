@@ -22,6 +22,11 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
     private $persistRestrictions;
 
     /**
+     * @var array
+     */
+    private $restrictionPersistMap;
+
+    /**
      * @var SecurityUtils
      */
     private $securityUtils;
@@ -56,6 +61,18 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
     public function setPersistRestrictions($persistRestrictions)
     {
         $this->persistRestrictions = $persistRestrictions;
+    }
+
+    /**
+     * set RestrictionPersistMap
+     *
+     * @param array $restrictionPersistMap restrictionPersistMap
+     *
+     * @return void
+     */
+    public function setRestrictionPersistMap($restrictionPersistMap)
+    {
+        $this->restrictionPersistMap = $restrictionPersistMap;
     }
 
     /**
@@ -154,11 +171,38 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
         // set the value
         if ($relatedEntity[$this->compareField] == $this->compareValue) {
             foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
-                $entity[$fieldName] = $fieldValue;
+                $fixedValue = $this->getFixedPersistValue($fieldName);
+                if (is_null($fixedValue)) {
+                    $entity[$fieldName] = $fieldValue;
+                } else {
+                    $entity[$fieldName] = $fixedValue;
+                }
             }
             $event->setEntity($entity);
         }
 
         return $event;
+    }
+
+    /**
+     * gets a preconfigured value for a certain field to persist
+     *
+     * @param string $fieldName field name
+     *
+     * @return mixed|null value
+     */
+    private function getFixedPersistValue($fieldName)
+    {
+        if (!isset($this->restrictionPersistMap[$fieldName])) {
+            return null;
+        }
+
+        $persistMapEntry = $this->restrictionPersistMap[$fieldName];
+        $persistValue = $persistMapEntry['name'];
+        if ($persistMapEntry['type'] == 'int') {
+            $persistValue = (int) $persistValue;
+        }
+
+        return $persistValue;
     }
 }
