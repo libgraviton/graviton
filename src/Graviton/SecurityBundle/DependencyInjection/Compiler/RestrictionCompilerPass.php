@@ -24,18 +24,25 @@ class RestrictionCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $restrictionMapConfigured = $container->getParameter('graviton.rest.data_restriction.map');
-        $restrictionMap = [];
+        $params = [
+            'graviton.rest.data_restriction.map',
+            'graviton.rest.data_restriction.conditional.persist.map'
+        ];
 
-        foreach ($restrictionMapConfigured as $headerName => $fieldName) {
-            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
-            if (count($fieldSpec) != 1) {
-                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
+        foreach ($params as $param) {
+            $mapConfigured = $container->getParameter($param);
+            $map = [];
+
+            foreach ($mapConfigured as $headerName => $fieldName) {
+                $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
+                if (count($fieldSpec) != 1) {
+                    throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
+                }
+
+                $map[$headerName] = array_pop($fieldSpec);
             }
 
-            $restrictionMap[$headerName] = array_pop($fieldSpec);
+            $container->setParameter($param.'.compiled', $map);
         }
-
-        $container->setParameter('graviton.rest.data_restriction.map.compiled', $restrictionMap);
     }
 }
