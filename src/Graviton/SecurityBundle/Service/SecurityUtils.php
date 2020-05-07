@@ -75,6 +75,7 @@ class SecurityUtils
             throw new \RuntimeException("Restriction Mode '".$dataRestrictionMode."' is invalid!");
         }
 
+        var_dump($dataRestrictionMap);
         $this->setDataRestrictionMap($dataRestrictionMap);
         $this->dataRestrictionMode = $dataRestrictionMode;
     }
@@ -196,6 +197,7 @@ class SecurityUtils
     public function getRequestDataRestrictions()
     {
         $restrictions = [];
+        var_dump($this->dataRestrictionMap);
         foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
             $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
             if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
