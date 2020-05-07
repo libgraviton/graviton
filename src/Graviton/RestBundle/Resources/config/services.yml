@@ -54,6 +54,9 @@ services:
         class: Graviton\RestBundle\RestListener\ConditionalRestrictionPersisterListener
         abstract: true
         calls:
+          - method: setRestrictionPersistMap
+            arguments:
+              - "%graviton.rest.data_restriction.conditional.persist.map.compiled%"
           - method: setPersistRestrictions
             arguments:
               - "%graviton.rest.data_restriction.persist%"

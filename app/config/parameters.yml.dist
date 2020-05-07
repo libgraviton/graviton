@@ -42,6 +42,13 @@ parameters:
     #graviton.rest.data_restriction.map:
     #    x-graviton-tenant: "int:tenant"
     graviton.rest.data_restriction.map: []
+    # here, you can override what gets actually persisted, a map from provided value to the effective value
+    # example:
+    #graviton.rest.data_restriction.persist.map:
+    #    tenant: "int:1234"
+    # IMPORTANT: this setting is only relevant for the ConditionalRestrictionPersisterListener! in normal mode,
+    # we always persist the current value
+    graviton.rest.data_restriction.conditional.persist.map: []
     graviton.rest.data_restriction.mode: eq
     # if true, then the mapped tenant is saved to the entity. if false, it mainly means that tenant stuff applies
     # to loader stuff (and maybe dynServiceListeners), but is not always saved
