@@ -122,6 +122,7 @@
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
+                    "graviton.sentry.dontReport": "SENTRY_DONT_REPORT",
                     "graviton.core.checkPackageName": "CHECK_PACKAGE_NAME",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
