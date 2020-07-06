@@ -5,6 +5,7 @@
 
 namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
+use Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**

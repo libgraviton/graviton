@@ -5,6 +5,7 @@
 
 namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
+use Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
