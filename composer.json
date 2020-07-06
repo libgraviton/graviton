@@ -10,8 +10,17 @@
         }
     ],
     "autoload": {
-        "psr-0": {"": "src/", "Graviton": "src/"},
-        "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
+        "psr-4": {
+            "Graviton\\": "src/Graviton/",
+            "GravitonDyn\\": "src/GravitonDyn/",
+            "Hydrators\\": "src/Doctrine/Hydrators/",
+            "Proxies\\": "src/Doctrine/Proxies/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php",
+            "app/Graviton.php"
+        ]
     },
     "require": {
         "php": ">=7.3.0",
