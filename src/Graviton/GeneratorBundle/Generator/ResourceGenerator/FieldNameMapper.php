@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
-use Doctrine\Common\Inflector\Inflector;
+use Symfony\Component\Inflector\Inflector;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
