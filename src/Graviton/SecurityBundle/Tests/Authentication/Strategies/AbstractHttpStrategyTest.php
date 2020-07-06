@@ -3,7 +3,7 @@
  * test abstract strategy
  */
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
 use Graviton\TestBundle\Test\RestTestCase;
