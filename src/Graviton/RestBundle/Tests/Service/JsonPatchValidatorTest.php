@@ -1,6 +1,6 @@
 <?php
 
-namespace Graviton\RestBundle\Service;
+namespace Graviton\RestBundle\Tests\Service;
 
 /**
  * @category GravitonCoreBundle

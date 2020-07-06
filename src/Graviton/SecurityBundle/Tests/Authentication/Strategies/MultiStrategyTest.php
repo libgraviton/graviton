@@ -3,7 +3,7 @@
  * Handling authentication for clients in the same network.
  */
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\BrowserKit\Cookie;

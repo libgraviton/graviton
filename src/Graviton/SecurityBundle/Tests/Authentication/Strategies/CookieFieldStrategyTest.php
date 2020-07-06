@@ -3,7 +3,7 @@
  * Fetching authentication information from Cookie header.
  */
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\BrowserKit\Cookie;

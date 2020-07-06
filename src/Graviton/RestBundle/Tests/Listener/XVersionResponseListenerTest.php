@@ -3,7 +3,7 @@
  * Unit tests for the XVersionResponseListener
  */
 
-namespace Graviton\RestBundle\Listener;
+namespace Graviton\RestBundle\Tests\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;

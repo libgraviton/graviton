@@ -3,7 +3,7 @@
  * check to see if reading from header field works
  */
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\RestTestCase;
 

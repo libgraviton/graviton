@@ -3,7 +3,7 @@
  * SecurityAuthenticatorTest
  */
 
-namespace Graviton\SecurityBundle\Authentication;
+namespace Graviton\SecurityBundle\Tests\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
 use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProviderDummy;
