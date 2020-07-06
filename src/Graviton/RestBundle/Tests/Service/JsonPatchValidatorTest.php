@@ -2,6 +2,8 @@
 
 namespace Graviton\RestBundle\Tests\Service;
 
+use Graviton\RestBundle\Service\JsonPatchValidator;
+
 /**
  * @category GravitonCoreBundle
  * @package  Graviton

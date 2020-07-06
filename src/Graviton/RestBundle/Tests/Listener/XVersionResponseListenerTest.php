@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Tests\Listener;
 
+use Graviton\RestBundle\Listener\XVersionResponseListener;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
