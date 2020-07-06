@@ -60,7 +60,6 @@
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
   </php>
   <listeners>
-    <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
     <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
   </listeners>
 </phpunit>
