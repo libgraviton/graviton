@@ -1,6 +1,8 @@
 <?php
 
-namespace Graviton\RestBundle\Service;
+namespace Graviton\RestBundle\Tests\Service;
+
+use Graviton\RestBundle\Service\JsonPatchValidator;
 
 /**
  * @category GravitonCoreBundle

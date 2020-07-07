@@ -10,8 +10,17 @@
         }
     ],
     "autoload": {
-        "psr-0": {"": "src/", "Graviton": "src/"},
-        "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
+        "psr-4": {
+            "Graviton\\": "src/Graviton/",
+            "GravitonDyn\\": "src/GravitonDyn/",
+            "Hydrators\\": "src/Doctrine/Hydrators/",
+            "Proxies\\": "src/Doctrine/Proxies/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php",
+            "app/Graviton.php"
+        ]
     },
     "require": {
         "php": ">=7.3.0",
@@ -62,7 +71,6 @@
     "require-dev": {
         "phpunit/phpunit": "^8",
         "squizlabs/php_codesniffer": "~3",
-        "johnkary/phpunit-speedtrap": "~3",
 
         "graviton/test-services-bundle": "^2.7.0",
         "graviton/mongodb-fixtures-bundle": "^1.0.1",
@@ -122,6 +130,7 @@
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
+                    "graviton.sentry.dontReport": "SENTRY_DONT_REPORT",
                     "graviton.core.checkPackageName": "CHECK_PACKAGE_NAME",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",

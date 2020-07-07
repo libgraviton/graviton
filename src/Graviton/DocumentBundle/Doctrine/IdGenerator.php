@@ -6,7 +6,6 @@
 namespace Graviton\DocumentBundle\Doctrine;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -14,7 +13,7 @@ use MongoDB\BSON\ObjectId;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class IdGenerator extends AbstractIdGenerator
+class IdGenerator implements \Doctrine\ODM\MongoDB\Id\IdGenerator
 {
 
     /**

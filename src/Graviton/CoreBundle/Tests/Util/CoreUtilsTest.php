@@ -3,7 +3,7 @@
  * test core utils
  */
 
-namespace Graviton\CoreBundle\Tests\Services;
+namespace Graviton\CoreBundle\Tests\Util;
 
 use Graviton\CoreBundle\Util\CoreUtils;
 use PHPUnit\Framework\TestCase;

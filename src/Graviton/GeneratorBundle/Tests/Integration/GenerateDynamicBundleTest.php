@@ -3,7 +3,7 @@
  * integration test that covers the result of our generator
  */
 
-namespace Graviton\GeneratorBundle\Test\Integration;
+namespace Graviton\GeneratorBundle\Tests\Integration;
 
 use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
