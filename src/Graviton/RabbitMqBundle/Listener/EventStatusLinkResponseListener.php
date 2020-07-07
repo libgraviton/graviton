@@ -239,7 +239,7 @@ class EventStatusLinkResponseListener
 
         // transient header?
         foreach ($this->transientHeaders as $headerName) {
-            if ($this->requestStack->getCurrentRequest()->headers->contains($headerName)) {
+            if ($this->requestStack->getCurrentRequest()->headers->has($headerName)) {
                 $obj->addTransientHeader(
                     $headerName,
                     $this->requestStack->getCurrentRequest()->headers->get($headerName)
