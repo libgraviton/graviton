@@ -36,6 +36,11 @@ class QueueEvent
     public $status;
 
     /**
+     * @var array
+     */
+    public $transientHeaders = [];
+
+    /**
      * constructor
      */
     public function __construct()
@@ -136,5 +141,40 @@ class QueueEvent
     {
         $this->status->{'$ref'} = $statusUrl;
         return $this;
+    }
+
+    /**
+     * get headers
+     *
+     * @return array headers
+     */
+    public function getTransientHeaders(): array
+    {
+        return $this->transientHeaders;
+    }
+
+    /**
+     * set headers
+     *
+     * @param array $transientHeaders headers
+     *
+     * @return void
+     */
+    public function setTransientHeaders(array $transientHeaders): void
+    {
+        $this->transientHeaders = $transientHeaders;
+    }
+
+    /**
+     * add header
+     *
+     * @param string $headerName  header name
+     * @param string $headerValue header value
+     *
+     * @return void
+     */
+    public function addTransientHeader(string $headerName, string $headerValue): void
+    {
+        $this->transientHeaders[$headerName] = $headerValue;
     }
 }

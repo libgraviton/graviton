@@ -131,6 +131,10 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # rabbitmq config
+
+    # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
+    graviton.rabbitmq.queueevent.transient_headers: []
+
     graviton.rabbitmq.host: localhost
     graviton.rabbitmq.port: 5672
     graviton.rabbitmq.user: guest

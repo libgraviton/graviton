@@ -145,6 +145,7 @@
                     "graviton.proxy": "PROXY",
                     "graviton.noproxy": "NOPROXY",
                     "graviton.composer.cmd": "COMPOSER_CMD",
+                    "graviton.rabbitmq.queueevent.transient_headers": "RABBITMQ_QUEUEEVENT_TRANSIENTHEADERS",
                     "graviton.rabbitmq.host": "RABBITMQ_HOST",
                     "graviton.rabbitmq.port": "RABBITMQ_PORT",
                     "graviton.rabbitmq.user": "RABBITMQ_USER",
