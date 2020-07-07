@@ -7,6 +7,12 @@ parameters:
     debug.container.dump: true
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
+
+    # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
+    graviton.rabbitmq.queueevent.transient_headers:
+        - graviton_user
+        - graviton_tenant
+
     # in tests, we always use the array cache provider
     graviton.cache.provider.service_id: graviton.cache.provider.local
     #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
