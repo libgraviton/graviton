@@ -42,9 +42,9 @@ class EventStatusLinkResponseListener
     private $router = null;
 
     /**
-     * @var Request request
+     * @var RequestStack requestStack
      */
-    private $request;
+    private $requestStack;
 
     /**
      * @var QueueEvent queue event document
@@ -142,7 +142,7 @@ class EventStatusLinkResponseListener
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
         $this->documentManager = $documentManager;
         $this->extRefConverter = $extRefConverter;
         $this->queueEventDocument = $queueEventDocument;
@@ -233,9 +233,19 @@ class EventStatusLinkResponseListener
     {
         $obj = clone $this->queueEventDocument;
         $obj->setEvent($this->generateRoutingKey());
-        $obj->setDocumenturl($this->request->get('selfLink'));
+        $obj->setDocumenturl($this->requestStack->getCurrentRequest()->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
         $obj->setCoreUserId($this->getSecurityUsername());
+
+        // transient header?
+        foreach ($this->transientHeaders as $headerName) {
+            if ($this->requestStack->getCurrentRequest()->headers->contains($headerName)) {
+                $obj->addTransientHeader(
+                    $headerName,
+                    $this->requestStack->getCurrentRequest()->headers->get($headerName)
+                );
+            }
+        }
 
         return $obj;
     }
@@ -250,7 +260,7 @@ class EventStatusLinkResponseListener
      */
     private function generateRoutingKey()
     {
-        $routeParts = explode('.', $this->request->get('_route'));
+        $routeParts = explode('.', $this->requestStack->getCurrentRequest()->get('_route'));
         $action = array_pop($routeParts);
         $baseRoute = implode('.', $routeParts);
 
