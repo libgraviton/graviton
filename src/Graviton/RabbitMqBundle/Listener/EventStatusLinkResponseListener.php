@@ -102,6 +102,11 @@ class EventStatusLinkResponseListener
     protected $workerRelativeUrl;
 
     /**
+     * @var array
+     */
+    private $transientHeaders = [];
+
+    /**
      * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface       $router                            Router dependency
      * @param RequestStack          $requestStack                      Request stack
@@ -116,6 +121,7 @@ class EventStatusLinkResponseListener
      * @param string                $eventStatusRouteName              name of the route to EventStatus
      * @param SecurityUtils         $securityUtils                     Security utils service
      * @param string                $workerRelativeUrl                 backend url relative from the workers
+     * @param array                 $transientHeaders                  headers to be included from request in event
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -131,7 +137,8 @@ class EventStatusLinkResponseListener
         $eventStatusEventResourceClassname,
         $eventStatusRouteName,
         SecurityUtils $securityUtils,
-        $workerRelativeUrl
+        $workerRelativeUrl,
+        $transientHeaders
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
@@ -149,6 +156,7 @@ class EventStatusLinkResponseListener
         if (!is_null($workerRelativeUrl)) {
             $this->workerRelativeUrl = new Uri($workerRelativeUrl);
         }
+        $this->transientHeaders = $transientHeaders;
     }
 
     /**
