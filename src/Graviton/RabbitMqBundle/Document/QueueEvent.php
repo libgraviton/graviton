@@ -38,7 +38,7 @@ class QueueEvent
     /**
      * @var array
      */
-    public $transientHeaders = [];
+    public $transientHeaders;
 
     /**
      * constructor
@@ -47,6 +47,7 @@ class QueueEvent
     {
         $this->document = new \stdClass();
         $this->status = new \stdClass();
+        $this->transientHeaders = new \ArrayObject();
     }
 
     /**
