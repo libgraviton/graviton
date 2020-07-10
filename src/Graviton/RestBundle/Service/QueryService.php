@@ -160,6 +160,12 @@ class QueryService
 
             if (is_array($records) && !empty($records) && is_object($records[0])) {
                 $returnValue = $records[0];
+
+                $request->attributes->set('totalCount', 1);
+                $request->attributes->set('recordCount', 1);
+            } else {
+                $request->attributes->set('totalCount', 0);
+                $request->attributes->set('recordCount', 0);
             }
         }
 
