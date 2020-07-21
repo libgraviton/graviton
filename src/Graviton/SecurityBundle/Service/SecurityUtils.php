@@ -4,6 +4,8 @@
  */
 namespace Graviton\SecurityBundle\Service;
 
+use Graviton\CoreBundle\Util\CoreUtils;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -30,13 +32,51 @@ class SecurityUtils
     private $tokenStorage;
 
     /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * data restriction mode constants
+     */
+    public const DATA_RESTRICTION_MODE_EQ = 'eq';
+    public const DATA_RESTRICTION_MODE_LTE = 'lte';
+
+    /**
+     * @var array
+     */
+    private $dataRestrictionMap = [];
+
+    /**
+     * @var string
+     */
+    private $dataRestrictionMode;
+
+    /**
      * StoreManager constructor.
-     * @param TokenStorageInterface $tokenStorage Auth token storage
+     *
+     * @param TokenStorageInterface $tokenStorage        Auth token storage
+     * @param RequestStack          $requestStack        request stack
+     * @param array                 $dataRestrictionMap  data restriction map
+     * @param string                $dataRestrictionMode restriction mode (EQ for equals check or LTE for lessthanequal)
      */
     public function __construct(
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
+        RequestStack $requestStack,
+        ?array $dataRestrictionMap = [],
+        $dataRestrictionMode = self::DATA_RESTRICTION_MODE_EQ
     ) {
         $this->tokenStorage = $tokenStorage;
+        $this->requestStack = $requestStack;
+
+        if ($dataRestrictionMode != self::DATA_RESTRICTION_MODE_EQ &&
+            $dataRestrictionMode != self::DATA_RESTRICTION_MODE_LTE
+        ) {
+            throw new \RuntimeException("Restriction Mode '".$dataRestrictionMode."' is invalid!");
+        }
+
+        $this->dataRestrictionMap = $dataRestrictionMap;
+        $this->dataRestrictionMode = $dataRestrictionMode;
     }
 
     /**
@@ -100,5 +140,53 @@ class SecurityUtils
             return (bool) $this->securityUser->hasRole($role);
         }
         throw new UsernameNotFoundException('No security user');
+    }
+
+    /**
+     * returns if the current configuration specifies data restrictions
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function hasDataRestrictions()
+    {
+        return !empty($this->dataRestrictionMap);
+    }
+
+    /**
+     * get DataRestrictionMap
+     *
+     * @return array DataRestrictionMap
+     */
+    public function getDataRestrictionMap()
+    {
+        return $this->dataRestrictionMap;
+    }
+
+    /**
+     * get DataRestrictionMode
+     *
+     * @return string DataRestrictionMode
+     */
+    public function getDataRestrictionMode()
+    {
+        return $this->dataRestrictionMode;
+    }
+
+    /**
+     * gets the restrictions in an finalized array structure
+     *
+     * @return array restrictions
+     */
+    public function getRequestDataRestrictions()
+    {
+        $restrictions = [];
+        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
+            $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
+            if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
+                $headerValue = (int) $headerValue;
+            }
+            $restrictions[$fieldSpec['name']] = $headerValue;
+        }
+        return $restrictions;
     }
 }

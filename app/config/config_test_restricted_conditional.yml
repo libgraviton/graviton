@@ -1,0 +1,13 @@
+imports:
+    - { resource: config_test_restricted.yml }
+
+# in this environment, data restrictions are enabled, but not persisted by default, neither is solr
+parameters:
+    graviton.rest.data_restriction.map:
+        x-graviton-client: "int:clientId"
+        x-graviton-moreField: "int:moreField"
+    # the persist map will ensure that it's a static value into moreField
+    graviton.rest.data_restriction.conditional.persist.map:
+        moreField: 'int:123456'
+    graviton.rest.data_restriction.persist: false
+    graviton.rest.data_restriction.solr: false

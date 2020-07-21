@@ -213,7 +213,14 @@ class EventStatusControllerTest extends RestTestCase
         $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
         $dbProducer->resetEventList();
 
-        $client->put('/core/app/' . $testApp->id, $testApp);
+        $client->put(
+            '/core/app/' . $testApp->id,
+            $testApp,
+            [],
+            [],
+            ['HTTP_GRAVITON_USER' => 'tester', 'HTTP_GRAVITON_TENANT' => 'company']
+        );
+
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
         // the worker relative our cannot be in the Link header
@@ -233,6 +240,11 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertEquals('anonymous', $data['coreUserId']);
         $this->assertEquals('https://backendalias:9443/core/app/test-event-app', $data['document']['$ref']);
         $this->assertStringContainsString('https://backendalias:9443/event/status/', $data['status']['$ref']);
+
+        // check transient headers
+        $this->assertEquals(2, count($data['transientHeaders']));
+        $this->assertEquals('tester', $data['transientHeaders']['graviton_user']);
+        $this->assertEquals('company', $data['transientHeaders']['graviton_tenant']);
 
         // A failing event should not be published
         // using patch

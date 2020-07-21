@@ -57,6 +57,10 @@ class Service
      * @var array
      */
     private $variations = [];
+    /**
+     * @var array
+     */
+    private $listeners = [];
 
     /**
      * @return string
@@ -259,5 +263,27 @@ class Service
     public function setVariations($variations)
     {
         $this->variations = $variations;
+    }
+
+    /**
+     * get Listeners
+     *
+     * @return array Listeners
+     */
+    public function getListeners()
+    {
+        return $this->listeners;
+    }
+
+    /**
+     * set Listeners
+     *
+     * @param array $listeners listeners
+     *
+     * @return void
+     */
+    public function setListeners($listeners)
+    {
+        $this->listeners = $listeners;
     }
 }

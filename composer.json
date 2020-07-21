@@ -10,11 +10,20 @@
         }
     ],
     "autoload": {
-        "psr-0": {"": "src/", "Graviton": "src/"},
-        "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
+        "psr-4": {
+            "Graviton\\": "src/Graviton/",
+            "GravitonDyn\\": "src/GravitonDyn/",
+            "Hydrators\\": "src/Doctrine/Hydrators/",
+            "Proxies\\": "src/Doctrine/Proxies/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php",
+            "app/Graviton.php"
+        ]
     },
     "require": {
-        "php": ">=7.4.0",
+        "php": ">=7.3.0",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.7.0",
 
@@ -61,9 +70,8 @@
     "require-dev": {
         "phpunit/phpunit": "^8",
         "squizlabs/php_codesniffer": "~3",
-        "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "^2.5.0",
+        "graviton/test-services-bundle": "^2.7.0",
         "graviton/mongodb-fixtures-bundle": "^1.0.1",
         "libgraviton/codesniffer": "~2",
 
@@ -98,12 +106,15 @@
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "check": [
-            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/"
+            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
         ]
     },
     "config": {
+        "platform": {
+            "php": "7.3.16"
+        },
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
@@ -118,6 +129,7 @@
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
+                    "graviton.sentry.dontReport": "SENTRY_DONT_REPORT",
                     "graviton.core.checkPackageName": "CHECK_PACKAGE_NAME",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
@@ -132,6 +144,7 @@
                     "graviton.proxy": "PROXY",
                     "graviton.noproxy": "NOPROXY",
                     "graviton.composer.cmd": "COMPOSER_CMD",
+                    "graviton.rabbitmq.queueevent.transient_headers": "RABBITMQ_QUEUEEVENT_TRANSIENTHEADERS",
                     "graviton.rabbitmq.host": "RABBITMQ_HOST",
                     "graviton.rabbitmq.port": "RABBITMQ_PORT",
                     "graviton.rabbitmq.user": "RABBITMQ_USER",
@@ -167,6 +180,10 @@
                     "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
                     "graviton.rest.schema_variation.enable": "SCHEMA_VARIATION_ENABLED",
                     "graviton.rest.data_restriction.map": "DATA_RESTRICTION_MAP",
+                    "graviton.rest.data_restriction.mode": "DATA_RESTRICTION_MODE",
+                    "graviton.rest.data_restriction.persist": "DATA_RESTRICTION_PERSIST",
+                    "graviton.rest.data_restriction.solr": "DATA_RESTRICTION_SOLR",
+                    "graviton.rest.data_restriction.conditional.persist.map": "DATA_RESTRICTION_CONDITIONAL_PERSIST_MAP",
                     "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
                     "graviton.analytics.cache_time.metadata": "ANALYTICS_CACHE_TIME_METADATA",
                     "graviton.sentry.dsn": "SENTRY_DSN",

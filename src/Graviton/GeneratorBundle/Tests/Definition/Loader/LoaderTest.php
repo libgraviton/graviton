@@ -3,7 +3,7 @@
  * test loader and loader strategies
  */
 
-namespace Graviton\GeneratorBundle\Tests\Definition;
+namespace Graviton\GeneratorBundle\Tests\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;

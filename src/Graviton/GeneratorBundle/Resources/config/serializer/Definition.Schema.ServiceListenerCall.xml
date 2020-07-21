@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall">
+        <property name="method"
+                  type="string"
+                  serialized-name="method"/>
+        <property name="arguments"
+                  type="array"
+                  serialized-name="arguments"/>
+    </class>
+</serializer>

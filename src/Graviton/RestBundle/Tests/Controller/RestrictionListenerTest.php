@@ -25,6 +25,20 @@ class RestrictionListenerTest extends RestTestCase
     private $repository;
 
     /**
+     * custom environment
+     *
+     * @var string
+     */
+    protected $environment = 'test_restricted';
+
+    /**
+     * custom client options
+     *
+     * @var string[]
+     */
+    private $clientOptions = ['environment' => 'test_restricted'];
+
+    /**
      * load fixtures
      *
      * @return void
@@ -54,7 +68,7 @@ class RestrictionListenerTest extends RestTestCase
      */
     public function testTenantFetchData($serverParameters, $expectedCount)
     {
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/testcase/multitenant/?sort(+value)', [], [], $serverParameters);
         $results = $client->getResults();
         $this->assertEquals($expectedCount, count($results));
@@ -65,7 +79,7 @@ class RestrictionListenerTest extends RestTestCase
         }
 
         // with select()
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/testcase/multitenant/?sort(+value)&select(id)', [], [], $serverParameters);
         $results = $client->getResults();
         $this->assertEquals($expectedCount, count($results));
@@ -83,7 +97,7 @@ class RestrictionListenerTest extends RestTestCase
      */
     public function testTenantFetchDataAnalytics($serverParameters, $expectedCount)
     {
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/analytics/restriction-multitenant?value=1', [], [], $serverParameters);
         $results = $client->getResults();
         $this->assertEquals($expectedCount, count($results));
@@ -138,7 +152,7 @@ class RestrictionListenerTest extends RestTestCase
      */
     public function testNoRqlOverride()
     {
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request(
             'GET',
             '/testcase/multitenant/?sort(+value)&eq(clientId,integer:5)',
@@ -151,7 +165,7 @@ class RestrictionListenerTest extends RestTestCase
         // should have no records as it's AND 5 AND 10
         $this->assertEmpty($results);
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request(
             'GET',
             '/testcase/multitenant/?sort(+value)&eq(clientId,integer:10)',
@@ -166,7 +180,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals("200", $results[0]->id);
         $this->assertEquals("201", $results[1]->id);
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request(
             'GET',
             '/testcase/multitenant/?sort(+value)&or(eq(clientId,integer:10),eq(clientId,integer:5))',
@@ -193,7 +207,7 @@ class RestrictionListenerTest extends RestTestCase
         $record->name = "foo";
         $record->value = 55;
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->post('/testcase/multitenant/', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
 
         $location = $client->getResponse()->headers->get('Location');
@@ -224,7 +238,7 @@ class RestrictionListenerTest extends RestTestCase
         $record->name = "foo";
         $record->value = 103;
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/testcase/multitenant/103', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
 
         // check it isn't visible to other tenants..
@@ -250,14 +264,14 @@ class RestrictionListenerTest extends RestTestCase
         $record->name = "foo";
         $record->value = 103;
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/testcase/multitenant/103', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
 
         // make sure it exists
         $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
 
         // now we want to write it again under tenant 6
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $record->value = 3333;
         $client->put('/testcase/multitenant/103', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '6']);
 
@@ -271,7 +285,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertsRecordNotExists(6, '/testcase/multitenant/103');
 
         // ok.. what happens if we try to update the record with no tenant?
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $record->value = 3334;
         $client->put('/testcase/multitenant/103', $record);
 
@@ -303,7 +317,7 @@ class RestrictionListenerTest extends RestTestCase
         );
 
         // admin wants to PATCH a tenant record..
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('PATCH', '/testcase/multitenant/100', [], [], [], $patchJson);
 
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
@@ -312,13 +326,13 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertsRecordExists(5, '/testcase/multitenant/100', 300);
 
         // wrong tenant to other tenant
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('PATCH', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '6'], $patchJson);
 
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
 
         // tenant to admin
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('PATCH', '/testcase/multitenant/1000', [], [], ['HTTP_X-GRAVITON-CLIENT' => '6'], $patchJson);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
@@ -334,7 +348,7 @@ class RestrictionListenerTest extends RestTestCase
             ]
         );
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('PATCH', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '5'], $patchJson);
 
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
@@ -349,7 +363,7 @@ class RestrictionListenerTest extends RestTestCase
     public function testTenantDeleteData()
     {
         // admin wants to DELETE a tenant record -> he can do that!
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('DELETE', '/testcase/multitenant/100');
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
@@ -359,19 +373,19 @@ class RestrictionListenerTest extends RestTestCase
         $this->setUp();
 
         // tenant wants to delete other tenant record -> 404 as he doesn't see it..
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('DELETE', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '6']);
 
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
 
         // tenant wants to delete admin record
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('DELETE', '/testcase/multitenant/1000', [], [], ['HTTP_X-GRAVITON-CLIENT' => '6']);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
 
         // now the owner wants to delete it
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('DELETE', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
@@ -397,7 +411,7 @@ class RestrictionListenerTest extends RestTestCase
             $server['HTTP_X-GRAVITON-CLIENT'] = (string) $tenant;
         }
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', $url, [], [], $server);
         $this->assertEquals($value, $client->getResults()->value);
 
@@ -418,7 +432,7 @@ class RestrictionListenerTest extends RestTestCase
      */
     private function assertsRecordNotExists($tenant, $url)
     {
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
 
         $server = [];
         if (!is_null($tenant)) {

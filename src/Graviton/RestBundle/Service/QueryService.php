@@ -40,11 +40,6 @@ class QueryService
     private $visitor;
 
     /**
-     * @var Manager
-     */
-    private $restrictionManager;
-
-    /**
      * @var integer
      */
     private $paginationDefaultLimit;
@@ -72,20 +67,17 @@ class QueryService
     /**
      * @param LoggerInterface          $logger                 logger
      * @param VisitorInterface         $visitor                visitor
-     * @param Manager                  $restrictionManager     restriction manager
      * @param integer                  $paginationDefaultLimit default pagination limit
      * @param EventDispatcherInterface $eventDispatcher        event dispatcher
      */
     public function __construct(
         LoggerInterface $logger,
         VisitorInterface $visitor,
-        Manager $restrictionManager,
         $paginationDefaultLimit,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->logger = $logger;
         $this->visitor = $visitor;
-        $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -168,6 +160,12 @@ class QueryService
 
             if (is_array($records) && !empty($records) && is_object($records[0])) {
                 $returnValue = $records[0];
+
+                $request->attributes->set('totalCount', 1);
+                $request->attributes->set('recordCount', 1);
+            } else {
+                $request->attributes->set('totalCount', 0);
+                $request->attributes->set('recordCount', 0);
             }
         }
 
@@ -265,33 +263,7 @@ class QueryService
     private function getRqlQuery()
     {
         /** @var Query $rqlQuery */
-        $rqlQuery = $this->request->attributes->get('rqlQuery', false);
-
-        // apply field restrictions as specified in service definition
-        $restrictionNode = $this->restrictionManager->handle($this->repository);
-        if ($restrictionNode) {
-            if (!$rqlQuery instanceof Query) {
-                $rqlQuery = new Query();
-            }
-
-            $query = $rqlQuery->getQuery();
-            if (is_null($query)) {
-                // only our query
-                $query = $restrictionNode;
-            } else {
-                // we have an existing query
-                $query = new AndNode(
-                    [
-                        $query,
-                        $restrictionNode
-                    ]
-                );
-            }
-
-            $rqlQuery->setQuery($query);
-        }
-
-        return $rqlQuery;
+        return $this->request->attributes->get('rqlQuery', false);
     }
 
     /**

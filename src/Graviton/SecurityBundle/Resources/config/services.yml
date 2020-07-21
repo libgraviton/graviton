@@ -85,4 +85,7 @@ services:
         public: true
         arguments:
           - "@security.token_storage"
+          - "@request_stack"
+          - "%graviton.rest.data_restriction.map.compiled%"
+          - "%graviton.rest.data_restriction.mode%"
 

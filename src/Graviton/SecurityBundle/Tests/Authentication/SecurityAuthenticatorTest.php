@@ -3,10 +3,11 @@
  * SecurityAuthenticatorTest
  */
 
-namespace Graviton\SecurityBundle\Authentication;
+namespace Graviton\SecurityBundle\Tests\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
 use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProviderDummy;
+use Graviton\SecurityBundle\Authentication\SecurityAuthenticator;
 use Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use Graviton\SecurityBundle\Entities\SecurityUser;

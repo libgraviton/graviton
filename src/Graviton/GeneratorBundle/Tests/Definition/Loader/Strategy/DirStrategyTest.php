@@ -3,7 +3,7 @@
  * test loader and loader strategies
  */
 
-namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
+namespace Graviton\GeneratorBundle\Tests\Definition\Loader\Strategy;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy;
 use PHPUnit\Framework\TestCase;

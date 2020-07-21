@@ -3,8 +3,9 @@
  * test security contract (mainly getters and defaults)
  */
 
-namespace Graviton\SecurityBundle\Entities;
+namespace Graviton\SecurityBundle\Tests\Entities;
 
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**

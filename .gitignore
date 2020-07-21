@@ -9,6 +9,7 @@ web/.htaccess
 web/explorer
 mongodata/
 src/GravitonDyn/*
+src/Doctrine/*
 src/Graviton/DocumentBundle/Entity/*.defaultLanguage
 app/config/parameters.yml
 app/config/parameters_dev.yml

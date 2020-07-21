@@ -448,6 +448,9 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Administration', $results->name->en);
         $this->assertEquals(true, $results->showInMenu);
 
+        // we also expect record count headers here
+        $this->assertEquals('1', $response->headers->get('x-record-count'));
+
         $this->assertStringContainsString(
             '<http://localhost/core/app/admin>; rel="self"',
             $response->headers->get('Link')

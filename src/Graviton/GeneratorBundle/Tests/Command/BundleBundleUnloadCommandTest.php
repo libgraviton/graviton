@@ -3,8 +3,9 @@
  * Class BundleBundleUnloadCommandTest
  */
 
-namespace Graviton\GeneratorBundle\Command;
+namespace Graviton\GeneratorBundle\Tests\Command;
 
+use Graviton\GeneratorBundle\Command\BundeBundleUnloadCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;

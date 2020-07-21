@@ -48,3 +48,4 @@ services:
           - "%graviton.rabbitmq.document.eventstatusstatus.route%"
           - "@graviton.security.service.utils"
           - "%graviton.worker.relativeUrl%"
+          - "%graviton.rabbitmq.queueevent.transient_headers%"

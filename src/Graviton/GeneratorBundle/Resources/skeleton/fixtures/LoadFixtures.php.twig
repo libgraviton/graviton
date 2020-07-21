@@ -13,53 +13,55 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
-{
-    /**
-     * @private ContainerInterface
-     */
-    private $container;
-
-    protected $restUtils;
-    protected $fixtures;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null)
+if (interface_exists('Graviton\MongoDB\Fixtures\FixtureInterface')) {
+    class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
     {
-        $this->container = $container;
-        $this->restUtils = $this->container->get('graviton.rest.restutils');
-        $this->fixtures = json_decode('{{ fixtures_json }}');
-    }
+        /**
+         * @private ContainerInterface
+         */
+        private $container;
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param ObjectManager $manager Object Manager
-     *
-     * @return void
-     */
-    public function load(ObjectManager $manager)
-    {
-        if (count($this->fixtures) > 0) {
-            $manager->clear();
-            foreach ($this->fixtures as $record) {
-                $manager->persist($this->getObjectFromRecord($record));
-                $manager->flush();
+        protected $restUtils;
+        protected $fixtures;
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param ContainerInterface $container service_container
+         *
+         * @return void
+         */
+        public function setContainer(ContainerInterface $container = null)
+        {
+            $this->container = $container;
+            $this->restUtils = $this->container->get('graviton.rest.restutils');
+            $this->fixtures = json_decode('{{ fixtures_json }}');
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @param ObjectManager $manager Object Manager
+         *
+         * @return void
+         */
+        public function load(ObjectManager $manager)
+        {
+            if (count($this->fixtures) > 0) {
+                $manager->clear();
+                foreach ($this->fixtures as $record) {
+                    $manager->persist($this->getObjectFromRecord($record));
+                    $manager->flush();
+                }
             }
         }
-    }
 
-    public function getObjectFromRecord($record)
-    {
-        return $this->restUtils->deserializeContent(
-            json_encode($record),
-            '{{ base }}Document\{{ document }}'
-        );
+        public function getObjectFromRecord($record)
+        {
+            return $this->restUtils->deserializeContent(
+                json_encode($record),
+                '{{ base }}Document\{{ document }}'
+            );
+        }
     }
 }

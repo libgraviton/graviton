@@ -28,7 +28,6 @@ class ArrayField extends AbstractField
      * @param bool   $readOnly              Read only
      * @param bool   $required              Is required
      * @param bool   $recordOriginException Is an exception to record origin
-     * @param array  $restrictions          restrictions
      */
     public function __construct(
         $serializerType,
@@ -36,8 +35,7 @@ class ArrayField extends AbstractField
         $exposedName,
         $readOnly,
         $required,
-        $recordOriginException,
-        $restrictions
+        $recordOriginException
     ) {
         $this->serializerType = $serializerType;
         parent::__construct(
@@ -46,8 +44,7 @@ class ArrayField extends AbstractField
             $readOnly,
             $required,
             false,
-            $recordOriginException,
-            $restrictions
+            $recordOriginException
         );
     }
 

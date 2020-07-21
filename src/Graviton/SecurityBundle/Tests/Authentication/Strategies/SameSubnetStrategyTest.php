@@ -3,8 +3,9 @@
  * Handling authentication for clients in the same network.
  */
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
+use Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 

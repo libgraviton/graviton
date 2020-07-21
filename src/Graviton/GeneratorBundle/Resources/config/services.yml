@@ -148,3 +148,9 @@ services:
         tags:
         -
             name: console.command
+
+    graviton_generator.command.cachedocumentannotation:
+      class: "Graviton\\GeneratorBundle\\Command\\CacheDocumentAnnotationCommand"
+      tags:
+        -
+          name: console.command
