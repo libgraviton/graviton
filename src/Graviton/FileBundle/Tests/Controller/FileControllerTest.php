@@ -236,7 +236,7 @@ class FileControllerTest extends RestTestCase
         $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
     }
 
     /**
@@ -322,7 +322,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -360,7 +360,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
