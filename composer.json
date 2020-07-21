@@ -23,7 +23,7 @@
         ]
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4.0",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.7.0",
 
@@ -112,9 +112,6 @@
         ]
     },
     "config": {
-        "platform": {
-            "php": "7.3.16"
-        },
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
