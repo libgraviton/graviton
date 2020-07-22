@@ -153,11 +153,9 @@ return $this->deletedDate;
         public function get{{ field.fieldName|capitalize }}()
     {% endif %}
     {
-    {% if '[]' in field.type or field.type == 'array' %}
         if ($this->{{ field.fieldName }} instanceof \Doctrine\Common\Collections\Collection) {
           return $this->{{ field.fieldName }}->toArray();
         }
-    {% endif %}
 
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
