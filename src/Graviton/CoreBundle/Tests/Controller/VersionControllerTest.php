@@ -44,7 +44,7 @@ class VersionControllerTest extends RestTestCase
         }
 
         foreach ($content['versions'] as $packageId => $packageVersion) {
-            $this->assertRegExp($regExp, $packageVersion);
+            $this->assertMatchesRegularExpression($regExp, $packageVersion);
         }
     }
 
