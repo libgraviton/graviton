@@ -854,17 +854,7 @@ class ResourceGenerator extends AbstractGenerator
         if ($baseController == 'RestController') {
             $baseController = RestController::class;
             $hasOwnBaseController = false;
-        } else {
-            echo 3;
         }
-
-        /*
-        $this->renderFile(
-            'controller/DocumentController.php.twig',
-            $dir . '/Controller/' . $document . 'Controller.php',
-            $parameters
-        );
-        */
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
