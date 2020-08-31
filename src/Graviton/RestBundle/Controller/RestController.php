@@ -138,7 +138,10 @@ class RestController extends AbstractController
      */
     public function getContainer()
     {
-        @trigger_error('Calling getContainer() on '.RestController::class.' is deprecated, inject your dependencies.', E_USER_DEPRECATED);
+        @trigger_error(
+            'Calling getContainer() on '.RestController::class.' is deprecated, inject your dependencies.',
+            E_USER_DEPRECATED
+        );
         return $this->container;
     }
 

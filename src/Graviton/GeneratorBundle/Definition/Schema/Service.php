@@ -103,7 +103,7 @@ class Service
     }
 
     /**
-     * @return ServiceListenerCall[]
+     * @return array calls
      */
     public function getBaseControllerCalls(): array
     {
@@ -111,7 +111,9 @@ class Service
     }
 
     /**
-     * @param ServiceListenerCall[] $baseControllerCalls
+     * @param ServiceListenerCall[] $baseControllerCalls calls
+     *
+     * @return void
      */
     public function setBaseControllerCalls(array $baseControllerCalls): void
     {
