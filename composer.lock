@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5167e570d7294ce34f0d1e5afe981a75",
+    "content-hash": "150b5abb7f06769638c906a518aaa0cd",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -6239,16 +6239,16 @@
         },
         {
             "name": "graviton/mongodb-fixtures-bundle",
-            "version": "v1.0.1",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-fixtures-bundle.git",
-                "reference": "254594c38dedd2ecb57e05854ce0d0468d34e078"
+                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/254594c38dedd2ecb57e05854ce0d0468d34e078",
-                "reference": "254594c38dedd2ecb57e05854ce0d0468d34e078",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/265101fb12b554b71bdb3b07fd796e5213cc2e3b",
+                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b",
                 "shasum": ""
             },
             "require": {
@@ -6266,7 +6266,7 @@
             ],
             "description": "A drop-in replacement for liip/test-fixtures-bundle that is dependency free and only focuses on MongoDB ODM fixtures",
             "homepage": "https://github.com/libgraviton/mongodb-fixtures-bundle",
-            "time": "2019-11-14T15:33:05+00:00"
+            "time": "2020-09-01T08:36:57+00:00"
         },
         {
             "name": "graviton/test-services-bundle",
