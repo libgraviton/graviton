@@ -47,9 +47,9 @@ class ExtReferenceHandler
      * Serialize extref to JSON
      *
      * @param SerializationVisitorInterface $visitor      Visitor
-     * @param ExtReference             $extReference Extref
-     * @param array                    $type         Type
-     * @param Context                  $context      Context
+     * @param ExtReference                  $extReference Extref
+     * @param array                         $type         Type
+     * @param Context                       $context      Context
      * @return string|null
      */
     public function serializeExtReferenceToJson(

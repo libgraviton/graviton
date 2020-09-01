@@ -119,8 +119,12 @@ class DateHandler implements SubscribingHandlerInterface
      *
      * @return string serialized date
      */
-    public function serializeDateTime(SerializationVisitorInterface $visitor, \DateTime $date, array $type, Context $context)
-    {
+    public function serializeDateTime(
+        SerializationVisitorInterface $visitor,
+        \DateTime $date,
+        array $type,
+        Context $context
+    ) {
         return $visitor->visitString($this->dateConverter->formatDateTime($date), $type, $context);
     }
 }
