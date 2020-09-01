@@ -14,4 +14,5 @@ parameters:
     graviton.document.serializer.handler.date.class: Graviton\DocumentBundle\Serializer\Handler\DateHandler
     graviton.document.serializer.handler.empty.class: Graviton\DocumentBundle\Serializer\Handler\EmptyHandler
     graviton.document.serializer.listener.emptyextref.class: Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener
+    graviton.document.serializer.visitor.jsonserialization.class: Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitorFactory
     graviton.document.serializer.subscriber.doctrineproxy.class: Graviton\DocumentBundle\Serializer\Subscriber\DoctrineProxySubscriber
