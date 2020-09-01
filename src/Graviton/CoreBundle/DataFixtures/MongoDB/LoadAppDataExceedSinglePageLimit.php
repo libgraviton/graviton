@@ -6,7 +6,7 @@
 namespace Graviton\CoreBundle\DataFixtures\MongoDB;
 
 use Graviton\MongoDB\Fixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use GravitonDyn\AppBundle\Document\App;
 
 /**

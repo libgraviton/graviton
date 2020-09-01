@@ -32,7 +32,7 @@ class RepositoryFactory
      *
      * @param string $documentId class to instanciate
      *
-     * @return \Doctrine\Common\Persistence\ObjectManager
+     * @return Doctrine\Persistence\ObjectManager manager
      */
     public function get($documentId)
     {

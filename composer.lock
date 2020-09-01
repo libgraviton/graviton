@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edfdcef584806e952180a5c84735c044",
+    "content-hash": "150b5abb7f06769638c906a518aaa0cd",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.151.0",
+            "version": "3.151.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "10db635441685088731345da13c6680a3dacb003"
+                "reference": "6deca431ad8d061face518bdde2072445385f45a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/10db635441685088731345da13c6680a3dacb003",
-                "reference": "10db635441685088731345da13c6680a3dacb003",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6deca431ad8d061face518bdde2072445385f45a",
+                "reference": "6deca431ad8d061face518bdde2072445385f45a",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +89,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-08-26T21:08:26+00:00"
+            "time": "2020-08-31T18:25:57+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -974,22 +974,22 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "4.2.0",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174"
+                "reference": "1d02d49707954aca9ba4a81447a8bdb5b4d75e5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174",
-                "reference": "f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/1d02d49707954aca9ba4a81447a8bdb5b4d75e5a",
+                "reference": "1d02d49707954aca9ba4a81447a8bdb5b4d75e5a",
                 "shasum": ""
             },
             "require": {
                 "doctrine/annotations": "^1.2",
                 "doctrine/mongodb-odm": "^2.0.0",
-                "doctrine/persistence": "^1.3.6",
+                "doctrine/persistence": "^1.3.6|^2.0",
                 "php": "^7.2",
                 "psr/log": "^1.0",
                 "symfony/config": "^4.3.3|^5.0",
@@ -1051,20 +1051,20 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2020-06-04T07:08:40+00:00"
+            "time": "2020-08-29T11:42:32+00:00"
         },
         {
             "name": "doctrine/persistence",
-            "version": "1.3.8",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "7a6eac9fb6f61bba91328f15aa7547f4806ca288"
+                "reference": "1dee036f22cd5dc0bc12132f1d1c38415907be55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/7a6eac9fb6f61bba91328f15aa7547f4806ca288",
-                "reference": "7a6eac9fb6f61bba91328f15aa7547f4806ca288",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/1dee036f22cd5dc0bc12132f1d1c38415907be55",
+                "reference": "1dee036f22cd5dc0bc12132f1d1c38415907be55",
                 "shasum": ""
             },
             "require": {
@@ -1073,7 +1073,7 @@
                 "doctrine/collections": "^1.0",
                 "doctrine/event-manager": "^1.0",
                 "doctrine/reflection": "^1.2",
-                "php": "^7.1 || ^8.0"
+                "php": "^7.1"
             },
             "conflict": {
                 "doctrine/common": "<2.10@dev"
@@ -1081,13 +1081,13 @@
             "require-dev": {
                 "doctrine/coding-standard": "^6.0",
                 "phpstan/phpstan": "^0.11",
-                "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
+                "phpunit/phpunit": "^7.0",
                 "vimeo/psalm": "^3.11"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -1149,7 +1149,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-06-20T12:56:16+00:00"
+            "time": "2020-05-12T19:32:44+00:00"
         },
         {
             "name": "doctrine/reflection",
@@ -3231,16 +3231,16 @@
         },
         {
             "name": "php-amqplib/php-amqplib",
-            "version": "v2.11.3",
+            "version": "v2.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "6353c5d2d3021a301914bc6566e695c99cfeb742"
+                "reference": "dfcccd36bf12b4c7cc3ec74d571e00e0f767232e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/6353c5d2d3021a301914bc6566e695c99cfeb742",
-                "reference": "6353c5d2d3021a301914bc6566e695c99cfeb742",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/dfcccd36bf12b4c7cc3ec74d571e00e0f767232e",
+                "reference": "dfcccd36bf12b4c7cc3ec74d571e00e0f767232e",
                 "shasum": ""
             },
             "require": {
@@ -3264,7 +3264,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.11-dev"
+                    "dev-master": "2.12-dev"
                 }
             },
             "autoload": {
@@ -3304,7 +3304,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2020-05-13T13:56:11+00:00"
+            "time": "2020-08-25T01:39:32+00:00"
         },
         {
             "name": "php-amqplib/rabbitmq-bundle",
@@ -5893,16 +5893,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.4.11",
+            "version": "v4.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "f5721c658ea5752000baca99f07cc0554708b56f"
+                "reference": "da9869f6939e19341eae226bb8ac20419cf3790e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/f5721c658ea5752000baca99f07cc0554708b56f",
-                "reference": "f5721c658ea5752000baca99f07cc0554708b56f",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/da9869f6939e19341eae226bb8ac20419cf3790e",
+                "reference": "da9869f6939e19341eae226bb8ac20419cf3790e",
                 "shasum": ""
             },
             "require": {
@@ -6003,7 +6003,7 @@
                 "doctrine/cache": "~1.6",
                 "doctrine/collections": "~1.0",
                 "doctrine/data-fixtures": "^1.1",
-                "doctrine/dbal": "~2.4",
+                "doctrine/dbal": "~2.4|^3.0",
                 "doctrine/doctrine-bundle": "^1.5|^2.0",
                 "doctrine/orm": "~2.4,>=2.4.5",
                 "doctrine/reflection": "~1.0",
@@ -6019,7 +6019,7 @@
                 "predis/predis": "~1.1",
                 "psr/http-client": "^1.0",
                 "psr/simple-cache": "^1.0",
-                "symfony/phpunit-bridge": "^5.0.8",
+                "symfony/phpunit-bridge": "^5.2",
                 "symfony/security-acl": "~2.8|~3.0",
                 "twig/cssinliner-extra": "^2.12",
                 "twig/inky-extra": "^2.12",
@@ -6080,7 +6080,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-24T04:10:27+00:00"
+            "time": "2020-08-31T06:09:59+00:00"
         },
         {
             "name": "thefrozenfire/swagger",
@@ -6239,16 +6239,16 @@
         },
         {
             "name": "graviton/mongodb-fixtures-bundle",
-            "version": "v1.0.1",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-fixtures-bundle.git",
-                "reference": "254594c38dedd2ecb57e05854ce0d0468d34e078"
+                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/254594c38dedd2ecb57e05854ce0d0468d34e078",
-                "reference": "254594c38dedd2ecb57e05854ce0d0468d34e078",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/265101fb12b554b71bdb3b07fd796e5213cc2e3b",
+                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b",
                 "shasum": ""
             },
             "require": {
@@ -6266,20 +6266,20 @@
             ],
             "description": "A drop-in replacement for liip/test-fixtures-bundle that is dependency free and only focuses on MongoDB ODM fixtures",
             "homepage": "https://github.com/libgraviton/mongodb-fixtures-bundle",
-            "time": "2019-11-14T15:33:05+00:00"
+            "time": "2020-09-01T08:36:57+00:00"
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.7.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "65f7da3eeac592222f95685567b63d352630f44c"
+                "reference": "498799e5bb160c317732565e5f716f4177f5cc41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/65f7da3eeac592222f95685567b63d352630f44c",
-                "reference": "65f7da3eeac592222f95685567b63d352630f44c",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/498799e5bb160c317732565e5f716f4177f5cc41",
+                "reference": "498799e5bb160c317732565e5f716f4177f5cc41",
                 "shasum": ""
             },
             "require-dev": {
@@ -6303,7 +6303,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2020-05-07T06:45:20+00:00"
+            "time": "2020-09-01T07:57:46+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -6391,16 +6391,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.9.0",
+            "version": "v4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "aaee038b912e567780949787d5fe1977be11a778"
+                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aaee038b912e567780949787d5fe1977be11a778",
-                "reference": "aaee038b912e567780949787d5fe1977be11a778",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/88e519766fc58bd46b8265561fb79b54e2e00b28",
+                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28",
                 "shasum": ""
             },
             "require": {
@@ -6439,7 +6439,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-08-18T19:48:01+00:00"
+            "time": "2020-08-30T16:15:20+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -6755,16 +6755,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.1.5",
+            "version": "9.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "adea70610c070869261d2d0a62fa968611447b56"
+                "reference": "d25b24b1cd14772bde4d75daeb393dc17db9f6e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/adea70610c070869261d2d0a62fa968611447b56",
-                "reference": "adea70610c070869261d2d0a62fa968611447b56",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/d25b24b1cd14772bde4d75daeb393dc17db9f6e6",
+                "reference": "d25b24b1cd14772bde4d75daeb393dc17db9f6e6",
                 "shasum": ""
             },
             "require": {
@@ -6824,7 +6824,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-27T06:29:01+00:00"
+            "time": "2020-08-31T06:31:46+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -8103,16 +8103,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.4.11",
+            "version": "v4.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "0bc6184e78cd73abb0820e160a202c3989409631"
+                "reference": "8c6395686d3f203caf3ba4d29182f8c69809d8bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/0bc6184e78cd73abb0820e160a202c3989409631",
-                "reference": "0bc6184e78cd73abb0820e160a202c3989409631",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/8c6395686d3f203caf3ba4d29182f8c69809d8bd",
+                "reference": "8c6395686d3f203caf3ba4d29182f8c69809d8bd",
                 "shasum": ""
             },
             "require": {
@@ -8178,7 +8178,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-23T08:31:43+00:00"
+            "time": "2020-08-28T16:19:28+00:00"
         },
         {
             "name": "theseer/tokenizer",

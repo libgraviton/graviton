@@ -138,7 +138,36 @@ class RestController extends AbstractController
      */
     public function getContainer()
     {
+        @trigger_error(
+            'Calling getContainer() on '.RestController::class.' is deprecated, inject your dependencies.',
+            E_USER_DEPRECATED
+        );
         return $this->container;
+    }
+
+    /**
+     * Function for classes that inherit from this controller, to give them the opportunity to deserialize stuff
+     *
+     * @param string $content       content
+     * @param string $documentClass class
+     *
+     * @return object deserialized object
+     */
+    protected function deserialize($content, $documentClass)
+    {
+        return $this->restUtils->deserialize($content, $documentClass);
+    }
+
+    /**
+     * Function for classes that inherit from this controller, to give them the opportunity to serialize stuff
+     *
+     * @param object $object object
+     *
+     * @return string json
+     */
+    protected function serialize($object)
+    {
+        return $this->restUtils->serialize($object);
     }
 
     /**
