@@ -117,7 +117,8 @@ class FileManagerTest extends RestTestCase
                 ],
                 "mime":"text\/plain",
                 "filename":"test.txt",
-                "hash":"4f3cbec0e58903d8bdcbd03d283cf43ed49a95d8d8b341ee38c0ba085204e2d5"
+                "hash":"4f3cbec0e58903d8bdcbd03d283cf43ed49a95d8d8b341ee38c0ba085204e2d5",
+                "additionalProperties":[]
              }',
             json_encode($contentArray['metadata'])
         );

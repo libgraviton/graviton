@@ -188,7 +188,11 @@ class NullExtrefControllerTest extends RestTestCase
         return [
             'empty refs' => [
                 [
+                    'optionalExtref'      => ['$ref' => null],
                     'requiredExtref'      => ['$ref' => 'http://localhost/core/app/admin'],
+                    'optionalExtrefArray' => [
+                        ['$ref' => null],
+                    ],
                     'requiredExtrefArray' => [
                         ['$ref' => 'http://localhost/core/app/admin'],
                     ],
@@ -221,13 +225,18 @@ class NullExtrefControllerTest extends RestTestCase
                 ],
                 [
                     'requiredExtref'      => ['$ref' => 'http://localhost/core/app/admin'],
+                    'optionalExtrefArray' => [],
                     'requiredExtrefArray' => [
                         ['$ref' => 'http://localhost/core/app/admin'],
                     ],
                     'optionalExtrefDeep'  => [
                         [
                             'deep' => [
-                                [], // backend renders this as {} -> not good
+                                [
+                                    'deep' => [
+                                        'deep' => [],
+                                    ],
+                                ],
                             ],
                         ],
                     ],

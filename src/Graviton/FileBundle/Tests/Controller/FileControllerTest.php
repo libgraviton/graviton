@@ -190,7 +190,7 @@ class FileControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->assertObjectNotHasAttribute('links', $results);
+        $this->assertEmpty($results->links);
 
         // Let's update links but without sending file and still have file info
         $id = $data->id;

@@ -124,14 +124,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'intarray'  => [10, 20],
             'strarray'  => ['a', 'b'],
             'boolarray' => [true, false],
-            'hasharray' => [(object) ['x' => 'y'], (object) []],
+            'hasharray' => [(object) ['x' => 'y']],
             'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
 
             'hash'      => (object) [
                 'intarray'  => [10, 20],
                 'strarray'  => ['a', 'b'],
                 'boolarray' => [true, false],
-                'hasharray' => [(object) ['x' => 'y'], (object) []],
+                'hasharray' => [(object) ['x' => 'y']],
                 'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
             ],
 
@@ -140,17 +140,17 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'intarray'  => [10, 20],
                     'strarray'  => ['a', 'b'],
                     'boolarray' => [true, false],
-                    'hasharray' => [(object) ['x' => 'y'], (object) []],
+                    'hasharray' => [(object) ['x' => 'y']],
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
 
             'rawData'      => (object) [
-                'hasharray' => [(object) ['x' => 'y'], (object) []],
+                'hasharray' => [(object) ['x' => 'y']],
                 'emptyhash' => (object) [],
                 'emptystring' => "",
                 'emptyarray' => [],
-                'emptyarrayhash' => [ (object) [] ]
+                'emptyarrayhash' => []
             ],
         ];
 
@@ -203,7 +203,9 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'hasharray' => [(object) ['x' => 'y'], (object) []],
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
-            ]
+            ],
+
+            'rawData'      => (object) [],
         ];
 
         $client = static::createRestClient();

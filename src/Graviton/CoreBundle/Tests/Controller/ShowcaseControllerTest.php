@@ -67,6 +67,8 @@ class ShowcaseControllerTest extends RestTestCase
                 'uri'       => 'protocol:value',
             ],
 
+            'nestedApps'            => [],
+            'unstructuredObject'    => (object) [],
             'choices'               => "<>"
         ];
 
@@ -83,8 +85,8 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $created = $client->getResults();
-        $this->assertObjectNotHasAttribute('nestedApps', $created);
-        $this->assertObjectNotHasAttribute('unstructuredObject', $created);
+        $this->assertEquals($showCase->nestedApps, $created->nestedApps);
+        $this->assertEquals($showCase->unstructuredObject, $created->unstructuredObject);
     }
 
     /**
@@ -480,6 +482,17 @@ class ShowcaseControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
+
+        /* expect empty arrays */
+        $filtred = array_map(
+            function ($entry) {
+                $entry->contacts = [];
+                $entry->nestedArray = [];
+                $entry->nestedApps = [];
+                return $entry;
+            },
+            $filtred
+        );
 
         $this->assertEquals($filtred, $client->getResults());
 
