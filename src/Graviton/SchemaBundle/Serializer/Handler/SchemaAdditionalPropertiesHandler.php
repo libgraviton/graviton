@@ -10,7 +10,7 @@ namespace Graviton\SchemaBundle\Serializer\Handler;
 use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
 use JMS\Serializer\Context;
-use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -23,15 +23,15 @@ class SchemaAdditionalPropertiesHandler
     /**
      * Serialize additionalProperties to JSON
      *
-     * @param JsonSerializationVisitor   $visitor              Visitor
-     * @param SchemaAdditionalProperties $additionalProperties properties
-     * @param array                      $type                 Type
-     * @param Context                    $context              Context
+     * @param SerializationVisitorInterface $visitor              Visitor
+     * @param SchemaAdditionalProperties    $additionalProperties properties
+     * @param array                         $type                 Type
+     * @param Context                       $context              Context
      *
      * @return string|null
      */
     public function serializeSchemaAdditionalPropertiesToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         SchemaAdditionalProperties $additionalProperties,
         array $type,
         Context $context

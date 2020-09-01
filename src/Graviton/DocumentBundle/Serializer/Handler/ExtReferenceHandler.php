@@ -11,8 +11,8 @@ use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventFormat;
 use Graviton\RestBundle\Routing\Loader\ActionUtils;
 use JMS\Serializer\Context;
 use JMS\Serializer\Exception\NotAcceptableException;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * JMS serializer handler for ExtReference
@@ -46,14 +46,14 @@ class ExtReferenceHandler
     /**
      * Serialize extref to JSON
      *
-     * @param JsonSerializationVisitor $visitor      Visitor
+     * @param SerializationVisitorInterface $visitor      Visitor
      * @param ExtReference             $extReference Extref
      * @param array                    $type         Type
      * @param Context                  $context      Context
      * @return string|null
      */
     public function serializeExtReferenceToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         ExtReference $extReference,
         array $type,
         Context $context
@@ -76,14 +76,14 @@ class ExtReferenceHandler
     /**
      * Serialize extref to JSON
      *
-     * @param JsonDeserializationVisitor $visitor Visitor
-     * @param string                     $url     Extref URL
-     * @param array                      $type    Type
-     * @param Context                    $context Context
+     * @param DeserializationVisitorInterface $visitor Visitor
+     * @param string                          $url     Extref URL
+     * @param array                           $type    Type
+     * @param Context                         $context Context
      * @return ExtReference|null
      */
     public function deserializeExtReferenceFromJson(
-        JsonDeserializationVisitor $visitor,
+        DeserializationVisitorInterface $visitor,
         $url,
         array $type,
         Context $context

@@ -7,9 +7,9 @@ namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use JMS\Serializer\Context;
 use JMS\Serializer\Exception\NotAcceptableException;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
 use Graviton\DocumentBundle\Entity\Hash;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * Hash handler for JMS serializer
@@ -23,14 +23,14 @@ class EmptyHandler
     /**
      * Serialize Hash object
      *
-     * @param JsonSerializationVisitor $visitor Visitor
-     * @param Hash                     $data    Data
-     * @param array                    $type    Type
-     * @param Context                  $context Context
+     * @param SerializationVisitorInterface $visitor Visitor
+     * @param Hash                          $data    Data
+     * @param array                         $type    Type
+     * @param Context                       $context Context
      * @return array
      */
     public function serializeEmptyToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         $data,
         array $type,
         Context $context
@@ -45,15 +45,15 @@ class EmptyHandler
     /**
      * Deserialize Hash object
      *
-     * @param JsonDeserializationVisitor $visitor Visitor
-     * @param array                      $data    Data
-     * @param array                      $type    Type
-     * @param Context                    $context Context
+     * @param DeserializationVisitorInterface $visitor Visitor
+     * @param array                           $data    Data
+     * @param array                           $type    Type
+     * @param Context                         $context Context
      *
      * @return Hash|null
      */
     public function deserializeEmptyFromJson(
-        JsonDeserializationVisitor $visitor,
+        DeserializationVisitorInterface $visitor,
         $data,
         array $type,
         Context $context
