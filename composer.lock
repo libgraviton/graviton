@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edfdcef584806e952180a5c84735c044",
+    "content-hash": "60d9cdd5cc67e696b6005e3ac9ac272c",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -6270,16 +6270,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.7.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "65f7da3eeac592222f95685567b63d352630f44c"
+                "reference": "825fed195a1e950d01e60ce4b15fd94c3b612966"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/65f7da3eeac592222f95685567b63d352630f44c",
-                "reference": "65f7da3eeac592222f95685567b63d352630f44c",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/825fed195a1e950d01e60ce4b15fd94c3b612966",
+                "reference": "825fed195a1e950d01e60ce4b15fd94c3b612966",
                 "shasum": ""
             },
             "require-dev": {
@@ -6303,7 +6303,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2020-05-07T06:45:20+00:00"
+            "time": "2020-09-01T07:22:18+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -8278,7 +8278,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "graviton/test-services-bundle": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
