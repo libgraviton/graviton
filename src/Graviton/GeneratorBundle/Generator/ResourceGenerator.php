@@ -11,6 +11,7 @@ use Graviton\GeneratorBundle\Definition\Schema\ServiceListener;
 use Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
+use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
@@ -478,7 +479,8 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
+            false
         );
 
         // are there any rest listeners defined?
@@ -594,6 +596,7 @@ class ResourceGenerator extends AbstractGenerator
      * @param string $factoryService factory service id
      * @param string $factoryMethod  factory method name
      * @param string $className      class name to override
+     * @param bool   $public         if public or not
      *
      * @return void
      */
@@ -605,10 +608,11 @@ class ResourceGenerator extends AbstractGenerator
         array $arguments = [],
         $factoryService = null,
         $factoryMethod = null,
-        $className = null
+        $className = null,
+        $public = true
     ) {
         $service = [];
-        $service['public'] = true;
+        $service['public'] = $public;
 
         // classname
         if (is_null($className)) {
@@ -840,11 +844,17 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateController(array $parameters, $dir, $document)
     {
-        $this->renderFile(
-            'controller/DocumentController.php.twig',
-            $dir . '/Controller/' . $document . 'Controller.php',
-            $parameters
-        );
+        // if no route, no need for controller
+        if (!$parameters['json']->hasController()) {
+            return;
+        }
+
+        $baseController = $parameters['json']->getBaseController();
+        $hasOwnBaseController = true;
+        if ($baseController == 'RestController') {
+            $baseController = RestController::class;
+            $hasOwnBaseController = false;
+        }
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
@@ -852,22 +862,32 @@ class ResourceGenerator extends AbstractGenerator
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
 
         $this->addParameter(
-            $parameters['base'] . 'Controller\\' . $parameters['document'] . 'Controller',
+            $baseController,
             $paramName . '.class'
         );
+
+        $controllerCalls = [
+            [
+                'method' => 'setModel',
+                'service' => implode(
+                    '.',
+                    [$shortName, $shortBundle, 'model', strtolower($parameters['document'])]
+                )
+            ]
+        ];
+
+        // any added calls?
+        if ($parameters['json']->getDef()->getService() != null) {
+            $addedCalls = $parameters['json']->getDef()->getService()->getBaseControllerCalls();
+            if (!empty($addedCalls)) {
+                $controllerCalls = array_merge($controllerCalls, $addedCalls);
+            }
+        }
 
         $this->addService(
             $paramName,
             $parameters['parent'],
-            array(
-                array(
-                    'method' => 'setModel',
-                    'service' => implode(
-                        '.',
-                        array($shortName, $shortBundle, 'model', strtolower($parameters['document']))
-                    )
-                )
-            ),
+            $controllerCalls,
             'graviton.rest'
         );
     }

@@ -38,6 +38,10 @@ class Service
      */
     private $baseController;
     /**
+     * @var ServiceListenerCall[]
+     */
+    private $baseControllerCalls = [];
+    /**
      * @var string[]
      */
     private $roles = [];
@@ -96,6 +100,24 @@ class Service
     {
         $this->baseController = $baseController;
         return $this;
+    }
+
+    /**
+     * @return array calls
+     */
+    public function getBaseControllerCalls(): array
+    {
+        return $this->baseControllerCalls;
+    }
+
+    /**
+     * @param ServiceListenerCall[] $baseControllerCalls calls
+     *
+     * @return void
+     */
+    public function setBaseControllerCalls(array $baseControllerCalls): void
+    {
+        $this->baseControllerCalls = $baseControllerCalls;
     }
 
     /**

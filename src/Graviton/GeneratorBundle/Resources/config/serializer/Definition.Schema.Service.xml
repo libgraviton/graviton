@@ -19,6 +19,9 @@
         <property name="baseController"
                   type="string"
                   serialized-name="baseController"/>
+        <property name="baseControllerCalls"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall&gt;"
+                  serialized-name="baseControllerCalls"/>
         <property name="roles"
                   type="array&lt;string&gt;"
                   serialized-name="roles"/>

@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Solarium\Client;
 use Solarium\Component\EdisMax;
+use Solarium\Core\Client\Adapter\Curl;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -100,7 +101,7 @@ class RqlSearchNodeListenerTest extends TestCase
         $this->solrClient = $this->getMockBuilder(Client::class)
             ->setConstructorArgs(
                 [
-                    null,
+                    $this->getMockBuilder(Curl::class)->getMock(),
                     $this->getMockBuilder(EventDispatcher::class)->getMock()
                 ]
             )
