@@ -2,10 +2,10 @@
 <serializer>
     <class name="Graviton\GeneratorBundle\Tests\Serializer\Handler\TestData">
         <property name="a"
-                  type="ArrayObject"
+                  type="Graviton\DocumentBundle\Entity\Hash"
                   serialized-name="a"/>
         <property name="b"
-                  type="array&lt;ArrayObject&gt;"
+                  type="array&lt;Graviton\DocumentBundle\Entity\Hash&gt;"
                   serialized-name="b"/>
     </class>
 </serializer>
