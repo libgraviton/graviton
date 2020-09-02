@@ -113,6 +113,9 @@
         ]
     },
     "config": {
+        "platform": {
+            "php": "7.4.9"
+        },
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
