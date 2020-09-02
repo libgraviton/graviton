@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Graviton\DocumentBundle\Serializer\Visitor;
 
+use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
 use JMS\Serializer\Exception\NotAcceptableException;
 use JMS\Serializer\Exception\RuntimeException;
-use JMS\Serializer\GraphNavigatorInterface;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
+use JMS\Serializer\NullAwareVisitorInterface;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
-class JsonSerializationVisitor implements SerializationVisitorInterface
+class JsonSerializationVisitor extends AbstractVisitor implements SerializationVisitorInterface, NullAwareVisitorInterface
 {
-    /**
-     * @var GraphNavigatorInterface
-     */
-    protected $navigator;
-
 
     /**
      * @var int
@@ -38,32 +34,6 @@ class JsonSerializationVisitor implements SerializationVisitorInterface
     ) {
         $this->dataStack = [];
         $this->options = $options;
-    }
-
-    public function setNavigator(GraphNavigatorInterface $navigator): void
-    {
-        $this->navigator = $navigator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepare($data)
-    {
-        return $data;
-    }
-
-    protected function getElementType(array $typeArray): ?array
-    {
-        if (false === isset($typeArray['params'][0])) {
-            return null;
-        }
-
-        if (isset($typeArray['params'][1]) && \is_array($typeArray['params'][1])) {
-            return $typeArray['params'][1];
-        } else {
-            return $typeArray['params'][0];
-        }
     }
 
     /**
@@ -128,8 +98,8 @@ class JsonSerializationVisitor implements SerializationVisitorInterface
                 continue;
             }
 
-            // do not include empty \ArrayObject
-            if ($v instanceof \ArrayObject && count($v) < 1) {
+            // don't incude nulls
+            if (is_null($v)) {
                 continue;
             }
 
@@ -234,5 +204,18 @@ class JsonSerializationVisitor implements SerializationVisitorInterface
             default:
                 throw new RuntimeException(sprintf('An error occurred while encoding your data (error code %d).', json_last_error()));
         }
+    }
+
+    public function isNull($value): bool
+    {
+        if (is_null($value)) {
+            return true;
+        }
+
+        if ($value instanceof ExtRefHoldingDocumentInterface && $value->isEmptyExtRefObject() === true) {
+            return true;
+        }
+
+        return false;
     }
 }
