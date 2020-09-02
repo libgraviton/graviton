@@ -61,7 +61,7 @@ class HashHandler
         array $type,
         Context $context
     ) {
-        return new Hash($data);
+        return $data;
     }
 
     /**
@@ -75,35 +75,11 @@ class HashHandler
      */
     public function deserializeHashFromJson(
         DeserializationVisitorInterface $visitor,
-        array $data,
+        $data,
         array $type,
         Context $context
     ) {
-        $currentPath = $context->getCurrentPath();
-        $currentRequestContent = $this->getCurrentRequestContent();
-        $dataObj = null;
-
-        if (!is_null($currentRequestContent)) {
-            $dataObj = $currentRequestContent;
-            foreach ($currentPath as $pathElement) {
-                if (isset($dataObj->{$pathElement})) {
-                    $dataObj = $dataObj->{$pathElement};
-                } else {
-                    $dataObj = null;
-                    break;
-                }
-            }
-        }
-
-        if (!is_null($dataObj)) {
-            if ($this->isSequentialArrayCase($dataObj, $data)) {
-                $dataObj = $dataObj[$this->getLocationCounter($currentPath)];
-            }
-
-            $data = $dataObj;
-        }
-
-        return new Hash($visitor->visitArray((array) $data, $type, $context));
+        return new Hash($data);
     }
 
     /**
