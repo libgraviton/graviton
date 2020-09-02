@@ -86,6 +86,10 @@ class JsonDeserializationVisitor extends AbstractVisitor implements Deserializat
      */
     public function visitArray($data, array $type): array
     {
+        if ($data instanceof \stdClass) {
+            $data = (array) $data;
+        }
+
         if (!\is_array($data)) {
             throw new RuntimeException(sprintf('Expected array, but got %s: %s', \gettype($data), json_encode($data)));
         }
