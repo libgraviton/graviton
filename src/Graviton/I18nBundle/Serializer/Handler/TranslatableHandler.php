@@ -89,7 +89,7 @@ class TranslatableHandler
         Context $context
     ) {
         if (!is_null($data)) {
-            $translatable = Translatable::createFromTranslations($data);
+            $translatable = Translatable::createFromTranslations((array) $data);
             $this->utils->persistTranslatable($translatable);
             return $translatable;
         }
