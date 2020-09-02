@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28b692adb9047955ccae31cf44346ba2",
+    "content-hash": "bd336b107258bdd05df12031fb2f58e8",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.151.3",
+            "version": "3.151.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6deca431ad8d061face518bdde2072445385f45a"
+                "reference": "08d8e5540bdef23127fec4787270d9d12ccc8117"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6deca431ad8d061face518bdde2072445385f45a",
-                "reference": "6deca431ad8d061face518bdde2072445385f45a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/08d8e5540bdef23127fec4787270d9d12ccc8117",
+                "reference": "08d8e5540bdef23127fec4787270d9d12ccc8117",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +89,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-08-31T18:25:57+00:00"
+            "time": "2020-09-01T18:17:03+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -5772,16 +5772,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.4.12",
+            "version": "v4.4.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "da9869f6939e19341eae226bb8ac20419cf3790e"
+                "reference": "9b8314080fb15e84e030f94488d9e1fa17adb846"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/da9869f6939e19341eae226bb8ac20419cf3790e",
-                "reference": "da9869f6939e19341eae226bb8ac20419cf3790e",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/9b8314080fb15e84e030f94488d9e1fa17adb846",
+                "reference": "9b8314080fb15e84e030f94488d9e1fa17adb846",
                 "shasum": ""
             },
             "require": {
@@ -5959,7 +5959,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-31T06:09:59+00:00"
+            "time": "2020-09-02T08:11:15+00:00"
         },
         {
             "name": "thefrozenfire/swagger",
@@ -8034,16 +8034,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.4.12",
+            "version": "v4.4.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "8c6395686d3f203caf3ba4d29182f8c69809d8bd"
+                "reference": "bba78ce46a13a8d761f6330c718924dc6ca7d3b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/8c6395686d3f203caf3ba4d29182f8c69809d8bd",
-                "reference": "8c6395686d3f203caf3ba4d29182f8c69809d8bd",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/bba78ce46a13a8d761f6330c718924dc6ca7d3b0",
+                "reference": "bba78ce46a13a8d761f6330c718924dc6ca7d3b0",
                 "shasum": ""
             },
             "require": {
@@ -8109,7 +8109,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-28T16:19:28+00:00"
+            "time": "2020-09-01T09:34:43+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -8218,5 +8218,8 @@
         "ext-mongodb": "^1.8.0"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.4.9"
+    },
     "plugin-api-version": "1.1.0"
 }
