@@ -38,15 +38,6 @@ services:
     graviton_generator.resourcegenerator.field_hiddenrestriction_mapper:
         class: "%graviton_generator.resourcegenerator.field_hiddenrestriction_mapper.class%"
 
-    #ArrayObject serializer handler
-    graviton.document.serializer.handler.arrayobject:
-        class: "%graviton.document.serializer.handler.arrayobject.class%"
-        tags:
-          -
-            name: "jms_serializer.handler"
-            type: "ArrayObject"
-            format: "json"
-
     graviton_generator.definition.loader:
         class: "%graviton_generator.definition.loader.class%"
         arguments:
