@@ -9,8 +9,8 @@ use Graviton\DocumentBundle\Service\DateConverter;
 use JMS\Serializer\Context;
 use JMS\Serializer\GraphNavigatorInterface;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
-use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\Handler\DateHandler as BaseDateHandler;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
@@ -90,13 +90,13 @@ class DateHandler implements SubscribingHandlerInterface
     /**
      * serialize datetime from json
      *
-     * @param JsonDeserializationVisitor $visitor visitor
-     * @param string                     $data    data
-     * @param array                      $type    type
+     * @param DeserializationVisitorInterface $visitor visitor
+     * @param string                          $data    data
+     * @param array                           $type    type
      *
      * @return \DateTime|null DateTime instance
      */
-    public function deserializeDateTimeFromJson(JsonDeserializationVisitor $visitor, $data, array $type)
+    public function deserializeDateTimeFromJson(DeserializationVisitorInterface $visitor, $data, array $type)
     {
         if (null === $data) {
             return null;
