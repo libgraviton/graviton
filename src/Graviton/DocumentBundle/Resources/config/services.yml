@@ -37,14 +37,6 @@ services:
   graviton.document.service.solrquery.client.adapter:
     class: "%graviton.document.service.solrquery.client.adapter.class%"
 
-  graviton.document.serializer.listener.emptyextref:
-    class: "%graviton.document.serializer.listener.emptyextref.class%"
-    tags:
-      - name: jms_serializer.event_listener
-        event: serializer.pre_serialize
-        method: onPreSerialize
-        direction: serialization
-
   graviton.document.serializer.visitor.jsonserialization:
     class: "%graviton.document.serializer.visitor.jsonserialization.class%"
     public: true
@@ -71,14 +63,6 @@ services:
       - name: kernel.event_listener
         event: document.model.event.update
         method: modelUpdate
-
-  graviton.document.serializer.handler.empty:
-    class: "%graviton.document.serializer.handler.empty.class%"
-    public: true
-    tags:
-      - name: jms_serializer.handler
-        type: Empty
-        format: json
 
   graviton.document.listener.extreferencesearchlistener:
     class: "%graviton.document.listener.extreferencesearchlistener.class%"
