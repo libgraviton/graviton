@@ -5,6 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Tests\Serializer\Handler;
 
+use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitor;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitor;
 use Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\GraphNavigator;
@@ -34,10 +36,7 @@ class ArrayObjectHandlerTest extends \PHPUnit\Framework\TestCase
         $type = [__METHOD__];
         $context = SerializationContext::create();
 
-        $serializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonSerializationVisitor')
-            ->disableOriginalConstructor()
-            ->setMethods(['visitArray'])
-            ->getMock();
+        $serializationVisitor = $this->getMockBuilder(JsonSerializationVisitor::class)->getMock();
         $serializationVisitor
             ->expects($this->once())
             ->method('visitArray')
@@ -68,10 +67,7 @@ class ArrayObjectHandlerTest extends \PHPUnit\Framework\TestCase
         $type = [__METHOD__];
         $context = DeserializationContext::create();
 
-        $deserializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonDeserializationVisitor')
-            ->disableOriginalConstructor()
-            ->setMethods(['visitArray'])
-            ->getMock();
+        $deserializationVisitor = $this->getMockBuilder(JsonDeserializationVisitor::class)->getMock();
         $deserializationVisitor
             ->expects($this->once())
             ->method('visitArray')

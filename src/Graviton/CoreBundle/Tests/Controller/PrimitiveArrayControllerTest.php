@@ -32,22 +32,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->loadFixturesLocal(
             [LoadTestCasePrimitiveArrayData::class]
         );
-
-
-        /*********
-         * FIXES IN FIXTURES
-         * Sadly - for this new approach to work, we need to fix our fixtures..
-         * they get generated wrong ({} converted to []), which leads to wrong data in db)
-         */
-        $client = static::createRestClient();
-        $client->request('GET', '/testcase/primitivearray/testdata');
-        $object = $client->getResults();
-        $object->hasharray[2] = new \stdClass();
-        $object->arrayhash[0]->hasharray[2] = new \stdClass();
-        $object->hash->hasharray[2] = new \stdClass();
-        $client = static::createRestClient();
-        $client->put('/testcase/primitivearray/testdata', $object);
-        $this->assertEmpty($client->getResponse()->getContent());
     }
 
     /**
@@ -124,14 +108,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'intarray'  => [10, 20],
             'strarray'  => ['a', 'b'],
             'boolarray' => [true, false],
-            'hasharray' => [(object) ['x' => 'y']],
+            'hasharray' => [(object) ['x' => 'y'], (object) []],
             'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
 
             'hash'      => (object) [
                 'intarray'  => [10, 20],
                 'strarray'  => ['a', 'b'],
                 'boolarray' => [true, false],
-                'hasharray' => [(object) ['x' => 'y']],
+                'hasharray' => [(object) ['x' => 'y'], (object) []],
                 'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
             ],
 
@@ -140,17 +124,17 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'intarray'  => [10, 20],
                     'strarray'  => ['a', 'b'],
                     'boolarray' => [true, false],
-                    'hasharray' => [(object) ['x' => 'y']],
+                    'hasharray' => [(object) ['x' => 'y'], (object) []],
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
 
             'rawData'      => (object) [
-                'hasharray' => [(object) ['x' => 'y']],
+                'hasharray' => [(object) ['x' => 'y'], (object) []],
                 'emptyhash' => (object) [],
                 'emptystring' => "",
                 'emptyarray' => [],
-                'emptyarrayhash' => []
+                'emptyarrayhash' => [ (object) [] ]
             ],
         ];
 
