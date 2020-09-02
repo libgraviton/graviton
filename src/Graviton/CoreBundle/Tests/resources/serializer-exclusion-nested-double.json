@@ -29,7 +29,9 @@
       {
         "levela": [
           {
-            "levela1": []
+            "levela1": [
+              {}
+            ]
           }
         ],
         "levelb": [
