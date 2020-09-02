@@ -166,7 +166,7 @@ class JsonDeserializationVisitor extends AbstractVisitor implements Deserializat
             $data = new \ArrayObject($data);
         }
 
-        if (!($data instanceof \ArrayObject || is_array($data))) {
+        if (!($data instanceof \ArrayObject)) {
             throw new RuntimeException(sprintf('Invalid data %s (%s), expected "%s".', json_encode($data), $metadata->type['name'], $metadata->class));
         }
 
@@ -177,7 +177,11 @@ class JsonDeserializationVisitor extends AbstractVisitor implements Deserializat
             return $this->navigator->accept($data, $metadata->type);
         }
 
-        if (!array_key_exists($name, $data)) {
+        if ($data instanceof \ArrayObject && !$data->offsetExists($name)) {
+            throw new NotAcceptableException();
+        } elseif ($data instanceof \stdClass && !property_exists($data, $name)) {
+            throw new NotAcceptableException();
+        } elseif (is_array($data) && !array_key_exists($name, $data)) {
             throw new NotAcceptableException();
         }
 
