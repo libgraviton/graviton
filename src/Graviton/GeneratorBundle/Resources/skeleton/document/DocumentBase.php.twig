@@ -154,13 +154,15 @@ return $this->deletedDate;
     {% endif %}
     {
         if ($this->{{ field.fieldName }} instanceof \Doctrine\Common\Collections\Collection) {
-          return $this->{{ field.fieldName }}->toArray();
+          $data = $this->{{ field.fieldName }}->toArray();
+        } else {
+          $data = $this->{{ field.fieldName }};
         }
 
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-        return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
+        return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($data, '{{ field.xDynamicKey.refField }}');
     {% else %}
-        return $this->{{ field.fieldName }};
+        return $data;
     {% endif %}
     }
 
