@@ -42,7 +42,7 @@
 
         "symfony/symfony": "~4.4.0",
         "symfony/monolog-bundle": "~3.0",
-        "symfony/psr-http-message-bridge": "^1.0.0",
+        "symfony/psr-http-message-bridge": "~2",
 
         "jms/serializer-bundle": "^2.4.1",
         "twig/twig": "~2",
