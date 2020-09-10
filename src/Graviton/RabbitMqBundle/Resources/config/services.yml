@@ -5,6 +5,7 @@ services:
 
     graviton.rabbitmq.producer.extamqp:
       class: "%graviton.rabbitmq.producer.extamqp.class%"
+      public: true
       arguments:
         - '%graviton.rabbitmq.host%'
         - '%graviton.rabbitmq.port%'

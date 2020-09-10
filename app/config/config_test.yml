@@ -6,7 +6,7 @@ parameters:
     kernel.debug: false
     debug.container.dump: true
     # we shall not produce queue messages in tests
-    graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
+    graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
 
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
