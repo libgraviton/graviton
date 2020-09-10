@@ -96,30 +96,6 @@ oneup_flysystem:
         graviton:
             adapter: '%graviton.file.backend%'
 
-old_sound_rabbit_mq:
-    connections:
-        default:
-            host:     "%rabbitmq.host%"
-            port:     "%rabbitmq.port%"
-            user:     "%rabbitmq.user%"
-            password: "%rabbitmq.password%"
-            vhost:    "%rabbitmq.vhost%"
-            lazy:     true
-            connection_timeout: 3
-            read_write_timeout: 3
-
-            # requires php-amqplib v2.4.1+ and PHP5.4+
-            keepalive: false
-
-            # requires php-amqplib v2.4.1+
-            heartbeat: 0
-
-    producers:
-        document_event:
-            auto_setup_fabric: false
-            class: OldSound\RabbitMqBundle\RabbitMq\Producer
-            connection: default
-
 graviton_proxy:
     sources:
         swagger: "%graviton.proxy.swagger.sources%"
