@@ -29,7 +29,7 @@
         "ext-mongodb": "^1.8.0",
         "ext-amqp": "~1",
 
-        "jean85/pretty-package-versions": "^1.1",
+        "jean85/pretty-package-versions": "^1.5 || ^2.0",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
         "graviton/rql-parser-bundle": "~3",
