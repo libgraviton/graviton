@@ -23,8 +23,7 @@ before_script:
   # spin up local mongodb with the version we need (only for integration testing)
   - >
       if [ "$COMPOSER_CHECK" = "false" ]; then
-          apt-get update && \
-          apt-get install -y librabbitmq-dev && \
+          sudo apt-get install -y librabbitmq-dev && \
           docker pull mongo:$MONGODB_VERSION && \
           docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION && \
           sleep 2 && \
