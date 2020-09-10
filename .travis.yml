@@ -23,6 +23,8 @@ before_script:
   # spin up local mongodb with the version we need (only for integration testing)
   - >
       if [ "$COMPOSER_CHECK" = "false" ]; then
+          apt-get update && \
+          apt-get install -y librabbitmq-dev && \
           docker pull mongo:$MONGODB_VERSION && \
           docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION && \
           sleep 2 && \
@@ -30,6 +32,7 @@ before_script:
           pecl channel-update pecl.php.net && \
           sleep 5 && \
           printf "\n" | pecl install -f mongodb-$EXTMONGODB_VERSION && \
+          printf "\n" | pecl install -f amqp-$EXTAMQP_VERSION && \
           echo "memory_limit=3G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini && \
           php -i | grep -A 4 mongo && \
           composer update --no-interaction --no-scripts mongodb/mongodb;
@@ -42,9 +45,9 @@ php:
   - 7.4
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.8.0
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.8.0 EXTAMQP_VERSION=1.10.2
     - COMPOSER_CHECK=true
-    - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.8.0
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.8.0 EXTAMQP_VERSION=1.10.2
 script:
   - >
       if [ "$COMPOSER_CHECK" = "false" ]; then
