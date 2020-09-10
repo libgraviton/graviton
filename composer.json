@@ -24,8 +24,10 @@
     },
     "require": {
         "php": ">=7.4.0",
+        "ext-json": "*",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.8.0",
+        "ext-amqp": "~1",
 
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
@@ -51,7 +53,6 @@
         "monolog/monolog": "~1",
 
         "php-jsonpatch/php-jsonpatch": "~3.0",
-        "php-amqplib/rabbitmq-bundle": "^1.13.0",
         "justinrainbow/json-schema": "~5.2.0",
         "guzzlehttp/guzzle": "^6.3.0",
         "riverline/multipart-parser": "^1.1.0",

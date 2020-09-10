@@ -210,7 +210,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         /** @var Dummy $dbProducer */
-        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
+        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.producer.extamqp');
         $dbProducer->resetEventList();
 
         $client->put(
@@ -228,7 +228,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertStringContainsString('eventStatus', $response->headers->get('link'));
 
         // get again
-        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
+        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.producer.extamqp');
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
