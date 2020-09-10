@@ -1,11 +1,11 @@
 <?php
 /**
- * dummy job producer
+ * producer for ext-amqp
  */
 
 namespace Graviton\RabbitMqBundle\Producer;
 
-use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -14,94 +14,51 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
  */
 class Dummy implements ProducerInterface
 {
-    /** @var array list of events */
-    private $eventList = [];
+
+    private array $eventList = [];
 
     /**
-     * Publishes the message and merges additional properties with basic properties
+     * set logger instance
      *
-     * @param string $msgBody              body
-     * @param string $routingKey           routingKey
-     * @param array  $additionalProperties properties
+     * @param LoggerInterface $logger logger
      *
      * @return void
      */
-    public function publish($msgBody, $routingKey = '', $additionalProperties = array())
+    public function setLogger(LoggerInterface $logger): void
     {
-        $this->eventList[] = $msgBody;
+        $this->logger = $logger;
     }
 
     /**
-     * Dummy.
+     * send a message
      *
-     * @return DummyChannel
-     */
-    public function getChannel()
-    {
-        return new DummyChannel();
-    }
-
-    /**
-     * Reset event list
+     * @param string $routingKey routing key
+     * @param string $message    message
+     *
      * @return void
      */
-    public function resetEventList()
+    public function send(string $routingKey, string $message): void
     {
-        $this->eventList = [];
+        $this->eventList[] = $message;
     }
 
     /**
-     * Get current event list
+     * get event list
      *
-     * @return array
+     * @return array event list
      */
-    public function getEventList()
+    public function getEventList(): array
     {
         return $this->eventList;
     }
 
     /**
-     * Dummy setter
-     * @param string $d dummy value
+     * clears event list
+     *
      * @return void
      */
-    public function setContentType($d)
+    public function resetEventList(): void
     {
-    }
-
-    /**
-     * Dummy setter
-     * @param string $d dummy value
-     * @return void
-     */
-    public function setExchangeOptions($d)
-    {
-    }
-
-    /**
-     * Dummy setter
-     * @param string $d dummy value
-     * @return void
-     */
-    public function setQueueOptions($d)
-    {
-    }
-
-    /**
-     * Dummy setter
-     * @param bool $d dummy value
-     * @return void
-     */
-    public function disableAutoSetupFabric($d = false)
-    {
-    }
-
-    /**
-     * Dummy setter
-     * @param bool $d dummy value
-     * @return void
-     */
-    public function setEventDispatcher($d = false)
-    {
+        $this->eventList = [];
     }
 }

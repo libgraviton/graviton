@@ -11,17 +11,16 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
+use Graviton\RabbitMqBundle\Producer\ProducerInterface;
+use Laminas\Diactoros\Uri;
 use MongoDB\BSON\Regex;
 use Symfony\Component\HttpFoundation\Response;
-use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
-use Zend\Diactoros\Uri;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -207,9 +206,7 @@ class EventStatusLinkResponseListener
             }
 
             foreach ($queuesForEvent as $queueForEvent) {
-                // declare the Queue for the Event if its not there already declared
-                $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
-                $this->rabbitMqProducer->publish(json_encode($queueEvent), $queueForEvent);
+                $this->rabbitMqProducer->send($queueForEvent, json_encode($queueEvent));
             }
         }
     }
