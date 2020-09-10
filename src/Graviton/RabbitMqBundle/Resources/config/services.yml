@@ -1,29 +1,21 @@
 services:
-    graviton.rabbitmq.consumer.dump:
-        class: "%graviton.rabbitmq.consumer.dump.class%"
 
     graviton.rabbitmq.document.queueevent:
         class: "%graviton.rabbitmq.document.queueevent.class%"
 
-    graviton.rabbitmq.command.produce:
-        class: "%graviton.rabbitmq.command.produce.class%"
-        calls:
-          -
-            method: setContainer
-            arguments:
-              - "@service_container"
-        tags:
-          -
-            name: console.command
-
-    graviton.rabbitmq.jobproducer:
-        class: "%graviton.rabbitmq.producer.job.class%"
-        parent: "old_sound_rabbit_mq.document_event_producer"
-        calls:
-          -
-            method: setContentType
-            arguments:
-              - "application/json"
+    graviton.rabbitmq.producer.extamqp:
+      class: "%graviton.rabbitmq.producer.extamqp.class%"
+      arguments:
+        - '%graviton.rabbitmq.host%'
+        - '%graviton.rabbitmq.port%'
+        - '%graviton.rabbitmq.user%'
+        - '%graviton.rabbitmq.password%'
+        - '%graviton.rabbitmq.vhost%'
+      calls:
+        -
+          method: setLogger
+          arguments:
+            - "@logger"
 
     # the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
     graviton.rabbitmq.listener.eventstatusresponselistener:
@@ -34,7 +26,7 @@ services:
             event: "graviton.rest.response.selfaware"
             method: "onKernelResponse"
         arguments:
-          - "@graviton.rabbitmq.jobproducer"
+          - "@graviton.rabbitmq.producer.extamqp"
           - "@router"
           - "@request_stack"
           - "@doctrine_mongodb.odm.default_document_manager"
