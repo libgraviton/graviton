@@ -56,7 +56,7 @@
         "php-jsonpatch/php-jsonpatch": "~3.0",
         "justinrainbow/json-schema": "~5.2.0",
         "guzzlehttp/guzzle": "^6.3.0",
-        "riverline/multipart-parser": "^1.1.0",
+        "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
 
         "oneup/flysystem-bundle": "^3",

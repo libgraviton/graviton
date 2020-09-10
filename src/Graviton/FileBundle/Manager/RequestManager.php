@@ -5,7 +5,7 @@
 
 namespace Graviton\FileBundle\Manager;
 
-use Riverline\MultiPartParser\Part;
+use Riverline\MultiPartParser\Converters\HttpFoundation;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
@@ -50,7 +50,7 @@ class RequestManager
             return $request;
         }
 
-        $part = new Part((string) $request);
+        $part = HttpFoundation::convert($request);
 
         if ($part->isMultiPart()) {
             // do we have metadata? for a multipart form
