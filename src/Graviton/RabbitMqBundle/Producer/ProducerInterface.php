@@ -15,7 +15,22 @@ use Psr\Log\LoggerInterface;
 interface ProducerInterface
 {
 
-    public function send(string $routingKey, string $message);
-    public function setLogger(LoggerInterface $logger): void;
+    /**
+     * send a message
+     *
+     * @param string $routingKey routing key
+     * @param string $message    message
+     *
+     * @return void
+     */
+    public function send(string $routingKey, string $message): void;
 
+    /**
+     * set logger instance
+     *
+     * @param LoggerInterface $logger logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger): void;
 }

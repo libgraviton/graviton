@@ -22,14 +22,22 @@ class ExtAmqp implements ProducerInterface
     private $queuePassword;
     private $queueVhost;
 
+    /**
+     * ExtAmqp constructor.
+     *
+     * @param string $queueHost     host
+     * @param int    $queuePort     port
+     * @param string $queueUsername username
+     * @param string $queuePassword password
+     * @param string $queueVhost    vhost
+     */
     public function __construct(
         $queueHost,
         $queuePort,
         $queueUsername,
         $queuePassword,
         $queueVhost
-    )
-    {
+    ) {
         $this->queueHost = $queueHost;
         $this->queuePort = $queuePort;
         $this->queueUsername = $queueUsername;
@@ -38,14 +46,26 @@ class ExtAmqp implements ProducerInterface
     }
 
     /**
-     * @param mixed $logger
+     * set logger instance
+     *
+     * @param LoggerInterface $logger logger
+     *
+     * @return void
      */
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
-    public function send(string $routingKey, string $message)
+    /**
+     * send a message
+     *
+     * @param string $routingKey routing key
+     * @param string $message    message
+     *
+     * @return void
+     */
+    public function send(string $routingKey, string $message): void
     {
         $connection = new \AMQPConnection();
         $connection->setHost($this->queueHost);
@@ -74,7 +94,6 @@ class ExtAmqp implements ProducerInterface
                     ['routingkey' => $routingKey, 'message' => $message]
                 );
             }
-
         } catch (\Exception $e) {
             $this->logger->error(
                 "Failed sending message to AMQP queue",
