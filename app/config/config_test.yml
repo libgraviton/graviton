@@ -6,7 +6,7 @@ parameters:
     kernel.debug: false
     debug.container.dump: true
     # we shall not produce queue messages in tests
-    graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
+    graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
 
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
@@ -53,27 +53,6 @@ monolog:
     handler:
         name: main
         type: "test"
-
-old_sound_rabbit_mq:
-    connections:
-        default:
-            host:     "%graviton.rabbitmq.host%"
-            port:     "%graviton.rabbitmq.port%"
-            user:     "%graviton.rabbitmq.user%"
-            password: "%graviton.rabbitmq.password%"
-            vhost:    "%graviton.rabbitmq.vhost%"
-            lazy:     true
-            connection_timeout: 3
-            read_write_timeout: 3
-
-            # requires php-amqplib v2.4.1+ and PHP5.4+
-            keepalive: false
-
-            # requires php-amqplib v2.4.1+
-            heartbeat: 0
-    producers:
-        document_event:
-            class: Graviton\RabbitMqBundle\Producer\Dummy
 
 graviton_proxy:
     sources:

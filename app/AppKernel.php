@@ -75,7 +75,6 @@ class AppKernel extends Kernel
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
-            new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
             new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
         );
