@@ -187,10 +187,30 @@ class GeneratorExtension implements ExtensionInterface
      */
     private function getSingleDoctrineIndexAnnotation($index)
     {
+        $keys = [];
+        $fields = explode(',', trim($index));
+        foreach ($fields as $field) {
+            $dir = 'asc';
+            if (substr($field, 0, 1) == '-') {
+                $field = substr($field, 1);
+                $dir = 'desc';
+            }
+            if (substr($field, 0, 1) == '+') {
+                $field = substr($field, 1);
+            }
+            $keys[] = sprintf(
+                '"%s"="%s"',
+                $field,
+                $dir
+            );
+        }
+
+        $keys = implode(', ', $keys);
+
         return sprintf(
-            ' @ODM\Index(keys={"%s"="asc"}, name="%s", background=true)',
-            $index,
-            $index
+            '@ODM\Index(keys={%s}, name="%s", background=true)',
+            $keys,
+            str_replace([',', '-', '+'], '_', $index)
         );
     }
 
