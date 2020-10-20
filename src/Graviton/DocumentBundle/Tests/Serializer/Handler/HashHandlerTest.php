@@ -7,6 +7,8 @@ namespace Graviton\DocumentBundle\Tests\Serializer\Handler;
 
 use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\DocumentBundle\Serializer\Handler\HashHandler;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitorFactory;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitorFactory;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -32,9 +34,7 @@ class HashHandlerTest extends \PHPUnit\Framework\TestCase
         $type = [__FILE__];
         $context = SerializationContext::create();
 
-        $serializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonSerializationVisitor')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $serializationVisitor = (new JsonSerializationVisitorFactory())->getVisitor();
 
         $this->assertEquals(
             $hash,
@@ -60,15 +60,7 @@ class HashHandlerTest extends \PHPUnit\Framework\TestCase
         $type = [__FILE__];
         $context = DeserializationContext::create();
 
-        $deserializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonDeserializationVisitor')
-            ->disableOriginalConstructor()
-            ->setMethods(['visitArray'])
-            ->getMock();
-        $deserializationVisitor
-            ->expects($this->once())
-            ->method('visitArray')
-            ->with($array, $type, $context)
-            ->willReturn($array);
+        $deserializationVisitor = (new JsonDeserializationVisitorFactory())->getVisitor();
 
         $this->assertEquals(
             $hash,

@@ -32,22 +32,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->loadFixturesLocal(
             [LoadTestCasePrimitiveArrayData::class]
         );
-
-
-        /*********
-         * FIXES IN FIXTURES
-         * Sadly - for this new approach to work, we need to fix our fixtures..
-         * they get generated wrong ({} converted to []), which leads to wrong data in db)
-         */
-        $client = static::createRestClient();
-        $client->request('GET', '/testcase/primitivearray/testdata');
-        $object = $client->getResults();
-        $object->hasharray[2] = new \stdClass();
-        $object->arrayhash[0]->hasharray[2] = new \stdClass();
-        $object->hash->hasharray[2] = new \stdClass();
-        $client = static::createRestClient();
-        $client->put('/testcase/primitivearray/testdata', $object);
-        $this->assertEmpty($client->getResponse()->getContent());
     }
 
     /**

@@ -38,7 +38,7 @@
     </property>
     <property name="enum" type="Graviton\SchemaBundle\Document\SchemaEnum" accessor-getter="getEnum" accessor-setter="setEnum" expose="true"/>
     <property name="properties" accessor-getter="getProperties" expose="true">
-      <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
+      <type><![CDATA[ArrayCollection<string,Graviton\SchemaBundle\Document\Schema>]]></type>
     </property>
     <property name="additionalProperties" accessor-getter="getAdditionalProperties" expose="true" type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"/>
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">

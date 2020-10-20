@@ -7,9 +7,11 @@ namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use Graviton\DocumentBundle\Service\DateConverter;
 use JMS\Serializer\Context;
-use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\GraphNavigatorInterface;
+use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\Handler\DateHandler as BaseDateHandler;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * Date handler for JMS serializer
@@ -22,13 +24,18 @@ use JMS\Serializer\VisitorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DateHandler extends BaseDateHandler
+class DateHandler implements SubscribingHandlerInterface
 {
 
     /**
      * @var DateConverter
      */
     private $dateConverter;
+
+    /**
+     * @var \JMS\Serializer\Handler\DateHandler
+     */
+    private $baseDateHandler;
 
     /**
      * DateHandler constructor.
@@ -38,7 +45,11 @@ class DateHandler extends BaseDateHandler
     public function __construct(DateConverter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
-        parent::__construct($dateConverter->getDateFormat(), $dateConverter->getTimezone(), true);
+        $this->baseDateHandler = new BaseDateHandler(
+            $dateConverter->getDateFormat(),
+            $dateConverter->getTimezone(),
+            true
+        );
     }
 
     /**
@@ -48,13 +59,30 @@ class DateHandler extends BaseDateHandler
      */
     public static function getSubscribingMethods()
     {
-        $methods = array_map(
-            function ($item) {
-                $item['priority'] = -100;
-                return $item;
-            },
-            parent::getSubscribingMethods()
-        );
+        $methods = [];
+        $deserializationTypes = ['DateTime'];
+        $serialisationTypes = ['DateTime'];
+
+        foreach (['json', 'xml'] as $format) {
+            foreach ($deserializationTypes as $type) {
+                $methods[] = [
+                    'type' => $type,
+                    'direction' => GraphNavigatorInterface::DIRECTION_DESERIALIZATION,
+                    'format' => $format,
+                    'priority' => -100
+                ];
+            }
+
+            foreach ($serialisationTypes as $type) {
+                $methods[] = [
+                    'type' => $type,
+                    'format' => $format,
+                    'direction' => GraphNavigatorInterface::DIRECTION_SERIALIZATION,
+                    'method' => 'serialize' . $type,
+                    'priority' => -100
+                ];
+            }
+        }
 
         return $methods;
     }
@@ -62,19 +90,19 @@ class DateHandler extends BaseDateHandler
     /**
      * serialize datetime from json
      *
-     * @param JsonDeserializationVisitor $visitor visitor
-     * @param string                     $data    data
-     * @param array                      $type    type
+     * @param DeserializationVisitorInterface $visitor visitor
+     * @param string                          $data    data
+     * @param array                           $type    type
      *
      * @return \DateTime|null DateTime instance
      */
-    public function deserializeDateTimeFromJson(JsonDeserializationVisitor $visitor, $data, array $type)
+    public function deserializeDateTimeFromJson(DeserializationVisitorInterface $visitor, $data, array $type)
     {
         if (null === $data) {
             return null;
         }
 
-        return parent::deserializeDateTimeFromJson(
+        return $this->baseDateHandler->deserializeDateTimeFromJson(
             $visitor,
             $this->dateConverter->getDateTimeStringInFormat($data),
             $type
@@ -84,15 +112,19 @@ class DateHandler extends BaseDateHandler
     /**
      * serialize datetime to json
      *
-     * @param VisitorInterface $visitor visitor
-     * @param \DateTime        $date    data
-     * @param array            $type    type
-     * @param Context          $context context
+     * @param SerializationVisitorInterface $visitor visitor
+     * @param \DateTime                     $date    data
+     * @param array                         $type    type
+     * @param Context                       $context context
      *
      * @return string serialized date
      */
-    public function serializeDateTime(VisitorInterface $visitor, \DateTime $date, array $type, Context $context)
-    {
+    public function serializeDateTime(
+        SerializationVisitorInterface $visitor,
+        \DateTime $date,
+        array $type,
+        Context $context
+    ) {
         return $visitor->visitString($this->dateConverter->formatDateTime($date), $type, $context);
     }
 }

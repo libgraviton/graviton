@@ -29,7 +29,7 @@
                   type="integer"
                   serialized-name="fixtureOrder"/>
         <property name="fixtures"
-                  type="array&lt;ArrayObject&gt;"
+                  type="array&lt;Graviton\DocumentBundle\Entity\Hash&gt;"
                   serialized-name="fixtures"/>
         <property name="collectionName"
                   type="string"

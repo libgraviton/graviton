@@ -366,7 +366,6 @@ class EmbeddingDocumentsTest extends RestTestCase
         // update document with empty embed-many
         $data = $client->getResults();
         $data->document = (object) ['id' => 'two', 'data' => 'two'];
-        $data->documents = [];
 
         // check entities again
         $this->assertEntityExists('one', 'one');
