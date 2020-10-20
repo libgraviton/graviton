@@ -180,7 +180,6 @@ class TranslatableArrayControllerTest extends RestTestCase
                             'en' => 'Valid value',
                         ],
                         'array' => [
-                            (object) [],
                             (object) [
                                 'en' => 'Valid value',
                             ],
@@ -215,12 +214,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                 (object) [
                     'propertyPath' => 'deep.deep[0].array',
                     'message'      => 'String value found, but an array is required',
-                ],
-
-                (object) [
-                    'propertyPath' => 'deep.deep[1].array[0].en',
-                    'message'      => 'The property en is required',
-                ],
+                ]
             ],
             $client->getResults()
         );
@@ -387,8 +381,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                             'en' => 'EN-70',
                             'de' => 'DE-70',
                             'fr' => 'EN-70'
-                        ],
-                        'array' => [],
+                        ]
                     ],
                 ]
             ]

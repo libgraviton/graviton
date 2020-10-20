@@ -7,10 +7,12 @@ namespace Graviton\DocumentBundle\Tests\Serializer\Handler;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitor;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitorFactory;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitor;
+use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitorFactory;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use JMS\Serializer\DeserializationContext;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\SerializationContext;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -48,14 +50,8 @@ class ExtReferenceHandlerTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getExtReference', 'getUrl'])
             ->getMock();
-        $this->serializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonSerializationVisitor')
-            ->disableOriginalConstructor()
-            ->setMethods(['visitString', 'visitNull'])
-            ->getMock();
-        $this->deserializationVisitor = $this->getMockBuilder('JMS\Serializer\JsonDeserializationVisitor')
-            ->disableOriginalConstructor()
-            ->setMethods(['visitString'])
-            ->getMock();
+        $this->serializationVisitor = (new JsonSerializationVisitorFactory())->getVisitor();
+        $this->deserializationVisitor = (new JsonDeserializationVisitorFactory())->getVisitor();
     }
 
     /**
@@ -69,17 +65,6 @@ class ExtReferenceHandlerTest extends TestCase
         $context = SerializationContext::create();
 
         $extref = ExtReference::create(__METHOD__, __FILE__);
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getUrl')
-            ->with($extref)
-            ->willThrowException(new \InvalidArgumentException());
-        $this->serializationVisitor
-            ->expects($this->once())
-            ->method('visitNull')
-            ->with(null, $type, $context)
-            ->willReturn(null);
 
         $handler = new ExtReferenceHandler($this->converter);
         $this->assertEquals(
@@ -107,14 +92,8 @@ class ExtReferenceHandlerTest extends TestCase
         $extref = ExtReference::create(__METHOD__, __FILE__);
 
         $this->converter
-            ->expects($this->once())
-            ->method('getUrl')
+            ->method("getUrl")
             ->with($extref)
-            ->willReturn($url);
-        $this->serializationVisitor
-            ->expects($this->once())
-            ->method('visitString')
-            ->with($url, $type, $context)
             ->willReturn($url);
 
         $handler = new ExtReferenceHandler($this->converter);
@@ -140,17 +119,6 @@ class ExtReferenceHandlerTest extends TestCase
         $context = DeserializationContext::create();
 
         $url = __FUNCTION__;
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getExtReference')
-            ->with($url)
-            ->willThrowException(new \InvalidArgumentException());
-        $this->deserializationVisitor
-            ->expects($this->once())
-            ->method('visitString')
-            ->with($url, $type, $context)
-            ->willReturn($url);
 
         $handler = new ExtReferenceHandler($this->converter);
         $this->assertEquals(
@@ -182,11 +150,6 @@ class ExtReferenceHandlerTest extends TestCase
             ->method('getExtReference')
             ->with($url)
             ->willReturn($extref);
-        $this->deserializationVisitor
-            ->expects($this->once())
-            ->method('visitString')
-            ->with($url, $type, $context)
-            ->willReturn($url);
 
         $handler = new ExtReferenceHandler($this->converter);
         $this->assertEquals(

@@ -10,8 +10,9 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventFormat;
 use Graviton\RestBundle\Routing\Loader\ActionUtils;
 use JMS\Serializer\Context;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Exception\NotAcceptableException;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * JMS serializer handler for ExtReference
@@ -45,40 +46,56 @@ class ExtReferenceHandler
     /**
      * Serialize extref to JSON
      *
-     * @param JsonSerializationVisitor $visitor      Visitor
-     * @param ExtReference             $extReference Extref
-     * @param array                    $type         Type
-     * @param Context                  $context      Context
+     * @param SerializationVisitorInterface $visitor      Visitor
+     * @param ExtReference                  $extReference Extref
+     * @param array                         $type         Type
+     * @param Context                       $context      Context
      * @return string|null
      */
     public function serializeExtReferenceToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         ExtReference $extReference,
         array $type,
         Context $context
     ) {
+        if (null === $extReference && !$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        if (null === $extReference) {
+            return $visitor->visitNull(null, $type);
+        }
+
         try {
-            return $visitor->visitString($this->converter->getUrl($extReference), $type, $context);
+            return $this->converter->getUrl($extReference);
         } catch (\InvalidArgumentException $e) {
-            return $visitor->visitNull(null, $type, $context);
+            return $visitor->visitNull(null, $type);
         }
     }
 
     /**
      * Serialize extref to JSON
      *
-     * @param JsonDeserializationVisitor $visitor Visitor
-     * @param string                     $url     Extref URL
-     * @param array                      $type    Type
-     * @param Context                    $context Context
+     * @param DeserializationVisitorInterface $visitor Visitor
+     * @param string                          $url     Extref URL
+     * @param array                           $type    Type
+     * @param Context                         $context Context
      * @return ExtReference|null
      */
     public function deserializeExtReferenceFromJson(
-        JsonDeserializationVisitor $visitor,
+        DeserializationVisitorInterface $visitor,
         $url,
         array $type,
         Context $context
     ) {
+        if (null === $url && !$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        if (null === $url) {
+            return $visitor->visitNull(null, $type);
+        }
+
         try {
             return $this->converter->getExtReference(
                 $visitor->visitString($url, $type, $context)

@@ -42,7 +42,10 @@
                   serialized-name="translatable"/>
         <property name="constraints"
                   type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Constraint&gt;"
-                  serialized-name="constraints"/>
+                  serialized-name="constraints"
+                  accessor-getter="getConstraints"
+                  accessor-setter="setConstraints"
+        />
         <property name="restrictions"
                   type="array&lt;string&gt;"
                   serialized-name="restrictions"/>

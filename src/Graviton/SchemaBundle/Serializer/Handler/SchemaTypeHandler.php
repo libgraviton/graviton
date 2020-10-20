@@ -7,7 +7,7 @@ namespace Graviton\SchemaBundle\Serializer\Handler;
 
 use Graviton\SchemaBundle\Document\SchemaType;
 use JMS\Serializer\Context;
-use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -20,15 +20,15 @@ class SchemaTypeHandler
     /**
      * Serialize SchemaType to JSON
      *
-     * @param JsonSerializationVisitor $visitor    Visitor
-     * @param SchemaType               $schemaType type
-     * @param array                    $type       Type
-     * @param Context                  $context    Context
+     * @param SerializationVisitorInterface $visitor    Visitor
+     * @param SchemaType                    $schemaType type
+     * @param array                         $type       Type
+     * @param Context                       $context    Context
      *
      * @return array
      */
     public function serializeSchemaTypeToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         SchemaType $schemaType,
         array $type,
         Context $context

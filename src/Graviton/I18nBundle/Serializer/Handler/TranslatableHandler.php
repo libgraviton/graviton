@@ -8,8 +8,8 @@ namespace Graviton\I18nBundle\Serializer\Handler;
 use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Service\I18nUtils;
 use JMS\Serializer\Context;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 /**
  * JMS serializer handler for Translatable
@@ -38,14 +38,14 @@ class TranslatableHandler
     /**
      * Serialize Translatable to JSON
      *
-     * @param JsonSerializationVisitor $visitor      Visitor
-     * @param Translatable             $translatable translatable
-     * @param array                    $type         Type
-     * @param Context                  $context      Context
+     * @param SerializationVisitorInterface $visitor      Visitor
+     * @param Translatable                  $translatable translatable
+     * @param array                         $type         Type
+     * @param Context                       $context      Context
      * @return string|null
      */
     public function serializeTranslatableToJson(
-        JsonSerializationVisitor $visitor,
+        SerializationVisitorInterface $visitor,
         $translatable,
         array $type,
         Context $context
@@ -75,21 +75,21 @@ class TranslatableHandler
     /**
      * Serialize Translatable from JSON
      *
-     * @param JsonDeserializationVisitor $visitor Visitor
-     * @param array                      $data    translation array as we represent if to users
-     * @param array                      $type    Type
-     * @param Context                    $context Context
+     * @param DeserializationVisitorInterface $visitor Visitor
+     * @param array                           $data    translation array as we represent if to users
+     * @param array                           $type    Type
+     * @param Context                         $context Context
      *
      * @return Translatable|null
      */
     public function deserializeTranslatableFromJson(
-        JsonDeserializationVisitor $visitor,
+        DeserializationVisitorInterface $visitor,
         $data,
         array $type,
         Context $context
     ) {
         if (!is_null($data)) {
-            $translatable = Translatable::createFromTranslations($data);
+            $translatable = Translatable::createFromTranslations((array) $data);
             $this->utils->persistTranslatable($translatable);
             return $translatable;
         }
