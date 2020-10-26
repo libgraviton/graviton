@@ -21,6 +21,20 @@ class EventStatusControllerTest extends RestTestCase
 {
 
     /**
+     * custom environment
+     *
+     * @var string
+     */
+    protected $environment = 'test_restricted';
+
+    /**
+     * custom client options
+     *
+     * @var string[]
+     */
+    private $clientOptions = ['environment' => 'test_restricted'];
+
+    /**
      * test to see if we can insert a status and if graviton complains about an invalid status
      *
      * @return void
@@ -41,7 +55,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $status->status = [$statusEntry];
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/status/mynewstatus', $status);
 
         $this->assertNull($client->getResults());
@@ -49,7 +63,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
 
         // get our object again
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/status/mynewstatus');
         $results = $client->getResults();
 
@@ -59,7 +73,7 @@ class EventStatusControllerTest extends RestTestCase
         // set invalid status
         $results->status[0]->status = 'thinking';
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/status/mynewstatus', $results);
         $results = $client->getResults();
 
@@ -91,7 +105,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $status->information = [$informationEntry];
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/status/mynewstatus', $status);
 
         $this->assertNull($client->getResults());
@@ -99,7 +113,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
 
         // get our object again
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/status/mynewstatus');
         $results = $client->getResults();
 
@@ -111,7 +125,7 @@ class EventStatusControllerTest extends RestTestCase
         // set invalid information type
         $results->information[0]->type = 'bogus';
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/status/mynewstatus', $results);
         $results = $client->getResults();
 
@@ -136,14 +150,14 @@ class EventStatusControllerTest extends RestTestCase
         $action->description = new \stdClass();
         $action->description->en = "Some translated action";
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/action/'.$action->id, $action);
 
         // Check result
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
 
         // get our object again
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/action/'.$action->id);
         $results = $client->getResults();
         $this->assertEquals($action->description->en, $results->description->en);
@@ -163,7 +177,7 @@ class EventStatusControllerTest extends RestTestCase
         $eventStatus->status = [$status];
 
         // Save the status
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/status/mynewstatus2', $eventStatus);
 
         $this->assertNull($client->getResults());
@@ -171,7 +185,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
 
         // get our object again, checking
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/status/mynewstatus2');
         $results = $client->getResults();
 
@@ -198,7 +212,7 @@ class EventStatusControllerTest extends RestTestCase
         $event->event = 'document.app.app.update';
         $worker->subscription[] = $event;
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->put('/event/worker/' . $worker->id, $worker);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
@@ -210,7 +224,7 @@ class EventStatusControllerTest extends RestTestCase
         $testApp->name->en = "test-event-app";
         $testApp->showInMenu = false;
 
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         /** @var Dummy $dbProducer */
         $dbProducer = $client->getContainer()->get('graviton.rabbitmq.producer.extamqp');
         $dbProducer->resetEventList();
@@ -286,13 +300,13 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertCount(1, $events);
 
         // check that another 'clientId' cannot request the eventstatus
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/status/'.$eventStatusId, [], [], ['HTTP_X-GRAVITON-CLIENT' => '500']);
         $response = $client->getResponse();
         $this->assertEquals(404, $response->getStatusCode());
 
         // check that we can get it back
-        $client = static::createRestClient();
+        $client = static::createRestClient($this->clientOptions);
         $client->request('GET', '/event/status/'.$eventStatusId, [], [], ['HTTP_X-GRAVITON-CLIENT' => '555']);
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
