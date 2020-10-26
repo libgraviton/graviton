@@ -11,7 +11,7 @@ parameters:
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
         - graviton_user
-        - graviton_tenant
+        - x-graviton-client
 
     # in tests, we always use the array cache provider
     graviton.cache.provider.service_id: graviton.cache.provider.local

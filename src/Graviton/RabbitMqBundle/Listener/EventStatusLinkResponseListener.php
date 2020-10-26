@@ -12,8 +12,10 @@ use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RabbitMqBundle\Producer\ProducerInterface;
+use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Laminas\Diactoros\Uri;
 use MongoDB\BSON\Regex;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -54,6 +56,11 @@ class EventStatusLinkResponseListener
      * @var array
      */
     private $eventMap;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @var ExtReferenceConverter ExtReferenceConverter
@@ -106,27 +113,29 @@ class EventStatusLinkResponseListener
     private $transientHeaders = [];
 
     /**
-     * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
-     * @param RouterInterface       $router                            Router dependency
-     * @param RequestStack          $requestStack                      Request stack
-     * @param DocumentManager       $documentManager                   Doctrine document manager
-     * @param ExtReferenceConverter $extRefConverter                   instance of the ExtReferenceConverter service
-     * @param QueueEvent            $queueEventDocument                queueevent document
-     * @param array                 $eventMap                          eventmap
-     * @param string                $eventWorkerClassname              classname of the EventWorker document
-     * @param string                $eventStatusClassname              classname of the EventStatus document
-     * @param string                $eventStatusStatusClassname        classname of the EventStatusStatus document
-     * @param string                $eventStatusEventResourceClassname classname of the E*S*E*Resource document
-     * @param string                $eventStatusRouteName              name of the route to EventStatus
-     * @param SecurityUtils         $securityUtils                     Security utils service
-     * @param string                $workerRelativeUrl                 backend url relative from the workers
-     * @param array                 $transientHeaders                  headers to be included from request in event
+     * @param ProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
+     * @param RouterInterface          $router                            Router dependency
+     * @param RequestStack             $requestStack                      Request stack
+     * @param DocumentManager          $documentManager                   Doctrine document manager
+     * @param EventDispatcherInterface $eventDispatcher                   event dispatcher
+     * @param ExtReferenceConverter    $extRefConverter                   instance of the ExtReferenceConverter service
+     * @param QueueEvent               $queueEventDocument                queueevent document
+     * @param array                    $eventMap                          eventmap
+     * @param string                   $eventWorkerClassname              classname of the EventWorker document
+     * @param string                   $eventStatusClassname              classname of the EventStatus document
+     * @param string                   $eventStatusStatusClassname        classname of the EventStatusStatus document
+     * @param string                   $eventStatusEventResourceClassname classname of the E*S*E*Resource document
+     * @param string                   $eventStatusRouteName              name of the route to EventStatus
+     * @param SecurityUtils            $securityUtils                     Security utils service
+     * @param string                   $workerRelativeUrl                 backend url relative from the workers
+     * @param array                    $transientHeaders                  headers to be included from request in event
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
         RouterInterface $router,
         RequestStack $requestStack,
         DocumentManager $documentManager,
+        EventDispatcherInterface $eventDispatcher,
         ExtReferenceConverter $extRefConverter,
         QueueEvent $queueEventDocument,
         array $eventMap,
@@ -143,6 +152,7 @@ class EventStatusLinkResponseListener
         $this->router = $router;
         $this->requestStack = $requestStack;
         $this->documentManager = $documentManager;
+        $this->eventDispatcher = $eventDispatcher;
         $this->extRefConverter = $extRefConverter;
         $this->queueEventDocument = $queueEventDocument;
         $this->eventMap = $eventMap;
@@ -314,6 +324,15 @@ class EventStatusLinkResponseListener
 
         // Set username to Event
         $eventStatus->setUserid($this->getSecurityUsername());
+
+        // send predispatch for other stuff happening (like restrictions)
+        $event = new EntityPrePersistEvent();
+        $event->setEntity($eventStatus);
+        $event->setRepository(
+            $this->documentManager->getRepository($this->eventStatusStatusClassname)
+        );
+
+        $this->eventDispatcher->dispatch($event, EntityPrePersistEvent::NAME);
 
         $this->documentManager->persist($eventStatus);
         $this->documentManager->flush();
