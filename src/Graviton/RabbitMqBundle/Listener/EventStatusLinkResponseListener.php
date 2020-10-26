@@ -332,8 +332,7 @@ class EventStatusLinkResponseListener
             $this->documentManager->getRepository($this->eventStatusStatusClassname)
         );
 
-        $event = $this->eventDispatcher->dispatch($event);
-        $eventStatus = $event->getEntity();
+        $this->eventDispatcher->dispatch($event, EntityPrePersistEvent::NAME);
 
         $this->documentManager->persist($eventStatus);
         $this->documentManager->flush();
