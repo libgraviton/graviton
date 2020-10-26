@@ -7,6 +7,7 @@ namespace Graviton\RabbitMqBundle\Tests\Controller;
 
 use Graviton\RabbitMqBundle\Producer\Dummy;
 use Graviton\TestBundle\Test\RestTestCase;
+use Laminas\Diactoros\Uri;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -202,8 +203,9 @@ class EventStatusControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
+        $testAppId = uniqid('testapp-');
         $testApp = new \stdClass();
-        $testApp->id = "test-event-app";
+        $testApp->id = $testAppId;
         $testApp->name = new \stdClass();
         $testApp->name->en = "test-event-app";
         $testApp->showInMenu = false;
@@ -218,7 +220,10 @@ class EventStatusControllerTest extends RestTestCase
             $testApp,
             [],
             [],
-            ['HTTP_GRAVITON_USER' => 'tester', 'HTTP_GRAVITON_TENANT' => 'company']
+            [
+                'HTTP_GRAVITON_USER' => 'tester',
+                'HTTP_X-GRAVITON-CLIENT' => '555'
+            ]
         );
 
         $response = $client->getResponse();
@@ -238,13 +243,18 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals('document.app.app.update', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
-        $this->assertEquals('https://backendalias:9443/core/app/test-event-app', $data['document']['$ref']);
+        $this->assertEquals('https://backendalias:9443/core/app/'.$testApp->id, $data['document']['$ref']);
         $this->assertStringContainsString('https://backendalias:9443/event/status/', $data['status']['$ref']);
+
+        // get EventStatus id
+        $url = new Uri($data['status']['$ref']);
+        $urlParts = explode('/', $url->getPath());
+        $eventStatusId = $urlParts[3];
 
         // check transient headers
         $this->assertEquals(2, count($data['transientHeaders']));
         $this->assertEquals('tester', $data['transientHeaders']['graviton_user']);
-        $this->assertEquals('company', $data['transientHeaders']['graviton_tenant']);
+        $this->assertEquals('555', $data['transientHeaders']['x-graviton-client']);
 
         // A failing event should not be published
         // using patch
@@ -274,5 +284,17 @@ class EventStatusControllerTest extends RestTestCase
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
         $this->assertCount(1, $events);
+
+        // check that another 'clientId' cannot request the eventstatus
+        $client = static::createRestClient();
+        $client->request('GET', '/event/status/'.$eventStatusId, [], [], ['HTTP_X-GRAVITON-CLIENT' => '500']);
+        $response = $client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
+
+        // check that we can get it back
+        $client = static::createRestClient();
+        $client->request('GET', '/event/status/'.$eventStatusId, [], [], ['HTTP_X-GRAVITON-CLIENT' => '555']);
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
