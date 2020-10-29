@@ -7,7 +7,8 @@
     "routerBase": "/file/",
     "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
     "parent": "graviton.file.controller.file",
-    "fixtures": [{}]
+    "fixtures": [{}],
+    "listeners": []
   },
   "target": {
     "indexes": [
