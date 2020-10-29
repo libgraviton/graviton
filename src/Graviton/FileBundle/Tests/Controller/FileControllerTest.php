@@ -21,6 +21,20 @@ class FileControllerTest extends RestTestCase
 {
 
     /**
+     * custom environment
+     *
+     * @var string
+     */
+    protected $environment = 'test';
+
+    /**
+     * custom client options
+     *
+     * @var string[]
+     */
+    protected $clientOptions = ['environment' => 'test'];
+
+    /**
      * setup client and load fixtures
      *
      * @return void
