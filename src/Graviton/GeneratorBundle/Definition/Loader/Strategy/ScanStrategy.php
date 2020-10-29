@@ -57,6 +57,22 @@ class ScanStrategy extends DirStrategy
             ->name('*.json')
             ->notName('_*')
             ->path('/(^|\/)resources\/definition($|\/)/i')
+            ->notPath('/(^|\/)resources\/definition\/patches($|\/)/i')
+            ->notPath('/(^|\/)Tests($|\/)/i');
+    }
+
+    /**
+     * @param mixed $input Input from command
+     * @return Finder
+     */
+    protected function getFinderPatches($input)
+    {
+        return (new Finder())
+            ->files()
+            ->in($this->scanDir)
+            ->name('*.json')
+            ->notName('_*')
+            ->path('/(^|\/)resources\/definition\/patches($|\/)/i')
             ->notPath('/(^|\/)Tests($|\/)/i');
     }
 }
