@@ -5,8 +5,10 @@
 
 namespace Graviton\RestBundle\RestListener;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\SecurityBundle\Service\SecurityUtils;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -40,6 +42,11 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
      * @var string
      */
     private $localField;
+
+    /**
+     * @var string
+     */
+    private $localFieldArrayMatcherExpression;
 
     /**
      * @var string
@@ -112,6 +119,18 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
     }
 
     /**
+     * symfony expression language expression that returns the value we to compare against
+     *
+     * @param string $localFieldArrayMatcherExpression expression
+     *
+     * @return void
+     */
+    public function setLocalFieldArrayMatcherExpression(string $localFieldArrayMatcherExpression): void
+    {
+        $this->localFieldArrayMatcherExpression = $localFieldArrayMatcherExpression;
+    }
+
+    /**
      * set RemoteField
      *
      * @param string $compareField compareField
@@ -158,7 +177,40 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
             return $event;
         }
 
-        $relatedEntity = $this->getContext()->getDm()->find($this->entityName, $entity[$this->localField]);
+        $relatedEntityId = null;
+
+        // is $localField in array?
+        if (is_array($entity[$this->localField])) {
+            if (is_null($this->localFieldArrayMatcherExpression)) {
+                throw new \RuntimeException(
+                    self::class.': localField "'.$this->localField.'" ".
+                    "is an array but there is no matcherExpression defined.'
+                );
+            }
+
+            $expression = new ExpressionLanguage();
+            foreach ($entity[$this->localField] as $entry) {
+                $val = $expression->evaluate($this->localFieldArrayMatcherExpression, ['entry' => $entry]);
+                if ($val !== false && !is_null($val)) {
+                    // we found a value
+                    $relatedEntityId = $val;
+                    continue;
+                }
+            }
+        } else {
+            $relatedEntityId = $entity[$this->localField];
+        }
+
+        // extrefence?
+        if ($relatedEntityId instanceof ExtReference) {
+            $relatedEntityId = $relatedEntityId->getId();
+        }
+
+        if (empty($relatedEntityId)) {
+            throw new \RuntimeException(self::class.': Unable to locate the ID of the related entity.');
+        }
+
+        $relatedEntity = $this->getContext()->getDm()->find($this->entityName, $relatedEntityId);
 
         // can we check the property?
         if (!$relatedEntity instanceof \ArrayAccess ||
@@ -178,8 +230,13 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
                     $entity[$fieldName] = $fixedValue;
                 }
             }
-            $event->setEntity($entity);
+        } else {
+            foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
+                unset($entity[$fieldName]);
+            }
         }
+
+        $event->setEntity($entity);
 
         return $event;
     }
