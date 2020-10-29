@@ -197,6 +197,11 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
                     continue;
                 }
             }
+
+            // did not find applicable condition
+            if (empty($relatedEntityId)) {
+                return $event;
+            }
         } else {
             $relatedEntityId = $entity[$this->localField];
         }
@@ -204,10 +209,6 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
         // extrefence?
         if ($relatedEntityId instanceof ExtReference) {
             $relatedEntityId = $relatedEntityId->getId();
-        }
-
-        if (empty($relatedEntityId)) {
-            throw new \RuntimeException(self::class.': Unable to locate the ID of the related entity.');
         }
 
         $relatedEntity = $this->getContext()->getDm()->find($this->entityName, $relatedEntityId);
