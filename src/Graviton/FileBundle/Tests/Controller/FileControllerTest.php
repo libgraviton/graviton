@@ -7,6 +7,9 @@ namespace Graviton\FileBundle\Tests\Controller;
 
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData;
+use GravitonDyn\TestCaseRestListenerCondPersisterEntityBundle\DataFixtures\MongoDB\
+    LoadTestCaseRestListenerCondPersisterEntityData;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,9 +45,10 @@ class FileControllerTest extends RestTestCase
     public function setUp() : void
     {
         $this->loadFixturesLocal(
-            array(
-                'GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData'
-            )
+            [
+                LoadFileData::class,
+                LoadTestCaseRestListenerCondPersisterEntityData::class
+            ]
         );
     }
 
