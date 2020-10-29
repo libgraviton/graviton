@@ -5,11 +5,6 @@
 
 namespace Graviton\FileBundle\Tests\Controller;
 
-use Graviton\LinkHeaderParser\LinkHeader;
-use Graviton\TestBundle\Test\RestTestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Response;
-
 /**
  * Basic functional test for /file
  *
@@ -34,6 +29,11 @@ class FileControllerTestRestricted extends FileControllerTest
      */
     protected $clientOptions = ['environment' => 'test_restricted'];
 
+    /**
+     * checks if restrictions are enforced as they're should be
+     *
+     * @return mixed
+     */
     public function testPostAndGetFileWithClientId()
     {
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
@@ -53,9 +53,56 @@ class FileControllerTestRestricted extends FileControllerTest
 
         $fileLocation = $response->headers->get('Location');
 
+        // get file
+        $client = static::createRestClient($this->clientOptions);
+        $client->request('GET', $fileLocation, [], [], ['HTTP_X-GRAVITON-CLIENT' => '555']);
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
         // get metadata
         $client = static::createRestClient($this->clientOptions);
-        $client->request('GET', $fileLocation, [], [], ['HTTP_ACCEPT' => 'application/json', 'HTTP_X-GRAVITON-CLIENT' => '500']);
+        $client->request(
+            'GET',
+            $fileLocation,
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_X-GRAVITON-CLIENT' => '555']
+        );
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // update metadata (for conditional)
+        $data = $client->getResults();
+        $data->links = [];
+        $data->links[] = [
+            '$ref' => 'http://localhost/core/app/2000',
+            'type' => 'someapp'
+        ];
+        $data->links[] = [
+            '$ref' => 'http://localhost/core/app/1000',
+            'type' => 'customer'
+        ];
+
+        $client = static::createRestClient($this->clientOptions);
+        $client->put(
+            $fileLocation,
+            $data,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_X-GRAVITON-CLIENT' => '555']
+        );
+
+        /*** SHOULD NOT BE ABLE TO GET FILES ***/
+
+        // get metadata
+        $client = static::createRestClient($this->clientOptions);
+        $client->request(
+            'GET',
+            $fileLocation,
+            [],
+            [],
+            ['HTTP_ACCEPT' => 'application/json', 'HTTP_X-GRAVITON-CLIENT' => '500']
+        );
         $response = $client->getResponse();
         $this->assertEquals(404, $response->getStatusCode());
 
@@ -65,18 +112,6 @@ class FileControllerTestRestricted extends FileControllerTest
         $response = $client->getResponse();
         $this->assertEquals(404, $response->getStatusCode());
 
-        // find them..
-
-        // get metadata
-        $client = static::createRestClient($this->clientOptions);
-        $client->request('GET', $fileLocation, [], [], ['HTTP_ACCEPT' => 'application/json', 'HTTP_X-GRAVITON-CLIENT' => '555']);
-        $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-
-        // get file
-        $client = static::createRestClient($this->clientOptions);
-        $client->request('GET', $fileLocation, [], [], ['HTTP_X-GRAVITON-CLIENT' => '555']);
-        $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
+        return $fileLocation;
     }
 }
