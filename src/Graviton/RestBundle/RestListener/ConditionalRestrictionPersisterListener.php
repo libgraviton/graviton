@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\RestListener;
 
+use Doctrine\Common\Collections\Collection;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\SecurityBundle\Service\SecurityUtils;
@@ -180,7 +181,7 @@ class ConditionalRestrictionPersisterListener extends RestListenerAbstract
         $relatedEntityId = null;
 
         // is $localField in array?
-        if (is_array($entity[$this->localField])) {
+        if (is_array($entity[$this->localField]) || $entity[$this->localField] instanceof Collection) {
             if (is_null($this->localFieldArrayMatcherExpression)) {
                 throw new \RuntimeException(
                     self::class.': localField "'.$this->localField.'" ".
