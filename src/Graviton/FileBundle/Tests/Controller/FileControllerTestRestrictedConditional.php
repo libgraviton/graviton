@@ -99,5 +99,19 @@ class FileControllerTestRestrictedConditional extends FileControllerTestRestrict
         );
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
+
+        // update file
+        $client = static::createRestClient($this->clientOptions);
+        $client->put(
+            $fileLocation,
+            'new content',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain', 'HTTP_X-GRAVITON-CLIENT' => '555'],
+            false
+        );
+        $this->assertEmpty($client->getResults());
+        $response = $client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
     }
 }
