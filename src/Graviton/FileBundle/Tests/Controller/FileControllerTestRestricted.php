@@ -5,6 +5,8 @@
 
 namespace Graviton\FileBundle\Tests\Controller;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 /**
  * Basic functional test for /file
  *
@@ -37,6 +39,62 @@ class FileControllerTestRestricted extends FileControllerTest
     public function testPostAndGetFileWithClientId()
     {
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
+
+        // create a file via PUT
+        $client = static::createRestClient($this->clientOptions);
+        $client->put(
+            '/file/my-test-file-tenant',
+            $fixtureData,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain', 'HTTP_X-GRAVITON-CLIENT' => '555'],
+            false
+        );
+        $this->assertEmpty($client->getResults());
+        $response = $client->getResponse();
+        $this->assertEquals(204, $response->getStatusCode());
+
+        // combined metadata & file
+        $fileMetadata = [
+            'id' => 'my-test-file-tenant2',
+                'links' => [
+                    [
+                        '$ref' => 'http://localhost/core/app/2000',
+                        'type' => 'someapp'
+                    ],
+                    [
+                        '$ref' => 'http://localhost/core/app/1000',
+                        'type' => 'customer'
+                    ]
+                ]
+        ];
+
+        $client = static::createRestClient($this->clientOptions);
+        $tempFile = tempnam(__DIR__.'/fixtures/', 'test-');
+        file_put_contents($tempFile, 'testcontent');
+
+        $client->put(
+            '/file/my-test-file-tenant2',
+            null,
+            [
+                'metadata' => json_encode($fileMetadata),
+            ],
+            [
+                'upload' => new UploadedFile($tempFile, 'test.txt', 'text/plain'),
+            ],
+            ['HTTP_X-GRAVITON-CLIENT' => '555'],
+            false
+        );
+
+        $this->assertEmpty($client->getResults());
+        $response = $client->getResponse();
+        $this->assertEquals(204, $response->getStatusCode());
+
+        // should not be able to get it
+        $client = static::createRestClient($this->clientOptions);
+        $client->request('GET', '/file/my-test-file-tenant2', [], [], ['HTTP_X-GRAVITON-CLIENT' => '500']);
+        $response = $client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
 
         $client = static::createRestClient($this->clientOptions);
         $client->post(
