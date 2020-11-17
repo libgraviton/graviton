@@ -112,6 +112,6 @@ class FileControllerTestRestrictedConditional extends FileControllerTestRestrict
         );
         $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
-        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
     }
 }
