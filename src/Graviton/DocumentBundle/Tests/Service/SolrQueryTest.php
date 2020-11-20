@@ -153,6 +153,16 @@ class SolrQueryTest extends TestCase
                 'han && ha2',
                 true
             ],
+            'simple-search-multispace1' => [
+                'han  ha2',
+                'han && ha2',
+                true
+            ],
+            'simple-search-multispace2' => [
+                'han      ha2    ha3 ha4',
+                'han && ha2 && ha3 && ha4',
+                true
+            ],
             'simple-search-wildcard' => [
                 'hans',
                 '(hans || hans*)',
