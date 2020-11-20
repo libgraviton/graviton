@@ -251,12 +251,19 @@ class SolrQuery
             $glue = '';
         }
 
+        // split and drop empty terms
+        $terms = array_filter(
+            explode(' ', $fullTerm),
+            function ($term) {
+                return !empty($term);
+            }
+        );
 
         $i = 0;
         $hasPreviousOperator = false;
         $fullSearchElements = [];
 
-        foreach (explode(' ', $node->getSearchQuery()) as $term) {
+        foreach ($terms as $term) {
             $i++;
 
             // is this an operator?
