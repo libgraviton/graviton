@@ -131,27 +131,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param object $entity       entity to insert
-     * @param bool   $returnEntity true to return entity
-     * @param bool   $doFlush      if we should flush or not after insert
+     * @param object $entity entity to insert
      *
      * @return Object|null entity or null
      */
-    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
+    public function insertRecord($entity)
     {
         $this->manager->persist($this->dispatchPrePersistEvent($entity));
-
-        if ($doFlush) {
-            $this->manager->flush([$entity]);
-        }
+        $this->manager->flush([$entity]);
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
 
-        if ($returnEntity) {
-            return $this->find($entity->getId());
-        }
-        return null;
+        return $entity;
     }
 
     /**
@@ -218,13 +210,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId   id of entity to update
-     * @param Object $entity       new entity
-     * @param bool   $returnEntity true to return entity
+     * @param string $documentId id of entity to update
+     * @param Object $entity     new entity
      *
      * @return Object|null
      */
-    public function updateRecord($documentId, $entity, $returnEntity = true)
+    public function updateRecord($documentId, $entity)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
         if (!is_null($documentId)) {
@@ -243,10 +234,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
 
-        if ($returnEntity) {
-            return $entity;
-        }
-        return null;
+        return $entity;
     }
 
     /**
