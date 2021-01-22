@@ -338,9 +338,9 @@ class RestController extends AbstractController
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($record, false);
+            $this->getModel()->insertRecord($record);
         } else {
-            $this->getModel()->updateRecord($id, $record, false);
+            $this->getModel()->updateRecord($id, $record);
         }
 
         // Set status code
