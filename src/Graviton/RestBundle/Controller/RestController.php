@@ -426,12 +426,12 @@ class RestController extends AbstractController
     /**
      * Deletes a record
      *
-     * @param Request $request request
      * @param Number  $id      ID of record
+     * @param Request $request request
      *
      * @return Response $response Result of the action
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction($id, Request $request)
     {
         $this->logger->info('REST: deleteAction');
 

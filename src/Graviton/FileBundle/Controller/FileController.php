@@ -146,13 +146,14 @@ class FileController extends RestController
     /**
      * Deletes a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
+     * @param Request $request request
      *
      * @return Response $response Result of the action
      */
-    public function deleteAction($id)
+    public function deleteAction($id, Request $request)
     {
-        $response = parent::deleteAction($id);
+        $response = parent::deleteAction($request, $id);
         $this->fileManager->remove($id);
         return $response;
     }
