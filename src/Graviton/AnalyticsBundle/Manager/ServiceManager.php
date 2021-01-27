@@ -163,17 +163,36 @@ class ServiceManager
     }
 
     /**
+     * Get the analytic model for current request
+     *
+     * @return AnalyticModel analytic model
+     */
+    public function getCurrentAnalyticModel()
+    {
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+
+        // Locate the model definition
+        return $this->getAnalyticModel($serviceRoute);
+    }
+
+    /**
+     * Gets all collections involved in this analytics
+     *
+     * @return string[] name of collections
+     */
+    public function getMongoCollections()
+    {
+        return $this->getCurrentAnalyticModel()->getAllCollections();
+    }
+
+    /**
      * Will map and find data for defined route
      *
      * @return array
      */
     public function getData()
     {
-        $serviceRoute = $this->requestStack->getCurrentRequest()
-                                           ->get('service');
-
-        // Locate the model definition
-        $model = $this->getAnalyticModel($serviceRoute);
+        $model = $this->getCurrentAnalyticModel();
 
         $cacheTime = $model->getCacheTime();
         $cacheKey = $this->getCacheKey($model);

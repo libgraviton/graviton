@@ -121,6 +121,21 @@ class AnalyticModel
     }
 
     /**
+     * gets all collections involved in this analytic
+     *
+     * @return string[] array of collection names
+     */
+    public function getAllCollections()
+    {
+        if (is_array($this->collection)) {
+            return $this->collection;
+        } elseif (is_null($this->collection)) {
+            return [];
+        }
+        return [$this->collection];
+    }
+
+    /**
      * Set value of collection
      *
      * @param mixed $collection string name

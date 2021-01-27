@@ -129,11 +129,6 @@ class VarnishListener
                 $baseTags[] = $basePath;
             }
 
-            // if something is done within i18n, we delete everything
-            if ($routeParts[0] == 'i18n') {
-                $baseTags[] = 'all';
-            }
-
             $this->logger->info('CACHESERVER LISTENER: INVALIDATING', [$baseTags]);
 
             $this->cacheManager->invalidateTags($baseTags);
