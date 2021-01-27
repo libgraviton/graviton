@@ -6,6 +6,7 @@ namespace Graviton\AnalyticsBundle\Controller;
 
 use Graviton\AnalyticsBundle\Manager\ServiceManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -29,6 +30,8 @@ class DefaultController
     }
 
     /**
+     * prints the data
+     *
      * @return JsonResponse
      */
     public function indexAction()
@@ -50,10 +53,16 @@ class DefaultController
     }
 
     /**
+     * executes the analytics
+     *
+     * @param Request $request request
+     *
      * @return JsonResponse
      */
-    public function serviceAction()
+    public function serviceAction(Request $request)
     {
+        $request->attributes->set('varnishTags', $this->serviceManager->getMongoCollections());
+
         return new JsonResponse(
             $this->serviceManager->getData()
         );

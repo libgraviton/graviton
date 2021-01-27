@@ -184,6 +184,8 @@ class RestController extends AbstractController
 
         $document = $this->getModel()->getSerialised($id, $request);
 
+        $this->addRequestAttributes($request);
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent($document);
@@ -252,6 +254,8 @@ class RestController extends AbstractController
 
         $this->logger->info('REST: allAction -> sending response');
 
+        $this->addRequestAttributes($request);
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent($content);
@@ -291,6 +295,8 @@ class RestController extends AbstractController
             'Location',
             $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
         );
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -342,6 +348,8 @@ class RestController extends AbstractController
         } else {
             $this->getModel()->updateRecord($id, $record);
         }
+
+        $this->addRequestAttributes($request);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -403,6 +411,8 @@ class RestController extends AbstractController
         // Update object
         $this->getModel()->updateRecord($id, $record);
 
+        $this->addRequestAttributes($request);
+
         // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set(
@@ -416,17 +426,20 @@ class RestController extends AbstractController
     /**
      * Deletes a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
+     * @param Request $request request
      *
      * @return Response $response Result of the action
      */
-    public function deleteAction($id)
+    public function deleteAction($id, Request $request)
     {
         $this->logger->info('REST: deleteAction');
 
         $response = $this->getResponse();
         $this->model->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -457,6 +470,8 @@ class RestController extends AbstractController
             $corsMethods = 'GET, OPTIONS';
         }
         $request->attributes->set('corsMethods', $corsMethods);
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -504,6 +519,8 @@ class RestController extends AbstractController
         $request->attributes->set('corsMethods', $corsMethods);
         $response->setContent($this->restUtils->serialize($schema));
 
+        $this->addRequestAttributes($request);
+
         return $response;
     }
 
@@ -519,20 +536,21 @@ class RestController extends AbstractController
     }
 
     /**
-     * validates user input and if successful returns the request input
+     * add some attributes to request
      *
      * @param Request $request request
      *
-     * @return object deserialized model
+     * @return void
      */
-    protected function validateAndGetRequestModel(Request $request)
+    private function addRequestAttributes(Request $request)
     {
-        // Get the response object from container
-        $response = $this->getResponse();
-        $model = $this->getModel();
-
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-
-        return $this->restUtils->validateRequest($request->getContent(), $model);
+        // try to set mongo collection name as varnishTag
+        $repository = $this->getModel()->getRepository();
+        if ($repository != null) {
+            $classNameParts = explode('\\', $repository->getDocumentName());
+            if (is_array($classNameParts)) {
+                $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
+            }
+        }
     }
 }
