@@ -153,7 +153,7 @@ class FileController extends RestController
      */
     public function deleteAction($id, Request $request)
     {
-        $response = parent::deleteAction($request, $id);
+        $response = parent::deleteAction($id, $request);
         $this->fileManager->remove($id);
         return $response;
     }
