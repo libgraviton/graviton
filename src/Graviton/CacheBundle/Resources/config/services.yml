@@ -17,6 +17,21 @@ services:
             method: onKernelResponse
             priority: 100
 
+    graviton.cache.listener.varnish:
+      class: '%graviton.cache.listener.varnish.class%'
+      tags:
+        - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+      calls:
+        - method: setLogger
+          arguments:
+            - '@logger'
+        - method: setResponseTagger
+          arguments:
+            - '@fos_http_cache.http.symfony_response_tagger'
+        - method: setCacheManager
+          arguments:
+            - '@fos_http_cache.cache_manager'
+
     ## public aliases for doctrine cache bundle providers
     graviton.cache.provider.local:
         alias: doctrine_cache.providers.local

@@ -67,7 +67,8 @@
         "guzzlehttp/psr7": "*",
 
         "solarium/solarium": "~6",
-        "mtdowling/jmespath.php": "^2.4"
+        "mtdowling/jmespath.php": "^2.4",
+        "friendsofsymfony/http-cache-bundle": "^2.10"
     },
     "require-dev": {
         "phpunit/phpunit": "~9|~8",
@@ -167,6 +168,8 @@
                     "graviton.cache.provider.service_id_local": "CACHE_PROVIDER_SERVICE_ID_LOCAL",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",
+                    "graviton.cache.server.hostname": "CACHE_SERVER_HOSTNAME",
+                    "graviton.cache.server.adapter_name": "CACHE_SERVER_ADAPTER_NAME",
                     "graviton.file.backend": "FILE_BACKEND",
                     "graviton.file.local.storage_directory": "FILE_LOCAL_STORAGE_DIRECTORY",
                     "graviton.file.allowed.mime_types": "FILE_ALLOWED_MIME_TYPES",

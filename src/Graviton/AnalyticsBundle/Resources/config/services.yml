@@ -2,6 +2,7 @@ services:
     graviton.analytics.defaut_controller:
         class: Graviton\AnalyticsBundle\Controller\DefaultController
         public: true
+        tags: ['controller.service_arguments']
         arguments:
             - "@graviton.analytics.service_manager"
 
