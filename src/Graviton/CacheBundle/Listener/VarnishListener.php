@@ -78,7 +78,7 @@ class VarnishListener
     /**
      * set logger
      *
-     * @param Logger $logger
+     * @param Logger $logger logger
      *
      * @return void
      */
@@ -108,6 +108,11 @@ class VarnishListener
         }
 
         $baseTags = [$path];
+        if ($event->getRequest()->attributes->has('varnishTags') &&
+            is_array($event->getRequest()->attributes->get('varnishTags'))
+        ) {
+            $baseTags = array_merge($baseTags, $event->getRequest()->attributes->get('varnishTags'));
+        }
 
         if (in_array($method, $this->tagOnMethodes)) {
             if (!is_null($basePath)) {

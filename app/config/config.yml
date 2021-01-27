@@ -110,7 +110,7 @@ fos_http_cache:
         default: "%cache.server.adapter_name%"
         noop: ~
         varnish:
-            tags_header: X-Cache-Tags
+            tags_header: XKey-Purge
             tag_mode: purgekeys
             header_length: 1234
             http:
