@@ -76,8 +76,7 @@ class AppKernel extends Kernel
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
-            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle(),
-            new \FOS\HttpCacheBundle\FOSHttpCacheBundle()
+            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
         );
 
         if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
