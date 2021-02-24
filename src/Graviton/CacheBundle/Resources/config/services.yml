@@ -21,16 +21,10 @@ services:
       class: '%graviton.cache.listener.varnish.class%'
       tags:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
-      calls:
-        - method: setLogger
-          arguments:
-            - '@logger'
-        - method: setResponseTagger
-          arguments:
-            - '@fos_http_cache.http.symfony_response_tagger'
-        - method: setCacheManager
-          arguments:
-            - '@fos_http_cache.cache_manager'
+      arguments:
+        - "@logger"
+        - "%graviton.cache.server.hostname%"
+        - "%graviton.cache.server.header%"
 
     ## public aliases for doctrine cache bundle providers
     graviton.cache.provider.local:
