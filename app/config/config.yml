@@ -101,22 +101,6 @@ oneup_flysystem:
         graviton:
             adapter: '%graviton.file.backend%'
 
-fos_http_cache:
-    tags:
-        enabled: true
-        annotations:
-            enabled: false
-    proxy_client:
-        default: "%graviton.cache.server.adapter_name%"
-        noop: ~
-        varnish:
-            tags_header: XKey-Purge
-            tag_mode: purgekeys
-            header_length: 1234
-            http:
-                servers:
-                    - "%graviton.cache.server.hostname%"
-
 graviton_proxy:
     sources:
         swagger: "%graviton.proxy.swagger.sources%"
