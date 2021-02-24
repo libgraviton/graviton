@@ -5,6 +5,7 @@
 
 namespace Graviton\CacheBundle\Listener;
 
+use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
@@ -16,15 +17,6 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
  */
 class VarnishListener
 {
-    /**
-     * @var SymfonyResponseTagger
-     */
-    private $responseTagger;
-
-    /**
-     * @var CacheManager
-     */
-    private $cacheManager;
 
     /**
      * @var Logger
@@ -32,59 +24,27 @@ class VarnishListener
     private $logger;
 
     /**
-     * which methods should be tagged
-     *
-     * @var array
+     * @var string
      */
-    private $tagOnMethodes = [
-        'GET',
-        'OPTIONS',
-        'HEAD'
-    ];
+    private $serverName;
 
     /**
-     * tag that every item should receive
-     *
-     * @var array
+     * @var string
      */
-    private $baseTags = [
-        'all'
-    ];
+    private $headerName;
 
     /**
-     * set ResponseTagger
+     * VarnishListener constructor.
      *
-     * @param SymfonyResponseTagger $responseTagger responseTagger
-     *
-     * @return void
+     * @param Logger $logger     logger
+     * @param string $serverName server name
+     * @param string $headerName header name
      */
-    public function setResponseTagger($responseTagger)
-    {
-        $this->responseTagger = $responseTagger;
-    }
-
-    /**
-     * set CacheManager
-     *
-     * @param CacheManager $cacheManager cacheManager
-     *
-     * @return void
-     */
-    public function setCacheManager($cacheManager)
-    {
-        $this->cacheManager = $cacheManager;
-    }
-
-    /**
-     * set logger
-     *
-     * @param Logger $logger logger
-     *
-     * @return void
-     */
-    public function setLogger($logger)
+    public function __construct(Logger $logger, $serverName, $headerName)
     {
         $this->logger = $logger;
+        $this->serverName = $serverName;
+        $this->headerName = $headerName;
     }
 
     /**
@@ -96,60 +56,22 @@ class VarnishListener
      */
     public function onKernelResponse(ResponseEvent $event)
     {
-        $method = $event->getRequest()->getMethod();
-        $path = $this->normalizePath($event->getRequest()->getPathInfo());
-        $routeParts = explode('/', $path);
-
-        // do we have a base path?
-        $basePath = null;
-        if (count($routeParts) > 1) {
-            array_pop($routeParts);
-            $basePath = implode('/', $routeParts);
+        if (is_null($this->serverName) || !$event->getRequest()->attributes->has('varnishTags')) {
+            return;
         }
 
-        $baseTags = [$path];
-        if ($event->getRequest()->attributes->has('varnishTags') &&
-            is_array($event->getRequest()->attributes->get('varnishTags'))
-        ) {
-            $baseTags = array_merge($baseTags, $event->getRequest()->attributes->get('varnishTags'));
+        $tags = $event->getRequest()->attributes->get('varnishTags');
+        if (is_array($tags)) {
+            $tags = implode(' ', $tags);
         }
 
-        if (in_array($method, $this->tagOnMethodes)) {
-            if (!is_null($basePath)) {
-                $baseTags[] = $basePath;
-            }
-            $tags = array_merge($this->baseTags, $baseTags);
+        // add tag
+        $event->getResponse()->headers->set(
+            $this->headerName,
+            $tags,
+            true
+        );
 
-            $this->logger->info('CACHESERVER LISTENER: TAGGING', [$tags]);
-
-            $this->responseTagger->addTags($tags);
-        } else {
-            // don't add basepath in case of POST as there is no element (<id>) part in url..
-            if (!is_null($basePath) && $method != 'POST') {
-                $baseTags[] = $basePath;
-            }
-
-            $this->logger->info('CACHESERVER LISTENER: INVALIDATING', [$baseTags]);
-
-            $this->cacheManager->invalidateTags($baseTags);
-        }
-    }
-
-    /**
-     * make sure the path is as we expect it
-     *
-     * @param string $path path
-     *
-     * @return string path
-     */
-    private function normalizePath($path)
-    {
-        if (substr($path, 0, 1) == '/') {
-            $path = substr($path, 1);
-        };
-        if (substr($path, -1) == '/') {
-            $path = substr($path, 0, -1);
-        };
-        return $path;
+        $this->logger->info('CACHESERVER LISTENER: TAGGING', [$tags]);
     }
 }
