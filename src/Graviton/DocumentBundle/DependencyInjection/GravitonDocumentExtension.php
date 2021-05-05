@@ -6,7 +6,6 @@
 namespace Graviton\DocumentBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
-use GuzzleHttp\Psr7\Uri;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
