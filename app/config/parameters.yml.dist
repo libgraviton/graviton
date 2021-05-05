@@ -4,6 +4,8 @@ parameters:
 
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
+    graviton.mongodb.default.server.uri_secondary: null
+    graviton.mongodb.secondary.read_preference: secondaryPreferred
 
     graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
     graviton.document.timezone: 'UTC'

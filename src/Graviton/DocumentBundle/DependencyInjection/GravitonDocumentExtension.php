@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use GuzzleHttp\Psr7\Uri;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -42,23 +43,26 @@ class GravitonDocumentExtension extends GravitonBundleExtension
     {
         parent::prepend($container);
 
-        // grab mongo config directly from vcap...
-        $services = getenv('VCAP_SERVICES');
-        if (!empty($services)) {
-            $services = json_decode($services, true);
-            $mongo = $services['mongodb'][0]['credentials'];
+        $mongoDsn = $container->getParameter('graviton.mongodb.default.server.uri');
+        $mongoDsnSecondary = $mongoDsn;
 
-            $container->setParameter('mongodb.default.server.uri', $mongo['uri']);
-            $container->setParameter('mongodb.default.server.db', $mongo['database']);
-        } else {
-            $container->setParameter(
-                'mongodb.default.server.uri',
-                $container->getParameter('graviton.mongodb.default.server.uri')
-            );
-            $container->setParameter(
-                'mongodb.default.server.db',
-                $container->getParameter('graviton.mongodb.default.server.db')
-            );
+        if (str_contains($mongoDsn, 'replicaSet=')) {
+            $mongoDsnSecondary = '&readPreference='
+                .$container->getParameter('graviton.mongodb.secondary.read_preference');
         }
+
+        $container->setParameter(
+            'mongodb.default.server.uri',
+            $mongoDsn
+        );
+        $container->setParameter(
+            'mongodb.default.server.uri_secondary',
+            $mongoDsnSecondary
+        );
+
+        $container->setParameter(
+            'mongodb.default.server.db',
+            $container->getParameter('graviton.mongodb.default.server.db')
+        );
     }
 }

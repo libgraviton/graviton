@@ -58,9 +58,16 @@ doctrine_mongodb:
         default:
             server: "%mongodb.default.server.uri%"
             options: {}
+        secondary:
+            server: "%graviton.mongodb.default.server.uri_secondary%"
+            options: {}
     document_managers:
         default:
             auto_mapping: true
+            metadata_cache_driver:
+                type: "service"
+                id: "%graviton.cache.provider.service_id_local%"
+        secondary:
             metadata_cache_driver:
                 type: "service"
                 id: "%graviton.cache.provider.service_id_local%"
