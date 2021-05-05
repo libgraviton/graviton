@@ -45,7 +45,7 @@ class GravitonDocumentExtension extends GravitonBundleExtension
         $mongoDsn = $container->getParameter('graviton.mongodb.default.server.uri');
         $mongoDsnSecondary = $mongoDsn;
 
-        if (str_contains($mongoDsn, 'replicaSet=')) {
+        if (is_string($mongoDsn) && str_contains($mongoDsn, 'replicaSet=')) {
             $mongoDsnSecondary = '&readPreference='
                 .$container->getParameter('graviton.mongodb.secondary.read_preference');
         }
