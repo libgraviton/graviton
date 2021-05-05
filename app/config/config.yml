@@ -68,6 +68,7 @@ doctrine_mongodb:
                 type: "service"
                 id: "%graviton.cache.provider.service_id_local%"
         secondary:
+            mappings: []
             metadata_cache_driver:
                 type: "service"
                 id: "%graviton.cache.provider.service_id_local%"
