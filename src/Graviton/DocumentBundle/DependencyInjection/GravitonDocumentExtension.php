@@ -63,5 +63,25 @@ class GravitonDocumentExtension extends GravitonBundleExtension
             'mongodb.default.server.db',
             $container->getParameter('graviton.mongodb.default.server.db')
         );
+
+        // set parameter that use secondary connection. this should have been generated and we set it as param
+        // for doctrine odm
+        if (class_exists('GravitonDyn\BundleBundle\GravitonDynBundleBundle')) {
+            $list = [];
+            foreach (\GravitonDyn\BundleBundle\GravitonDynBundleBundle::$secondaryConnectionBundles as $bundleName) {
+                $list[$bundleName] = ['type' => 'annotation'];
+            }
+
+            // set list for mongo odm bundle
+            $config = $container->getExtensionConfig('doctrine_mongodb');
+            if (isset($config[0]) && is_array($config[0])) {
+                $config = $config[0];
+            }
+
+            if (isset($config['document_managers']['secondary'])) {
+                $config['document_managers']['secondary']['mappings'] = $list;
+                $container->prependExtensionConfig('doctrine_mongodb', $config);
+            }
+        }
     }
 }
