@@ -69,7 +69,9 @@ class GravitonDocumentExtension extends GravitonBundleExtension
         if (class_exists('GravitonDyn\BundleBundle\GravitonDynBundleBundle')) {
             $list = [];
             foreach (\GravitonDyn\BundleBundle\GravitonDynBundleBundle::$secondaryConnectionBundles as $bundleName) {
-                $list[$bundleName] = ['type' => 'annotation'];
+                if (!empty($bundleName)) {
+                    $list[$bundleName] = ['type' => 'annotation'];
+                }
             }
 
             // set list for mongo odm bundle
