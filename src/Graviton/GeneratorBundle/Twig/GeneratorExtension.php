@@ -26,8 +26,7 @@ class GeneratorExtension implements ExtensionInterface
     private $doctrineOwnFieldMapping = [
         'hash[]' => 'hasharray',
         'date[]' => 'datearray',
-        'translatable[]' => 'translatablearray',
-        'boolean' => 'bool'
+        'translatable[]' => 'translatablearray'
     ];
 
     /**
