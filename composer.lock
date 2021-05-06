@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5c184dd3170730549ee70e51b319a0e",
+    "content-hash": "6ce2ae3fa5d60ed7d5affd9c916f5240",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1314,16 +1314,16 @@
         },
         {
             "name": "graviton/deployment-service-bundle",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/DeploymentServiceBundle.git",
-                "reference": "b06ed781f4ed0eba57f560aa5fce8394a7296d5e"
+                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/b06ed781f4ed0eba57f560aa5fce8394a7296d5e",
-                "reference": "b06ed781f4ed0eba57f560aa5fce8394a7296d5e",
+                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
+                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
                 "shasum": ""
             },
             "require": {
@@ -1348,9 +1348,9 @@
             "description": "Bundle that helps what to do if services are deployed with multiple instances",
             "support": {
                 "issues": "https://github.com/libgraviton/DeploymentServiceBundle/issues",
-                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v0.1.0"
+                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v0.2.0"
             },
-            "time": "2019-09-02T10:38:08+00:00"
+            "time": "2021-05-06T12:24:12+00:00"
         },
         {
             "name": "graviton/json-schema",
