@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6b878d6d7178fb47d00b9531defd4bf",
+    "content-hash": "6ce2ae3fa5d60ed7d5affd9c916f5240",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.180.2",
+            "version": "3.180.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "88b91af651a9affd384b184332a4d52d69ab7c81"
+                "reference": "99c08e621c33ca4b2efa1df162c1ce0ecb3068dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/88b91af651a9affd384b184332a4d52d69ab7c81",
-                "reference": "88b91af651a9affd384b184332a4d52d69ab7c81",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/99c08e621c33ca4b2efa1df162c1ce0ecb3068dd",
+                "reference": "99c08e621c33ca4b2efa1df162c1ce0ecb3068dd",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.180.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.180.3"
             },
-            "time": "2021-05-05T02:47:28+00:00"
+            "time": "2021-05-05T19:41:31+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1314,16 +1314,16 @@
         },
         {
             "name": "graviton/deployment-service-bundle",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/DeploymentServiceBundle.git",
-                "reference": "b06ed781f4ed0eba57f560aa5fce8394a7296d5e"
+                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/b06ed781f4ed0eba57f560aa5fce8394a7296d5e",
-                "reference": "b06ed781f4ed0eba57f560aa5fce8394a7296d5e",
+                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
+                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
                 "shasum": ""
             },
             "require": {
@@ -1348,9 +1348,9 @@
             "description": "Bundle that helps what to do if services are deployed with multiple instances",
             "support": {
                 "issues": "https://github.com/libgraviton/DeploymentServiceBundle/issues",
-                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v0.1.0"
+                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v0.2.0"
             },
-            "time": "2019-09-02T10:38:08+00:00"
+            "time": "2021-05-06T12:24:12+00:00"
         },
         {
             "name": "graviton/json-schema",
