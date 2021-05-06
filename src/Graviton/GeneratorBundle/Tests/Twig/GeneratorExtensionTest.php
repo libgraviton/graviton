@@ -69,7 +69,9 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                     '-hans,-fred,+id'
                 ],
                 'ensureIndexes' => null,
-                'expected' => ' * @ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="_hans__fred__id", background=true)'
+                'expected' =>
+                    ' * @ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="_hans__fred__id",'.
+                    ' background=true)'
             ]
         ];
     }
