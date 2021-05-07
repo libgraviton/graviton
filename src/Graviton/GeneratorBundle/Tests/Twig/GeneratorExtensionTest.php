@@ -53,26 +53,25 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 'ensureIndexes' => [
                     'fred'
                 ],
-                'expected' => '@ODM\Indexes({'.
-                    '@ODM\Index(keys={"hans"="asc"}, name="hans", background=true), '.
-                    '@ODM\Index(keys={"fred"="asc"}, name="fred", background=true)})'
+                'expected' => ' * @ODM\Index(keys={"hans"="asc"}, name="hans", background=true)'.PHP_EOL.
+                    ' * @ODM\Index(keys={"fred"="asc"}, name="fred", background=true)'
             ],
             'compound-normal' => [
                 'indexes' => [
                     'hans,+fred'
                 ],
                 'ensureIndexes' => null,
-                'expected' => '@ODM\Indexes({'.
-                    '@ODM\Index(keys={"hans"="asc", "fred"="asc"}, name="hans__fred", background=true)})'
+                'expected' =>
+                    ' * @ODM\Index(keys={"hans"="asc", "fred"="asc"}, name="hans__fred", background=true)'
             ],
             'compound-normal-desc' => [
                 'indexes' => [
                     '-hans,-fred,+id'
                 ],
                 'ensureIndexes' => null,
-                'expected' => '@ODM\Indexes({'.
-                    '@ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="_hans__fred__id", '.
-                    'background=true)})'
+                'expected' =>
+                    ' * @ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="_hans__fred__id",'.
+                    ' background=true)'
             ]
         ];
     }
