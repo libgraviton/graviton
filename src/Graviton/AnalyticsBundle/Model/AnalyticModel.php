@@ -25,6 +25,7 @@ class AnalyticModel
     protected $cacheTime;
     protected $params = [];
     protected $processor;
+    protected $useSecondary = false;
 
     /**
      * get Database
@@ -332,5 +333,27 @@ class AnalyticModel
     public function setParams($params)
     {
         $this->params = $params;
+    }
+
+    /**
+     * get UseSecondary
+     *
+     * @return bool UseSecondary
+     */
+    public function isUseSecondary()
+    {
+        return $this->useSecondary;
+    }
+
+    /**
+     * set UseSecondary
+     *
+     * @param bool $useSecondary useSecondary
+     *
+     * @return void
+     */
+    public function setUseSecondary($useSecondary)
+    {
+        $this->useSecondary = $useSecondary;
     }
 }
