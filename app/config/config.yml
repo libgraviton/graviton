@@ -59,7 +59,7 @@ doctrine_mongodb:
             server: "%mongodb.default.server.uri%"
             options: {}
         secondary:
-            server: "%graviton.mongodb.default.server.uri_secondary%"
+            server: "%mongodb.default.server.uri_secondary%"
             options: {}
     document_managers:
         default:
