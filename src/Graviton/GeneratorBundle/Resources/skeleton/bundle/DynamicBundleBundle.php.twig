@@ -16,6 +16,9 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 class {{bundleName}} extends Bundle implements GravitonBundleInterface
 {% endblock %}
 {% block class_body %}
+
+    public static array $secondaryConnectionBundles = ['{{ secondaryConnectionBundles|join("','") }}'];
+
     /**
      * set up graviton symfony dynamic bundles
      *

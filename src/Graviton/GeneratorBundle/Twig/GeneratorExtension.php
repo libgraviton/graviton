@@ -175,7 +175,16 @@ class GeneratorExtension implements ExtensionInterface
         if (!empty($textIndexes)) {
             $indexes[] = $this->getDoctrineTextIndexAnnotation($collectionName, $textIndexes);
         }
-        return '@ODM\Indexes({'.implode(', ', $indexes).'})';
+        //return '@ODM\Indexes({'.implode(', ', $indexes).'})';
+
+        $indexLines = array_map(
+            function ($singleIndexLine) {
+                return ' * '.$singleIndexLine;
+            },
+            $indexes
+        );
+
+        return implode(PHP_EOL, $indexLines);
     }
 
     /**

@@ -55,6 +55,9 @@ class GenerateDynamicBundleCommand extends Command
     /** @var  array */
     private $bundleBundleList = [];
 
+    /** @var  array */
+    private $bundleSecondaryConnectionList = [];
+
     /** @var array|null */
     private $bundleAdditions = null;
 
@@ -95,6 +98,10 @@ class GenerateDynamicBundleCommand extends Command
      * @var string
      */
     private $repositoryFactoryService;
+    /**
+     * @var string
+     */
+    private $repositorySecondaryFactoryService;
     /**
      * @var bool
      */
@@ -185,6 +192,13 @@ class GenerateDynamicBundleCommand extends Command
                 'doctrine_mongodb.odm.default_document_manager'
             )
             ->addOption(
+                'repositorySecondaryFactoryService',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Factory service for repositories',
+                'doctrine_mongodb.odm.secondary_document_manager'
+            )
+            ->addOption(
                 'generateController',
                 '',
                 InputOption::VALUE_OPTIONAL,
@@ -250,6 +264,7 @@ class GenerateDynamicBundleCommand extends Command
             $this->generateSchema = false;
         }
         $this->repositoryFactoryService = $input->getOption('repositoryFactoryService');
+        $this->repositorySecondaryFactoryService = $input->getOption('repositorySecondaryFactoryService');
 
         /**
          * GENERATE THE BUNDLEBUNDLE
@@ -289,6 +304,10 @@ class GenerateDynamicBundleCommand extends Command
             $bundleName = str_replace('/', '', $namespace);
             $bundleDir = $input->getOption('srcDir').$namespace;
             $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
+
+            if ($jsonDef->isUseSecondaryConnection()) {
+                $this->bundleSecondaryConnectionList[] = $bundleName;
+            }
 
             try {
                 $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
@@ -474,6 +493,7 @@ class GenerateDynamicBundleCommand extends Command
         $generator = $this->resourceGenerator;
         $generator->setGenerateSerializerConfig($this->generateSerializerConfig);
         $generator->setRepositoryFactoryService($this->repositoryFactoryService);
+        $generator->setRepositorySecondaryFactoryService($this->repositorySecondaryFactoryService);
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
         $generator->setGenerateSchema($this->generateSchema);
@@ -580,7 +600,8 @@ class GenerateDynamicBundleCommand extends Command
             $this->bundleBundleList,
             $this->bundleBundleNamespace,
             $this->bundleBundleClassname,
-            $this->bundleBundleClassfile
+            $this->bundleBundleClassfile,
+            $this->bundleSecondaryConnectionList
         );
     }
 

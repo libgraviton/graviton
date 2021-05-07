@@ -20,6 +20,10 @@ class Service
     /**
      * @var bool
      */
+    private bool $useSecondary = false;
+    /**
+     * @var bool
+     */
     private $versioning;
     /**
      * @var bool
@@ -82,6 +86,28 @@ class Service
     {
         $this->parent = $parent;
         return $this;
+    }
+
+    /**
+     * get UseSecondary
+     *
+     * @return bool UseSecondary
+     */
+    public function isUseSecondary()
+    {
+        return $this->useSecondary;
+    }
+
+    /**
+     * set UseSecondary
+     *
+     * @param bool $useSecondary useSecondary
+     *
+     * @return void
+     */
+    public function setUseSecondary($useSecondary)
+    {
+        $this->useSecondary = $useSecondary;
     }
 
     /**
