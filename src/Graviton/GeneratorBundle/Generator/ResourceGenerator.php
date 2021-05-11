@@ -71,11 +71,6 @@ class ResourceGenerator extends AbstractGenerator
     private $repositoryFactoryService;
 
     /**
-     * @var string
-     */
-    private $repositorySecondaryFactoryService;
-
-    /**
      * @var boolean
      */
     private $generateController = false;
@@ -148,18 +143,6 @@ class ResourceGenerator extends AbstractGenerator
     public function setRepositoryFactoryService($repositoryFactoryService)
     {
         $this->repositoryFactoryService = $repositoryFactoryService;
-    }
-
-    /**
-     * set RepositorySecondaryFactoryService
-     *
-     * @param string $repositorySecondaryFactoryService repositorySecondaryFactoryService
-     *
-     * @return void
-     */
-    public function setRepositorySecondaryFactoryService($repositorySecondaryFactoryService)
-    {
-        $this->repositorySecondaryFactoryService = $repositorySecondaryFactoryService;
     }
 
     /**
@@ -297,7 +280,6 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
-            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('isVersioning', $this->json->isVersionedService())
             ->setParameter('collection', $this->json->getServiceCollection())
@@ -468,12 +450,6 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
-        // which repo factory to use? if secondary flag is true, we use the secondary..
-        $repoFactoryService = $this->repositoryFactoryService;
-        if ($parameters['isUseSecondaryConnection'] == true) {
-            $repoFactoryService = $this->repositorySecondaryFactoryService;
-        }
-
         $this->addService(
             $repoName,
             null,
@@ -485,7 +461,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document
                 )
             ),
-            $repoFactoryService,
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
@@ -501,7 +477,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                 )
             ),
-            $repoFactoryService,
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
             false

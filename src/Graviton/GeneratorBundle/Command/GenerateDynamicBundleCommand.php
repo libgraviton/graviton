@@ -96,10 +96,6 @@ class GenerateDynamicBundleCommand extends Command
      */
     private $repositoryFactoryService;
     /**
-     * @var string
-     */
-    private $repositorySecondaryFactoryService;
-    /**
      * @var bool
      */
     private $generateController = true;
@@ -189,13 +185,6 @@ class GenerateDynamicBundleCommand extends Command
                 'doctrine_mongodb.odm.default_document_manager'
             )
             ->addOption(
-                'repositorySecondaryFactoryService',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Factory service for repositories',
-                'doctrine_mongodb.odm.secondary_document_manager'
-            )
-            ->addOption(
                 'generateController',
                 '',
                 InputOption::VALUE_OPTIONAL,
@@ -261,7 +250,6 @@ class GenerateDynamicBundleCommand extends Command
             $this->generateSchema = false;
         }
         $this->repositoryFactoryService = $input->getOption('repositoryFactoryService');
-        $this->repositorySecondaryFactoryService = $input->getOption('repositorySecondaryFactoryService');
 
         /**
          * GENERATE THE BUNDLEBUNDLE
@@ -490,7 +478,6 @@ class GenerateDynamicBundleCommand extends Command
         $generator = $this->resourceGenerator;
         $generator->setGenerateSerializerConfig($this->generateSerializerConfig);
         $generator->setRepositoryFactoryService($this->repositoryFactoryService);
-        $generator->setRepositorySecondaryFactoryService($this->repositorySecondaryFactoryService);
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
         $generator->setGenerateSchema($this->generateSchema);
