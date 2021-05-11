@@ -55,9 +55,6 @@ class GenerateDynamicBundleCommand extends Command
     /** @var  array */
     private $bundleBundleList = [];
 
-    /** @var  array */
-    private $bundleSecondaryConnectionList = [];
-
     /** @var array|null */
     private $bundleAdditions = null;
 
@@ -306,7 +303,7 @@ class GenerateDynamicBundleCommand extends Command
             $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
 
             if ($jsonDef->isUseSecondaryConnection()) {
-                $this->bundleSecondaryConnectionList[] = $bundleName;
+                die('define here!');
             }
 
             try {
@@ -600,8 +597,7 @@ class GenerateDynamicBundleCommand extends Command
             $this->bundleBundleList,
             $this->bundleBundleNamespace,
             $this->bundleBundleClassname,
-            $this->bundleBundleClassfile,
-            $this->bundleSecondaryConnectionList
+            $this->bundleBundleClassfile
         );
     }
 
