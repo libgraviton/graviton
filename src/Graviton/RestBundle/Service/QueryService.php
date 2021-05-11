@@ -10,6 +10,7 @@ use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use MongoDB\Driver\ReadPreference;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,7 +91,9 @@ class QueryService
     /**
      * toggle flag if we should use mongodb secondary
      *
-     * @param bool $isUseSecondary
+     * @param bool $isUseSecondary if secondary or not
+     *
+     * @return void
      */
     public function setIsUseSecondary(bool $isUseSecondary): void
     {
@@ -130,6 +133,9 @@ class QueryService
              * this is only the case when queryBuilder was overridden, most likely via a PostEvent
              * in the rql parsing phase.
              */
+            if ($this->isUseSecondary) {
+                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+            }
             $this->queryBuilder->hydrate($repository->getClassName());
 
             $this->logger->info('QueryService: Aggregate query');
@@ -145,8 +151,12 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
+
+            if ($this->isUseSecondary) {
+                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+            }
 
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
@@ -167,8 +177,12 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
+
+            if ($this->isUseSecondary) {
+                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+            }
 
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
