@@ -290,10 +290,6 @@ class GenerateDynamicBundleCommand extends Command
             $bundleDir = $input->getOption('srcDir').$namespace;
             $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
 
-            if ($jsonDef->isUseSecondaryConnection()) {
-                die('define here!');
-            }
-
             try {
                 $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
 
