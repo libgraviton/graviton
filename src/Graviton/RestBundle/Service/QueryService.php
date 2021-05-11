@@ -65,6 +65,11 @@ class QueryService
     protected $eventDispatcher;
 
     /**
+     * @var bool toggles if we should send readpref 'secondarypreferred'
+     */
+    private $isUseSecondary = false;
+
+    /**
      * @param LoggerInterface          $logger                 logger
      * @param VisitorInterface         $visitor                visitor
      * @param integer                  $paginationDefaultLimit default pagination limit
@@ -80,6 +85,16 @@ class QueryService
         $this->visitor = $visitor;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * toggle flag if we should use mongodb secondary
+     *
+     * @param bool $isUseSecondary
+     */
+    public function setIsUseSecondary(bool $isUseSecondary): void
+    {
+        $this->isUseSecondary = $isUseSecondary;
     }
 
     /**

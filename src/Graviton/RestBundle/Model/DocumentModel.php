@@ -95,6 +95,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
+     * toggle flag if we should use mongodb secondary
+     *
+     * @param bool $isUseSecondary
+     */
+    public function setIsUseSecondary(bool $isUseSecondary): void
+    {
+        $this->queryService->setIsUseSecondary($isUseSecondary);
+    }
+
+    /**
      * get repository instance
      *
      * @return DocumentRepository
