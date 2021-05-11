@@ -37,10 +37,10 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     /**
      * Generate the BundleBundle
      *
-     * @param array  $bundleList             List of bundles
-     * @param string $bundleBundleNamespace  Namespace of our BundleBundle
-     * @param string $bundleName             Name of the bundle
-     * @param string $targetFilename         Where to write the list to
+     * @param array  $bundleList            List of bundles
+     * @param string $bundleBundleNamespace Namespace of our BundleBundle
+     * @param string $bundleName            Name of the bundle
+     * @param string $targetFilename        Where to write the list to
      *
      * @return void
      */

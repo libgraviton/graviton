@@ -97,7 +97,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * toggle flag if we should use mongodb secondary
      *
-     * @param bool $isUseSecondary
+     * @param bool $isUseSecondary if secondary or not
+     *
+     * @return void
      */
     public function setIsUseSecondary(bool $isUseSecondary): void
     {
