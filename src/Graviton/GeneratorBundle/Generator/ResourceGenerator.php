@@ -287,6 +287,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
+            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->setParameter('reservedFieldnames', $reservedFieldNames)
@@ -801,17 +802,27 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
+        // calls for normal
+        $calls = [
+            [
+                'method' => 'setRepository',
+                'service' => $repoName
+            ]
+        ];
+
+        // set secondary connection?
+        if ($parameters['isUseSecondaryConnection']) {
+            $calls[] = [
+                'method' => 'setIsUseSecondary',
+                'arguments' => [true]
+            ];
+        }
+
         // normal service
         $this->addService(
             $paramName,
             'graviton.rest.model',
-            array(
-                [
-                    'method' => 'setRepository',
-                    'service' => $repoName
-                ],
-            ),
-            null
+            $calls
         );
 
         // embedded service
