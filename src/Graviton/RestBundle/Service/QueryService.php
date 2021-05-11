@@ -128,14 +128,17 @@ class QueryService
             $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
         }
 
+        if ($this->isUseSecondary) {
+            $this->queryBuilder = $this->queryBuilder->setReadPreference(
+                new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED)
+            );
+        }
+
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
              * this is only the case when queryBuilder was overridden, most likely via a PostEvent
              * in the rql parsing phase.
              */
-            if ($this->isUseSecondary) {
-                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
-            }
             $this->queryBuilder->hydrate($repository->getClassName());
 
             $this->logger->info('QueryService: Aggregate query');
@@ -153,10 +156,6 @@ class QueryService
                 'QueryService: allAction query',
                 ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
-
-            if ($this->isUseSecondary) {
-                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
-            }
 
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
@@ -179,10 +178,6 @@ class QueryService
                 'QueryService: getAction query',
                 ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
-
-            if ($this->isUseSecondary) {
-                $this->queryBuilder->setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
-            }
 
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
