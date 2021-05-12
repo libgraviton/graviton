@@ -42,48 +42,23 @@ class GravitonDocumentExtension extends GravitonBundleExtension
     {
         parent::prepend($container);
 
-        $mongoDsn = $container->getParameter('graviton.mongodb.default.server.uri');
-        $mongoDsnSecondary = $mongoDsn;
+        // grab mongo config directly from vcap...
+        $services = getenv('VCAP_SERVICES');
+        if (!empty($services)) {
+            $services = json_decode($services, true);
+            $mongo = $services['mongodb'][0]['credentials'];
 
-        if (is_string($mongoDsn) && str_contains($mongoDsn, 'replicaSet=')) {
-            $mongoDsnSecondary = $mongoDsn.'&readPreference='
-                .$container->getParameter('graviton.mongodb.secondary.read_preference');
-        }
-
-        $container->setParameter(
-            'mongodb.default.server.uri',
-            $mongoDsn
-        );
-        $container->setParameter(
-            'mongodb.default.server.uri_secondary',
-            $mongoDsnSecondary
-        );
-
-        $container->setParameter(
-            'mongodb.default.server.db',
-            $container->getParameter('graviton.mongodb.default.server.db')
-        );
-
-        // set parameter that use secondary connection. this should have been generated and we set it as param
-        // for doctrine odm
-        if (class_exists('GravitonDyn\BundleBundle\GravitonDynBundleBundle')) {
-            $list = [];
-            foreach (\GravitonDyn\BundleBundle\GravitonDynBundleBundle::$secondaryConnectionBundles as $bundleName) {
-                if (!empty($bundleName)) {
-                    $list[$bundleName] = ['type' => 'annotation'];
-                }
-            }
-
-            // set list for mongo odm bundle
-            $config = $container->getExtensionConfig('doctrine_mongodb');
-            if (isset($config[0]) && is_array($config[0])) {
-                $config = $config[0];
-            }
-
-            if (isset($config['document_managers']['secondary'])) {
-                $config['document_managers']['secondary']['mappings'] = $list;
-                $container->prependExtensionConfig('doctrine_mongodb', $config);
-            }
+            $container->setParameter('mongodb.default.server.uri', $mongo['uri']);
+            $container->setParameter('mongodb.default.server.db', $mongo['database']);
+        } else {
+            $container->setParameter(
+                'mongodb.default.server.uri',
+                $container->getParameter('graviton.mongodb.default.server.uri')
+            );
+            $container->setParameter(
+                'mongodb.default.server.db',
+                $container->getParameter('graviton.mongodb.default.server.db')
+            );
         }
     }
 }

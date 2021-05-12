@@ -37,11 +37,10 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     /**
      * Generate the BundleBundle
      *
-     * @param array  $bundleList                 List of bundles
-     * @param string $bundleBundleNamespace      Namespace of our BundleBundle
-     * @param string $bundleName                 Name of the bundle
-     * @param string $targetFilename             Where to write the list to
-     * @param array  $secondaryConnectionBundles list of bundles that use secondary connection
+     * @param array  $bundleList            List of bundles
+     * @param string $bundleBundleNamespace Namespace of our BundleBundle
+     * @param string $bundleName            Name of the bundle
+     * @param string $targetFilename        Where to write the list to
      *
      * @return void
      */
@@ -49,8 +48,7 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
         array $bundleList,
         $bundleBundleNamespace,
         $bundleName,
-        $targetFilename,
-        array $secondaryConnectionBundles
+        $targetFilename
     ) {
         $absoluteList = [];
         foreach ($bundleList as $namespace) {
@@ -68,8 +66,7 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
         $parameters = array(
             'namespace' => str_replace('/', '\\', $bundleBundleNamespace),
             'bundleName' => $bundleName,
-            'bundleClassList' => $absoluteList,
-            'secondaryConnectionBundles' => $secondaryConnectionBundles
+            'bundleClassList' => $absoluteList
         );
 
         $this->renderFile('bundle/DynamicBundleBundle.php.twig', $targetFilename, $parameters);

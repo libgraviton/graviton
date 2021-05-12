@@ -71,11 +71,6 @@ class ResourceGenerator extends AbstractGenerator
     private $repositoryFactoryService;
 
     /**
-     * @var string
-     */
-    private $repositorySecondaryFactoryService;
-
-    /**
      * @var boolean
      */
     private $generateController = false;
@@ -148,18 +143,6 @@ class ResourceGenerator extends AbstractGenerator
     public function setRepositoryFactoryService($repositoryFactoryService)
     {
         $this->repositoryFactoryService = $repositoryFactoryService;
-    }
-
-    /**
-     * set RepositorySecondaryFactoryService
-     *
-     * @param string $repositorySecondaryFactoryService repositorySecondaryFactoryService
-     *
-     * @return void
-     */
-    public function setRepositorySecondaryFactoryService($repositorySecondaryFactoryService)
-    {
-        $this->repositorySecondaryFactoryService = $repositorySecondaryFactoryService;
     }
 
     /**
@@ -297,7 +280,6 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
-            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('isVersioning', $this->json->isVersionedService())
             ->setParameter('collection', $this->json->getServiceCollection())
@@ -305,6 +287,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
+            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->setParameter('reservedFieldnames', $reservedFieldNames)
@@ -468,12 +451,6 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
-        // which repo factory to use? if secondary flag is true, we use the secondary..
-        $repoFactoryService = $this->repositoryFactoryService;
-        if ($parameters['isUseSecondaryConnection'] == true) {
-            $repoFactoryService = $this->repositorySecondaryFactoryService;
-        }
-
         $this->addService(
             $repoName,
             null,
@@ -485,7 +462,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document
                 )
             ),
-            $repoFactoryService,
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
@@ -501,7 +478,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                 )
             ),
-            $repoFactoryService,
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
             false
@@ -825,17 +802,27 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
+        // calls for normal
+        $calls = [
+            [
+                'method' => 'setRepository',
+                'service' => $repoName
+            ]
+        ];
+
+        // set secondary connection?
+        if ($parameters['isUseSecondaryConnection']) {
+            $calls[] = [
+                'method' => 'setIsUseSecondary',
+                'arguments' => [true]
+            ];
+        }
+
         // normal service
         $this->addService(
             $paramName,
             'graviton.rest.model',
-            array(
-                [
-                    'method' => 'setRepository',
-                    'service' => $repoName
-                ],
-            ),
-            null
+            $calls
         );
 
         // embedded service

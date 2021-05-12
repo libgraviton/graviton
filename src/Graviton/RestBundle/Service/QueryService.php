@@ -10,6 +10,7 @@ use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use MongoDB\Driver\ReadPreference;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +66,11 @@ class QueryService
     protected $eventDispatcher;
 
     /**
+     * @var bool toggles if we should send readpref 'secondarypreferred'
+     */
+    private $isUseSecondary = false;
+
+    /**
      * @param LoggerInterface          $logger                 logger
      * @param VisitorInterface         $visitor                visitor
      * @param integer                  $paginationDefaultLimit default pagination limit
@@ -80,6 +86,18 @@ class QueryService
         $this->visitor = $visitor;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * toggle flag if we should use mongodb secondary
+     *
+     * @param bool $isUseSecondary if secondary or not
+     *
+     * @return void
+     */
+    public function setIsUseSecondary(bool $isUseSecondary): void
+    {
+        $this->isUseSecondary = $isUseSecondary;
     }
 
     /**
@@ -110,6 +128,12 @@ class QueryService
             $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
         }
 
+        if ($this->isUseSecondary) {
+            $this->queryBuilder = $this->queryBuilder->setReadPreference(
+                new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED)
+            );
+        }
+
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
              * this is only the case when queryBuilder was overridden, most likely via a PostEvent
@@ -130,7 +154,7 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
 
             // count queryBuilder
@@ -152,7 +176,7 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
             );
 
             $query = $this->queryBuilder->getQuery();
