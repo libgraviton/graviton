@@ -123,15 +123,16 @@ class QueryService
 
         $this->applyRqlQuery();
 
+        if ($this->isUseSecondary) {
+            $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+        } else {
+            $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY);
+        }
+
         // dispatch our event if normal builder
         if ($this->queryBuilder instanceof Builder) {
             $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
-        }
-
-        if ($this->isUseSecondary) {
-            $this->queryBuilder = $this->queryBuilder->setReadPreference(
-                new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED)
-            );
+            $this->queryBuilder = $this->queryBuilder->setReadPreference($readPreference);
         }
 
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
@@ -141,9 +142,17 @@ class QueryService
              */
             $this->queryBuilder->hydrate($repository->getClassName());
 
-            $this->logger->info('QueryService: Aggregate query');
+            $this->logger->info(
+                'QueryService: Aggregate query',
+                [
+                    'readPref' => $readPreference->getModeString()
+                ]
+            );
 
-            $records = array_values($this->queryBuilder->execute()->toArray());
+            $records = array_values(
+                $this->queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
+            );
+
             $request->attributes->set('recordCount', count($records));
 
             $returnValue = $records;
@@ -154,7 +163,7 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
             );
 
             // count queryBuilder
@@ -176,7 +185,7 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'isSecondary' => $this->isUseSecondary]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
             );
 
             $query = $this->queryBuilder->getQuery();
