@@ -26,7 +26,7 @@
         "php": ">=7.4.0",
         "ext-json": "*",
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.9.0",
+        "ext-mongodb": "^1.10.0",
         "ext-amqp": "~1",
 
         "jean85/pretty-package-versions": "^1.5 || ^2.0",
