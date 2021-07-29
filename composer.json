@@ -50,6 +50,8 @@
         "doctrine/mongodb-odm-bundle": "^4.1.0",
         "doctrine/doctrine-cache-bundle": "^1.3",
 
+        "doctrine/mongodb-odm": "=2.2.0",
+
         "monolog/monolog": "~1",
 
         "php-jsonpatch/php-jsonpatch": "~3.0",
