@@ -76,16 +76,13 @@ class AppKernel extends Kernel
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
-            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
+            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle(),
+            new \Sentry\SentryBundle\SentryBundle()
         );
 
         if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-        }
-
-        if ('prod' === $this->getEnvironment()) {
-            $bundles[] = new \Sentry\SentryBundle\SentryBundle();
         }
 
         // our own bundles!

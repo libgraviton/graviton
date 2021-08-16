@@ -11,3 +11,7 @@ services:
     test_consumer:
         class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 
+    Sentry\Integration\IgnoreErrorsIntegration:
+        arguments:
+            $options:
+                ignore_exceptions: "%graviton.sentry.dontReport%"

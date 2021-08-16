@@ -2,15 +2,6 @@ imports:
     - { resource: security.yml }
     - { resource: config.yml }
 
-# sentry is active on prod
-sentry:
-    dsn: "%graviton.sentry.dsn%"
-    options:
-        excluded_exceptions: "%graviton.sentry.dontReport%"
-        environment: "%kernel.environment%"
-        tags:
-            application: graviton
-
 monolog:
     handlers:
         main:

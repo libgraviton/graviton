@@ -63,8 +63,8 @@
         "oneup/flysystem-bundle": "^3",
         "league/flysystem-aws-s3-v3": "^1.0",
 
-        "sentry/sentry-symfony": "^3.0",
-        "sentry/sentry": "^2.0",
+        "sentry/sentry-symfony": "^4.0",
+        "sentry/sentry": "^3.0",
         "php-http/guzzle6-adapter": "*",
         "guzzlehttp/psr7": "*",
 

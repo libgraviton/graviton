@@ -1,2 +1,2 @@
 bash prepare-for-tests.sh
-./vendor/bin/phpunit
+php ./vendor/bin/phpunit
