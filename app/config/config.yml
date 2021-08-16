@@ -114,3 +114,12 @@ graviton_core:
     uri_whitelist:
         - /core/version
         - /person/whoami
+
+sentry:
+    dsn: "%graviton.sentry.dsn%"
+    options:
+        integrations:
+            - 'Sentry\Integration\IgnoreErrorsIntegration'
+        environment: "%kernel.environment%"
+        tags:
+            application: graviton
