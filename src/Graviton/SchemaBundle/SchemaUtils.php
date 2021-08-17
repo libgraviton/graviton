@@ -5,7 +5,6 @@
 
 namespace Graviton\SchemaBundle;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
@@ -16,6 +15,7 @@ use Graviton\SchemaBundle\Service\RepositoryFactory;
 use JmesPath\CompilerRuntime;
 use JMS\Serializer\Serializer;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -78,7 +78,7 @@ class SchemaUtils
     private $serializerMetadataFactory;
 
     /**
-     * @var CacheProvider
+     * @var CacheItemPoolInterface
      */
     private $cache;
 
@@ -109,7 +109,7 @@ class SchemaUtils
      * @param array                              $documentFieldNames        Document field names
      * @param boolean                            $schemaVariationEnabled    if schema variations should be enabled
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
-     * @param CacheProvider                      $cache                     Doctrine cache provider
+     * @param CacheItemPoolInterface             $cache                     Doctrine cache provider
      * @param CompilerRuntime                    $jmesRuntime               jmespath.php Runtime
      * @param I18nUtils                          $intUtils                  i18n utils
      */
@@ -123,7 +123,7 @@ class SchemaUtils
         array $documentFieldNames,
         $schemaVariationEnabled,
         ConstraintBuilder $constraintBuilder,
-        CacheProvider $cache,
+        CacheItemPoolInterface $cache,
         CompilerRuntime $jmesRuntime,
         I18nUtils $intUtils
     ) {
@@ -203,11 +203,11 @@ class SchemaUtils
             (string) $internal,
             (string) $serialized,
             (string) $variationName,
-            (string) implode('-', $languages)
+            implode('-', $languages)
         );
 
-        if ($this->cache->contains($cacheKey)) {
-            return $this->cache->fetch($cacheKey);
+        if ($this->cache->hasItem($cacheKey)) {
+            return $this->cache->getItem($cacheKey)->get();
         }
 
         // build up schema data
@@ -449,7 +449,9 @@ class SchemaUtils
         }
 
         if ($schemaIsCachable === true) {
-            $this->cache->save($cacheKey, $schema);
+            $cacheItem = $this->cache->getItem($cacheKey);
+            $cacheItem->set($schema);
+            $this->cache->save($cacheItem);
         }
 
         return $schema;

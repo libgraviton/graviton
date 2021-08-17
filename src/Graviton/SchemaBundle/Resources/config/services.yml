@@ -129,7 +129,7 @@ services:
           - "%graviton.document.field.names%"
           - "%graviton.rest.schema_variation.enable%"
           - "@graviton.schema.constraint.builder"
-          - "@graviton.cache.provider.file"
+          - "@graviton.cache.adapter.app"
           - "@graviton.core.service.jmespath"
           - "@graviton.18n.utils"
 
