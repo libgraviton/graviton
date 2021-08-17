@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7651ea1e13dde9d9e4d3e9e2333f90ab",
+    "content-hash": "01d7ab22c2e8f4e4e56622f5d4cf184b",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1265,20 +1265,20 @@
         },
         {
             "name": "graviton/deployment-service-bundle",
-            "version": "v0.2.0",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/DeploymentServiceBundle.git",
-                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203"
+                "reference": "edb12fedcd86bff21907fa0c3f09492583face88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
-                "reference": "b3ccdc81124a76dd96ca48a7ea20e0f3497dd203",
+                "url": "https://api.github.com/repos/libgraviton/DeploymentServiceBundle/zipball/edb12fedcd86bff21907fa0c3f09492583face88",
+                "reference": "edb12fedcd86bff21907fa0c3f09492583face88",
                 "shasum": ""
             },
             "require": {
-                "jean85/pretty-package-versions": "~1"
+                "composer-runtime-api": "^2"
             },
             "type": "library",
             "autoload": {
@@ -1299,9 +1299,9 @@
             "description": "Bundle that helps what to do if services are deployed with multiple instances",
             "support": {
                 "issues": "https://github.com/libgraviton/DeploymentServiceBundle/issues",
-                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v0.2.0"
+                "source": "https://github.com/libgraviton/DeploymentServiceBundle/tree/v1.0.0"
             },
-            "time": "2021-05-06T12:24:12+00:00"
+            "time": "2021-08-17T15:14:09+00:00"
         },
         {
             "name": "graviton/json-schema",
