@@ -10,7 +10,7 @@ use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Document\Translation;
 use MongoDB\Collection;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -41,7 +41,7 @@ class Translator
     private $defaultLanguage;
 
     /**
-     * @var AdapterInterface
+     * @var CacheItemPoolInterface
      */
     private $cache;
 
@@ -58,17 +58,17 @@ class Translator
     /**
      * Translator constructor.
      *
-     * @param DocumentManager  $manager         manager
-     * @param string           $defaultLanguage default language
-     * @param AdapterInterface $cache           cache adapter
-     * @param int              $cacheNameDepth  how many characters of the original is used as cache pool divider
+     * @param DocumentManager        $manager         manager
+     * @param string                 $defaultLanguage default language
+     * @param CacheItemPoolInterface $cache           cache adapter
+     * @param int                    $cacheNameDepth  how many characters of the original is used as cache pool divider
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function __construct(
         DocumentManager $manager,
         $defaultLanguage,
-        AdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         $cacheNameDepth
     ) {
         $this->translationCollection = $manager->getDocumentCollection(Translation::class);

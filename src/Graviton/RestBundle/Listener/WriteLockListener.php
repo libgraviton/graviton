@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Monolog\Logger;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -32,7 +32,7 @@ class WriteLockListener
     private $requestStack;
 
     /**
-     * @var AdapterInterface
+     * @var CacheItemPoolInterface
      */
     private $cache;
 
@@ -91,15 +91,15 @@ class WriteLockListener
     private $randomDelayMax = 500;
 
     /**
-     * @param Logger           $logger         logger
-     * @param RequestStack     $requestStack   request stack
-     * @param AdapterInterface $cache          cache
-     * @param array            $randomWaitUrls urls we randomly wait on
+     * @param Logger                 $logger         logger
+     * @param RequestStack           $requestStack   request stack
+     * @param CacheItemPoolInterface $cache          cache
+     * @param array                  $randomWaitUrls urls we randomly wait on
      */
     public function __construct(
         Logger $logger,
         RequestStack $requestStack,
-        AdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         array $randomWaitUrls
     ) {
         $this->logger = $logger;
@@ -126,7 +126,7 @@ class WriteLockListener
         }
 
         $url = $this->requestStack->getCurrentRequest()->getPathInfo();
-        $cacheKey = $this->cacheKeyPrefix.$url;
+        $cacheKey = $this->cacheKeyPrefix.sha1($url);
 
         // should we do a random delay here? only applies to writing methods!
         if (in_array($currentMethod, $this->lockingMethods) &&

@@ -12,7 +12,7 @@ use Graviton\DocumentBundle\Service\DateConverter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -28,7 +28,6 @@ use Symfony\Component\Routing\Router;
 class ServiceManager
 {
     /** Cache name for services */
-    const CACHE_KEY_SERVICES = 'analytics_services';
     const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
@@ -38,7 +37,7 @@ class ServiceManager
     /** @var AnalyticsManager */
     protected $analyticsManager;
 
-    /** @var AdapterInterface */
+    /** @var CacheItemPoolInterface */
     protected $cacheProvider;
 
     /** @var DateConverter */
@@ -72,18 +71,18 @@ class ServiceManager
     /**
      * ServiceConverter constructor.
      *
-     * @param RequestStack     $requestStack      Sf Request information service
-     * @param AnalyticsManager $analyticsManager  Db Manager and query control
-     * @param AdapterInterface $cacheProvider     Cache service
-     * @param DateConverter    $dateConverter     date converter
-     * @param Router           $router            To manage routing generation
-     * @param int              $cacheTimeMetadata How long to cache metadata
-     * @param array            $analyticsServices the services
+     * @param RequestStack           $requestStack      Sf Request information service
+     * @param AnalyticsManager       $analyticsManager  Db Manager and query control
+     * @param CacheItemPoolInterface $cacheProvider     Cache service
+     * @param DateConverter          $dateConverter     date converter
+     * @param Router                 $router            To manage routing generation
+     * @param int                    $cacheTimeMetadata How long to cache metadata
+     * @param array                  $analyticsServices the services
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
-        AdapterInterface $cacheProvider,
+        CacheItemPoolInterface $cacheProvider,
         DateConverter $dateConverter,
         Router $router,
         $cacheTimeMetadata,
