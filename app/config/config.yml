@@ -81,8 +81,6 @@ jms_serializer:
     metadata:
         cache: graviton.core.jms.cache.provider
         debug: "%kernel.debug%"
-        file_cache:
-            dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
 
 oneup_flysystem:
