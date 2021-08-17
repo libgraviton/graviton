@@ -137,7 +137,7 @@ services:
         arguments:
           - "@logger"
           - "@request_stack"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@graviton.cache.adapter.app"
           - "%graviton.writelock.randomwaiturls%"
         tags:
           -

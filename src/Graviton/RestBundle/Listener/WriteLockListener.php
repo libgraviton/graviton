@@ -5,8 +5,8 @@
  */
 namespace Graviton\RestBundle\Listener;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Monolog\Logger;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -32,7 +32,7 @@ class WriteLockListener
     private $requestStack;
 
     /**
-     * @var CacheProvider
+     * @var AdapterInterface
      */
     private $cache;
 
@@ -91,15 +91,15 @@ class WriteLockListener
     private $randomDelayMax = 500;
 
     /**
-     * @param Logger        $logger         logger
-     * @param RequestStack  $requestStack   request stack
-     * @param CacheProvider $cache          cache
-     * @param array         $randomWaitUrls urls we randomly wait on
+     * @param Logger           $logger         logger
+     * @param RequestStack     $requestStack   request stack
+     * @param AdapterInterface $cache          cache
+     * @param array            $randomWaitUrls urls we randomly wait on
      */
     public function __construct(
         Logger $logger,
         RequestStack $requestStack,
-        CacheProvider $cache,
+        AdapterInterface $cache,
         array $randomWaitUrls
     ) {
         $this->logger = $logger;
@@ -141,7 +141,7 @@ class WriteLockListener
         $this->logger->info("LOCK CHECK START = ".$cacheKey);
 
         // check for existing one
-        while ($this->cache->fetch($cacheKey) === true) {
+        while ($this->cache->hasItem($cacheKey) === true) {
             usleep(250000);
         }
 
@@ -153,7 +153,11 @@ class WriteLockListener
         }
 
         // create new
-        $this->cache->save($cacheKey, true, $this->maxTime);
+        $cacheItem = $this->cache->getItem($cacheKey);
+        $cacheItem->set(true);
+        $cacheItem->expiresAfter($this->maxTime);
+
+        $this->cache->save($cacheItem);
         $this->logger->info("LOCK ADD = ".$cacheKey);
 
         $event->getRequest()->attributes->set('writeLockOn', $cacheKey);
@@ -194,7 +198,7 @@ class WriteLockListener
     {
         $lockName = $request->attributes->get('writeLockOn', null);
         if (!is_null($lockName)) {
-            $this->cache->delete($lockName);
+            $this->cache->deleteItem($lockName);
             $this->logger->info("LOCK REMOVED = ".$lockName);
         }
     }
