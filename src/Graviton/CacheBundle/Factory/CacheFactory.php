@@ -7,6 +7,7 @@ namespace Graviton\CacheBundle\Factory;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\DoctrineProvider;
 
 /**
@@ -17,18 +18,27 @@ use Symfony\Component\Cache\DoctrineProvider;
 class CacheFactory
 {
 
+    public const ADAPTER_ARRAY = 'array';
+
     private $appCache;
+    private $adapterOverride;
     private $redisHost;
     private $redisPort;
 
-    public function __construct(CacheItemPoolInterface $appCache, $redisHost, $redisPort)
+    public function __construct(CacheItemPoolInterface $appCache, $adapterOverride, $redisHost, $redisPort)
     {
         $this->appCache = $appCache;
+        $this->adapterOverride = $adapterOverride;
         $this->redisHost = $redisHost;
         $this->redisPort = $redisPort;
     }
 
     public function getInstance(bool $isRewrite = false) : CacheItemPoolInterface {
+        if ($this->adapterOverride == self::ADAPTER_ARRAY) {
+            // forced array adapter
+            return new ArrayAdapter();
+        }
+
         return $this->appCache;
     }
 

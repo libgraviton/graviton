@@ -29,6 +29,7 @@ services:
     Graviton\CacheBundle\Factory\CacheFactory:
       arguments:
         - "@cache.app"
+        - "%graviton.cache.provider.override%"
         - "%graviton.cache.redis.host%"
         - "%graviton.cache.redis.port%"
 

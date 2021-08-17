@@ -206,7 +206,7 @@ class Translator
     public function removeCachedLanguages()
     {
         $this->languages = [];
-        $this->cacheRewrite->delete(self::CACHE_KEY_LANGUAGES);
+        $this->cache->deleteItem(self::CACHE_KEY_LANGUAGES);
     }
 
     /**

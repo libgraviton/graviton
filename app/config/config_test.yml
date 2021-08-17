@@ -14,8 +14,8 @@ parameters:
         - x-graviton-client
 
     # in tests, we always use the array cache provider
-    graviton.cache.provider.service_id: graviton.cache.provider.local
-    #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
+    graviton.cache.provider.override: array
+
     # for testing group serialization
     graviton.rest.serializer.groups: {  }
     graviton.rest.serializer.allow_group_override_header: true
