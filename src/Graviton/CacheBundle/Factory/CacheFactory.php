@@ -8,6 +8,7 @@ namespace Graviton\CacheBundle\Factory;
 use Doctrine\Common\Cache\CacheProvider;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\DoctrineProvider;
 
 /**
@@ -21,22 +22,45 @@ class CacheFactory
     public const ADAPTER_ARRAY = 'array';
 
     private $appCache;
+    private $instanceId;
     private $adapterOverride;
     private $redisHost;
     private $redisPort;
 
-    public function __construct(CacheItemPoolInterface $appCache, $adapterOverride, $redisHost, $redisPort)
+    /**
+     * @param CacheItemPoolInterface $appCache        cache by symfony
+     * @param string                 $instanceId      instance id
+     * @param string                 $adapterOverride override
+     * @param string                 $redisHost       redis host
+     * @param int                    $redisPort       redis port
+     */
+    public function __construct(CacheItemPoolInterface $appCache, $instanceId, $adapterOverride, $redisHost, $redisPort)
     {
         $this->appCache = $appCache;
+        $this->instanceId = $instanceId;
         $this->adapterOverride = $adapterOverride;
         $this->redisHost = $redisHost;
         $this->redisPort = $redisPort;
     }
 
-    public function getInstance(bool $isRewrite = false) : CacheItemPoolInterface {
+    /**
+     * gets instance
+     *
+     * @param bool $isRewrite if rewritable or not
+     *
+     * @return CacheItemPoolInterface cache
+     */
+    public function getInstance(bool $isRewrite = false) : CacheItemPoolInterface
+    {
         if ($this->adapterOverride == self::ADAPTER_ARRAY) {
             // forced array adapter
             return new ArrayAdapter();
+        }
+
+        if ($this->redisHost != null) {
+            $redis = new \Redis();
+            $redis->connect($this->redisHost, $this->redisPort);
+            return new RedisAdapter($redis, $this->instanceId);
         }
 
         return $this->appCache;
@@ -50,7 +74,8 @@ class CacheFactory
      *
      * @return CacheProvider
      */
-    public function getDoctrineInstance(bool $isRewrite = false) : CacheProvider {
+    public function getDoctrineInstance(bool $isRewrite = false) : CacheProvider
+    {
         return new DoctrineProvider($this->getInstance($isRewrite));
     }
 }

@@ -96,9 +96,8 @@ class HttpLoader implements LoaderInterface
     /**
      * @inheritDoc
      *
-     * @param CacheItemPoolInterface $cache          cache adapter
-     * @param string                 $cacheNamespace cache namespace
-     * @param int                    $cacheLifetime  cache lifetime
+     * @param CacheItemPoolInterface $cache         cache adapter
+     * @param int                    $cacheLifetime cache lifetime
      *
      * @return void
      */

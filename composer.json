@@ -165,6 +165,7 @@
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD",
                     "graviton.security.authentication.strategy.multi.services": "GRAVITON_SECURITY_STRATEGY_MULTI_SERVICES",
+                    "graviton.cache.instance_id": "CACHE_INSTANCE_ID",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",
                     "graviton.cache.server.hostname": "CACHE_SERVER_HOSTNAME",

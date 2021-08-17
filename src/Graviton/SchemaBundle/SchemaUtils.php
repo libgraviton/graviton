@@ -196,15 +196,16 @@ class SchemaUtils
             ];
         }
 
-        $cacheKey = sprintf(
-            'schema.%s.%s.%s.%s.%s.%s',
+        $cacheDiscriminators = [
             $model->getEntityClass(),
             (string) $online,
             (string) $internal,
             (string) $serialized,
             (string) $variationName,
             implode('-', $languages)
-        );
+        ];
+
+        $cacheKey = 'jsonSchema-'.sha1(implode('.', $cacheDiscriminators));
 
         if ($this->cache->hasItem($cacheKey)) {
             return $this->cache->getItem($cacheKey)->get();
