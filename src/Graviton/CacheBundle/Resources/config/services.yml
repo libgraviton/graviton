@@ -33,7 +33,7 @@ services:
         - "%graviton.cache.redis.port%"
 
     graviton.cache.adapter.app:
-      class: Symfony\Component\Cache\Adapter\AdapterInterface
+      class: Psr\Cache\CacheItemPoolInterface
       factory: ['@Graviton\CacheBundle\Factory\CacheFactory', 'getInstance']
       arguments: [true]
 

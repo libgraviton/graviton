@@ -5,7 +5,7 @@
 
 namespace Graviton\CacheBundle\Factory;
 
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -19,14 +19,14 @@ class CacheFactory
     private $redisHost;
     private $redisPort;
 
-    public function __construct(AdapterInterface $appCache, $redisHost, $redisPort)
+    public function __construct(CacheItemPoolInterface $appCache, $redisHost, $redisPort)
     {
         $this->appCache = $appCache;
         $this->redisHost = $redisHost;
         $this->redisPort = $redisPort;
     }
 
-    public function getInstance(bool $isAppendable) : AdapterInterface {
+    public function getInstance(bool $isAppendable) : CacheItemPoolInterface {
         return $this->appCache;
     }
 }
