@@ -121,5 +121,3 @@ sentry:
         integrations:
             - 'Sentry\Integration\IgnoreErrorsIntegration'
         environment: "%kernel.environment%"
-        tags:
-            application: graviton
