@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "284dee25c41602cd9604aa6a41030a4f",
+    "content-hash": "b8ada758cfd86cdedacac1882d4969f1",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.190.2",
+            "version": "3.190.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "8ca6a5f9834de3eb3fb84b28fc12c9088bc01293"
+                "reference": "4e641e25cc8f4d04002404afe050e25035fad0f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8ca6a5f9834de3eb3fb84b28fc12c9088bc01293",
-                "reference": "8ca6a5f9834de3eb3fb84b28fc12c9088bc01293",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4e641e25cc8f4d04002404afe050e25035fad0f3",
+                "reference": "4e641e25cc8f4d04002404afe050e25035fad0f3",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.190.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.190.3"
             },
-            "time": "2021-08-13T18:12:28+00:00"
+            "time": "2021-08-16T18:13:42+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1765,21 +1765,21 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v3.0.1",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "6908a7e5b565a0f899d36b301d1d854410e3de96"
+                "reference": "d875daf3432de6b8b9c7397f54deaa394287ad0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/6908a7e5b565a0f899d36b301d1d854410e3de96",
-                "reference": "6908a7e5b565a0f899d36b301d1d854410e3de96",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/d875daf3432de6b8b9c7397f54deaa394287ad0a",
+                "reference": "d875daf3432de6b8b9c7397f54deaa394287ad0a",
                 "shasum": ""
             },
             "require": {
                 "graviton/php-rql-parser": "^5.0",
-                "symfony/http-kernel": "^3.0 || ^4.0"
+                "symfony/symfony": "~4|~5"
             },
             "require-dev": {
                 "doctrine/mongodb-odm": "@stable",
@@ -1788,6 +1788,7 @@
                 "squizlabs/php_codesniffer": "~3",
                 "symfony/framework-bundle": "^3.0 || ^4.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1807,9 +1808,9 @@
             "description": "Port of the php-rql-parser into the world of Symfony",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonRqlParserBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/master"
+                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/develop"
             },
-            "time": "2019-11-14T16:27:51+00:00"
+            "time": "2021-08-17T06:58:55+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -8420,9 +8421,18 @@
             "time": "2021-03-09T10:59:23+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "graviton/rql-parser-bundle",
+            "version": "dev-develop",
+            "alias": "3.0.1",
+            "alias_normalized": "3.0.1.0"
+        }
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "graviton/rql-parser-bundle": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
