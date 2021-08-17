@@ -8,6 +8,8 @@ namespace Graviton\ProxyBundle\Tests\Definition\Loader;
 use Graviton\ProxyBundle\Definition\Loader\HttpLoader;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 /**
  * tests for the HttpLoader class
@@ -95,7 +97,6 @@ class HttpLoaderTest extends TestCase
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
-            ->setMethods(['supports'])
             ->getMock();
         $mock
             ->expects($this->once())
@@ -119,7 +120,6 @@ class HttpLoaderTest extends TestCase
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
-            ->setMethods(['supports', 'process'])
             ->getMock();
         $mock
             ->expects($this->once())
@@ -148,7 +148,6 @@ class HttpLoaderTest extends TestCase
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
-            ->setMethods(['supports', 'process'])
             ->getMock();
         $mock->expects($this->never())
             ->method("supports");
@@ -156,19 +155,21 @@ class HttpLoaderTest extends TestCase
             ->method("process");
         $this->sut->setDispersalStrategy($mock);
 
-        $cacheMock = $this->getMockBuilder('Doctrine\Common\Cache\FilesystemCache')
+        $cacheMockItem = new CacheItem();
+        $cacheMockItem->set($apiDefinition);
+
+        $cacheMock = $this->getMockBuilder(ArrayAdapter::class)
             ->disableOriginalConstructor()
-            ->setMethods(['contains', 'fetch'])
             ->getMock();
         $cacheMock->expects($this->exactly(1))
-            ->method('contains')
+            ->method('hasItem')
             ->with($storeKeyDef)
             ->willReturn(1);
         $cacheMock->expects($this->exactly(1))
-            ->method('fetch')
+            ->method('getItem')
             ->with($storeKeyDef)
-            ->willReturn($apiDefinition);
-        $this->sut->setCache($cacheMock, 'ProxyBundle', 1234);
+            ->willReturn($cacheMockItem);
+        $this->sut->setCache($cacheMock, 1234);
         $this->sut->setOptions(['prefix' => $storeKey]);
 
         $content = $this->sut->load("http://localhost/test/blablabla");
