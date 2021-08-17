@@ -15,6 +15,7 @@ use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,6 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 use Graviton\RestBundle\Controller\RestController;
-use Doctrine\Common\Cache\CacheProvider;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -67,18 +67,18 @@ final class RestUtils implements RestUtilsInterface
     private $schemaValidator;
 
     /**
-     * @var CacheProvider
+     * @var CacheItemPoolInterface
      */
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface $container       container
-     * @param Router             $router          router
-     * @param Serializer         $serializer      serializer
-     * @param LoggerInterface    $logger          PSR logger (e.g. Monolog)
-     * @param SchemaUtils        $schemaUtils     schema utils
-     * @param Validator          $schemaValidator schema validator
-     * @param CacheProvider      $cacheProvider   Cache service
+     * @param ContainerInterface     $container       container
+     * @param Router                 $router          router
+     * @param Serializer             $serializer      serializer
+     * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
+     * @param SchemaUtils            $schemaUtils     schema utils
+     * @param Validator              $schemaValidator schema validator
+     * @param CacheItemPoolInterface $cacheProvider   Cache service
      */
     public function __construct(
         ContainerInterface $container,
@@ -87,7 +87,7 @@ final class RestUtils implements RestUtilsInterface
         LoggerInterface $logger,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
-        CacheProvider $cacheProvider
+        CacheItemPoolInterface $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
@@ -318,10 +318,12 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getOptionRoutes()
     {
-        $cached = $this->cacheProvider->fetch('cached_restutils_route_options');
-        if ($cached) {
-            return $cached;
+        $cacheItem = $this->cacheProvider->getItem('cached_restutils_route_options');
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
         $ret = array_filter(
             $this->router->getRouteCollection()->all(),
             function ($route) {
@@ -339,7 +341,10 @@ final class RestUtils implements RestUtilsInterface
                 return is_null($route->getRequirement('id'));
             }
         );
-        $this->cacheProvider->save('cached_restutils_route_options', $ret);
+
+        $cacheItem->set($ret);
+        $this->cacheProvider->save($cacheItem);
+
         return $ret;
     }
 
@@ -355,10 +360,12 @@ final class RestUtils implements RestUtilsInterface
     public function getRoutesByBasename($baseName)
     {
         $cacheId = 'cached_restutils_route_'.$baseName;
-        $cached = $this->cacheProvider->fetch($cacheId);
-        if ($cached) {
-            return $cached;
+        $cacheItem = $this->cacheProvider->getItem($cacheId);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
         $ret = [];
         $collections = $this->router->getRouteCollection()->all();
         foreach ($collections as $routeName => $route) {
@@ -366,7 +373,10 @@ final class RestUtils implements RestUtilsInterface
                 $ret[$routeName] = $route;
             }
         }
-        $this->cacheProvider->save($cacheId, $ret);
+
+        $cacheItem->set($ret);
+        $this->cacheProvider->save($cacheItem);
+
         return $ret;
     }
 

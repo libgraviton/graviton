@@ -13,8 +13,6 @@ parameters:
   graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
   graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
   graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
-  graviton.rest.restriction.manager.class: Graviton\RestBundle\Restriction\Manager
-  graviton.rest.restriction.handler.whoami.class: Graviton\RestBundle\Restriction\Handler\Whoami
   graviton.rest.services: []
   graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
   graviton.rest.not_modifiable.origin.records:
@@ -219,7 +217,7 @@ services:
           - "@logger"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
+          - "@graviton.cache.adapter.app"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
