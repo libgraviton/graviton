@@ -7,7 +7,7 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
-use Doctrine\Common\Cache\CacheProvider;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 /**
  * LoaderInterface
@@ -39,13 +39,12 @@ interface LoaderInterface
     /**
      * set a cache
      *
-     * @param CacheProvider $cache          doctrine cache provider
-     * @param string        $cacheNamespace cache namespace
-     * @param int           $cacheLifetime  cache lifetime
+     * @param AdapterInterface $cache         cache
+     * @param int              $cacheLifetime cache lifetime
      *
      * @return void
      */
-    public function setCache(CacheProvider $cache, $cacheNamespace, $cacheLifetime);
+    public function setCache(AdapterInterface $cache, $cacheLifetime);
 
     /**
      * check if the input is supported
