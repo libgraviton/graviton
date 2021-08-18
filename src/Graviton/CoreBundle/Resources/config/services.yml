@@ -1,19 +1,20 @@
+parameters:
+  graviton.core.controller.main.class: Graviton\CoreBundle\Controller\MainController
+  graviton.core.model.version.class: Graviton\CoreBundle\Model\Version
+  graviton.core.listener.requesthost.class: Graviton\CoreBundle\Listener\RequestHostListener
+  graviton.core.listener.jsonexceptionlistener.class: Graviton\CoreBundle\Listener\JsonExceptionListener
+
 services:
 
     graviton.core.jms.cache.provider:
-        class: "%graviton.core.jms.cache.provider.class%"
+        class: Metadata\Cache\PsrCacheAdapter
         arguments:
           - "jms"
-          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
+          - "@graviton.cache.adapter.app"
 
+    # we must alias this as external bundles refer to this service that way
     graviton.core.http.client:
-      class: 'GuzzleHttp\Client'
-      factory: ['Graviton\PhpProxy\Factory', 'createHttpClient']
-      arguments:
-        - "%graviton.core.http.client.options%"
-        - "%graviton.core.httpclient.debugRequests%"
-        - "@logger"
-        - "%graviton.core.httpclient.debugMaxLength%"
+      parent: graviton.common.http.client
 
     graviton.core.controller.main:
       class: "%graviton.core.controller.main.class%"
@@ -82,22 +83,6 @@ services:
             name: "kernel.event_listener"
             event: "kernel.exception"
             method: "onKernelException"
-
-    graviton.core.command.waitfordatabase:
-        class: "Graviton\\CoreBundle\\Command\\WaitForDatabaseCommand"
-        arguments:
-        - "@doctrine_mongodb.odm.default_document_manager"
-        tags:
-        -
-            name: console.command
-
-    graviton.core.command.checkdeployment:
-        class: Graviton\DeploymentServiceBundle\Command\CheckForNeededDeploymentCommand
-        tags:
-            - { name: console.command }
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '%graviton.core.checkPackageName%'
 
     graviton.core.routing.loader:
       class: "Graviton\\CoreBundle\\Routing\\RouteLoader"

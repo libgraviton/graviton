@@ -29,7 +29,7 @@ services:
         arguments:
             - "@request_stack"
             - "@graviton.analytics.analytics_manager"
-            - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "@graviton.cache.adapter.app"
             - "@graviton.document.service.dateconverter"
             - "@router"
             - "%graviton.analytics.cache_time.metadata%"

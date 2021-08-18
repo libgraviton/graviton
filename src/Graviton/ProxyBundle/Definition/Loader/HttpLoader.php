@@ -7,15 +7,15 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
-use Doctrine\Common\Cache\CacheProvider;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
+use Laminas\Diactoros\Uri;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Zend\Diactoros\Uri;
 
 /**
  * load a file over http and process the data
@@ -47,14 +47,14 @@ class HttpLoader implements LoaderInterface
     private $strategy;
 
     /**
-     * doctrine cache
+     * cache
      *
-     * @var CacheProvider
+     * @var CacheItemPoolInterface
      */
     private $cache;
 
     /**
-     * doctrine cache lifetime
+     * cache lifetime
      *
      * @var int
      */
@@ -96,16 +96,14 @@ class HttpLoader implements LoaderInterface
     /**
      * @inheritDoc
      *
-     * @param CacheProvider $cache          doctrine cache provider
-     * @param string        $cacheNamespace cache namespace
-     * @param int           $cacheLifetime  cache lifetime
+     * @param CacheItemPoolInterface $cache         cache adapter
+     * @param int                    $cacheLifetime cache lifetime
      *
      * @return void
      */
-    public function setCache(CacheProvider $cache, $cacheNamespace, $cacheLifetime)
+    public function setCache(CacheItemPoolInterface $cache, $cacheLifetime)
     {
         $this->cache = $cache;
-        $this->cache->setNamespace($cacheNamespace);
         $this->cacheLifetime = $cacheLifetime;
     }
 
@@ -156,8 +154,8 @@ class HttpLoader implements LoaderInterface
         }
 
         $cacheKeyDef = $this->options['storeKey'].'-def';
-        if ($this->cache instanceof CacheProvider && $this->cache->contains($cacheKeyDef)) {
-            return $this->cache->fetch($cacheKeyDef);
+        if ($this->cache instanceof CacheItemPoolInterface && $this->cache->hasItem($cacheKeyDef)) {
+            return $this->cache->getItem($cacheKeyDef)->get();
         }
 
         if (isset($this->strategy)) {
@@ -185,8 +183,12 @@ class HttpLoader implements LoaderInterface
                 $retVal = $this->strategy->process($content, $fallbackHost);
             }
 
-            if ($this->cache instanceof CacheProvider) {
-                $this->cache->save($cacheKeyDef, $retVal, $this->cacheLifetime);
+            if ($this->cache instanceof CacheItemPoolInterface) {
+                $cacheItem = $this->cache->getItem($cacheKeyDef);
+                $cacheItem->set($retVal);
+                $cacheItem->expiresAfter($this->cacheLifetime);
+
+                $this->cache->save($cacheItem);
             }
         }
 

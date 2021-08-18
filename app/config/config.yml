@@ -25,28 +25,25 @@ framework:
         handler_id:  ~
     fragments:       ~
 
+graviton_common:
+    mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
+    cache:
+        instance_id: "%graviton.cache.instance_id%"
+        redis_host: "%graviton.cache.redis.host%"
+        redis_port: "%graviton.cache.redis.port%"
+        adapter_override: null
+    http_client:
+        verify_peer: "%graviton.core.httpclient.verifyPeer%"
+        debug_requests: "%graviton.core.httpclient.debugRequests%"
+        debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
+    deployment:
+        check_package_name: "%graviton.core.checkPackageName%"
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     exception_controller: null
-
-# doctrine cache configuration
-doctrine_cache:
-    providers:
-        local:
-            php_file:
-                directory: "%kernel.cache_dir%/doctrinecache_local"
-        file:
-            file_system:
-                directory: "%kernel.cache_dir%/doctrinecache_files"
-        array:
-            array:
-        redis:
-            redis:
-                database: 2
-                host: "%graviton.cache.redis.host%"
-                port: "%graviton.cache.redis.port%"
 
 # DoctrineMongoDB Configuration
 # see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
@@ -63,7 +60,7 @@ doctrine_mongodb:
             auto_mapping: true
             metadata_cache_driver:
                 type: "service"
-                id: "%graviton.cache.provider.service_id_local%"
+                id: "graviton.common.cache.adapter.app.doctrine"
 
 
 # JmsSerializerBundle Configuration
@@ -81,8 +78,6 @@ jms_serializer:
     metadata:
         cache: graviton.core.jms.cache.provider
         debug: "%kernel.debug%"
-        file_cache:
-            dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
 
 oneup_flysystem:
@@ -121,5 +116,3 @@ sentry:
         integrations:
             - 'Sentry\Integration\IgnoreErrorsIntegration'
         environment: "%kernel.environment%"
-        tags:
-            application: graviton

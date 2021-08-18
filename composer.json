@@ -29,15 +29,13 @@
         "ext-mongodb": "^1.10.0",
         "ext-amqp": "~1",
 
-        "jean85/pretty-package-versions": "^1.5 || ^2.0",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/rql-parser-bundle": "~3",
+        "graviton/common-bundle": "~0",
+        "graviton/rql-parser-bundle": "^3.0.2",
         "graviton/json-schema": "^1.16.0",
-        "graviton/php-proxy": "~2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
-        "graviton/deployment-service-bundle": "^0.2.0",
         "graviton/mongodb-migrations-bundle": "~2",
 
         "symfony/symfony": "~4.4.0",
@@ -47,8 +45,8 @@
         "jms/serializer-bundle": "~3",
 
         "doctrine/persistence": "~2",
-        "doctrine/mongodb-odm-bundle": "^4.1.0",
-        "doctrine/doctrine-cache-bundle": "^1.3",
+        "doctrine/inflector": "~2",
+        "doctrine/mongodb-odm-bundle": "^4.3.0",
 
         "doctrine/mongodb-odm": "=2.2.0",
 
@@ -56,7 +54,6 @@
 
         "php-jsonpatch/php-jsonpatch": "~3.0",
         "justinrainbow/json-schema": "~5.2.0",
-        "guzzlehttp/guzzle": "^6.3.0",
         "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
 
@@ -65,7 +62,7 @@
 
         "sentry/sentry-symfony": "^4.0",
         "sentry/sentry": "^3.0",
-        "php-http/guzzle6-adapter": "*",
+        "php-http/guzzle7-adapter": "*",
         "guzzlehttp/psr7": "*",
 
         "solarium/solarium": "~6",
@@ -97,22 +94,28 @@
             "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
         "post-install-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+            "@regenerate"
         ],
         "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+            "@regenerate"
         ],
         "configure": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
+        "regenerate": [
+            "@configure",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
+            "@reset-cache",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
         ],
         "check": [
             "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
             "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
             "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
+        ],
+        "reset-cache": [
+            "./bin/console cache:clear",
+            "./bin/console cache:warmup"
         ]
     },
     "config": {
@@ -165,8 +168,7 @@
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD",
                     "graviton.security.authentication.strategy.multi.services": "GRAVITON_SECURITY_STRATEGY_MULTI_SERVICES",
-                    "graviton.cache.provider.service_id": "CACHE_PROVIDER_SERVICE_ID",
-                    "graviton.cache.provider.service_id_local": "CACHE_PROVIDER_SERVICE_ID_LOCAL",
+                    "graviton.cache.instance_id": "CACHE_INSTANCE_ID",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",
                     "graviton.cache.server.hostname": "CACHE_SERVER_HOSTNAME",

@@ -3,7 +3,7 @@
 
 namespace Graviton\CoreBundle\Compiler;
 
-use Jean85\PrettyVersions;
+use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
@@ -17,18 +17,18 @@ class VersionCompilerPass implements CompilerPassInterface
 {
 
     /**
-     * @var PrettyVersions
+     * @var VersionInformation
      */
-    private $prettyVersions;
+    private $versionInformation;
 
     /**
      * VersionCompilerPass constructor.
      *
-     * @param PrettyVersions $prettyVersions version util
+     * @param VersionInformation $versionInformation version util
      */
-    public function __construct(PrettyVersions $prettyVersions)
+    public function __construct(VersionInformation $versionInformation)
     {
-        $this->prettyVersions = $prettyVersions;
+        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -78,12 +78,12 @@ class VersionCompilerPass implements CompilerPassInterface
             $versionHeader .= $name . ': ' . $version . '; ';
         }
 
-        $versionInformation['php'] = PHP_VERSION;
+        $versionInformation['php'] = $this->versionInformation->getPhpVersion();
 
         // add stuff just for service, not header (exts)
         if (isset($config['ext']) && is_array($config['ext'])) {
             foreach ($config['ext'] as $name) {
-                $version = phpversion($name);
+                $version = $this->versionInformation->getPhpExtVersion($name);
                 if ($version !== false) {
                     $versionInformation['ext-'.$name] = $version;
                 }
@@ -109,6 +109,6 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     public function getPackageVersion($name)
     {
-        return (string) $this->prettyVersions::getVersion($name);
+        return $this->versionInformation->getPrettyVersion($name);
     }
 }

@@ -1,3 +1,24 @@
+parameters:
+  graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
+  graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
+  graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
+  graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
+  graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener
+  graviton.rest.request.class: Symfony\Component\HttpFoundation\Request
+  graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
+  graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
+  graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
+  graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
+  graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
+  graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
+  graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
+  graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
+  graviton.rest.services: []
+  graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
+  graviton.rest.not_modifiable.origin.records:
+    - "core"
+  graviton.rest.headers.x-versioning: !php/const Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME
+
 services:
 
     graviton.rest.serializer:
@@ -137,7 +158,7 @@ services:
         arguments:
           - "@logger"
           - "@request_stack"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@graviton.cache.adapter.app"
           - "%graviton.writelock.randomwaiturls%"
         tags:
           -
@@ -196,7 +217,7 @@ services:
           - "@logger"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
+          - "@graviton.cache.adapter.app"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->

@@ -161,16 +161,13 @@ parameters:
     graviton.writelock.randomwaiturls:
       - /event/status
 
-    # caching related settings
-    # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
-    # for redis use:
-    #    graviton.cache.provider.service_id: graviton.cache.provider.redis
+    # you can set this to a value if you want to override the determined cache adapter to use
+    graviton.cache.provider.override: null
+    # some id to differentiate "instances" upon redeployments for shared distributed caches
+    graviton.cache.instance_id: grv
 
-    # this is the service that should be distributed when using multiple replicas
-    graviton.cache.provider.service_id: graviton.cache.provider.local
-    # this should always point to a local cache adapter for performance reasons
-    graviton.cache.provider.service_id_local: graviton.cache.provider.local
-    graviton.cache.redis.host: localhost
+    #graviton.cache.redis.host: localhost
+    graviton.cache.redis.host: null
     graviton.cache.redis.port: 6379
 
     # would be "127.0.0.1:9080", hostname and port to varnish
