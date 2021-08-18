@@ -1,2 +1,3 @@
 rm -Rf src/GravitonDyn var/cache/*
-composer run-script regenerate
+composer install
+rm -Rf var/cache/tes*
