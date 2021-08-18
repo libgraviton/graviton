@@ -7,7 +7,6 @@ namespace Graviton\CoreBundle\Tests\DependencyInjection\CompilerPass;
 
 use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
-use Jean85\Version;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -53,14 +52,6 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
             );
 
         $prettyVersion = new class extends VersionInformation {
-
-            /**
-             * constructor
-             */
-            public function __construct()
-            {
-                parent::__construct(null);
-            }
 
             /**
              * get version
