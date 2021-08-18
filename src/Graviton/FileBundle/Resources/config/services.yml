@@ -9,7 +9,6 @@ services:
         public: true
         arguments:
             - "@oneup_flysystem.graviton_filesystem"
-            - "@doctrine_mongodb"
         calls:
           -
             method: setAllowedMimeTypes
