@@ -57,8 +57,9 @@
         "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
 
-        "oneup/flysystem-bundle": "^3",
-        "league/flysystem-aws-s3-v3": "^1.0",
+        "oneup/flysystem-bundle": "~4",
+        "league/flysystem-async-aws-s3": "~2",
+        "league/flysystem-aws-s3-v3": "~2",
 
         "sentry/sentry-symfony": "^4.0",
         "sentry/sentry": "^3.0",
