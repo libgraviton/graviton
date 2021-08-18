@@ -5,8 +5,8 @@
 
 namespace Graviton\CoreBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
-use Jean85\PrettyVersions;
 use Jean85\Version;
 
 /**
@@ -52,7 +52,16 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
                 ]
             );
 
-        $prettyVersion = new class extends PrettyVersions {
+        $prettyVersion = new class extends VersionInformation {
+
+            /**
+             * constructor
+             */
+            public function __construct()
+            {
+                parent::__construct(null);
+            }
+
             /**
              * get version
              *
@@ -60,13 +69,13 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
              *
              * @return Version version
              */
-            public static function getVersion(string $packageName): Version
+            public function getPrettyVersion($packageName) : ?string
             {
                 if ($packageName == 'graviton/graviton') {
-                    return new Version($packageName, 'v20.7.0@ssfdf');
+                    return 'v20.7.0';
                 }
 
-                return new Version($packageName, 'v1.0.1@ssfdf');
+                return 'v1.0.1';
             }
         };
 
