@@ -1269,12 +1269,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
-                "reference": "ddbf053b5870603fe4fe7c23870b8817c4662e10"
+                "reference": "310425fbc1c2a9f1d49559d4c7777aab44422d8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/ddbf053b5870603fe4fe7c23870b8817c4662e10",
-                "reference": "ddbf053b5870603fe4fe7c23870b8817c4662e10",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/310425fbc1c2a9f1d49559d4c7777aab44422d8a",
+                "reference": "310425fbc1c2a9f1d49559d4c7777aab44422d8a",
                 "shasum": ""
             },
             "require": {
@@ -1311,7 +1311,7 @@
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/develop"
             },
-            "time": "2021-08-18T13:35:46+00:00"
+            "time": "2021-08-18T13:46:31+00:00"
         },
         {
             "name": "graviton/json-schema",
