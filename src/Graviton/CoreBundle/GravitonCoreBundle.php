@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle;
 
-use Composer\InstalledVersions;
 use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
 use Graviton\CoreBundle\Compiler\RouteLoaderCompilerPass;
@@ -34,7 +33,7 @@ class GravitonCoreBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new VersionCompilerPass(new VersionInformation(new InstalledVersions())));
+        $container->addCompilerPass(new VersionCompilerPass(new VersionInformation()));
         $container->addCompilerPass(new EnvParametersCompilerPass());
         $container->addCompilerPass(new RouteLoaderCompilerPass());
     }
