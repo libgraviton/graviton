@@ -12,14 +12,9 @@ services:
           - "jms"
           - "@graviton.cache.adapter.app"
 
+    # we must alias this as external bundles refer to this service that way
     graviton.core.http.client:
-      class: 'GuzzleHttp\Client'
-      factory: ['Graviton\PhpProxy\Factory', 'createHttpClient']
-      arguments:
-        - "%graviton.core.http.client.options%"
-        - "%graviton.core.httpclient.debugRequests%"
-        - "@logger"
-        - "%graviton.core.httpclient.debugMaxLength%"
+      parent: graviton.common.http.client
 
     graviton.core.controller.main:
       class: "%graviton.core.controller.main.class%"

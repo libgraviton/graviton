@@ -31,6 +31,10 @@ graviton_common:
         redis_host: "%graviton.cache.redis.host%"
         redis_port: "%graviton.cache.redis.port%"
         adapter_override: null
+    http_client:
+        verify_peer: "%graviton.core.httpclient.verifyPeer%"
+        debug_requests: "%graviton.core.httpclient.debugRequests%"
+        debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
 
 # Twig Configuration
 twig:

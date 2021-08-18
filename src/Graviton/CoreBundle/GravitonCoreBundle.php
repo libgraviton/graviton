@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle;
 
 use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
-use Graviton\CoreBundle\Compiler\HttpClientOptionsCompilerPass;
 use Graviton\CoreBundle\Compiler\RouteLoaderCompilerPass;
 use Jean85\PrettyVersions;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -37,6 +36,5 @@ class GravitonCoreBundle extends Bundle
         $container->addCompilerPass(new VersionCompilerPass(new PrettyVersions()));
         $container->addCompilerPass(new EnvParametersCompilerPass());
         $container->addCompilerPass(new RouteLoaderCompilerPass());
-        $container->addCompilerPass(new HttpClientOptionsCompilerPass());
     }
 }
