@@ -31,8 +31,8 @@
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "dev-develop",
-        "graviton/rql-parser-bundle": "dev-develop as 3.0.1",
+        "graviton/common-bundle": "~0",
+        "graviton/rql-parser-bundle": "^3.0.2",
         "graviton/json-schema": "^1.16.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",

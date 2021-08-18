@@ -1,3 +1,2 @@
 rm -Rf src/GravitonDyn var/cache/*
-composer install
-rm -Rf var/cache/tes*
+SYMFONY_ENV=test composer install --ignore-platform-reqs --no-interaction
