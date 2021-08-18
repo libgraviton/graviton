@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "01d7ab22c2e8f4e4e56622f5d4cf184b",
+    "content-hash": "3028b706352700d52fbba90d963558b8",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.190.3",
+            "version": "3.190.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4e641e25cc8f4d04002404afe050e25035fad0f3"
+                "reference": "b66a54a7825ce5a639fe929906746249d903ae5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4e641e25cc8f4d04002404afe050e25035fad0f3",
-                "reference": "4e641e25cc8f4d04002404afe050e25035fad0f3",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b66a54a7825ce5a639fe929906746249d903ae5d",
+                "reference": "b66a54a7825ce5a639fe929906746249d903ae5d",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.190.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.190.4"
             },
-            "time": "2021-08-16T18:13:42+00:00"
+            "time": "2021-08-17T18:17:31+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1262,6 +1262,48 @@
                 "source": "https://github.com/libgraviton/analytics-base/tree/master"
             },
             "time": "2018-12-06T09:14:15+00:00"
+        },
+        {
+            "name": "graviton/common-bundle",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
+                "reference": "7e3db331928df77764d83f561f67f82881a865ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/7e3db331928df77764d83f561f67f82881a865ce",
+                "reference": "7e3db331928df77764d83f561f67f82881a865ce",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2",
+                "symfony/symfony": "~4|~5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Graviton\\CommonBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/DeploymentServiceBundle/graphs/contributors"
+                }
+            ],
+            "description": "Common functionality for our php apps",
+            "support": {
+                "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
+                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/develop"
+            },
+            "time": "2021-08-18T07:27:23+00:00"
         },
         {
             "name": "graviton/deployment-service-bundle",
@@ -8334,6 +8376,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "graviton/common-bundle": 20,
         "graviton/rql-parser-bundle": 20
     },
     "prefer-stable": true,

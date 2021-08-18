@@ -25,6 +25,13 @@ framework:
         handler_id:  ~
     fragments:       ~
 
+graviton_common:
+    cache:
+        instance_id: "%graviton.cache.instance_id%"
+        redis_host: "%graviton.cache.redis.host%"
+        redis_port: "%graviton.cache.redis.port%"
+        adapter_override: null
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
@@ -46,7 +53,7 @@ doctrine_mongodb:
             auto_mapping: true
             metadata_cache_driver:
                 type: "service"
-                id: "graviton.cache.adapter.mongo_odm"
+                id: "graviton.common.cache.adapter.app.doctrine"
 
 
 # JmsSerializerBundle Configuration

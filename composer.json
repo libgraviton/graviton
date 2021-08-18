@@ -33,6 +33,7 @@
         "jean85/pretty-package-versions": "^1.5 || ^2.0",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
+        "graviton/common-bundle": "dev-develop",
         "graviton/rql-parser-bundle": "dev-develop as 3.0.1",
         "graviton/json-schema": "^1.16.0",
         "graviton/php-proxy": "~2",

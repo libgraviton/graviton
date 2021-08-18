@@ -164,7 +164,7 @@ parameters:
     # you can set this to a value if you want to override the determined cache adapter to use
     graviton.cache.provider.override: null
     # some id to differentiate "instances" upon redeployments for shared distributed caches
-    graviton.cache.instance_id: 23232132133
+    graviton.cache.instance_id: grv
 
     #graviton.cache.redis.host: localhost
     graviton.cache.redis.host: null

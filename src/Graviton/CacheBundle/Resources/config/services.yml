@@ -26,21 +26,5 @@ services:
         - "%graviton.cache.server.hostname%"
         - "%graviton.cache.server.header%"
 
-    Graviton\CacheBundle\Factory\CacheFactory:
-      arguments:
-        - "@cache.app"
-        - "%graviton.cache.instance_id%"
-        - "%graviton.cache.provider.override%"
-        - "%graviton.cache.redis.host%"
-        - "%graviton.cache.redis.port%"
-
     graviton.cache.adapter.app:
-      class: Psr\Cache\CacheItemPoolInterface
-      factory: ['@Graviton\CacheBundle\Factory\CacheFactory', 'getInstance']
-      arguments: [true]
-
-    # we only use symfony cache.. but as mongodb-odm didn't switch to PSR yet, we need to keep that for them..
-    graviton.cache.adapter.mongo_odm:
-      class: Doctrine\Common\Cache\CacheProvider
-      factory: ['@Graviton\CacheBundle\Factory\CacheFactory', 'getDoctrineInstance']
-      arguments: [true]
+      parent: graviton.common.cache.adapter.app
