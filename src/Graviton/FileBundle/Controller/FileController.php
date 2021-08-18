@@ -106,7 +106,6 @@ class FileController extends RestController
 
         /** @var Response $response */
         return $this->fileManager->buildGetContentResponse(
-            $this->getResponse(),
             $file
         );
     }
