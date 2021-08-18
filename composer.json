@@ -28,9 +28,7 @@
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.10.0",
         "ext-amqp": "~1",
-        "composer-runtime-api": "^2",
 
-        "jean85/pretty-package-versions": "^1.5 || ^2.0",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
         "graviton/common-bundle": "dev-develop",
@@ -38,7 +36,6 @@
         "graviton/json-schema": "^1.16.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
-        "graviton/deployment-service-bundle": "~1",
         "graviton/mongodb-migrations-bundle": "~2",
 
         "symfony/symfony": "~4.4.0",
