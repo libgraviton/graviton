@@ -84,22 +84,6 @@ services:
             event: "kernel.exception"
             method: "onKernelException"
 
-    graviton.core.command.waitfordatabase:
-        class: "Graviton\\CoreBundle\\Command\\WaitForDatabaseCommand"
-        arguments:
-        - "@doctrine_mongodb.odm.default_document_manager"
-        tags:
-        -
-            name: console.command
-
-    graviton.core.command.checkdeployment:
-        class: Graviton\DeploymentServiceBundle\Command\CheckForNeededDeploymentCommand
-        tags:
-            - { name: console.command }
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '%graviton.core.checkPackageName%'
-
     graviton.core.routing.loader:
       class: "Graviton\\CoreBundle\\Routing\\RouteLoader"
       arguments:

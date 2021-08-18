@@ -26,6 +26,7 @@ framework:
     fragments:       ~
 
 graviton_common:
+    mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
     cache:
         instance_id: "%graviton.cache.instance_id%"
         redis_host: "%graviton.cache.redis.host%"
@@ -35,6 +36,8 @@ graviton_common:
         verify_peer: "%graviton.core.httpclient.verifyPeer%"
         debug_requests: "%graviton.core.httpclient.debugRequests%"
         debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
+    deployment:
+        check_package_name: "%graviton.core.checkPackageName%"
 
 # Twig Configuration
 twig:
