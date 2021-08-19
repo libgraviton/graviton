@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\SecurityBundle\Entities\SecurityUser;
+use MongoDB\BSON\Regex;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,6 +18,23 @@ class WhoAmIController extends RestController
 {
 
     /**
+     * @var string
+     */
+    private $queryField;
+
+    /**
+     * set QueryField
+     *
+     * @param string $queryField queryField
+     *
+     * @return void
+     */
+    public function setQueryField($queryField)
+    {
+        $this->queryField = $queryField;
+    }
+
+    /**
      * Currently authenticated user information.
      * If security is not enabled then header will be Not Allowed.
      * If User not found using correct header Anonymous user
@@ -27,21 +44,25 @@ class WhoAmIController extends RestController
      */
     public function whoAmIAction()
     {
-        /** @var SecurityUser $securityUser */
-        $securityUser = $this->getSecurityUser();
+        $username = $this->getSecurityUser()->getUserIdentifier();
+        $document = $this->getModel()->getRepository()->findOneBy(
+            [
+                $this->queryField => new Regex('^'.preg_quote($username).'$', 'i')
+            ]
+        );
 
         /** @var Response $response */
         $response = $this->getResponse();
         $response->headers->set('Content-Type', 'application/json');
 
-        if (!$securityUser) {
-            $response->setContent(json_encode(['Security is not enabled']));
-            $response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+        $response->setStatusCode(Response::HTTP_OK);
+
+        if (!$document) {
+            $response->setContent(json_encode(new \stdClass()));
             return $response;
         }
 
-        $response->setContent($this->restUtils->serialize($securityUser->getUser()));
-        $response->setStatusCode(Response::HTTP_OK);
+        $response->setContent($this->restUtils->serialize($document));
 
         return $response;
     }

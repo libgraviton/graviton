@@ -11,43 +11,43 @@ services:
       - "%graviton.security.authentication.strategy.subnet.key%"
       - "%graviton.security.authentication.strategy.subnet.header_field%"
 
-  graviton_security_authenticator:
-    class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
-    arguments:
-      - "%graviton.security.authentication.test_username%"
-      - "%graviton.security.authentication.allow_anonymous%"
-      - "@graviton_security_user_provider"
-      - "@=service(parameter('graviton.security.authentication.strategy'))"
-      - "@logger"
-
-  graviton.security.authentication.strategy.multi:
-    class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
-    public: true
-    calls:
-      -
-        method: setStrategies
-        arguments:
-          - "@service_container"
-          - "%graviton.security.authentication.strategy.multi.services%"
-
-  graviton.security.authentication.strategy.subnet:
-    class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
-    public: true
-    arguments:
-      - "%graviton.security.authentication.strategy.subnet.key%"
-      - "%graviton.security.authentication.strategy.subnet.header_field%"
-
-  graviton.security.authentication.strategy.header:
-    class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
-    public: true
-    arguments:
-      - "%graviton.security.authentication.strategy.header.key%"
-
-  graviton.security.authentication.strategy.cookie:
-    class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
-    public: true
-    arguments:
-      - "%graviton.security.authentication.strategy.cookie.key%"
+#  graviton_security_authenticator:
+#    class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
+#    arguments:
+#      - "%graviton.security.authentication.test_username%"
+#      - "%graviton.security.authentication.allow_anonymous%"
+#      - "@graviton_security_user_provider"
+#      - "@=service(parameter('graviton.security.authentication.strategy'))"
+#      - "@logger"
+#
+#  graviton.security.authentication.strategy.multi:
+#    class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
+#    public: true
+#    calls:
+#      -
+#        method: setStrategies
+#        arguments:
+#          - "@service_container"
+#          - "%graviton.security.authentication.strategy.multi.services%"
+#
+#  graviton.security.authentication.strategy.subnet:
+#    class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
+#    public: true
+#    arguments:
+#      - "%graviton.security.authentication.strategy.subnet.key%"
+#      - "%graviton.security.authentication.strategy.subnet.header_field%"
+#
+#  graviton.security.authentication.strategy.header:
+#    class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+#    public: true
+#    arguments:
+#      - "%graviton.security.authentication.strategy.header.key%"
+#
+#  graviton.security.authentication.strategy.cookie:
+#    class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
+#    public: true
+#    arguments:
+#      - "%graviton.security.authentication.strategy.cookie.key%"
 
   # provider
   Graviton\SecurityBundle\Authentication\UserProvider:
@@ -55,20 +55,6 @@ services:
   graviton.security.authentication.provider.model.noop:
     class: Graviton\SecurityBundle\User\Model\NullModel
     public: true
-    calls:
-      -
-        method: setRepository
-        arguments:
-          - "@graviton.core.repository.dummy"
-
-  #
-  #  Whoami Services
-  #
-  graviton.security.model.whoami:
-    class: Graviton\SecurityBundle\Model\WhoAmI
-    parent: graviton.rest.model
-    arguments:
-      - "@graviton.rql.visitor.mongodb"
     calls:
       -
         method: setRepository
@@ -83,7 +69,12 @@ services:
       -
         method: setModel
         arguments:
-          - "@graviton.security.model.whoami"
+          - "@=service(parameter('graviton.security.authentication.provider.model'))"
+      -
+        method: setQueryField
+        arguments:
+          - "%graviton.security.authentication.provider.model.query_field%"
+
 
   #
   #  Service Security Utils
