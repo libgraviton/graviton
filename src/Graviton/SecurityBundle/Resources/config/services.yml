@@ -1,91 +1,99 @@
 services:
-    graviton_security_authenticator:
-        class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
+
+  Graviton\SecurityBundle\Authenticator\UserHeaderAuthenticator:
+    arguments:
+      - "@logger"
+      - "%graviton.security.authentication.strategy.header.key%"
+      - "%graviton.security.authentication.allow_anonymous%"
+
+  Graviton\SecurityBundle\Authenticator\SameSubnetAuthenticator:
+    arguments:
+      - "%graviton.security.authentication.strategy.subnet.key%"
+      - "%graviton.security.authentication.strategy.subnet.header_field%"
+
+  graviton_security_authenticator:
+    class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
+    arguments:
+      - "%graviton.security.authentication.test_username%"
+      - "%graviton.security.authentication.allow_anonymous%"
+      - "@graviton_security_user_provider"
+      - "@=service(parameter('graviton.security.authentication.strategy'))"
+      - "@logger"
+
+  graviton.security.authentication.strategy.multi:
+    class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
+    public: true
+    calls:
+      -
+        method: setStrategies
         arguments:
-          - "%graviton.security.authentication.test_username%"
-          - "%graviton.security.authentication.allow_anonymous%"
-          - "@graviton_security_user_provider"
-          - "@=service(parameter('graviton.security.authentication.strategy'))"
-          - "@logger"
+          - "@service_container"
+          - "%graviton.security.authentication.strategy.multi.services%"
 
-    graviton.security.authentication.strategy.multi:
-        class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
-        public: true
-        calls:
-          -
-            method: setStrategies
-            arguments:
-              - "@service_container"
-              - "%graviton.security.authentication.strategy.multi.services%"
+  graviton.security.authentication.strategy.subnet:
+    class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
+    public: true
+    arguments:
+      - "%graviton.security.authentication.strategy.subnet.key%"
+      - "%graviton.security.authentication.strategy.subnet.header_field%"
 
-    graviton.security.authentication.strategy.subnet:
-        class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
-        public: true
+  graviton.security.authentication.strategy.header:
+    class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+    public: true
+    arguments:
+      - "%graviton.security.authentication.strategy.header.key%"
+
+  graviton.security.authentication.strategy.cookie:
+    class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
+    public: true
+    arguments:
+      - "%graviton.security.authentication.strategy.cookie.key%"
+
+  # provider
+  Graviton\SecurityBundle\Authentication\UserProvider:
+
+  graviton.security.authentication.provider.model.noop:
+    class: Graviton\SecurityBundle\User\Model\NullModel
+    public: true
+    calls:
+      -
+        method: setRepository
         arguments:
-          - "%graviton.security.authentication.strategy.subnet.key%"
-          - "%graviton.security.authentication.strategy.subnet.header_field%"
+          - "@graviton.core.repository.dummy"
 
-    graviton.security.authentication.strategy.header:
-        class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
-        public: true
+  #
+  #  Whoami Services
+  #
+  graviton.security.model.whoami:
+    class: Graviton\SecurityBundle\Model\WhoAmI
+    parent: graviton.rest.model
+    arguments:
+      - "@graviton.rql.visitor.mongodb"
+    calls:
+      -
+        method: setRepository
         arguments:
-          - "%graviton.security.authentication.strategy.header.key%"
+          - "@graviton.core.repository.dummy"
 
-    graviton.security.authentication.strategy.cookie:
-      class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
-      public: true
-      arguments:
-        - "%graviton.security.authentication.strategy.cookie.key%"
-
-    # provider
-    graviton_security_user_provider:
-        class: Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider
+  graviton.security.controller.whoami:
+    class: Graviton\SecurityBundle\Controller\WhoAmIController
+    parent: graviton.rest.controller
+    public: true
+    calls:
+      -
+        method: setModel
         arguments:
-          - "@=service(parameter('graviton.security.authentication.provider.model'))"
-          - "%graviton.security.authentication.provider.model.query_field%"
+          - "@graviton.security.model.whoami"
 
-    graviton.security.authentication.provider.model.noop:
-        class: Graviton\SecurityBundle\User\Model\NullModel
-        public: true
-        calls:
-          -
-            method: setRepository
-            arguments:
-              - "@graviton.core.repository.dummy"
-
-    #
-    #    Whoami Services
-    #
-    graviton.security.model.whoami:
-        class: Graviton\SecurityBundle\Model\WhoAmI
-        parent: graviton.rest.model
-        arguments:
-          - "@graviton.rql.visitor.mongodb"
-        calls:
-          -
-            method: setRepository
-            arguments:
-              - "@graviton.core.repository.dummy"
-
-    graviton.security.controller.whoami:
-        class: Graviton\SecurityBundle\Controller\WhoAmIController
-        parent: graviton.rest.controller
-        public: true
-        calls:
-          -
-            method: setModel
-            arguments:
-              - "@graviton.security.model.whoami"
-
-    #
-    #    Service Security Utils
-    #
-    graviton.security.service.utils:
-        class: Graviton\SecurityBundle\Service\SecurityUtils
-        public: true
-        arguments:
-          - "@security.token_storage"
-          - "@request_stack"
-          - "%graviton.rest.data_restriction.map.compiled%"
-          - "%graviton.rest.data_restriction.mode%"
+  #
+  #  Service Security Utils
+  #
+  graviton.security.service.utils:
+    class: Graviton\SecurityBundle\Service\SecurityUtils
+    public: true
+    arguments:
+      - "@security.token_storage"
+      - "@request_stack"
+      - "%graviton.rest.data_restriction.map.compiled%"
+      - "%graviton.rest.data_restriction.mode%"
 

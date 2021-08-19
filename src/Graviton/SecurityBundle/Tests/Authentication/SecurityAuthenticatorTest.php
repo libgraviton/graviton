@@ -5,8 +5,8 @@
 
 namespace Graviton\SecurityBundle\Tests\Authentication;
 
-use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
-use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProviderDummy;
+use Graviton\SecurityBundle\Authentication\Provider\UserProvider;
+use Graviton\SecurityBundle\Authentication\Provider\UserProviderDummy;
 use Graviton\SecurityBundle\Authentication\SecurityAuthenticator;
 use Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
@@ -31,7 +31,7 @@ class SecurityAuthenticatorTest extends GravitonTestCase
     private $logger;
 
     /**
-     * @var AuthenticationProvider
+     * @var UserProvider
      */
     private $userProvider;
 
@@ -45,7 +45,7 @@ class SecurityAuthenticatorTest extends GravitonTestCase
                              ->setMethods(array('warning', 'info'))
                              ->getMockForAbstractClass();
 
-        $this->userProvider = new AuthenticationProviderDummy();
+        $this->userProvider = new UserProviderDummy();
     }
 
     /**

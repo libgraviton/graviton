@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class AuthenticationProviderDummy extends AuthenticationProvider
+class UserProviderDummy extends UserProvider
 {
 
     /**

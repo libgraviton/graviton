@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
-use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
+use Graviton\SecurityBundle\Authentication\Provider\UserProvider;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Entities\SubnetUser;
@@ -40,7 +40,7 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     protected $allowAnonymous;
 
     /**
-     * @var AuthenticationProvider
+     * @var UserProvider
      */
     protected $userProvider;
 
@@ -55,16 +55,16 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     protected $logger;
 
     /**
-     * @param string                 $securityTestUsername user for testing
-     * @param boolean                $allowAnonymous       user provider to use
-     * @param AuthenticationProvider $userProvider         user provider to use
-     * @param StrategyInterface      $extractionStrategy   auth strategy to use
-     * @param LoggerInterface        $logger               logger to user for logging errors
+     * @param string            $securityTestUsername user for testing
+     * @param boolean           $allowAnonymous       user provider to use
+     * @param UserProvider      $userProvider         user provider to use
+     * @param StrategyInterface $extractionStrategy   auth strategy to use
+     * @param LoggerInterface   $logger               logger to user for logging errors
      */
     public function __construct(
         $securityTestUsername,
         $allowAnonymous,
-        AuthenticationProvider $userProvider,
+        UserProvider $userProvider,
         StrategyInterface $extractionStrategy,
         LoggerInterface $logger
     ) {

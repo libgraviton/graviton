@@ -1,6 +1,6 @@
 <?php
 /**
- * security consultant entity
+ * normal user
  */
 
 namespace Graviton\SecurityBundle\Entities;
@@ -16,16 +16,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class SecurityUser implements UserInterface
 {
-    const ROLE_USER = 'ROLE_GRAVITON_USER';
-    const ROLE_CONSULTANT = 'ROLE_GRAVITON_CONSULTANT';
-    const ROLE_ANONYMOUS = 'ROLE_GRAVITON_ANONYMOUS';
-    const ROLE_SUBNET = 'ROLE_GRAVITON_SUBNET_USER';
-    const ROLE_TEST = 'ROLE_GRAVITON_TEST_USER';
 
     /**
-     * @var Object
+     * @var string
      */
-    private $user;
+    private $username;
 
     /**
      * @var string[]
@@ -35,12 +30,12 @@ class SecurityUser implements UserInterface
     /**
      * Constructor of the class.
      *
-     * @param object   $user  the user
-     * @param string[] $roles roles for the contract
+     * @param string   $username username
+     * @param string[] $roles    roles for the contract
      */
-    public function __construct($user, array $roles = array())
+    public function __construct(string $username, array $roles = array())
     {
-        $this->user = $user;
+        $this->username = $username;
         $this->roles = $roles;
     }
 
@@ -81,10 +76,17 @@ class SecurityUser implements UserInterface
      */
     public function getUsername()
     {
-        if (method_exists($this->user, 'getUsername')) {
-            return $this->user->getUsername();
-        }
-        return false;
+        return $this->getUserIdentifier();
+    }
+
+    /**
+     * Returns the username used to authenticate the user.
+     *
+     * @return string The username
+     */
+    public function getUserIdentifier()
+    {
+        return $this->username;
     }
 
     /**
@@ -100,16 +102,6 @@ class SecurityUser implements UserInterface
     }
 
     /**
-     * Provides the consultant object.
-     *
-     * @return Object
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
      * Check if user has role
      * @param string $role User Role
      * @return bool
@@ -117,15 +109,5 @@ class SecurityUser implements UserInterface
     public function hasRole($role)
     {
         return in_array($role, $this->roles);
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        $roles = $this->$this->getRoles();
-        $username = $this->getUsername() ? $this->getUsername() : 'anonymous';
-        return reset($roles).':'.$username;
     }
 }
