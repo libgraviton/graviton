@@ -6,8 +6,11 @@
 namespace Graviton\RestBundle\Tests\Listener;
 
 use Graviton\RestBundle\Listener\XVersionResponseListener;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * @category GravitonCoreBundle
@@ -16,7 +19,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
+class XVersionResponseListenerTest extends TestCase
 {
     /**
      * verifies the correct behavior of the onKernelResponse()
@@ -25,25 +28,17 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testOnKernelResponse()
     {
-        $response = new Response();
-
-        $eventDouble = $this->getMockBuilder(ResponseEvent::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getResponse', 'isMainRequest'])
-            ->getMock();
-        $eventDouble
-            ->expects($this->once())
-            ->method('getResponse')
-            ->will($this->returnValue($response));
-        $eventDouble
-            ->expects($this->once())
-            ->method('isMainRequest')
-            ->will($this->returnValue(true));
+        $event = new ResponseEvent(
+            $this->getMockForAbstractClass(HttpKernelInterface::class),
+            new Request(),
+            HttpKernelInterface::MAIN_REQUEST,
+            new Response()
+        );
 
         $listener = new XVersionResponseListener('self: v3.0.0-hans;');
-        $listener->onKernelResponse($eventDouble);
+        $listener->onKernelResponse($event);
 
-        $this->assertEquals('self: v3.0.0-hans;', $response->headers->get('X-VERSION'));
+        $this->assertEquals('self: v3.0.0-hans;', $event->getResponse()->headers->get('X-VERSION'));
     }
 
     /**
@@ -55,18 +50,16 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
     {
         $response = new Response();
 
-        $eventDouble = $this->getMockBuilder(ResponseEvent::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['isMainRequest'])
-            ->getMock();
-        $eventDouble
-            ->expects($this->once())
-            ->method('isMainRequest')
-            ->will($this->returnValue(false));
+        $event = new ResponseEvent(
+            $this->getMockForAbstractClass(HttpKernelInterface::class),
+            new Request(),
+            HttpKernelInterface::SUB_REQUEST,
+            new Response()
+        );
 
         $listener = new XVersionResponseListener('self: v3.0.0-hans;');
-        $listener->onKernelResponse($eventDouble);
+        $listener->onKernelResponse($event);
 
-        $this->assertNull($response->headers->get('X-VERSION'));
+        $this->assertFalse($response->headers->has('X-VERSION'));
     }
 }

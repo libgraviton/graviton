@@ -40,7 +40,7 @@ class XVersionResponseListener
     public function onKernelResponse(ResponseEvent $event)
     {
         if (!$event->isMainRequest()) {
-            // don't do anything if it's not the master request
+            // don't do anything if it's not the main request
             return;
         }
 
