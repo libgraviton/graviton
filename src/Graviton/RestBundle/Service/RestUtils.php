@@ -410,7 +410,12 @@ final class RestUtils implements RestUtilsInterface
     public function getControllerFromRoute(Route $route)
     {
         $ret = false;
-        $actionParts = explode(':', $route->getDefault('_controller'));
+
+        if (str_contains($route->getDefault('_controller'), '::')) {
+            $actionParts = explode('::', $route->getDefault('_controller'));
+        } else {
+            $actionParts = explode(':', $route->getDefault('_controller'));
+        }
 
         if (count($actionParts) == 2) {
             $ret = $this->container->get($actionParts[0]);
