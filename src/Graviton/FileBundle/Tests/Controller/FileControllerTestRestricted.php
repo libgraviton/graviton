@@ -20,7 +20,7 @@ class FileControllerTestRestricted extends FileControllerTest
      *
      * @var string
      */
-    protected $environment = 'test_restricted';
+    static protected $environment = 'test_restricted';
 
     /**
      * custom client options
