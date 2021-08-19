@@ -138,14 +138,16 @@ class WriteLockListener
             usleep(rand($this->randomDelayMin, $this->randomDelayMax) * 1000);
         }
 
-        $this->logger->info("LOCK CHECK START = ".$cacheKey);
+        if ($this->cache->hasItem($cacheKey)) {
+            $this->logger->info("LOCK CHECK START = ".$cacheKey);
 
-        // check for existing one
-        while ($this->cache->hasItem($cacheKey) === true) {
-            usleep(250000);
+            // check for existing one
+            while ($this->cache->hasItem($cacheKey) === true) {
+                usleep(250000);
+            }
+
+            $this->logger->info("LOCK CHECK FINISHED = ".$cacheKey);
         }
-
-        $this->logger->info("LOCK CHECK FINISHED = ".$cacheKey);
 
         if (in_array($currentMethod, $this->waitingMethods)) {
             // current method just wants to wait..
@@ -197,7 +199,7 @@ class WriteLockListener
     private function releaseLock(Request $request)
     {
         $lockName = $request->attributes->get('writeLockOn', null);
-        if (!is_null($lockName)) {
+        if (!is_null($lockName) && $this->cache->hasItem($lockName)) {
             $this->cache->deleteItem($lockName);
             $this->logger->info("LOCK REMOVED = ".$lockName);
         }
