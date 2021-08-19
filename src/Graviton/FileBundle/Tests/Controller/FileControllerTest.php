@@ -28,7 +28,7 @@ class FileControllerTest extends RestTestCase
      *
      * @var string
      */
-    static protected $environment = 'test';
+    protected static $environment = 'test';
 
     /**
      * custom client options
