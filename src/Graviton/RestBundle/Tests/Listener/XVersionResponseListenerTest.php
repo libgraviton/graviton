@@ -29,7 +29,7 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
 
         $eventDouble = $this->getMockBuilder(ResponseEvent::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResponse', 'isMasterRequest'])
+            ->onlyMethods(['getResponse', 'isMainRequest'])
             ->getMock();
         $eventDouble
             ->expects($this->once())
@@ -37,7 +37,7 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($response));
         $eventDouble
             ->expects($this->once())
-            ->method('isMasterRequest')
+            ->method('isMainRequest')
             ->will($this->returnValue(true));
 
         $listener = new XVersionResponseListener('self: v3.0.0-hans;');
@@ -57,11 +57,11 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
 
         $eventDouble = $this->getMockBuilder(ResponseEvent::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['isMasterRequest'])
+            ->onlyMethods(['isMainRequest'])
             ->getMock();
         $eventDouble
             ->expects($this->once())
-            ->method('isMasterRequest')
+            ->method('isMainRequest')
             ->will($this->returnValue(false));
 
         $listener = new XVersionResponseListener('self: v3.0.0-hans;');

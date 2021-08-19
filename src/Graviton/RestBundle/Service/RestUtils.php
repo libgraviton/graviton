@@ -411,11 +411,12 @@ final class RestUtils implements RestUtilsInterface
     {
         $ret = false;
 
-        if (str_contains($route->getDefault('_controller'), '::')) {
-            $actionParts = explode('::', $route->getDefault('_controller'));
-        } else {
-            $actionParts = explode(':', $route->getDefault('_controller'));
+        $controllerName = $route->getDefault('_controller');
+        if (substr_count($controllerName, ':') == 1) {
+            $controllerName = str_replace(':', '::', $controllerName);
         }
+
+        $actionParts = explode('::', $controllerName);
 
         if (count($actionParts) == 2) {
             $ret = $this->container->get($actionParts[0]);

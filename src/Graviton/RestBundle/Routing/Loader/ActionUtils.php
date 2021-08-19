@@ -46,7 +46,7 @@ class ActionUtils
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
         $defaults = array(
-            '_controller' => $service . ':' . $action,
+            '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
 
@@ -214,7 +214,7 @@ class ActionUtils
         }
 
         $defaults = array(
-            '_controller' => $service . ':' . $action,
+            '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
 
