@@ -19,11 +19,7 @@ framework:
         enable_annotations:   false
     default_locale: "%locale%"
     trusted_hosts: ~
-    session:
-        name: graviton
-        # handler_id set to null will use default session handler from php.ini
-        handler_id:  ~
-    fragments:       ~
+    fragments: ~
 
 graviton_common:
     mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
