@@ -88,7 +88,7 @@ parameters:
     graviton.file.allowed.mime_types: []
     graviton.file.read_filesystem_mimetype: true
 
-    graviton.file.local.storage_directory: "%kernel.root_dir%/files"
+    graviton.file.local.storage_directory: '%kernel.project_dir%/app/files'
 
     graviton.file.s3.endpoint: null
     graviton.file.s3.version: latest

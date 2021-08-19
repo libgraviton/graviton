@@ -40,12 +40,12 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $rootDir = $container->getParameter('kernel.root_dir');
+        $rootDir = $container->getParameter('kernel.project_dir');
 
         if (strpos($rootDir, 'vendor') !== false) {
             $configurationFile = $rootDir.'/../../../../app';
         } else {
-            $configurationFile = $rootDir;
+            $configurationFile = $rootDir.'/app';
         }
 
         $configurationFile .= '/config/version_service.yml';

@@ -33,12 +33,11 @@
 
         "graviton/common-bundle": "~0",
         "graviton/rql-parser-bundle": "^3.0.2",
-        "graviton/json-schema": "^1.16.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/mongodb-migrations-bundle": "~2",
 
-        "symfony/symfony": "~4.4.0",
+        "symfony/symfony": "~5.3.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "~2",
 
@@ -60,8 +59,8 @@
         "oneup/flysystem-bundle": "~4",
         "league/flysystem-async-aws-s3": "~2",
 
-        "sentry/sentry-symfony": "^4.0",
-        "sentry/sentry": "^3.0",
+        "sentry/sentry-symfony": "~4",
+        "sentry/sentry": "~3",
         "php-http/guzzle7-adapter": "*",
         "guzzlehttp/psr7": "*",
 

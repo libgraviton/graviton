@@ -29,7 +29,7 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
         $containerDouble
             ->expects($this->once())
             ->method('getParameter')
-            ->with('kernel.root_dir')
+            ->with('kernel.project_dir')
             ->willReturn(__DIR__.'/Resources/version');
 
         // what we expect to be set
