@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "520785d0dabaa2d1452507476d14086a",
+    "content-hash": "95a30fdabd90609d31b6e7c04626be77",
     "packages": [
         {
             "name": "async-aws/core",
@@ -6130,20 +6130,21 @@
         },
         {
             "name": "graviton/mongodb-fixtures-bundle",
-            "version": "v2.0.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-fixtures-bundle.git",
-                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b"
+                "reference": "ea61fee98d875c9512451e4f7ed3aed70b9b8673"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/265101fb12b554b71bdb3b07fd796e5213cc2e3b",
-                "reference": "265101fb12b554b71bdb3b07fd796e5213cc2e3b",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/ea61fee98d875c9512451e4f7ed3aed70b9b8673",
+                "reference": "ea61fee98d875c9512451e4f7ed3aed70b9b8673",
                 "shasum": ""
             },
             "require": {
-                "doctrine/mongodb-odm-bundle": "^4.0"
+                "doctrine/mongodb-odm-bundle": "^4.0",
+                "symfony/symfony": "~5"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -6159,9 +6160,9 @@
             "homepage": "https://github.com/libgraviton/mongodb-fixtures-bundle",
             "support": {
                 "issues": "https://github.com/libgraviton/mongodb-fixtures-bundle/issues",
-                "source": "https://github.com/libgraviton/mongodb-fixtures-bundle/tree/master"
+                "source": "https://github.com/libgraviton/mongodb-fixtures-bundle/tree/v3.0.0"
             },
-            "time": "2020-09-01T08:36:57+00:00"
+            "time": "2021-06-24T13:00:49+00:00"
         },
         {
             "name": "graviton/test-services-bundle",
