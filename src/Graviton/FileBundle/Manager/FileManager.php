@@ -81,7 +81,7 @@ class FileManager
     /**
      * Will update the response object with provided file data
      *
-     * @param File $file     File document object from DB
+     * @param File $file File document object from DB
      *
      * @return Response
      * @throws InvalidArgumentException if invalid info fetched from fileSystem
@@ -107,9 +107,11 @@ class FileManager
 
         $fileStream = $this->fileSystem->readStream($file->getId());
 
-        $response = new StreamedResponse(function() use ($fileStream) {
-            echo stream_get_contents($fileStream);
-        });
+        $response = new StreamedResponse(
+            function () use ($fileStream) {
+                echo stream_get_contents($fileStream);
+            }
+        );
 
         // Create Response
         $disposition = $response->headers->makeDisposition(
@@ -148,7 +150,7 @@ class FileManager
     }
 
     /**
-     * @param File  $document File Document
+     * @param File          $document File Document
      * @param Request       $request  Request bag
      * @param DocumentModel $model    File Document Model
      * @return File
@@ -220,9 +222,9 @@ class FileManager
     /**
      * Create the basic needs for a file
      *
-     * @param File $document Post or Put file document
+     * @param File         $document Post or Put file document
      * @param UploadedFile $file     To be used in set metadata
-     * @param File $original If there is a original document
+     * @param File         $original If there is a original document
      *
      * @return File
      * @throws InvalidArgumentException
@@ -286,8 +288,8 @@ class FileManager
     /**
      * Simple validation for post/put request
      *
-     * @param File $document  File document
-     * @param string       $requestId Request ID
+     * @param File   $document  File document
+     * @param string $requestId Request ID
      * @return bool
      */
     private function validIdRequest(File $document, $requestId)
