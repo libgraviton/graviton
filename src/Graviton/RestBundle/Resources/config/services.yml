@@ -186,17 +186,6 @@ services:
             event: graviton.rest.request
             method: onKernelRequest
 
-    #Special mimetypes Request listener -->
-    graviton.rest.listener.specialmimetypesrequestlistener:
-        class: Graviton\RestBundle\Listener\SpecialMimetypeRequestListener
-        arguments:
-          - "@service_container"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onKernelRequest
-
     #Allowed RQL operator listener -->
     graviton.rest.listener.rqlallowedoperatorrequestlistener:
         class: "%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%"

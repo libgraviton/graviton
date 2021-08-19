@@ -77,7 +77,6 @@ parameters:
     graviton.security.authentication.provider.model.query_field: false
 
     graviton.security.services.whitelist: {}
-    graviton.rest.special_mimetypes: {}
 
     graviton.analytics.cache_time.metadata: 10
 
