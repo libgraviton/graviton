@@ -6,6 +6,8 @@
 namespace Graviton\ProxyBundle\Tests\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\Loader\HttpLoader;
+use GuzzleHttp\Psr7\Response;
+use Laminas\Diactoros\CallbackStream;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -37,12 +39,14 @@ class HttpLoaderTest extends TestCase
      */
     public function setup() : void
     {
-        $response = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
-            ->getMock();
-        $response
-            ->expects($this->any())
-            ->method("getBody")
-            ->willReturn("{ 'test': 'bablaba' }");
+        $content = new CallbackStream(
+            function () {
+                return "{ 'test': 'bablaba' }";
+            }
+        );
+
+        $response = new Response();
+        $response = $response->withBody($content);
 
         $client = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
         $client->expects($this->any())

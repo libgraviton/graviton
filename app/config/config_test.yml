@@ -1,6 +1,7 @@
 imports:
     - { resource: config_dev.yml }
     - { resource: "@FrameworkBundle/Resources/config/test.xml" }
+    - { resource: services_test.yml }
 
 parameters:
     kernel.debug: false
@@ -21,6 +22,9 @@ parameters:
     graviton.rest.serializer.allow_group_override_header: true
     graviton.rest.serializer.override_header_name: x-groups
     graviton.rest.schema_variation.enable: true
+
+    # flysystem backend in memory
+    graviton.file.backend: local
 
     graviton.worker.relativeUrl: "https://backendalias:9443/"
     graviton.translator.default.locale: en
