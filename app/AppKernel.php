@@ -79,9 +79,14 @@ class AppKernel extends Kernel
             new \Sentry\SentryBundle\SentryBundle()
         );
 
-        if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
+        $nonProdEnv = ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false);
+
+        if ($nonProdEnv) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+        }
+
+        if ($nonProdEnv && class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
             $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
         }
 
