@@ -33,6 +33,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
+      - name: Docker Layer Caching
+        # You may pin to the exact commit or the version.
+        # uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
+        uses: satackey/action-docker-layer-caching@v0.0.11
+
       - name: Run composer and tests
         uses: ./.github/actions/test-php74
 

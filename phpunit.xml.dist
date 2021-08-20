@@ -15,27 +15,8 @@
     </exclude>
   </coverage>
   <testsuites>
-    <testsuite name="integration">
-      <directory>src/*/*Bundle/Tests/Controller</directory>
-      <directory>src/*/*Bundle/Tests/Integration</directory>
-      <directory>src/*/Bundle/*Bundle/Tests/Controller</directory>
-      <directory>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</directory>
-      <file>src/Graviton/FileBundle/Tests/FileManagerTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListenerTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</file>
-    </testsuite>
-    <testsuite name="unit">
+    <testsuite name="all">
       <directory>src/*/*Bundle/Tests</directory>
-      <directory>src/*/Bundle/*Bundle/Tests</directory>
-      <exclude>src/*/*Bundle/Tests/Controller</exclude>
-      <exclude>src/*/*Bundle/Tests/Integration</exclude>
-      <exclude>src/*/Bundle/*Bundle/Tests/Controller</exclude>
-      <exclude>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</exclude>
-      <exclude>src/Graviton/FileBundle/Tests/FileManagerTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListenerTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>
