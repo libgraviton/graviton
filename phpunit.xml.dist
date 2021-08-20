@@ -5,14 +5,16 @@
     <include>
       <directory>src/Graviton/**</directory>
     </include>
-    <!--
+
     <exclude>
-      <directory>src/*/*Bundle/Tests</directory>
-      <directory>src/*/*Bundle/Resources</directory>
-      <directory>src/Doctrine</directory>
-      <directory>src/GravitonDyn</directory>
+      <directory>**/Tests/**</directory>
+      <directory>**/Exception/**</directory>
+      <directory>**/Composer/**</directory>
+      <directory>**/Resources/**</directory>
+      <directory>**/*Bundle.php</directory>
+      <directory>**/TestBundle/**</directory>
     </exclude>
-    -->
+
   </coverage>
   <testsuites>
     <testsuite name="all">
