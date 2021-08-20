@@ -21,7 +21,7 @@ class AnonymousUser implements UserInterface
     /**
      * username constant
      */
-    public const USERNAME = '_anonymous_';
+    public const USERNAME = 'anonymous';
 
     /**
      * Returns the roles granted to the user.
