@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="app/bootstrap.tests.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage cacheDirectory="var/cache/phpunit/coverage" pathCoverage="true">
+  <coverage>
     <include>
-      <directory>src</directory>
+      <directory>src/Graviton/**</directory>
     </include>
+    <!--
     <exclude>
       <directory>src/*/*Bundle/Tests</directory>
-      <directory>src/*/*Bundle/*Bundle/Tests</directory>
       <directory>src/*/*Bundle/Resources</directory>
-      <directory>src/*/Bundle/*Bundle/Resources</directory>
-      <directory>src/*/Bundle/DependencyInjection</directory>
+      <directory>src/Doctrine</directory>
       <directory>src/GravitonDyn</directory>
     </exclude>
+    -->
   </coverage>
   <testsuites>
     <testsuite name="all">
