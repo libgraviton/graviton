@@ -11,44 +11,6 @@ services:
       - "%graviton.security.authentication.strategy.subnet.key%"
       - "%graviton.security.authentication.strategy.subnet.header_field%"
 
-#  graviton_security_authenticator:
-#    class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
-#    arguments:
-#      - "%graviton.security.authentication.test_username%"
-#      - "%graviton.security.authentication.allow_anonymous%"
-#      - "@graviton_security_user_provider"
-#      - "@=service(parameter('graviton.security.authentication.strategy'))"
-#      - "@logger"
-#
-#  graviton.security.authentication.strategy.multi:
-#    class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
-#    public: true
-#    calls:
-#      -
-#        method: setStrategies
-#        arguments:
-#          - "@service_container"
-#          - "%graviton.security.authentication.strategy.multi.services%"
-#
-#  graviton.security.authentication.strategy.subnet:
-#    class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
-#    public: true
-#    arguments:
-#      - "%graviton.security.authentication.strategy.subnet.key%"
-#      - "%graviton.security.authentication.strategy.subnet.header_field%"
-#
-#  graviton.security.authentication.strategy.header:
-#    class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
-#    public: true
-#    arguments:
-#      - "%graviton.security.authentication.strategy.header.key%"
-#
-#  graviton.security.authentication.strategy.cookie:
-#    class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
-#    public: true
-#    arguments:
-#      - "%graviton.security.authentication.strategy.cookie.key%"
-
   # provider
   Graviton\SecurityBundle\Authentication\UserProvider:
 
