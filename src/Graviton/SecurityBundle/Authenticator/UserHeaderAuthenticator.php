@@ -63,7 +63,8 @@ class UserHeaderAuthenticator extends AbstractAuthenticator
      */
     public function supports(Request $request): ?bool
     {
-        return true;
+        // this is set by any previous authenticators - as this will always return an anonymous user if allowed
+        return !$request->attributes->get('authenticated', false);
     }
 
     /**

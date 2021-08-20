@@ -69,6 +69,8 @@ class SameSubnetAuthenticator extends AbstractAuthenticator implements Authentic
             throw new CustomUserMessageAuthenticationException('User not allowed for subnet auth');
         }
 
+        $request->attributes->set('authenticated', true);
+
         return new SelfValidatingPassport(
             new UserBadge($request->headers->get($this->headerField))
         );
