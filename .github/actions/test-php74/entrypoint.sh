@@ -7,4 +7,6 @@ composer configure
 
 composer check
 
-php vendor/bin/phpunit
+php -m
+
+php vendor/bin/phpunit --coverage-clover=coverage.clover
