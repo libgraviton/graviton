@@ -43,7 +43,7 @@ class VersionCompilerPass implements CompilerPassInterface
         $rootDir = $container->getParameter('kernel.project_dir');
 
         if (strpos($rootDir, 'vendor') !== false) {
-            $configurationFile = $rootDir.'/../../../../app';
+            $configurationFile = $rootDir.'/../../../app';
         } else {
             $configurationFile = $rootDir.'/app';
         }
