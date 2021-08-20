@@ -10,6 +10,7 @@ framework:
     secret: "%secret%"
     router:
         resource: "%kernel.project_dir%/app/config/routing.yml"
+        utf8: true
         strict_requirements: ~
     form:
         enabled: false
