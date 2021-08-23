@@ -48,13 +48,194 @@ class NullModel implements ModelInterface
     /**
      * Find a single record by id
      *
-     * @param string $id Record-Id
+     * @param string $documentId id
+     * @param bool   $forceClear force
      *
      * @return Object
      */
-    public function find($id)
+    public function find($documentId, $forceClear = false)
     {
         return;
+    }
+
+    /**
+     * returns the schema
+     *
+     * @return array schema
+     */
+    public function getSchema()
+    {
+        return [];
+    }
+
+    /**
+     * title
+     *
+     * @return string title
+     */
+    public function getTitle()
+    {
+        return "";
+    }
+
+    /**
+     * title
+     *
+     * @param string $field field
+     *
+     * @return string title
+     */
+    public function getTitleOfField($field)
+    {
+        return "";
+    }
+
+    /**
+     * Description
+     *
+     * @return string Description
+     */
+    public function getDescription()
+    {
+        return "";
+    }
+
+    /**
+     * Description
+     *
+     * @param string $field field
+     *
+     * @return string Description
+     */
+    public function getDescriptionOfField($field)
+    {
+        return "";
+    }
+
+    /**
+     * GroupsOfField
+     *
+     * @param string $field field
+     *
+     * @return array GroupsOfField
+     */
+    public function getGroupsOfField($field)
+    {
+        return [];
+    }
+
+    /**
+     * ReadOnlyOfField
+     *
+     * @param string $field field
+     *
+     * @return bool ReadOnlyOfField
+     */
+    public function getReadOnlyOfField($field)
+    {
+        return true;
+    }
+
+    /**
+     * DocumentClass
+     *
+     * @return string DocumentClass
+     */
+    public function getDocumentClass()
+    {
+        return \stdClass::class;
+    }
+
+    /**
+     * RecordOriginModifiable
+     *
+     * @return bool RecordOriginModifiable
+     */
+    public function getRecordOriginModifiable()
+    {
+        return true;
+    }
+
+    /**
+     * Versioning
+     *
+     * @return bool Versioning
+     */
+    public function isVersioning()
+    {
+        return false;
+    }
+
+    /**
+     * Variations
+     *
+     * @return array Variations
+     */
+    public function getVariations()
+    {
+        return [];
+    }
+
+    /**
+     * OnVariaton
+     *
+     * @return array OnVariaton
+     */
+    public function getOnVariaton()
+    {
+        return [];
+    }
+
+    /**
+     * SolrInformation
+     *
+     * @return array SolrInformation
+     */
+    public function getSolrInformation()
+    {
+        return [];
+    }
+
+    /**
+     * RequiredFields
+     *
+     * @return array RequiredFields
+     */
+    public function getRequiredFields()
+    {
+        return [];
+    }
+
+    /**
+     * Constraints
+     *
+     * @return array Constraints
+     */
+    public function getConstraints()
+    {
+        return [];
+    }
+
+    /**
+     * SearchableFields
+     *
+     * @return array SearchableFields
+     */
+    public function getSearchableFields()
+    {
+        return [];
+    }
+
+    /**
+     * RecordOriginExceptionOfField
+     *
+     * @param string $field field
+     *
+     * @return bool RecordOriginExceptionOfField
+     */
+    public function getRecordOriginExceptionOfField($field)
+    {
+        return false;
     }
 
     /**
