@@ -135,6 +135,8 @@ class AnalyticsCreateViewCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 
     /**
