@@ -82,7 +82,9 @@ class AppKernel extends Kernel
         if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-            $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
+            if (class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
+                $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
+            }
         }
 
         // our own bundles!
