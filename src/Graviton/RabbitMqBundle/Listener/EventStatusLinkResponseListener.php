@@ -190,6 +190,7 @@ class EventStatusLinkResponseListener
         // we can always safely call this, it doesn't need much resources.
         // only if we have subscribers, it will create more load as it persists an EventStatus
         $queueEvent = $this->createQueueEventObject();
+        $this->documentManager->persist($queueEvent);
 
         if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
             $linkHeader = LinkHeader::fromString($response->headers->get('Link', null));
