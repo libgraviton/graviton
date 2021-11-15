@@ -26,6 +26,10 @@ services:
             name: "kernel.event_listener"
             event: "graviton.rest.response.selfaware"
             method: "onKernelResponse"
+          -
+            name: "kernel.event_listener"
+            event: "kernel.terminate"
+            method: "onKernelTerminate"
         arguments:
           - "@graviton.rabbitmq.producer.extamqp"
           - "@router"

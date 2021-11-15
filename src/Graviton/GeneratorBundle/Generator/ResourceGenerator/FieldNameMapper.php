@@ -14,6 +14,20 @@ use Doctrine\Inflector\InflectorFactory;
  */
 class FieldNameMapper implements FieldMapperInterface
 {
+
+    /**
+     * @var \Doctrine\Inflector\Inflector $inflector
+     */
+    private $inflector;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->inflector = InflectorFactory::create()->build();
+    }
+
     /**
      * @param array $field   mappable field with type attribute
      * @param mixed $context context for mapper to check
@@ -22,7 +36,7 @@ class FieldNameMapper implements FieldMapperInterface
      */
     public function map($field, $context = null)
     {
-        $field['singularName'] = InflectorFactory::create()->build()->singularize($field['fieldName']);
+        $field['singularName'] = $this->inflector->singularize($field['fieldName']);
         return $field;
     }
 }

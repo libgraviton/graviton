@@ -13,6 +13,7 @@ use Graviton\PhpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Laminas\Diactoros\Uri;
 use Psr\Http\Message\UriInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -21,7 +22,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Zend\Diactoros\Uri;
 
 /**
  * general controller for all proxy staff
@@ -152,13 +152,7 @@ class ProxyController
             $response = (new HttpFoundationFactory())->createResponse($e->getResponse());
         } catch (ServerException $serverException) {
             $response = (new HttpFoundationFactory())->createResponse($serverException->getResponse());
-        } catch (TransformationException $e) {
-            $message = json_encode(
-                ['code' => 404, 'message' => 'HTTP 404 Not found']
-            );
-
-            throw new NotFoundHttpException($message, $e);
-        } catch (RequestException $e) {
+        } catch (TransformationException | RequestException $e) {
             $message = json_encode(
                 ['code' => 404, 'message' => 'HTTP 404 Not found']
             );
