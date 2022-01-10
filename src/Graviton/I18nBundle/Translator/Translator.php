@@ -292,7 +292,7 @@ class Translator
         return sprintf(
             'translator_%s_%s',
             implode('.', $this->getLanguages()),
-            str_pad(strtolower(substr($original, 0, $this->cacheNameDepth)), $this->cacheNameDepth, '.')
+            sha1($original)
         );
     }
 }
