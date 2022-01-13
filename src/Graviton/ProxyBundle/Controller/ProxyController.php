@@ -9,7 +9,7 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
-use Graviton\PhpProxy\Proxy;
+use Graviton\CommonBundle\Component\HttpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;

@@ -33,6 +33,10 @@ graviton_common:
         redis_port: "%graviton.cache.redis.port%"
         adapter_override: null
     http_client:
+        options:
+            stream: false
+            http_errors: false
+            cookies: true
         verify_peer: "%graviton.core.httpclient.verifyPeer%"
         debug_requests: "%graviton.core.httpclient.debugRequests%"
         debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
