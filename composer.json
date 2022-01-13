@@ -122,7 +122,10 @@
         "platform": {
             "php": "7.4.9"
         },
-        "bin-dir": "vendor/bin"
+        "bin-dir": "vendor/bin",
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     },
     "bin": ["bin/console"],
     "minimum-stability": "dev",
