@@ -217,13 +217,17 @@ class ProxyController
     protected function decideApiAndEndpoint($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
+        $query = parse_url($url, PHP_URL_QUERY);
+        if ($query) {
+            $query = '?' . $query;
+        }
 
         $pattern = array (
             "@schema\/@",
             "@\/3rdparty\/@",
             "@\/item$@",
         );
-        $path = preg_replace($pattern, '', $path);
+        $path = preg_replace($pattern, '', $path . $query);
 
         //get api name and endpoint
         $apiName = substr($path, 0, strpos($path, '/'));
