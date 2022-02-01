@@ -9,6 +9,7 @@ on:
 jobs:
   build:
 
+    # only this
     name: PHP 8.1
 
     runs-on: ubuntu-latest
