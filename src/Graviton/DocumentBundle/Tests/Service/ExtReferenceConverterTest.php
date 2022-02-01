@@ -55,7 +55,7 @@ class ExtReferenceConverterTest extends TestCase
             new Route(
                 '/core/app/{id}',
                 [
-                    '_controller' => 'graviton.core.controller.app:getAction',
+                    '_controller' => 'graviton.core.controller.app::getAction',
                     '_format' => '~'
                 ],
                 [
@@ -85,7 +85,7 @@ class ExtReferenceConverterTest extends TestCase
             new Route(
                 '/i18n/language/{id}',
                 [
-                    '_controller' => 'graviton.i18n.controller.language:getAction',
+                    '_controller' => 'graviton.i18n.controller.language::getAction',
                     '_format' => '~'
                 ],
                 [
@@ -101,7 +101,7 @@ class ExtReferenceConverterTest extends TestCase
             new Route(
                 '/hans/showcase/{id}',
                 [
-                    '_controller' => 'gravitondyn.showcase.controller.showcase:getAction',
+                    '_controller' => 'gravitondyn.showcase.controller.showcase::getAction',
                     '_format' => '~'
                 ],
                 [

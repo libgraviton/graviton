@@ -118,7 +118,12 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
         ) {
             $id = $matches['id'];
 
-            list($routeService) = explode(':', $route->getDefault('_controller'));
+            $controllerName = $route->getDefault('_controller');
+            if (substr_count($controllerName, ':') === 1) {
+                $controllerName = str_replace(':', '::', $controllerName);
+            }
+
+            list($routeService) = explode('::', $controllerName);
             list($core, $bundle,,$name) = explode('.', $routeService);
             $serviceName = implode('.', [$core, $bundle, 'rest', $name]);
             $collection = array_search($serviceName, $this->mapping);

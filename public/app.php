@@ -40,7 +40,14 @@ if (!$activateDebug) {
     $kernel = new AppCache($kernel);
 }
 
-Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_X_FORWARDED_ALL);
+Request::setTrustedProxies(
+    ['0.0.0.0/0'],
+    Request::HEADER_FORWARDED &&
+    Request::HEADER_X_FORWARDED_FOR &&
+    Request::HEADER_X_FORWARDED_HOST &&
+    Request::HEADER_X_FORWARDED_PROTO &&
+    Request::HEADER_X_FORWARDED_PORT
+);
 
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

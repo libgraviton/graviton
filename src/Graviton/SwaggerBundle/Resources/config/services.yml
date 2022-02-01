@@ -1,5 +1,5 @@
 parameters:
-  graviton.swagger.generation_dir: "%kernel.cache_dir%/../../"
+  graviton.swagger.generation_dir: "%kernel.project_dir%/app/"
 
 services:
 

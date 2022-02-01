@@ -189,7 +189,7 @@ class EventStatusLinkResponseListener
         $response = $event->getResponse();
 
         // exit if not master request, uninteresting method or an error occurred
-        if (!$event->isMasterRequest() || $this->isNotConcerningRequest() || !$response->isSuccessful()) {
+        if (!$event->isMainRequest() || $this->isNotConcerningRequest() || !$response->isSuccessful()) {
             return;
         }
 

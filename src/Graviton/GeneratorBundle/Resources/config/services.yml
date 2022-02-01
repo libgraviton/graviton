@@ -83,7 +83,7 @@ services:
           -
             method: setScanDir
             arguments:
-              - "%kernel.root_dir%/.."
+              - "%kernel.project_dir%"
 
     graviton_generator.resourcegenerator.parameter_builder:
         class: "%graviton_generator.resourcegenerator.parameter_builder.class%"

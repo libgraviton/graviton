@@ -39,7 +39,7 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         if (!empty($dynamicBundleDir)) {
             // if this is not an absolute dir, make it relative to the base dir
             if (substr($dynamicBundleDir, 0, 1) !== '/') {
-                $dynamicBundleDir = $container->getParameter('kernel.root_dir').'/../'.$dynamicBundleDir;
+                $dynamicBundleDir = $container->getParameter('kernel.project_dir').'/'.$dynamicBundleDir;
             }
 
             $dirs[] = $dynamicBundleDir;

@@ -96,8 +96,13 @@ final class RestEventSubscriber implements EventSubscriberInterface
      */
     private function getEventObject(KernelEvent $event)
     {
+        $controllerName = $event->getRequest()->get('_controller');
+        if (substr_count($controllerName, ':') === 1) {
+            $controllerName = str_replace(':', '::', $controllerName);
+        }
+
         // get the service name
-        list ($serviceName) = explode(":", $event->getRequest()->get('_controller'));
+        list ($serviceName) = explode("::", $controllerName);
 
         // get the controller which handles this request
         if ($this->container->has($serviceName)) {

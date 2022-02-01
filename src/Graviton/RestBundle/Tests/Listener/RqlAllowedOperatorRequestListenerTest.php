@@ -36,7 +36,7 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
         $event->setRequest($request);
 
         $listener = new RqlAllowedOperatorRequestListener();
-        $listener->onKernelRequest($event);
+        $this->assertNull($listener->onKernelRequest($event));
     }
 
     /**
@@ -57,7 +57,7 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
         $event->setRequest($request);
 
         $listener = new RqlAllowedOperatorRequestListener();
-        $listener->onKernelRequest($event);
+        $this->assertNull($listener->onKernelRequest($event));
     }
 
     /**

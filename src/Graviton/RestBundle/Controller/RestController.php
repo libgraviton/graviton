@@ -9,8 +9,10 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
@@ -22,6 +24,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -41,7 +44,7 @@ class RestController extends AbstractController
     private $logger;
 
     /**
-     * @var DocumentModel
+     * @var ModelInterface
      */
     private $model;
 
@@ -222,14 +225,13 @@ class RestController extends AbstractController
     /**
      * Set the model class
      *
-     * @param DocumentModel $model Model class
+     * @param ModelInterface $model Model class
      *
      * @return self
      */
-    public function setModel(DocumentModel $model)
+    public function setModel(ModelInterface $model)
     {
         $this->model = $model;
-
         return $this;
     }
 
@@ -527,10 +529,11 @@ class RestController extends AbstractController
     /**
      * Security needs to be enabled to get Object.
      *
-     * @return String
+     * @return UserInterface
+     *
      * @throws UsernameNotFoundException
      */
-    public function getSecurityUser()
+    public function getSecurityUser() : ?UserInterface
     {
         return $this->securityUtils->getSecurityUser();
     }
