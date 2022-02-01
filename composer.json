@@ -41,7 +41,7 @@
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "~2",
 
-        "jms/serializer-bundle": "~3",
+        "jms/serializer-bundle": "~4",
 
         "doctrine/persistence": "~2",
         "doctrine/inflector": "~2",
