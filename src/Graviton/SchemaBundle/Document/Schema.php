@@ -298,6 +298,9 @@ class Schema
             if ($type === 'int') {
                 $type = 'integer';
             }
+            if ($type === 'bool') {
+                $type = 'boolean';
+            }
             if ($type === 'hash') {
                 $type = 'object';
             }
