@@ -1,7 +1,7 @@
 FROM php:7.4-cli
 
-ARG EXTMONGODB_VERSION=1.10.0
-ARG EXTAMQP_VERSION=1.10.2
+ARG EXTMONGODB_VERSION=1.12.0
+ARG EXTAMQP_VERSION=1.11.0
 
 RUN apt update && \
     apt-get install -y librabbitmq-dev git zip unzip && \
