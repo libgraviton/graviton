@@ -153,6 +153,8 @@ class JsonDeserializationVisitor extends AbstractVisitor implements Deserializat
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function visitProperty(PropertyMetadata $metadata, $data)
     {
@@ -205,6 +207,8 @@ class JsonDeserializationVisitor extends AbstractVisitor implements Deserializat
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function getResult($data)
     {
