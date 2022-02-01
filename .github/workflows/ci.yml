@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    name: PHP 7.4
+    name: PHP 8.1
 
     runs-on: ubuntu-latest
 
@@ -38,12 +38,12 @@ jobs:
         # uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
         uses: satackey/action-docker-layer-caching@v0.0.11
         with:
-          key: graviton-php74-{hash}
+          key: graviton-php81-{hash}
           restore-keys: |
-            graviton-php74-
+            graviton-php81-
 
       - name: Run composer and tests (with coverage)
-        uses: ./.github/actions/test-php74
+        uses: ./.github/actions/test-php81
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
 
@@ -56,41 +56,3 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           # glob to junit xml files
           path: phpunit_junit.xml
-
-  build8:
-
-    name: PHP 8.1
-
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: read
-
-    services:
-      mongodb:
-        image: mongo:5.0
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php80-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php80-
-
-      - name: Docker Layer Caching
-        # You may pin to the exact commit or the version.
-        # uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        with:
-          key: graviton-php80-{hash}
-          restore-keys: |
-            graviton-php80-
-
-      - name: Run composer and tests
-        uses: ./.github/actions/test-php80

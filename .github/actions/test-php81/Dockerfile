@@ -7,6 +7,7 @@ RUN apt update && \
     apt-get install -y librabbitmq-dev git zip unzip && \
     printf "\n" | pecl install -f mongodb-${EXTMONGODB_VERSION} && \
     printf "\n" | pecl install -f amqp-${EXTAMQP_VERSION} && \
+    printf "\n" | pecl install -f pcov && \
     docker-php-ext-enable mongodb && \
     docker-php-ext-enable amqp && \
     apt clean
