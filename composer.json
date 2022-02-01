@@ -37,7 +37,7 @@
         "graviton/analytics-base": "^0.4.0",
         "graviton/mongodb-migrations-bundle": "~2",
 
-        "symfony/symfony": "~5.3.0",
+        "symfony/symfony": "~5.4.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "~2",
 
@@ -51,7 +51,7 @@
 
         "monolog/monolog": "~1",
 
-        "php-jsonpatch/php-jsonpatch": "~3.0",
+        "php-jsonpatch/php-jsonpatch": "~4.0",
         "justinrainbow/json-schema": "~5.2.0",
         "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
@@ -75,7 +75,7 @@
         "graviton/mongodb-fixtures-bundle": "dev-develop as 3.0.0",
         "libgraviton/codesniffer": "~2",
 
-        "symfony/phpunit-bridge": "^4.0",
+        "symfony/phpunit-bridge": "^6.0",
         "dms/phpunit-arraysubset-asserts": "~0"
     },
     "suggest": {
