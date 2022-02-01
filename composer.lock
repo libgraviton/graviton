@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "731c4b3f3a61e0071adb03af30067ac8",
+    "content-hash": "a4137f08dba895d4933fe5e90560c7d1",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1295,16 +1295,16 @@
         },
         {
             "name": "graviton/common-bundle",
-            "version": "v0.3.0",
+            "version": "dev-feature/deprec",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
-                "reference": "94039c549823f0fa15bf6c0754f5f248ae2efedc"
+                "reference": "37daa252bf3c2c20e285a417d169da2695828140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/94039c549823f0fa15bf6c0754f5f248ae2efedc",
-                "reference": "94039c549823f0fa15bf6c0754f5f248ae2efedc",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/37daa252bf3c2c20e285a417d169da2695828140",
+                "reference": "37daa252bf3c2c20e285a417d169da2695828140",
                 "shasum": ""
             },
             "require": {
@@ -1314,7 +1314,7 @@
                 "guzzlehttp/guzzle": "~7",
                 "laminas/laminas-diactoros": "~2",
                 "psr/http-message": "^1.0",
-                "symfony/symfony": "~4|~5"
+                "symfony/symfony": "~5"
             },
             "require-dev": {
                 "phpunit/phpunit": "~9"
@@ -1338,9 +1338,9 @@
             "description": "Common functionality for our php apps",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/v0.3.0"
+                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/feature/deprec"
             },
-            "time": "2022-01-10T09:51:39+00:00"
+            "time": "2022-02-01T10:04:26+00:00"
         },
         {
             "name": "graviton/link-header-rel-parser",
@@ -8362,6 +8362,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "graviton/common-bundle": 20,
         "graviton/mongodb-fixtures-bundle": 20
     },
     "prefer-stable": true,
