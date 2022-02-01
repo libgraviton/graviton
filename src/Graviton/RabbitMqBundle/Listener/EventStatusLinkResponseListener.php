@@ -19,6 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
@@ -111,6 +112,11 @@ class EventStatusLinkResponseListener
      * @var array
      */
     private $transientHeaders = [];
+
+    /**
+     * @var array
+     */
+    private $queueToSend = [];
 
     /**
      * @param ProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
@@ -216,8 +222,22 @@ class EventStatusLinkResponseListener
             }
 
             foreach ($queuesForEvent as $queueForEvent) {
-                $this->rabbitMqProducer->send($queueForEvent, json_encode($queueEvent));
+                $this->queueToSend[$queueForEvent] = json_encode($queueEvent);
             }
+        }
+    }
+
+    /**
+     * sends the events
+     *
+     * @param TerminateEvent $event event
+     *
+     * @return void
+     */
+    public function onKernelTerminate(TerminateEvent $event)
+    {
+        foreach ($this->queueToSend as $queueName => $payload) {
+            $this->rabbitMqProducer->send($queueName, $payload);
         }
     }
 
