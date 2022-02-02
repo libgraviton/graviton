@@ -459,7 +459,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $parameters['bundle'] . ':' . $document
+                    'value' => $documentName
                 )
             ),
             $this->repositoryFactoryService,
@@ -475,7 +475,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
+                    'value' => $documentName
                 )
             ),
             $this->repositoryFactoryService,

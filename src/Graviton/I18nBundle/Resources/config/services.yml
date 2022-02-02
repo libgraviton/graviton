@@ -15,7 +15,7 @@ services:
     factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
     public: true
     arguments:
-      - "GravitonI18nBundle:Language"
+      - Graviton\I18nBundle\Document\Language
 
   graviton.i18n.model.language:
     class: "%graviton.i18n.model.language.class%"
