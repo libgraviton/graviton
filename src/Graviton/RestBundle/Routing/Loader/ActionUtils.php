@@ -45,10 +45,16 @@ class ActionUtils
     private static function getRoute($service, $method, $action, $serviceConfig, $parameters = array())
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
+
         $defaults = array(
             '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
+
+        // add service params as defaults..
+        if (!empty($serviceConfig[0]) && is_array($serviceConfig[0])) {
+            $defaults = array_merge($serviceConfig[0], $defaults);
+        }
 
         $requirements = [];
 
@@ -59,9 +65,6 @@ class ActionUtils
 
         $route = new Route($pattern, $defaults, $requirements);
         $route->setMethods($method);
-        if (!empty($serviceConfig[0]) && is_array($serviceConfig[0])) {
-            $route->setDefaults($serviceConfig[0]);
-        }
 
         return $route;
     }
