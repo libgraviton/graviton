@@ -83,7 +83,10 @@ class ActionUtils
     private static function getBaseFromService($service, $serviceConfig)
     {
         if (isset($serviceConfig[0]['router-base']) && strlen($serviceConfig[0]['router-base']) > 0) {
-            $base = $serviceConfig[0]['router-base'] . '/';
+            $base = $serviceConfig[0]['router-base'];
+            if (!str_ends_with($base, '/')) {
+                $base .= '/';
+            }
         } else {
             $parts = explode('.', $service);
 
