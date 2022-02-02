@@ -36,6 +36,8 @@ services:
           - "@graviton.i18n.model.language"
     tags:
       - name: "graviton.rest"
+        collection: Language
+        router-base: /i18n/language/
 
   graviton.i18n.listener.contentlanguageresponse:
     class: "%graviton.i18n.listener.contentlanguageresponse.class%"
