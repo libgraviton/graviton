@@ -59,6 +59,9 @@ class ActionUtils
 
         $route = new Route($pattern, $defaults, $requirements);
         $route->setMethods($method);
+        if (!empty($serviceConfig[0]) && is_array($serviceConfig[0])) {
+            $route->setDefaults($serviceConfig[0]);
+        }
 
         return $route;
     }
