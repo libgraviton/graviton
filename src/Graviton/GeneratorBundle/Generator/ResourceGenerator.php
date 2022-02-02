@@ -680,6 +680,10 @@ class ResourceGenerator extends AbstractGenerator
                     // router base defined?
                     $routerBase = $this->json->getRouterBase();
                     if ($routerBase !== false) {
+                        if (!\str_ends_with($routerBase, '/')) {
+                            $routerBase .= '/';
+                        }
+
                         $thisTag['router-base'] = $routerBase;
                     }
                 }
@@ -782,12 +786,12 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         if ($this->generateSchema) {
-            $this->renderFile(
+            $this->renderFileAsJson(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . '.json',
                 array_merge($parameters, ['isEmbedded' => false])
             );
-            $this->renderFile(
+            $this->renderFileAsJson(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
                 array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
