@@ -51,7 +51,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
     public function getExtReference($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
-        if ($path === false) {
+        if (empty($path)) {
             throw new \InvalidArgumentException(sprintf('URL %s', $url));
         }
 
