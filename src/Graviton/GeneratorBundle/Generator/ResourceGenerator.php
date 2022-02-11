@@ -420,11 +420,6 @@ class ResourceGenerator extends AbstractGenerator
 
         $documentName = $parameters['base'] . 'Document\\' . $parameters['document'];
 
-        $this->addParameter(
-            $documentName,
-            $docName . '.class'
-        );
-
         $this->addService(
             $docName,
             null,
@@ -433,7 +428,7 @@ class ResourceGenerator extends AbstractGenerator
             [],
             null,
             null,
-            '%'. $docName . '.class%'
+            $documentName
         );
 
         $this->addParameter(
@@ -804,7 +799,7 @@ class ResourceGenerator extends AbstractGenerator
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
         $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
 
-        $this->addParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
+        $modelClassName = $parameters['base'] . 'Model\\' . $parameters['document'];
 
         // calls for normal
         $calls = [
@@ -826,25 +821,20 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $paramName,
             'graviton.rest.model',
-            $calls
-        );
-
-        // embedded service
-        $this->addParameter(
-            $parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded',
-            $paramName . 'embedded.class'
+            $calls,
+            className: $modelClassName
         );
 
         $this->addService(
             $paramName . 'embedded',
             'graviton.rest.model',
-            array(
+            [
                 [
                     'method' => 'setRepository',
                     'service' => $repoName . 'embedded'
                 ],
-            ),
-            null
+            ],
+            className: $modelClassName.'Embedded'
         );
     }
 
@@ -876,11 +866,6 @@ class ResourceGenerator extends AbstractGenerator
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
 
-        $this->addParameter(
-            $baseController,
-            $paramName . '.class'
-        );
-
         $controllerCalls = [
             [
                 'method' => 'setModel',
@@ -903,7 +888,8 @@ class ResourceGenerator extends AbstractGenerator
             $paramName,
             $parameters['parent'],
             $controllerCalls,
-            'graviton.rest'
+            'graviton.rest',
+            className: $baseController
         );
     }
 
