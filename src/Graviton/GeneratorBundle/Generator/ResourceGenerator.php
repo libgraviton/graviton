@@ -349,7 +349,7 @@ class ResourceGenerator extends AbstractGenerator
     {
         $this->filesystem->dumpFile(
             $this->servicesFile,
-            Yaml::dump(array_merge($this->parameters, $this->services))
+            Yaml::dump(array_merge($this->parameters, $this->services), 4)
         );
     }
 
@@ -768,18 +768,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateModel(array $parameters, $dir, $document)
     {
-        $this->renderFile(
-            'model/Model.php.twig',
-            $dir . '/Model/' . $document . '.php',
-            $parameters
-        );
-
-        $this->renderFile(
-            'model/Model.php.twig',
-            $dir . '/Model/' . $document . 'Embedded.php',
-            array_merge($parameters, ['document' => $document.'Embedded'])
-        );
-
         if ($this->generateSchema) {
             $this->renderFileAsJson(
                 'model/schema.json.twig',
@@ -798,8 +786,6 @@ class ResourceGenerator extends AbstractGenerator
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
         $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
-
-        $modelClassName = $parameters['base'] . 'Model\\' . $parameters['document'];
 
         // calls for normal
         $calls = [
@@ -822,7 +808,14 @@ class ResourceGenerator extends AbstractGenerator
             $paramName,
             'graviton.rest.model',
             $calls,
-            className: $modelClassName
+            arguments: [
+                [
+                    'type' => 'string',
+                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
+                        '/Resources/config/schema/'.$parameters['document'].'.json\')'
+                ]
+            ],
+            className: 'Graviton\RestBundle\Model\DocumentModel'
         );
 
         $this->addService(
@@ -834,7 +827,14 @@ class ResourceGenerator extends AbstractGenerator
                     'service' => $repoName . 'embedded'
                 ],
             ],
-            className: $modelClassName.'Embedded'
+            arguments: [
+                [
+                    'type' => 'string',
+                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
+                        '/Resources/config/schema/'.$parameters['document'].'Embedded.json\')'
+                ]
+            ],
+            className: 'Graviton\RestBundle\Model\DocumentModel'
         );
     }
 

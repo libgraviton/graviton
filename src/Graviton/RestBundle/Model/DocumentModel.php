@@ -76,21 +76,50 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $restUtils;
 
     /**
-     * @param QueryService             $queryService               query service
-     * @param RestUtils                $restUtils                  Rest utils
-     * @param EventDispatcherInterface $eventDispatcher            Kernel event dispatcher
-     * @param array                    $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * set query service
+     *
+     * @param QueryService $queryService qs
+     *
+     * @return void
      */
-    public function __construct(
-        QueryService $queryService,
-        RestUtils $restUtils,
-        EventDispatcherInterface $eventDispatcher,
-        $notModifiableOriginRecords
-    ) {
-        parent::__construct();
+    public function setQueryService(QueryService $queryService)
+    {
         $this->queryService = $queryService;
+    }
+
+    /**
+     * set event dispatcher
+     *
+     * @param EventDispatcherInterface $eventDispatcher ed
+     *
+     * @return void
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * set notModifiableOriginRecords
+     *
+     * @param array $notModifiableOriginRecords arr
+     *
+     * @return void
+     */
+    public function setNotModifiableOriginRecords($notModifiableOriginRecords)
+    {
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
+    }
+
+    /**
+     * set restutils
+     *
+     * @param RestUtils $restUtils ru
+     *
+     * @return void
+     */
+    public function setRestUtils(RestUtils $restUtils)
+    {
         $this->restUtils = $restUtils;
     }
 
