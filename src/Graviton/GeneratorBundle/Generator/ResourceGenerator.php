@@ -475,7 +475,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $documentName
+                    'value' => $documentName.'Embedded'
                 )
             ),
             $this->repositoryFactoryService,
