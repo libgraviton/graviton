@@ -8,7 +8,11 @@
   "target": {
     "indexes": [
       "createDate",
-      "eventName"
+      "eventName",
+      ["status.0.status","status.0.workerId"]
+    ],
+    "textIndexes": [
+      ["information.0.workerId","information.0.content"]
     ],
     "relations": [],
     "fields": [
