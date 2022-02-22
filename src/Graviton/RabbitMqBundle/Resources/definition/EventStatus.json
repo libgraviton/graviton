@@ -9,8 +9,8 @@
     "indexes": [
       "createDate",
       "eventName",
-      ["status.status","status.workerId"],
-      ["information.workerId","information.content"]
+      "status.status,status.workerId",
+      "information.workerId,information.content"
     ],
     "relations": [],
     "fields": [
