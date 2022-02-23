@@ -14,8 +14,6 @@ namespace Graviton\DocumentBundle\Listener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
 use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
 
@@ -99,7 +97,7 @@ class ExtReferenceSearchListener
      *
      * @param string $url Extref URL representation
      *
-     * @return array extref as array
+     * @return \Graviton\DocumentBundle\Entity\ExtReference extref
      */
     private function getDbRefValue($url)
     {
@@ -108,8 +106,7 @@ class ExtReferenceSearchListener
         }
 
         try {
-            $extref = $this->converter->getExtReference($url);
-            return $extref->jsonSerialize();
+            return $this->converter->getExtReference($url);
         } catch (\InvalidArgumentException $e) {
             //make up some invalid refs to ensure we find nothing if an invalid url was given
             return [];

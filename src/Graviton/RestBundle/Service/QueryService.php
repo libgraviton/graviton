@@ -161,17 +161,23 @@ class QueryService
              * this is or the "all" action -> multiple documents returned
              */
 
-            $this->logger->info(
-                'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
-            );
+            $mainQuery = $this->queryBuilder->getQuery();
 
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
             $countQueryBuilder->count()->limit(0)->skip(0);
             $totalCount = $countQueryBuilder->getQuery()->execute();
 
-            $records = array_values($this->queryBuilder->getQuery()->execute()->toArray());
+            $this->logger->info(
+                'QueryService: allAction query',
+                [
+                    'q' => $mainQuery->getQuery(),
+                    'totalCount' => $totalCount,
+                    'readPref' => $readPreference->getModeString()
+                ]
+            );
+
+            $records = array_values($mainQuery->execute()->toArray());
 
             $request->attributes->set('totalCount', $totalCount);
             $request->attributes->set('recordCount', count($records));
