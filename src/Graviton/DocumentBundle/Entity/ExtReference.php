@@ -38,9 +38,9 @@ class ExtReference implements \JsonSerializable
     /**
      * Specify data which should be serialized to JSON
      *
-     * @return array
+     * @return mixed
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : mixed
     {
         return ['$ref' => $this->ref, '$id' => $this->id];
     }

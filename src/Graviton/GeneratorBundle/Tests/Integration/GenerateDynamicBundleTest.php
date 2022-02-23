@@ -150,7 +150,7 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         );
         // * tag and router base is set
         $this->assertSame(
-            ['name' => 'graviton.rest', 'collection' => 'TestA', 'router-base' => '/testa'],
+            ['name' => 'graviton.rest', 'collection' => 'TestA', 'router-base' => '/testa/'],
             $serviceConf['services']['gravitondyn.testa.controller.testa']['tags'][0]
         );
 

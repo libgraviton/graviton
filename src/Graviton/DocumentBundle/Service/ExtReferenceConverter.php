@@ -6,8 +6,9 @@
 namespace Graviton\DocumentBundle\Service;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -27,10 +28,6 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
      * @var array
      */
     private $mapping;
-    /**
-     * @var Route[]
-     */
-    private $resolvingCache;
 
     /**
      * Constructor
@@ -54,24 +51,27 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
     public function getExtReference($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
-        if ($path === false) {
+        if (empty($path)) {
             throw new \InvalidArgumentException(sprintf('URL %s', $url));
         }
 
-        $id = null;
-        $collection = null;
+        try {
+            $previousContext = $this->router->getContext();
+            $this->router->setContext(RequestContext::fromUri($path));
 
-        if (!isset($this->resolvingCache[$path])) {
-            foreach ($this->router->getRouteCollection()->all() as $route) {
-                list($collection, $id) = $this->getDataFromRoute($route, $path);
-                if ($collection !== null && $id !== null) {
-                    $this->resolvingCache[$path] = $route;
-                    return ExtReference::create($collection, $id);
-                }
+            $route = $this->router->matchRequest(Request::create($path));
+
+            $this->router->setContext($previousContext);
+
+            if (is_array($route) && isset($route['collection']) && isset($route['id'])) {
+                return ExtReference::create($route['collection'], $route['id']);
             }
-        } else {
-            list($collection, $id) = $this->getDataFromRoute($this->resolvingCache[$path], $path);
-            return ExtReference::create($collection, $id);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException(
+                sprintf('Error while determening route for %s', $path),
+                0,
+                $e
+            );
         }
 
         throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
@@ -100,37 +100,5 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
             ['id' => $extReference->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-    }
-
-    /**
-     * get collection and id from route
-     *
-     * @param Route  $route route to look at
-     * @param string $value value of reference as URI
-     *
-     * @return array
-     */
-    private function getDataFromRoute(Route $route, $value)
-    {
-        if ($route->getRequirement('id') !== null &&
-            $route->getMethods() === ['GET'] &&
-            preg_match($route->compile()->getRegex(), $value, $matches)
-        ) {
-            $id = $matches['id'];
-
-            $controllerName = $route->getDefault('_controller');
-            if (substr_count($controllerName, ':') === 1) {
-                $controllerName = str_replace(':', '::', $controllerName);
-            }
-
-            list($routeService) = explode('::', $controllerName);
-            list($core, $bundle,,$name) = explode('.', $routeService);
-            $serviceName = implode('.', [$core, $bundle, 'rest', $name]);
-            $collection = array_search($serviceName, $this->mapping);
-
-            return [$collection, $id];
-        }
-
-        return [null, null];
     }
 }

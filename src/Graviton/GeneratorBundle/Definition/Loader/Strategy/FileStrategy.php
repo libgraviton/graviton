@@ -21,6 +21,9 @@ class FileStrategy implements StrategyInterface
      */
     public function supports($input)
     {
+        if (is_null($input)) {
+            return false;
+        }
         return is_file($input);
     }
 

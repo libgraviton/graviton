@@ -9,8 +9,9 @@ use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -26,14 +27,11 @@ class ExtReferenceConverterTest extends TestCase
      * @var RouterInterface|MockObject
      */
     private $router;
+
     /**
-     * @var RouteCollection|MockObject
+     * @var array
      */
-    private $collection;
-    /**
-     * @var Route[]
-     */
-    private $routes;
+    private $routeInformation = [];
 
     /**
      * setup type we want to test
@@ -42,78 +40,23 @@ class ExtReferenceConverterTest extends TestCase
      */
     public function setUp() : void
     {
-        $this->router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+        $this->router = $this->getMockBuilder(Router::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getRouteCollection', 'generate'])
+            ->onlyMethods(['generate', 'matchRequest', 'getContext'])
             ->getMock();
 
-        $this->collection = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
-            ->setMethods(['all'])
-            ->getMock();
+        $this->router
+            ->expects($this->any())
+            ->method('getContext')
+            ->will($this->returnValue(RequestContext::fromUri('/')));
 
-        $this->routes = [
-            new Route(
-                '/core/app/{id}',
-                [
-                    '_controller' => 'graviton.core.controller.app::getAction',
-                    '_format' => '~'
-                ],
-                [
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ],
-                [],
-                '',
-                [],
-                [
-                    'GET'
-                ]
-            ),
-            new Route(
-                '/core/app',
-                [
-                    '_controller' => 'graviton.core.controller.app.appAction',
-                    '_format' => '~'
-                ],
-                [],
-                [],
-                '',
-                [],
-                [
-                    'GET'
-                ]
-            ),
-            new Route(
-                '/i18n/language/{id}',
-                [
-                    '_controller' => 'graviton.i18n.controller.language::getAction',
-                    '_format' => '~'
-                ],
-                [
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ],
-                [],
-                '',
-                [],
-                [
-                    'GET'
-                ]
-            ),
-            new Route(
-                '/hans/showcase/{id}',
-                [
-                    '_controller' => 'gravitondyn.showcase.controller.showcase::getAction',
-                    '_format' => '~'
-                ],
-                [
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ],
-                [],
-                '',
-                [],
-                [
-                    'GET'
-                ]
-            ),
+        $this->routeInformation['/core/app/test'] = [
+            'collection' => 'App',
+            'id' => 'test'
+        ];
+        $this->routeInformation['/hans/showcase/blah'] = [
+            'collection' => 'ShowCase',
+            'id' => 'blah'
         ];
     }
 
@@ -131,13 +74,12 @@ class ExtReferenceConverterTest extends TestCase
     {
         $this->router
             ->expects($this->once())
-            ->method('getRouteCollection')
-            ->will($this->returnValue($this->collection));
-
-        $this->collection
-            ->expects($this->once())
-            ->method('all')
-            ->will($this->returnValue($this->routes));
+            ->method('matchRequest')
+            ->willReturnCallback(
+                function (Request $request) {
+                    return $this->routeInformation[$request->getPathInfo()];
+                }
+            );
 
         $converter = new ExtReferenceConverter(
             $this->router,
