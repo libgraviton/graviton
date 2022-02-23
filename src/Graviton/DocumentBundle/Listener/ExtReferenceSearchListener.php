@@ -101,12 +101,12 @@ class ExtReferenceSearchListener
      */
     private function getDbRefValue($url)
     {
-        if ($url === null) {
+        if (empty($url)) {
             return null;
         }
 
         try {
-            return $this->converter->getExtReference($url);
+            return $this->converter->getExtReference($url)->jsonSerialize();
         } catch (\InvalidArgumentException $e) {
             //make up some invalid refs to ensure we find nothing if an invalid url was given
             return [];

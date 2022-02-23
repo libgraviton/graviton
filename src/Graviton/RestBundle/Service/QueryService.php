@@ -161,12 +161,12 @@ class QueryService
              * this is or the "all" action -> multiple documents returned
              */
 
-            $mainQuery = $this->queryBuilder->getQuery();
-
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
             $countQueryBuilder->count()->limit(0)->skip(0);
             $totalCount = $countQueryBuilder->getQuery()->execute();
+
+            $mainQuery = $this->queryBuilder->getQuery();
 
             $this->logger->info(
                 'QueryService: allAction query',
@@ -279,14 +279,16 @@ class QueryService
         }
 
         if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
+            $currentQuery = $this->queryBuilder->getQuery()->getQuery();
 
             /*** default sort ***/
-            if (!array_key_exists('sort', $this->queryBuilder->getQuery()->getQuery())) {
+
+            if (!array_key_exists('sort', $currentQuery)) {
                 $this->queryBuilder->sort('_id');
             }
 
             /*** pagination stuff ***/
-            if (!array_key_exists('limit', $this->queryBuilder->getQuery()->getQuery())) {
+            if (!array_key_exists('limit', $currentQuery)) {
                 $this->queryBuilder->skip($this->getPaginationSkip());
                 $this->queryBuilder->limit($this->getPaginationPageSize());
             }
