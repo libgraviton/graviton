@@ -6,6 +6,7 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
@@ -14,7 +15,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlOperatorNotAllowedListener extends RestExceptionListener
+class RqlOperatorNotAllowedListener
 {
     /**
      * Handle the exception and send the right response
@@ -26,12 +27,13 @@ class RqlOperatorNotAllowedListener extends RestExceptionListener
     {
         $exception = $event->getThrowable();
         if ($exception instanceof RqlOperatorNotAllowedException) {
-            $response = $exception->getResponse() ?: new Response();
-            $response = $response
-                ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent($this->getSerializedContent(['message' => $exception->getMessage()]));
+            $msg = [
+                'message' => $exception->getMessage()
+            ];
 
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
+            );
         }
     }
 }

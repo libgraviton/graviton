@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Laminas\Diactoros\Response\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
@@ -16,7 +17,7 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class NotFoundExceptionListener extends RestExceptionListener
+class NotFoundExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,18 +29,11 @@ class NotFoundExceptionListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof NotFoundException) {
-            $msg = array("message" => $exception->getMessage());
-            // Set status code and content
-            $response = $exception->getResponse();
-            if (!$response instanceof Response) {
-                $response = new Response();
-            }
+            $msg = ["message" => $exception->getMessage()];
 
-            $response = $response
-                ->setStatusCode(Response::HTTP_NOT_FOUND)
-                ->setContent($this->getSerializedContent($msg));
-
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_NOT_FOUND)
+            );
         }
     }
 }

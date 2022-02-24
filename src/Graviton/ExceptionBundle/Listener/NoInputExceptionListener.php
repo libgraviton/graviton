@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\NoInputException;
@@ -16,7 +17,7 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class NoInputExceptionListener extends RestExceptionListener
+class NoInputExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,13 +29,11 @@ class NoInputExceptionListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof NoInputException) {
-            $msg = array("message" => "No input data");
+            $msg = ["message" => "No input data"];
 
-            $response = $exception->getResponse()
-                ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent($this->getSerializedContent($msg));
-
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
+            );
         }
     }
 }

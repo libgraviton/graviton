@@ -1,23 +1,26 @@
-services:
-    kernel.listener.graviton_exception_rest_exception:
-        class: "%kernel.listener.graviton_exception_rest_exception.class%"
-        abstract: true
-        arguments:
-            - "@graviton.rest.serializer"
+parameters:
+  kernel.listener.graviton_exception_validation_exception.class: Graviton\ExceptionBundle\Listener\ValidationExceptionListener
+  kernel.listener.graviton_exception_notfound_exception.class: Graviton\ExceptionBundle\Listener\NotFoundExceptionListener
+  kernel.listener.graviton_exception_serialization_exception.class: Graviton\ExceptionBundle\Listener\SerializationExceptionListener
+  kernel.listener.graviton_exception_deserialization_exception.class: Graviton\ExceptionBundle\Listener\DeserializationExceptionListener
+  kernel.listener.graviton_exception_noinput_exception.class: Graviton\ExceptionBundle\Listener\NoInputExceptionListener
+  kernel.listener.graviton_exception_rqlsyntaxerror.class: Graviton\ExceptionBundle\Listener\RqlSyntaxErrorListener
+  kernel.listener.graviton_exception_rqloperatornotallowed.class: Graviton\ExceptionBundle\Listener\RqlOperatorNotAllowedListener
+  kernel.listener.graviton_exception_malformedinput_exception.class: Graviton\ExceptionBundle\Listener\MalformedInputExceptionListener
+  kernel.listener.graviton_exception_invalidjsonpatch_exception.class: Graviton\ExceptionBundle\Listener\InvalidJsonPatchExceptionListener
+  kernel.listener.graviton_exception_recordoriginmodified_exception.class: Graviton\ExceptionBundle\Listener\RecordOriginExceptionListener
 
+services:
     kernel.listener.graviton_exception_notfound_exception:
         class: "%kernel.listener.graviton_exception_notfound_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
             event: kernel.exception
             method: onKernelException
 
-
     kernel.listener.graviton_exception_validation_exception:
         class: "%kernel.listener.graviton_exception_validation_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         calls:
           -
             method: setConstraintUtils
@@ -31,7 +34,6 @@ services:
 
     kernel.listener.graviton_exception_serialization_exception:
         class: "%kernel.listener.graviton_exception_serialization_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -40,7 +42,6 @@ services:
 
     kernel.listener.graviton_exception_deserialization_exception:
         class: "%kernel.listener.graviton_exception_deserialization_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -49,7 +50,6 @@ services:
 
     kernel.listener.graviton_exception_noinput_exception:
         class: "%kernel.listener.graviton_exception_noinput_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -58,7 +58,6 @@ services:
 
     kernel.listener.graviton_exception_rqlsyntaxerror:
         class: "%kernel.listener.graviton_exception_rqlsyntaxerror.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -67,7 +66,6 @@ services:
 
     kernel.listener.graviton_exception_rqloperatornotallowed:
         class: "%kernel.listener.graviton_exception_rqloperatornotallowed.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -76,7 +74,6 @@ services:
 
     kernel.listener.graviton_exception_malformedinput_exception:
         class: "%kernel.listener.graviton_exception_malformedinput_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -85,7 +82,6 @@ services:
 
     kernel.listener.graviton_exception_invalidjsonpatch_exception:
         class: "%kernel.listener.graviton_exception_invalidjsonpatch_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener
@@ -94,7 +90,6 @@ services:
 
     kernel.listener.graviton_exception_recordoriginmodified_exception:
         class: "%kernel.listener.graviton_exception_recordoriginmodified_exception.class%"
-        parent: "kernel.listener.graviton_exception_rest_exception"
         tags:
           -
             name: kernel.event_listener

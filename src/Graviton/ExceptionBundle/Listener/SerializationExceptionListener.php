@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SerializationExceptionListener extends RestExceptionListener
+class SerializationExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,10 +29,13 @@ class SerializationExceptionListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof SerializationException) {
-            $response = $exception->getResponse()
-                ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $msg = [
+                'message' => 'serialization problem: '.$exception->getMessage()
+            ];
 
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_INTERNAL_SERVER_ERROR)
+            );
         }
     }
 }

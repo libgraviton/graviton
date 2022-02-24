@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
@@ -16,7 +17,7 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class MalformedInputExceptionListener extends RestExceptionListener
+class MalformedInputExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,13 +29,11 @@ class MalformedInputExceptionListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof MalformedInputException) {
-            $msg = array("message" => "Bad Request - " . $exception->getMessage());
+            $msg = ["message" => "Bad Request - " . $exception->getMessage()];
 
-            $response = $exception->getResponse()
-                ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent($this->getSerializedContent($msg));
-
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
+            );
         }
     }
 }

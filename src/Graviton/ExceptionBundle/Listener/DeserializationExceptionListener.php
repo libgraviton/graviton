@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DeserializationExceptionListener extends RestExceptionListener
+class DeserializationExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -27,19 +28,13 @@ class DeserializationExceptionListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        // var_dump does not work here... use
-        //    \Doctrine\Common\Util\Debug::dump($e);die;
         if (($exception = $event->getThrowable()) instanceof DeserializationException) {
             // hnmm.. no way to find out which property (name) failed??
-            $msg = array('message' => $exception->getPrevious()->getMessage());
+            $msg = ['message' => $exception->getPrevious()->getMessage()];
 
-            $response = $exception->getResponse();
-            $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-            $response->setContent(
-                $this->getSerializedContent($msg)
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
             );
-
-            $event->setResponse($response);
         }
     }
 }
