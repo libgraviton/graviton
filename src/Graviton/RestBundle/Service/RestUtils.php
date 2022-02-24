@@ -225,30 +225,21 @@ final class RestUtils implements RestUtilsInterface
 
         // is request body empty
         if ($content === '') {
-            $e = new NoInputException();
-            $e->setResponse($response);
-            throw $e;
+            throw new NoInputException();
         }
 
         $input = json_decode($content, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            $e = new MalformedInputException($this->getLastJsonErrorMessage());
-            $e->setErrorType(json_last_error());
-            $e->setResponse($response);
-            throw $e;
+            throw new MalformedInputException(jsonError: json_last_error_msg());
         }
         if (!is_array($input)) {
-            $e = new MalformedInputException('JSON request body must be an object');
-            $e->setResponse($response);
-            throw $e;
+            throw new MalformedInputException('JSON request body must be an object');
         }
 
         if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
             // we need to check for id mismatches....
             if ($request->attributes->get('id') != $input['id']) {
-                $e = new MalformedInputException('Record ID in your payload must be the same');
-                $e->setResponse($response);
-                throw $e;
+                throw new MalformedInputException('Record ID in your payload must be the same');
             }
         }
 
@@ -256,11 +247,9 @@ final class RestUtils implements RestUtilsInterface
             array_key_exists('id', $input) &&
             !$model->isIdInPostAllowed()
         ) {
-            $e = new MalformedInputException(
+            throw new MalformedInputException(
                 '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
             );
-            $e->setResponse($response);
-            throw $e;
         }
     }
 
@@ -282,22 +271,6 @@ final class RestUtils implements RestUtilsInterface
                 throw new InvalidJsonPatchException('Change/remove of ID not allowed');
             }
         }
-    }
-
-    /**
-     * Used for backwards compatibility to PHP 5.4
-     *
-     * @return string
-     */
-    private function getLastJsonErrorMessage()
-    {
-        $message = 'Unable to decode JSON string';
-
-        if (function_exists('json_last_error_msg')) {
-            $message = json_last_error_msg();
-        }
-
-        return $message;
     }
 
     /**
@@ -469,7 +442,7 @@ final class RestUtils implements RestUtilsInterface
 
             return $this->serializeContent($result);
         } catch (\Exception $e) {
-            throw new SerializationException($e);
+            throw new SerializationException(prev: $e);
         }
     }
 
@@ -491,7 +464,7 @@ final class RestUtils implements RestUtilsInterface
                 $documentClass
             );
         } catch (\Exception $e) {
-            throw new DeserializationException("Deserialization failed", $e);
+            throw new DeserializationException(prev: $e);
         }
 
         return $record;

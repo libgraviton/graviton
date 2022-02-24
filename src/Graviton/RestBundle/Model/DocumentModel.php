@@ -416,9 +416,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $originValue = strtolower(trim($record->getRecordOrigin()));
 
             if (in_array($originValue, $values)) {
-                $msg = sprintf("Must not be one of the following keywords: %s", implode(', ', $values));
-
-                throw new RecordOriginModifiedException($msg);
+                throw new RecordOriginModifiedException(
+                    sprintf(
+                        "'recordOrigin' must not be one of the following keywords: %s",
+                        implode(', ', $values)
+                    )
+                );
             }
         }
     }

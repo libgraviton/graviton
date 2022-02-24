@@ -63,7 +63,8 @@
         "guzzlehttp/psr7": "*",
 
         "solarium/solarium": "~6",
-        "mtdowling/jmespath.php": "^2.4"
+        "mtdowling/jmespath.php": "^2.4",
+        "symfony/runtime": "^6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~9|~8",
@@ -118,7 +119,8 @@
     "config": {
         "bin-dir": "vendor/bin",
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "symfony/runtime": true
         }
     },
     "bin": ["bin/console"],

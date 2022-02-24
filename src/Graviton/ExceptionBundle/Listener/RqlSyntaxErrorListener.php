@@ -6,6 +6,7 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\RqlParser\Exception\SyntaxErrorException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlSyntaxErrorListener extends RestExceptionListener
+class RqlSyntaxErrorListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,18 +29,13 @@ class RqlSyntaxErrorListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof SyntaxErrorException) {
-            // Set status code and content
-            $response = new Response();
-            $response
-                ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent(
-                    $this->getSerializedContent(
-                        [
-                            'message' => sprintf('syntax error in rql: %s', $exception->getMessage())
-                        ]
-                    )
-                );
-            $event->setResponse($response);
+            $msg = [
+                'message' => sprintf('syntax error in rql: %s', $exception->getMessage())
+            ];
+
+            $event->setResponse(
+                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
+            );
         }
     }
 }

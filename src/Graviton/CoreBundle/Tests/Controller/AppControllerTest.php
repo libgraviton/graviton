@@ -555,9 +555,8 @@ class AppControllerTest extends RestTestCase
 
         // Check that error message contains detailed reason
         json_decode($input);
-        $lastJsonError = function_exists('json_last_error_msg')
-            ? json_last_error_msg()
-            : 'Unable to decode JSON string';
+        $lastJsonError = json_last_error_msg();
+
         $this->assertStringContainsString(
             $lastJsonError,
             $client->getResults()->message
@@ -580,9 +579,8 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->post('/person/customer', $helloApp);
 
-        $this->assertEquals(
-            'Bad Request - "id" can not be given on a POST request. '.
-            'Do a PUT request instead to update an existing record.',
+        $this->assertStringContainsString(
+            '"id" can not be given on a POST request.',
             $client->getResults()->message
         );
     }
@@ -695,7 +693,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString(
-            'Invalid JSON patch request',
+            'Patch request should be an array of operations',
             $response->getContent()
         );
     }

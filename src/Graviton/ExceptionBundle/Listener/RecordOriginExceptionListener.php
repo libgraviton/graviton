@@ -6,6 +6,7 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
@@ -16,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RecordOriginExceptionListener extends RestExceptionListener
+class RecordOriginExceptionListener
 {
 
     /**
@@ -29,20 +30,17 @@ class RecordOriginExceptionListener extends RestExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getThrowable()) instanceof RecordOriginModifiedException) {
-            $content = array(
+            $content = [
                 "propertyPath" => "recordOrigin",
-                "message"      => $exception->getMessage(),
+                "message" => $exception->getMessage(),
+            ];
+
+            $event->setResponse(
+                new JsonResponse(
+                    $content,
+                    Response::HTTP_BAD_REQUEST
+                )
             );
-
-            // Set status code and content
-            $response = new Response();
-            $response
-                ->setStatusCode($exception->getStatusCode())
-                ->setContent(
-                    $this->getSerializedContent($content)
-                );
-
-            $event->setResponse($response);
         }
     }
 }

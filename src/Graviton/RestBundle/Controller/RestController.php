@@ -395,7 +395,7 @@ class RestController extends AbstractController
                 $patch = new Patch($jsonDocument, $request->getContent());
                 $patchedDocument = $patch->apply();
             } catch (\Exception $e) {
-                throw new InvalidJsonPatchException($e->getMessage());
+                throw new InvalidJsonPatchException(prev: $e);
             }
         } catch (\Exception $e) {
             throw $e;

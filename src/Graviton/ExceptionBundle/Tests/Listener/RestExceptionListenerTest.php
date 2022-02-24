@@ -1,14 +1,12 @@
 <?php
 /**
- * RqlOperatorNotAllowedListenerTest class file
+ * RestExceptionListenerTest class file
  */
 
 namespace Graviton\ExceptionBundle\Tests\Listener;
 
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
-use Graviton\ExceptionBundle\Listener\RqlOperatorNotAllowedListener;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
+use Graviton\ExceptionBundle\Listener\RestExceptionListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,33 +19,8 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlOperatorNotAllowedListenerTest extends TestCase
+class RestExceptionListenerTest extends TestCase
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-    /**
-     * @var SerializationContext
-     */
-    private $context;
-
-    /**
-     * Setup the test
-     *
-     * @return void
-     */
-    protected function setUp() : void
-    {
-        $this->serializer = $this->getMockBuilder(SerializerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->context = $this->getMockBuilder(SerializationContext::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        parent::setUp();
-    }
 
     /**
      * gets exception
@@ -73,7 +46,7 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
      */
     public function testOnKernelExceptionWithUnsupportedException()
     {
-        $listener = new RqlOperatorNotAllowedListener($this->serializer, $this->context);
+        $listener = new RestExceptionListener();
         $event = $this->getExceptionEvent(new HttpException(400));
         $listener->onKernelException($event);
         $this->assertNull($event->getResponse());
@@ -86,24 +59,24 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
      */
     public function testOnKernelException()
     {
-        $serializedContent = 'serialized content';
-
-        $response = new Response($serializedContent, Response::HTTP_BAD_REQUEST);
         $exception = new RqlOperatorNotAllowedException('limit');
-        $exception->setResponse($response);
 
-        $this->serializer->expects($this->once())
-            ->method('serialize')
-            ->with(['message' => $exception->getMessage()], 'json')
-            ->willReturn($serializedContent);
-
-        $listener = new RqlOperatorNotAllowedListener($this->serializer);
+        $listener = new RestExceptionListener();
 
         $event = $this->getExceptionEvent($exception);
-
         $listener->onKernelException($event);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $event->getResponse()->getStatusCode());
-        $this->assertEquals($serializedContent, $event->getResponse()->getContent());
+
+        $content = json_decode($event->getResponse()->getContent(), true);
+
+        $this->assertEquals(
+            "Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException",
+            $content['type']
+        );
+        $this->assertEquals(
+            "RQL operator \"limit\" is not allowed for this request",
+            $content['message']
+        );
     }
 }

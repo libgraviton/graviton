@@ -9,6 +9,7 @@ use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\SchemaBundle\Constraint\ConstraintUtils;
 use JsonSchema\Entity\JsonPointer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ValidationExceptionListener extends RestExceptionListener
+class ValidationExceptionListener
 {
 
     /**
@@ -50,15 +51,9 @@ class ValidationExceptionListener extends RestExceptionListener
     {
         if (($exception = $event->getThrowable()) instanceof ValidationException) {
             $content = $this->getErrorMessages($exception->getErrors());
-            // Set status code and content
-            $response = new Response();
-            $response
-                ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent(
-                    $this->getSerializedContent($content)
-                );
-
-            $event->setResponse($response);
+            $event->setResponse(
+                new JsonResponse($content, Response::HTTP_BAD_REQUEST)
+            );
         }
     }
 
