@@ -2,7 +2,7 @@
 
 namespace Graviton;
 
-require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+require __DIR__.'/../app/autoload_runtime.php';
 
 return function (array $context) {
     $env = 'prod';
