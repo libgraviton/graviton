@@ -5,7 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Exception;
 
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * RqlOperatorNotAllowed exception
@@ -14,9 +14,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-final class RqlOperatorNotAllowedException extends BadRequestHttpException implements RestExceptionInterface
+final class RqlOperatorNotAllowedException extends RestException
 {
-    use RestExceptionTrait;
 
     /**
      * Constructor
@@ -25,6 +24,9 @@ final class RqlOperatorNotAllowedException extends BadRequestHttpException imple
      */
     public function __construct($operator)
     {
-        parent::__construct(sprintf('RQL operator "%s" is not allowed for this request', $operator));
+        parent::__construct(
+            Response::HTTP_BAD_REQUEST,
+            sprintf('RQL operator "%s" is not allowed for this request', $operator)
+        );
     }
 }

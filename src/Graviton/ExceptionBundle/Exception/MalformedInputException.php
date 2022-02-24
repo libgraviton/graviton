@@ -5,7 +5,6 @@
 
 namespace Graviton\ExceptionBundle\Exception;
 
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,9 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-final class MalformedInputException extends BadRequestHttpException implements RestExceptionInterface
+final class MalformedInputException extends RestException
 {
-    use RestExceptionTrait;
 
     private $errorTypes = array(
         JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
@@ -30,25 +28,20 @@ final class MalformedInputException extends BadRequestHttpException implements R
     /**
      * Constructor
      *
-     * @param string     $message Error message
-     * @param \Exception $prev    Previous Exception
+     * @param string     $message   Error message
+     * @param \Exception $prev      Previous Exception
+     * @param string     $jsonError json error type
      */
-    public function __construct($message = "Malformed input", $prev = null)
+    public function __construct($message = "Malformed input", $prev = null, $jsonError = null)
     {
-        parent::__construct($message, $prev, Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * Sets the specific json error type to make consistent error reporting (and thus testing) possible
-     *
-     * @param int $error Error constant from json_last_error
-     *
-     * @return void
-     */
-    public function setErrorType($error)
-    {
-        if (isset($this->errorTypes[$error])) {
-            $this->message = trim($this->errorTypes[$error].': '.$this->message);
+        if (!is_null($jsonError) && isset($this->errorTypes[$jsonError])) {
+            $message .= ' - '.$this->errorTypes[$jsonError];
         }
+
+        parent::__construct(
+            Response::HTTP_BAD_REQUEST,
+            $message,
+            $prev
+        );
     }
 }

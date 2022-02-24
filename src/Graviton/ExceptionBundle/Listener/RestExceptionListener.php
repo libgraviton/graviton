@@ -1,23 +1,20 @@
 <?php
 /**
- * Listener for deserialization exceptions
+ * Listener for RestException exceptions
  */
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use Graviton\ExceptionBundle\Exception\RestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Graviton\ExceptionBundle\Exception\DeserializationException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Listener for deserialization exceptions
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DeserializationExceptionListener
+class RestExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -28,12 +25,19 @@ class DeserializationExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getThrowable()) instanceof DeserializationException) {
-            // hnmm.. no way to find out which property (name) failed??
-            $msg = ['message' => $exception->getPrevious()->getMessage()];
+        if (($exception = $event->getThrowable()) instanceof RestException) {
+            $innerMessage = $exception->getMessage();
+            if ($exception->getPrevious() instanceof \Throwable) {
+                $innerMessage .= ' - '.$exception->getPrevious()->getMessage();
+            }
+
+            $msg = [
+                'type' => $exception::class,
+                'message' => $innerMessage
+            ];
 
             $event->setResponse(
-                new JsonResponse($msg, Response::HTTP_BAD_REQUEST)
+                new JsonResponse($msg, $exception->getStatusCode())
             );
         }
     }
