@@ -104,6 +104,8 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
         $listener->onKernelException($event);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $event->getResponse()->getStatusCode());
-        $this->assertEquals($serializedContent, $event->getResponse()->getContent());
+        $this->assertStringContainsString('RQL operator', $event->getResponse()->getContent());
+        $this->assertStringContainsString('limit', $event->getResponse()->getContent());
+        $this->assertStringContainsString('is not allowed for this request', $event->getResponse()->getContent());
     }
 }
