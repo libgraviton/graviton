@@ -17,25 +17,17 @@ use Symfony\Component\HttpFoundation\Response;
 final class MalformedInputException extends RestException
 {
 
-    private $errorTypes = array(
-        JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
-        JSON_ERROR_STATE_MISMATCH => 'Underflow or modes mismatch',
-        JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
-        JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
-        JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded'
-    );
-
     /**
      * Constructor
      *
      * @param string     $message   Error message
      * @param \Exception $prev      Previous Exception
-     * @param string     $jsonError json error type
+     * @param ?string    $jsonError json error type
      */
-    public function __construct($message = "Malformed input", $prev = null, $jsonError = null)
+    public function __construct($message = "Malformed input", $prev = null, ?string $jsonError = null)
     {
-        if (!is_null($jsonError) && isset($this->errorTypes[$jsonError])) {
-            $message .= ' - '.$this->errorTypes[$jsonError];
+        if (!is_null($jsonError)) {
+            $message .= ' - '.$jsonError;
         }
 
         parent::__construct(

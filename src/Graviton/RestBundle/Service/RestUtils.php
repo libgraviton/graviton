@@ -230,7 +230,7 @@ final class RestUtils implements RestUtilsInterface
 
         $input = json_decode($content, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new MalformedInputException(jsonError: $this->getLastJsonErrorMessage());
+            throw new MalformedInputException(jsonError: json_last_error_msg());
         }
         if (!is_array($input)) {
             throw new MalformedInputException('JSON request body must be an object');
@@ -271,22 +271,6 @@ final class RestUtils implements RestUtilsInterface
                 throw new InvalidJsonPatchException('Change/remove of ID not allowed');
             }
         }
-    }
-
-    /**
-     * Used for backwards compatibility to PHP 5.4
-     *
-     * @return string
-     */
-    private function getLastJsonErrorMessage()
-    {
-        $message = 'Unable to decode JSON string';
-
-        if (function_exists('json_last_error_msg')) {
-            $message = json_last_error_msg();
-        }
-
-        return $message;
     }
 
     /**
