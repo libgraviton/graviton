@@ -1,0 +1,54 @@
+version: "2.7"
+server:
+  command: "php -d opcache.enable_cli=1 public/app.php"
+  # If you are using symfony 5.3+ and the new Runtime component:
+  # remove the previous `command` line above and uncomment the line below.
+  # command: "php public/index.php"
+  env:
+    APP_RUNTIME: Baldinof\RoadRunnerBundle\Runtime\Runtime
+    APP_ENV: prod
+    APP_DEBUG: '0'
+    SYMFONY_ENV: prod
+http:
+  address: 0.0.0.0:9080
+  middleware: ["static"]
+  uploads:
+    forbid: [".php", ".exe", ".bat", ".sh"]
+  pool:
+    num_workers: 1
+    max_jobs: 64
+    supervisor:
+      # watch_tick defines how often to check the state of the workers (seconds)
+      watch_tick: 5s
+      # ttl defines maximum time worker is allowed to live (seconds)
+      ttl: 0
+      # idle_ttl defines maximum duration worker can spend in idle mode after first use. Disabled when 0 (seconds)
+      idle_ttl: 90s
+      # exec_ttl defines maximum lifetime per job (seconds)
+      exec_ttl: 60s
+      # max_worker_memory limits memory usage per worker (MB)
+      max_worker_memory: 0
+  static:
+    dir: "public"
+    forbid: [".php", ".htaccess"]
+  fcgi:
+    address: tcp://0.0.0.0:9000
+logs:
+  mode: production
+  line_ending: ""
+  channels:
+    http:
+      level: debug # Log all http requests, set to info to disable
+    server:
+      level: debug # Everything written to worker stderr is logged
+      mode: raw
+    metrics:
+      level: error
+
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+# Uncomment to use metrics integration
+metrics:
+  # prometheus client address (path /metrics added automatically)
+  address: "0.0.0.0:9180"

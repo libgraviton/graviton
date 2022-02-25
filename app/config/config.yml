@@ -42,6 +42,15 @@ graviton_common:
     deployment:
         check_package_name: "%graviton.core.checkPackageName%"
 
+baldinof_road_runner:
+    default_integrations: true
+    #    kernel_reboot:
+    #        strategy: always
+    kernel_reboot:
+        strategy: on_exception
+        allowed_exceptions:
+            - Graviton\ExceptionBundle\Exception\RestException
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"

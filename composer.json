@@ -64,7 +64,8 @@
 
         "solarium/solarium": "~6",
         "mtdowling/jmespath.php": "^2.4",
-        "symfony/runtime": "^6.0"
+        "symfony/runtime": "^6.0",
+        "baldinof/roadrunner-bundle": "^2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~9|~8",

@@ -76,7 +76,8 @@ class AppKernel extends Kernel
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
-            new \Sentry\SentryBundle\SentryBundle()
+            new \Sentry\SentryBundle\SentryBundle(),
+            new \Baldinof\RoadRunnerBundle\BaldinofRoadRunnerBundle()
         );
 
         $nonProdEnv = ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false);
