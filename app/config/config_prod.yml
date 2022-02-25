@@ -6,7 +6,7 @@ monolog:
     handlers:
         main:
             type: "stream"
-            path: "%graviton.log.path%"
+            path: "php://stderr"
             level: "%graviton.log.level%"
             channels: ["!event"]
             formatter: "log_formatter"
