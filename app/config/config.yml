@@ -113,8 +113,19 @@ graviton_core:
         - /person/whoami
 
 sentry:
-    dsn: "%graviton.sentry.dsn%"
+    dsn: "%gateway.sentry.dsn%"
+    register_error_listener: false
+    tracing:
+        enabled: false
     options:
+        # see https://github.com/getsentry/sentry-symfony/issues/421
+        ## as we cannot filter here, we disable all and enable those that we want
+        default_integrations: false
         integrations:
             - 'Sentry\Integration\IgnoreErrorsIntegration'
+            - 'Sentry\Integration\RequestIntegration'
+            - 'Sentry\Integration\TransactionIntegration'
+            - 'Sentry\Integration\FrameContextifierIntegration'
+            - 'Sentry\Integration\EnvironmentIntegration'
+            - 'Sentry\Integration\ModulesIntegration'
         environment: "%kernel.environment%"
