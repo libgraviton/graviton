@@ -20,3 +20,4 @@ app/swagger.*
 versions.yml
 .idea
 *.cache
+.env.local
