@@ -113,7 +113,7 @@ graviton_core:
         - /person/whoami
 
 sentry:
-    dsn: "%gateway.sentry.dsn%"
+    dsn: "%graviton.sentry.dsn%"
     register_error_listener: false
     tracing:
         enabled: false
