@@ -11,6 +11,12 @@ services:
     test_consumer:
         class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 
+    # sentry
+    Sentry\Integration\RequestIntegration:
+    Sentry\Integration\TransactionIntegration:
+    Sentry\Integration\FrameContextifierIntegration:
+    Sentry\Integration\EnvironmentIntegration:
+    Sentry\Integration\ModulesIntegration:
     Sentry\Integration\IgnoreErrorsIntegration:
         arguments:
             $options:
