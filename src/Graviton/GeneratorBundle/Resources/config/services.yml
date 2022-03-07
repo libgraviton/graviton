@@ -117,8 +117,7 @@ services:
 
     # commands
 
-    graviton_generator.command.generatedynamicbundle:
-        class: "Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand"
+    Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand:
         arguments:
           - "@graviton_generator.definition.loader"
           - "@graviton_generator.generator.bundle"

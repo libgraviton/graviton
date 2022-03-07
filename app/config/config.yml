@@ -1,8 +1,12 @@
 imports:
+    # the generated params by incenteev (env)
     - { resource: parameters.yml }
+    # default values for build time parameters
+    - { resource: parameters_buildtime.yml }
+    # optional overrides via configured GRAVITON_MERGE_CONFIG env
+    - { resource: 'parameters_buildtime.php' }
     - { resource: services.yml }
 
-parameters:
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
@@ -40,7 +44,7 @@ graviton_common:
         debug_requests: "%graviton.core.httpclient.debugRequests%"
         debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
     deployment:
-        check_package_name: "%graviton.core.checkPackageName%"
+        check_package_name: "%graviton.version.self_package_name%"
 
 # Twig Configuration
 twig:

@@ -1,7 +1,5 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
-    graviton.core.checkPackageName: 'graviton/graviton'
-
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
@@ -11,24 +9,10 @@ parameters:
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
     graviton.log.level: "info"
     graviton.sentry.dsn: null
-    graviton.sentry.dontReport:
-        - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
-        - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
-        - "Graviton\\RqlParser\\Exception\\SyntaxErrorException"
-        - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # proxy settings for HttpClient and possibly more
     graviton.proxy: null
     graviton.noproxy: null
-
-    # if set to a path, documentbundle will search this also for generated bundles
-    # important: this should best be a path relative to the graviton root dir! (./app/../)
-    graviton.generator.dynamicbundle.dir: null
-    #graviton.generator.synthetic_fields: 'int:tenant'
-    graviton.generator.synthetic_fields: null
-    graviton.generator.synthetic_fields_expose_on: null
-    #graviton.generator.ensure_indexes: hans,test2
-    graviton.generator.ensure_indexes: null
 
     # which serializer groups should be (de)serialized on this instance
     graviton.rest.serializer.groups: null
