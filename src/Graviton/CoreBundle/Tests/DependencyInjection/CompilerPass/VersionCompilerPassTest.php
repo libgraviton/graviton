@@ -26,11 +26,15 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
         $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
             ->disableOriginalConstructor()
             ->getMock();
+
         $containerDouble
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameter')
-            ->with('kernel.project_dir')
-            ->willReturn(__DIR__ . '/Resources/version');
+            ->willReturnOnConsecutiveCalls(
+                'graviton/graviton',
+                ['symfony/symfony'],
+                ['php']
+            );
 
         // what we expect to be set
         $containerDouble
