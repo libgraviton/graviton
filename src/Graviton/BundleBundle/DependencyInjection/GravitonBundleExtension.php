@@ -102,7 +102,6 @@ class GravitonBundleExtension extends Extension implements PrependInterface
             if ('xml' == $file->getExtension()) {
                 $xmlLoader->load($file->getRealPath());
             } elseif ('yml' == $file->getExtension() || 'yaml' == $file->getExtension()) {
-                echo 'load '.$file->getRealPath().PHP_EOL;
                 $ymlLoader->load($file->getRealPath());
             }
         }
