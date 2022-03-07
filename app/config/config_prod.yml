@@ -8,7 +8,7 @@ monolog:
             type: "stream"
             path: "%graviton.log.path%"
             level: "%graviton.log.level%"
-            channels: ["!event"]
+            channels: ["!event", "!doctrine", "!php"]
             formatter: "log_formatter"
         sentry:
             type: sentry
