@@ -4,10 +4,35 @@ imports:
 
 parameters:
     # build time parameters.. from from runtime to build time
+    # DYNAMICBUNDLE_DIR
     graviton.generator.dynamicbundle.dir: null
+    # GENERATOR_SYNTHETIC_FIELDS
     graviton.generator.synthetic_fields: null
+    # GENERATOR_SYNTHETIC_FIELDS_EXPOSE_ON
     graviton.generator.synthetic_fields_expose_on: null
+    # GENERATOR_ENSURE_INDEXES
     graviton.generator.ensure_indexes: null
+
+    # DATA_RESTRICTION_MAP
+    graviton.rest.data_restriction.map: {}
+    # DATA_RESTRICTION_MODE
+    graviton.rest.data_restriction.mode: eq
+    # DATA_RESTRICTION_PERSIST
+    graviton.rest.data_restriction.persist: true
+    # DATA_RESTRICTION_SOLR
+    graviton.rest.data_restriction.solr: true
+    # DATA_RESTRICTION_CONDITIONAL_PERSIST_MAP
+    graviton.rest.data_restriction.conditional.persist.map: {}
+
+    # CHECK_PACKAGE_NAME
+    graviton.core.checkPackageName: graviton/graviton
+
+    # SENTRY_DONT_REPORT
+    graviton.sentry.dontReport:
+        - Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
+        - Graviton\JsonSchemaBundle\Exception\ValidationException
+        - Graviton\RqlParser\Exception\SyntaxErrorException
+        - Graviton\AnalyticsBundle\Exception\AnalyticUsageException
 
     # end build time parameters
 
