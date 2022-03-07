@@ -109,7 +109,6 @@
             "@regenerate"
         ],
         "configure": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "regenerate": [
             "@configure",

@@ -1,2 +1,0 @@
-parameters:
-    graviton.mongodb.default.server.db: db

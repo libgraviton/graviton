@@ -3,6 +3,46 @@ imports:
     - { resource: services.yml }
 
 parameters:
+    # build time parameters.. from from runtime to build time
+    graviton.generator.dynamicbundle.dir: null
+    graviton.generator.synthetic_fields: null
+    graviton.generator.synthetic_fields_expose_on: null
+    graviton.generator.ensure_indexes: null
+
+    # end build time parameters
+
+    secret: ThisTokenIsNotSoSecretChangeIt
+
+    graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
+    graviton.document.timezone: UTC
+
+    graviton.jmespath.cache_dir: '%kernel.cache_dir%/jmespath'
+
+    graviton.security.services.whitelist: {  }
+
+    graviton.translator.default.locale: en
+    graviton.translator.cache_name_depth: 3
+
+    graviton.router.host: null
+    graviton.router.port_http: null
+    graviton.router.port_https: null
+
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+
+    graviton.rabbitmq.consumer.dump.routingkeys:
+        - 'document.#'
+
+    graviton.proxy.custom.sources: {  }
+    graviton.proxy.redirect.sources: {  }
+
+    graviton.writelock.randomwaiturls:
+        - /event/status
+
+    graviton.cache.provider.override: null
+    graviton.cache.server.header: xkey
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
@@ -20,7 +60,7 @@ framework:
     validation:
         enabled:              true
         enable_annotations:   false
-    default_locale: "%locale%"
+    default_locale: "%graviton.translator.default.locale%"
     trusted_hosts: ~
     fragments: ~
 
@@ -96,7 +136,8 @@ oneup_flysystem:
 
     filesystems:
         graviton:
-            adapter: '%graviton.file.backend%'
+            #adapter: '%env(resolve:FILE_BACKEND)%'
+            adapter: local
 
 graviton_proxy:
     sources:
