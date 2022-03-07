@@ -1,7 +1,0 @@
-#configure which version numbers should be read
-
-selfName: graviton/graviton
-desiredVersions:
-  - symfony/symfony
-ext:
-  - mongodb

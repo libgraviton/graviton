@@ -6,7 +6,6 @@ namespace Graviton\CoreBundle\Compiler;
 use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -40,34 +39,18 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $rootDir = $container->getParameter('kernel.project_dir');
-
-        if (strpos($rootDir, 'vendor') !== false) {
-            $configurationFile = $rootDir.'/../../../app';
-        } else {
-            $configurationFile = $rootDir.'/app';
-        }
-
-        $configurationFile .= '/config/version_service.yml';
-
-        if (!file_exists($configurationFile)) {
-            throw new \LogicException(
-                'Could not read version configuration file "'.$configurationFile.'"'
-            );
-        }
-
-        $config = Yaml::parseFile($configurationFile);
         $versionInformation = [
             'self' => 'unknown'
         ];
 
-        if (isset($config['selfName'])) {
-            $versionInformation['self'] = $this->getPackageVersion($config['selfName']);
+        $selfName = $container->getParameter('graviton.version.self_package_name');
+        if (!empty($selfName)) {
+            $versionInformation['self'] = $this->getPackageVersion($selfName);
         }
 
-
-        if (isset($config['desiredVersions']) && is_array($config['desiredVersions'])) {
-            foreach ($config['desiredVersions'] as $name) {
+        $desiredVersions = $container->getParameter('graviton.version.desired_versions');
+        if (!empty($desiredVersions) && is_array($desiredVersions)) {
+            foreach ($desiredVersions as $name) {
                 $versionInformation[$name] = $this->getPackageVersion($name);
             }
         }
@@ -81,8 +64,9 @@ class VersionCompilerPass implements CompilerPassInterface
         $versionInformation['php'] = $this->versionInformation->getPhpVersion();
 
         // add stuff just for service, not header (exts)
-        if (isset($config['ext']) && is_array($config['ext'])) {
-            foreach ($config['ext'] as $name) {
+        $extList = $container->getParameter('graviton.version.ext_list');
+        if (!empty($extList) && is_array($extList)) {
+            foreach ($extList as $name) {
                 $version = $this->versionInformation->getPhpExtVersion($name);
                 if ($version !== false) {
                     $versionInformation['ext-'.$name] = $version;
