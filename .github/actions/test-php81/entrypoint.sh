@@ -2,6 +2,9 @@
 
 set -e
 
+echo "APP_ENV=test" > .env.local
+echo "APP_DEBUG=0" >> .env.local
+
 bash prepare-for-tests.sh
 
 export MONGODB_URI=mongodb://mongodb:27017/db

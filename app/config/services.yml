@@ -11,6 +11,14 @@ services:
     test_consumer:
         class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 
+    # expose dotenv command
+    Symfony\Component\Dotenv\Command\DotenvDumpCommand:
+        tags:
+            - { name: console.command }
+        arguments:
+            - '%kernel.project_dir%'
+            - '%kernel.environment%'
+
     # sentry
     Sentry\Integration\RequestIntegration:
     Sentry\Integration\TransactionIntegration:
