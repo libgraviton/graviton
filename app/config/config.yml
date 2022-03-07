@@ -1,30 +1,12 @@
 imports:
+    # the generated params by incenteev (env)
     - { resource: parameters.yml }
+    # default values for build time parameters
+    - { resource: parameters_buildtime.yml }
+    # optional overrides via configured GRAVITON_MERGE_CONFIG env
+    - { resource: 'parameters_buildtime.php' }
     - { resource: services.yml }
 
-parameters:
-    # generator
-    graviton.generator.dynamicbundle.dir: null
-    generator.bundlebundle.additions: []
-    #graviton.generator.synthetic_fields: 'int:tenant'
-    graviton.generator.synthetic_fields: null
-    graviton.generator.synthetic_fields_expose_on: null
-    #graviton.generator.ensure_indexes: hans,test2
-    graviton.generator.ensure_indexes: null
-
-    # /core/version params
-    graviton.version.self_package_name: graviton/graviton
-    graviton.version.desired_versions:
-        - symfony/symfony
-    graviton.version.ext_list:
-        - mongodb
-
-    # sentry
-    graviton.sentry.dontReport:
-        - Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
-        - Graviton\JsonSchemaBundle\Exception\ValidationException
-        - Graviton\RqlParser\Exception\SyntaxErrorException
-        - Graviton\AnalyticsBundle\Exception\AnalyticUsageException
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
