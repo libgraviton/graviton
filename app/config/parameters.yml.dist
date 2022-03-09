@@ -46,7 +46,7 @@ parameters:
     graviton.security.authentication.allow_anonymous: true
     graviton.security.authentication.test_username: false
     graviton.security.authentication.strategy.cookie.key: graviton_user
-    graviton.security.authentication.strategy.subnet.key: 127.0.0.0/24
+    graviton.security.authentication.strategy.subnet.key: 0.0.0.0/0
     graviton.security.authentication.strategy.subnet.header_field: x-graviton-authentication
     graviton.security.authentication.strategy.header.key: graviton_user
 
