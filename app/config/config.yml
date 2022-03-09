@@ -11,6 +11,8 @@ imports:
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    trusted_proxies: '192.0.0.0/8,172.0.0.0/8,10.0.0.0/8'
+    trusted_headers: [ 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix' ]
     secret: "%secret%"
     php_errors:
         log: true
