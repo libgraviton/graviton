@@ -21,19 +21,19 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 
     /*** arrayaccess stuff ***/
 
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value) : void {
         $this->{$offset} = $value;
     }
 
-    public function offsetExists($offset) {
+    public function offsetExists($offset) : bool {
         return isset($this->{$offset});
     }
 
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset) : void {
         // not supported
     }
 
-    public function offsetGet($offset) {
+    public function offsetGet($offset) : mixed {
         return isset($this->{$offset}) ? $this->{$offset} : null;
     }
 
@@ -42,7 +42,7 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     */
     private $fieldsAddedCount = {% if fields is iterable %}{{ fields|length }}{% else %}0{% endif %};
 
-    public function isEmptyExtRefObject() {
+    public function isEmptyExtRefObject() : bool {
       return (
         $this->fieldsAddedCount === 1 &&
         is_callable([$this, 'getRef']) &&

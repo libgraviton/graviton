@@ -29,7 +29,7 @@ class RestrictionListenerTest extends RestTestCase
      *
      * @var string
      */
-    protected $environment = 'test_restricted';
+    protected static $environment = 'test_restricted';
 
     /**
      * custom client options

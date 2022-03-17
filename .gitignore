@@ -16,6 +16,8 @@ app/config/parameters_dev.yml
 app/config/parameters_local.xml
 app/files/
 app/config/deploy.yml
+app/swagger.*
 versions.yml
 .idea
 *.cache
+.env.local

@@ -14,7 +14,7 @@ oneup_flysystem:
     adapters:
         localfile:
             local:
-                directory: '%kernel.root_dir%/files'
+                directory: '%kernel.project_dir%/app/files'
     filesystems:
         graviton:
             adapter: localfile

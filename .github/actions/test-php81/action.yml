@@ -1,0 +1,13 @@
+# action.yml
+name: 'Graviton test php 8.1'
+description: 'tests'
+inputs:
+  github-token:
+    description: 'Github token'
+    required: false
+    default: 'no'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.github-token }}

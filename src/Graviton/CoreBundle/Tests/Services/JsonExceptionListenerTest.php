@@ -6,12 +6,11 @@
 namespace Graviton\CoreBundle\Tests\Services;
 
 use Graviton\CoreBundle\Listener\JsonExceptionListener;
-use Graviton\TestBundle\Test\RestTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * Functional test
@@ -20,7 +19,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonExceptionListenerTest extends KernelTestCase
+class JsonExceptionListenerTest extends TestCase
 {
 
     /**
@@ -32,13 +31,16 @@ class JsonExceptionListenerTest extends KernelTestCase
     {
         $sut = new JsonExceptionListener();
 
-        $exceptionEvent = $this->getMockBuilder(ExceptionEvent::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getThrowable'])
-            ->getMock();
+        $kernelMock = $this->getMockForAbstractClass(HttpKernelInterface::class);
+        $req = new Request();
 
         $exception = new \Exception('This is the exception message', 501);
-        $exceptionEvent->method('getThrowable')->willReturn($exception);
+        $exceptionEvent = new ExceptionEvent(
+            $kernelMock,
+            $req,
+            0,
+            $exception
+        );
 
         $sut->onKernelException($exceptionEvent);
 

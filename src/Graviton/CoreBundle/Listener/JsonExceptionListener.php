@@ -73,13 +73,16 @@ class JsonExceptionListener
                 'message' => $exception->getMessage()
             ];
 
+            if ($exception instanceof \Error) {
+                $data['message'] = 'php internal error, details redacted. check logs.';
+            }
+
             if ($exception->getPrevious() instanceof \Exception) {
                 $data['innerMessage'] = $exception->getPrevious()->getMessage();
             }
         }
 
-        $response = new JsonResponse($data);
-        $event->setResponse($response);
+        $event->setResponse(new JsonResponse($data));
     }
 
     /**

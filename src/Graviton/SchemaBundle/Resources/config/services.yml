@@ -25,6 +25,7 @@ services:
             method: onKernelResponse
 
     graviton.schema.model.schemamodel:
+        abstract: true
         class: "%graviton.schema.model.schemamodel.class%"
         calls:
           -

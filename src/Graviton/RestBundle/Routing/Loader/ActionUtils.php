@@ -45,10 +45,16 @@ class ActionUtils
     private static function getRoute($service, $method, $action, $serviceConfig, $parameters = array())
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
+
         $defaults = array(
-            '_controller' => $service . ':' . $action,
+            '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
+
+        // add service params as defaults..
+        if (!empty($serviceConfig[0]) && is_array($serviceConfig[0])) {
+            $defaults = array_merge($serviceConfig[0], $defaults);
+        }
 
         $requirements = [];
 
@@ -77,7 +83,10 @@ class ActionUtils
     private static function getBaseFromService($service, $serviceConfig)
     {
         if (isset($serviceConfig[0]['router-base']) && strlen($serviceConfig[0]['router-base']) > 0) {
-            $base = $serviceConfig[0]['router-base'] . '/';
+            $base = $serviceConfig[0]['router-base'];
+            if (!str_ends_with($base, '/')) {
+                $base .= '/';
+            }
         } else {
             $parts = explode('.', $service);
 
@@ -214,7 +223,7 @@ class ActionUtils
         }
 
         $defaults = array(
-            '_controller' => $service . ':' . $action,
+            '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
 

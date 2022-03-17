@@ -2,7 +2,9 @@
 
 namespace Graviton\RestBundle\Tests\Listener;
 
+use Graviton\RestBundle\Event\RestEvent;
 use Graviton\RestBundle\Listener\JsonRequestListener;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -10,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonRequestListenerTest extends \PHPUnit\Framework\TestCase
+class JsonRequestListenerTest extends TestCase
 {
     /**
      * @return void
@@ -20,17 +22,11 @@ class JsonRequestListenerTest extends \PHPUnit\Framework\TestCase
         $server = array('HTTP_ACCEPT' => 'application/json');
         $request = new Request([], [], [], [], [], $server);
 
-        $eventDouble = $this->getMockBuilder('\Graviton\RestBundle\Event\RestEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getRequest'))
-            ->getMock();
-        $eventDouble
-            ->expects($this->once())
-            ->method('getRequest')
-            ->willReturn($request);
+        $event = new RestEvent();
+        $event->setRequest($request);
 
         $listener = new JsonRequestListener();
-        $listener->onKernelRequest($eventDouble);
+        $listener->onKernelRequest($event);
 
         $this->assertEquals('json', $request->getRequestFormat());
     }

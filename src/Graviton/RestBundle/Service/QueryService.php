@@ -161,17 +161,23 @@ class QueryService
              * this is or the "all" action -> multiple documents returned
              */
 
-            $this->logger->info(
-                'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
-            );
-
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
             $countQueryBuilder->count()->limit(0)->skip(0);
             $totalCount = $countQueryBuilder->getQuery()->execute();
 
-            $records = array_values($this->queryBuilder->getQuery()->execute()->toArray());
+            $mainQuery = $this->queryBuilder->getQuery();
+
+            $this->logger->info(
+                'QueryService: allAction query',
+                [
+                    'q' => $mainQuery->getQuery(),
+                    'totalCount' => $totalCount,
+                    'readPref' => $readPreference->getModeString()
+                ]
+            );
+
+            $records = array_values($mainQuery->execute()->toArray());
 
             $request->attributes->set('totalCount', $totalCount);
             $request->attributes->set('recordCount', count($records));
@@ -273,14 +279,16 @@ class QueryService
         }
 
         if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
+            $currentQuery = $this->queryBuilder->getQuery()->getQuery();
 
             /*** default sort ***/
-            if (!array_key_exists('sort', $this->queryBuilder->getQuery()->getQuery())) {
+
+            if (!array_key_exists('sort', $currentQuery)) {
                 $this->queryBuilder->sort('_id');
             }
 
             /*** pagination stuff ***/
-            if (!array_key_exists('limit', $this->queryBuilder->getQuery()->getQuery())) {
+            if (!array_key_exists('limit', $currentQuery)) {
                 $this->queryBuilder->skip($this->getPaginationSkip());
                 $this->queryBuilder->limit($this->getPaginationPageSize());
             }

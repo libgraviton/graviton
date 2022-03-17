@@ -2,9 +2,6 @@ GravitonDyn
 GravitonDyn/BundleBundle
 GravitonDyn/BundleBundle/GravitonDynBundleBundle.php
 GravitonDyn/TestBBundle
-GravitonDyn/TestBBundle/Model
-GravitonDyn/TestBBundle/Model/TestBEmbedded.php
-GravitonDyn/TestBBundle/Model/TestB.php
 GravitonDyn/TestBBundle/Document
 GravitonDyn/TestBBundle/Document/TestBBase.php
 GravitonDyn/TestBBundle/Document/TestBEmbedded.php
@@ -25,13 +22,6 @@ GravitonDyn/TestBBundle/DependencyInjection
 GravitonDyn/TestBBundle/DependencyInjection/GravitonDynTestBExtension.php
 GravitonDyn/TestBBundle/GravitonDynTestBBundle.php
 GravitonDyn/TestABundle
-GravitonDyn/TestABundle/Model
-GravitonDyn/TestABundle/Model/TestAEmbedded.php
-GravitonDyn/TestABundle/Model/TestA.php
-GravitonDyn/TestABundle/Model/TestAExtrefEmbedded.php
-GravitonDyn/TestABundle/Model/TestAExtref.php
-GravitonDyn/TestABundle/Model/TestAEmbedEmbedded.php
-GravitonDyn/TestABundle/Model/TestAEmbed.php
 GravitonDyn/TestABundle/Document
 GravitonDyn/TestABundle/Document/TestABase.php
 GravitonDyn/TestABundle/Document/TestAEmbedded.php

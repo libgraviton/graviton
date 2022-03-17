@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="graviton.jsonschema.schema.uri"/>
+
+        <parameter key="graviton.jsonschema.validator.constraint.factory.class">Graviton\JsonSchemaBundle\Validator\Constraint\Factory</parameter>
+
+        <parameter key="graviton.jsonschema.validator.constraint.schema.class">Graviton\JsonSchemaBundle\Validator\Constraint\SchemaConstraint</parameter>
+        <parameter key="graviton.jsonschema.validator.constraint.format.class">Graviton\JsonSchemaBundle\Validator\Constraint\FormatConstraint</parameter>
+        <parameter key="graviton.jsonschema.validator.constraint.object.class">Graviton\JsonSchemaBundle\Validator\Constraint\ObjectConstraint</parameter>
+
+        <parameter key="graviton.jsonschema.validator.class">Graviton\JsonSchemaBundle\Validator\Validator</parameter>
+        <parameter key="graviton.jsonschema.validator.validator.class">JsonSchema\Validator</parameter>
+    </parameters>
+
+    <services>
+
+        <!-- validator -->
+        <service id="graviton.jsonschema.validator"
+                 class="%graviton.jsonschema.validator.class%">
+            <argument type="service" id="graviton.jsonschema.validator.validator"/>
+            <argument>%graviton.jsonschema.schema.uri%</argument>
+        </service>
+
+        <!-- validator factory -->
+        <service id="graviton.jsonschema.validator.constraint.factory"
+                 class="%graviton.jsonschema.validator.constraint.factory.class%">
+            <call method="setConstraintClass">
+                <argument>schema</argument>
+                <argument>%graviton.jsonschema.validator.constraint.schema.class%</argument>
+            </call>
+            <call method="setConstraintClass">
+                <argument>object</argument>
+                <argument>%graviton.jsonschema.validator.constraint.object.class%</argument>
+            </call>
+            <call method="setConstraintClass">
+                <argument>format</argument>
+                <argument>%graviton.jsonschema.validator.constraint.format.class%</argument>
+            </call>
+            <!-- event dispatcher -->
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher" />
+            </call>
+        </service>
+
+        <!-- subvalidator (what we wrap) -->
+        <service id="graviton.jsonschema.validator.validator" class="%graviton.jsonschema.validator.validator.class%">
+            <argument type="service" id="graviton.jsonschema.validator.constraint.factory" />
+        </service>
+
+        <!-- commands -->
+        <service id="graviton.jsonschema.command.validatedefinition.abstract"
+                 abstract="true">
+            <call method="setValidator">
+                <argument type="service" id="graviton.jsonschema.validator"/>
+            </call>
+        </service>
+        <service id="graviton.jsonschema.command.validatedefinition.directory"
+                 public="true"
+                 class="Graviton\JsonSchemaBundle\Command\ValidateDirectoryCommand"
+                 parent="graviton.jsonschema.command.validatedefinition.abstract">
+            <call method="setDefaultPath">
+                <argument>%kernel.project_dir%</argument>
+            </call>
+            <tag name="console.command"/>
+        </service>
+        <service id="graviton.jsonschema.command.validatedefinition.file"
+                 public="true"
+                 class="Graviton\JsonSchemaBundle\Command\ValidateFileCommand"
+                 parent="graviton.jsonschema.command.validatedefinition.abstract">
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

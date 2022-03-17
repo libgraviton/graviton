@@ -6,6 +6,8 @@
 
 namespace Graviton\SecurityBundle\Entities;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * Class AnonymousUser
  *
@@ -13,26 +15,55 @@ namespace Graviton\SecurityBundle\Entities;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AnonymousUser
+class AnonymousUser implements UserInterface
 {
-    const DEFAULT_ID = 0;
 
     /**
-     * @var int
+     * username constant
      */
-    private $id;
+    public const USERNAME = 'anonymous';
 
     /**
-     * @var string
+     * Returns the roles granted to the user.
+     *
+     * @return string[] The user roles
      */
-    private $username = 'anonymous';
-
-    /**
-     * Constructor of the class.
-     */
-    public function __construct()
+    public function getRoles()
     {
-        $this->setId(self::DEFAULT_ID);
+        return [];
+    }
+
+    /**
+     * Returns the password used to authenticate the user.
+     *
+     * @return string The password
+     */
+    public function getPassword()
+    {
+        return '';
+    }
+
+    /**
+     * Returns the salt that was originally used to encode the password.
+     *
+     * @return null The salt
+     */
+    public function getSalt()
+    {
+        return null;
+    }
+
+    /**
+     * Removes sensitive data from the user.
+     *
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     *
+     * @return void
+     */
+    public function eraseCredentials()
+    {
+        return null;
     }
 
     /**
@@ -42,23 +73,16 @@ class AnonymousUser
      */
     public function getUsername()
     {
-        return $this->username;
+        return $this->getUserIdentifier();
     }
 
     /**
-     * @param int $id id
-     * @return void
+     * Returns the username used to authenticate the user.
+     *
+     * @return string The username
      */
-    public function setId($id)
+    public function getUserIdentifier()
     {
-        $this->id = $id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
+        return self::USERNAME;
     }
 }

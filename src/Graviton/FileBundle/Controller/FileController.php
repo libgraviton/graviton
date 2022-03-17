@@ -9,8 +9,8 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
 use Graviton\FileBundle\Manager\RequestManager;
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File;
-use GravitonDyn\FileBundle\Model\File as FileModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,9 +72,7 @@ class FileController extends RestController
             $file = $this->restUtils->validateRequest($formData, $this->getModel());
         }
 
-        /** @var FileModel $model */
-        $model = $this->getModel();
-        $file = $this->fileManager->handleSaveRequest($file, $request, $model);
+        $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
 
         // Set status code and content
         $response = $this->getResponse();

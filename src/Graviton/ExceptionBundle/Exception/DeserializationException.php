@@ -24,6 +24,10 @@ final class DeserializationException extends RestException
      */
     public function __construct($message = "Deserialization Error", $prev = null)
     {
-        parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $prev);
+        parent::__construct(
+            Response::HTTP_BAD_REQUEST,
+            $message,
+            $prev
+        );
     }
 }

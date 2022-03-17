@@ -38,13 +38,15 @@ class ExtReferenceType extends Type
      * Convert PHP value to MongoDb representation
      *
      * @param mixed $value Value to convert
-     * @return object|null
+     * @return array|null
      */
     public static function convertToDb($value)
     {
-        return $value instanceof ExtReference ?
-            ['$ref' => $value->getRef(), '$id' => $value->getId()] :
-            null;
+        if ($value instanceof ExtReference) {
+            return ['$ref' => $value->getRef(), '$id' => $value->getId()];
+        }
+
+        return $value;
     }
 
     /**

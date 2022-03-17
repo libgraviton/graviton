@@ -5,13 +5,16 @@
 
 namespace Graviton\FileBundle\Tests\Controller;
 
+// @codingStandardsIgnoreStart
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData;
-use GravitonDyn\TestCaseRestListenerCondPersisterEntityBundle\DataFixtures\MongoDB\
-    LoadTestCaseRestListenerCondPersisterEntityData;
+use GravitonDyn\TestCaseRestListenerCondPersisterEntityBundle\DataFixtures\MongoDB\{
+    LoadTestCaseRestListenerCondPersisterEntityData
+};
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+// @codingStandardsIgnoreEnd
 
 /**
  * Basic functional test for /file
@@ -28,7 +31,7 @@ class FileControllerTest extends RestTestCase
      *
      * @var string
      */
-    protected $environment = 'test';
+    protected static $environment = 'test';
 
     /**
      * custom client options
