@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-abstract class RestException extends HttpException implements RestExceptionInterface
+abstract class RestException extends HttpException
 {
-    use RestExceptionTrait;
 }

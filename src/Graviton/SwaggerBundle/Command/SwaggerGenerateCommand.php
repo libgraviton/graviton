@@ -144,8 +144,10 @@ class SwaggerGenerateCommand extends Command
                 $swaggerHashFile,
                 $hash
             );
+
+            echo 'wrote file '.$swaggerFile.PHP_EOL;
         } else {
-            echo 'swagger.json already up to date, no need to generate...'.PHP_EOL;
+            echo $swaggerFile.' already up to date, no need to generate...'.PHP_EOL;
         }
 
         return 0;

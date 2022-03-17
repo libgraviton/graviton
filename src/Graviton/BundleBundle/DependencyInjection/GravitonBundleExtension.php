@@ -85,7 +85,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      *
      * @return void
      */
-    private function loadFiles($dir, ContainerBuilder $container, array $allowed)
+    protected function loadFiles($dir, ContainerBuilder $container, array $allowed)
     {
         $locator = new FileLocator($dir);
         $xmlLoader = new Loader\XmlFileLoader($container, $locator);
@@ -101,7 +101,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
             }
             if ('xml' == $file->getExtension()) {
                 $xmlLoader->load($file->getRealPath());
-            } elseif ('yml' == $file->getExtension()) {
+            } elseif ('yml' == $file->getExtension() || 'yaml' == $file->getExtension()) {
                 $ymlLoader->load($file->getRealPath());
             }
         }

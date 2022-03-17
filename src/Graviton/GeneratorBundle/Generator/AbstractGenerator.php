@@ -121,4 +121,23 @@ abstract class AbstractGenerator
             $this->render($template, $parameters)
         );
     }
+
+    /**
+     * renders a json file form a twig template
+     *
+     * @param string $template   template filename
+     * @param string $target     where to generate to
+     * @param array  $parameters template params
+     *
+     * @return void
+     */
+    protected function renderFileAsJson($template, $target, $parameters)
+    {
+        $content = json_decode($this->render($template, $parameters));
+
+        $this->fs->dumpFile(
+            $target,
+            json_encode($content, JSON_PRETTY_PRINT)
+        );
+    }
 }

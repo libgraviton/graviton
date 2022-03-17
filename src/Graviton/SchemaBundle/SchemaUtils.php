@@ -7,6 +7,7 @@ namespace Graviton\SchemaBundle;
 
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
@@ -161,18 +162,18 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string        $modelName  name of mode to generate schema for
-     * @param DocumentModel $model      model to generate schema for
-     * @param boolean       $online     if we are online and have access to mongodb during this build
-     * @param boolean       $internal   if true, we generate the schema for internal validation use
-     * @param boolean       $serialized if true, it will serialize the Schema object and return a \stdClass instead
-     * @param \stdClass     $userData   if given, the userData will be checked for a variation match
+     * @param string         $modelName  name of mode to generate schema for
+     * @param ModelInterface $model      model to generate schema for
+     * @param boolean        $online     if we are online and have access to mongodb during this build
+     * @param boolean        $internal   if true, we generate the schema for internal validation use
+     * @param boolean        $serialized if true, it will serialize the Schema object and return a \stdClass instead
+     * @param \stdClass      $userData   if given, the userData will be checked for a variation match
      *
      * @return Schema|\stdClass Either a Schema instance or serialized as \stdClass if $serialized is true
      */
     public function getModelSchema(
         $modelName,
-        DocumentModel $model,
+        ModelInterface $model,
         $online = true,
         $internal = false,
         $serialized = false,

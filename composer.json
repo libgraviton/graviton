@@ -23,36 +23,36 @@
         ]
     },
     "require": {
-        "php": ">=7.4.0",
+        "php": ">=8.1.0",
         "ext-json": "*",
+        "ext-ctype": "*",
+        "ext-mbstring": "*",
+
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.10.0",
         "ext-amqp": "~1",
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "^0.3.0",
+        "graviton/common-bundle": "~1",
         "graviton/rql-parser-bundle": "^3.0.2",
-        "graviton/json-schema": "^1.16.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/mongodb-migrations-bundle": "~2",
 
-        "symfony/symfony": "~4.4.0",
+        "symfony/symfony": "~5.4.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "~2",
 
-        "jms/serializer-bundle": "~3",
+        "jms/serializer-bundle": "~4",
 
         "doctrine/persistence": "~2",
         "doctrine/inflector": "~2",
         "doctrine/mongodb-odm-bundle": "^4.3.0",
 
-        "doctrine/mongodb-odm": "=2.2.0",
-
         "monolog/monolog": "~1",
 
-        "php-jsonpatch/php-jsonpatch": "~3.0",
+        "php-jsonpatch/php-jsonpatch": "~4.0",
         "justinrainbow/json-schema": "~5.2.0",
         "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
@@ -60,24 +60,33 @@
         "oneup/flysystem-bundle": "~4",
         "league/flysystem-async-aws-s3": "~2",
 
-        "sentry/sentry-symfony": "^4.0",
-        "sentry/sentry": "^3.0",
+        "sentry/sentry-symfony": "~4",
+        "sentry/sentry": "~3",
         "php-http/guzzle7-adapter": "*",
         "guzzlehttp/psr7": "*",
 
         "solarium/solarium": "~6",
-        "mtdowling/jmespath.php": "^2.4"
+        "mtdowling/jmespath.php": "^2.4",
+        "symfony/runtime": "^6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~9|~8",
         "squizlabs/php_codesniffer": "~3",
 
         "graviton/test-services-bundle": "^2.9.0",
-        "graviton/mongodb-fixtures-bundle": "~2",
+        "graviton/mongodb-fixtures-bundle": "~3",
         "libgraviton/codesniffer": "~2",
 
-        "symfony/phpunit-bridge": "^4.0",
+        "symfony/phpunit-bridge": "^6.0",
         "dms/phpunit-arraysubset-asserts": "~0"
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
@@ -119,12 +128,10 @@
         ]
     },
     "config": {
-        "platform": {
-            "php": "7.4.9"
-        },
         "bin-dir": "vendor/bin",
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "symfony/runtime": true
         }
     },
     "bin": ["bin/console"],
@@ -139,15 +146,9 @@
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
-                    "graviton.sentry.dontReport": "SENTRY_DONT_REPORT",
-                    "graviton.core.checkPackageName": "CHECK_PACKAGE_NAME",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
-                    "graviton.generator.dynamicbundle.dir": "DYNAMICBUNDLE_DIR",
-                    "graviton.generator.synthetic_fields": "GENERATOR_SYNTHETIC_FIELDS",
-                    "graviton.generator.synthetic_fields_expose_on": "GENERATOR_SYNTHETIC_FIELDS_EXPOSE_ON",
-                    "graviton.generator.ensure_indexes": "GENERATOR_ENSURE_INDEXES",
                     "graviton.core.httpclient.debugRequests": "HTTPCLIENT_DEBUGREQUESTS",
                     "graviton.core.httpclient.debugMaxLength": "HTTPCLIENT_DEBUGREQUESTS_MAXLENGTH",
                     "graviton.core.httpclient.verifyPeer": "HTTPCLIENT_VERIFY_PEER",
@@ -163,14 +164,12 @@
                     "graviton.proxy.swagger.sources": "PROXY_SWAGGER_SOURCES",
                     "graviton.security.authentication.allow_anonymous": "SECURITY_AUTHENTICATION_ALLOW_ANONYMOUS",
                     "graviton.security.authentication.test_username": "SECURITY_AUTHENTICATION_TEST_USERNAME",
-                    "graviton.security.authentication.strategy": "SECURITY_AUTHENTICATION_STRATEGY",
                     "graviton.security.authentication.strategy.header.key": "SECURITY_AUTHENTICATION_STRATEGY_HEADER_KEY",
                     "graviton.security.authentication.strategy.cookie.key": "SECURITY_AUTHENTICATION_STRATEGY_COOKIE_KEY",
                     "graviton.security.authentication.strategy.subnet.key": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_KEY",
                     "graviton.security.authentication.strategy.subnet.header_field": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_HEADER_FIELD",
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD",
-                    "graviton.security.authentication.strategy.multi.services": "GRAVITON_SECURITY_STRATEGY_MULTI_SERVICES",
                     "graviton.cache.instance_id": "CACHE_INSTANCE_ID",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",

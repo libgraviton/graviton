@@ -6,6 +6,7 @@
 namespace Graviton\FileBundle\Manager;
 
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File;
 use GravitonDyn\FileBundle\Document\FileMetadataBase;
 use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
@@ -17,7 +18,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Filesystem\Filesystem as SfFileSystem;
-use GravitonDyn\FileBundle\Model\File as DocumentModel;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 

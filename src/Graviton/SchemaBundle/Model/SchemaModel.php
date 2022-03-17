@@ -29,33 +29,19 @@ class SchemaModel implements ContainerAwareInterface
 
     /**
      * load some schema info for the model
+     *
+     * @param string $jsonSchemaPath json schema path
      */
-    public function __construct()
+    public function __construct(string $jsonSchemaPath)
     {
-        list(, $bundle, , $model) = explode('\\', get_called_class());
-        $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
-
-        if (!file_exists($file)) {
-            $reflection = new \ReflectionClass($this);
-            $file = dirname($reflection->getFileName()).'/../Resources/config/schema/' . $model . '.json';
+        if (!file_exists($jsonSchemaPath)) {
+            throw new \LogicException('Please create and pass a json schema file ' . $jsonSchemaPath);
         }
 
-        if (!file_exists($file)) {
-            // fallback try on model property (this should be available on some generated classes)
-            if (isset($this->_modelPath)) {
-                // try to find schema.json relative to the model involved..
-                $file = dirname($this->_modelPath) . '/../Resources/config/schema/' . $model . '.json';
-            }
-
-            if (!file_exists($file)) {
-                throw new \LogicException('Please create the schema file ' . $file);
-            }
-        }
-
-        $this->schema = \json_decode(file_get_contents($file));
+        $this->schema = \json_decode(file_get_contents($jsonSchemaPath));
 
         if (is_null($this->schema)) {
-            throw new \LogicException('The file ' . $file . ' doe not contain valid json');
+            throw new \LogicException('The file ' . $jsonSchemaPath . ' doe not contain valid json');
         }
     }
 

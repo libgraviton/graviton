@@ -32,7 +32,7 @@ class RqlAllowedOperatorRequestListener
         }
 
         $route = $event->getRequest()->attributes->get('_route');
-        if (substr($route, -4) !== '.get') {
+        if (!str_ends_with($route, '.get')) {
             return;
         }
 

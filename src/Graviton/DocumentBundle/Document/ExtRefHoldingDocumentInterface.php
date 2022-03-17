@@ -17,5 +17,5 @@ interface ExtRefHoldingDocumentInterface
      *
      * @return boolean
      */
-    public function isEmptyExtRefObject();
+    public function isEmptyExtRefObject() : bool;
 }

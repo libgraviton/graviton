@@ -167,12 +167,9 @@ class RecordOriginConstraintTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals(
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Must not be one of the following keywords: core'
-            ],
-            $client->getResults()
+        $this->assertStringContainsString(
+            "'recordOrigin' must not be one of the following keywords",
+            $client->getResults()->message
         );
     }
 

@@ -257,9 +257,7 @@ class ProxyController
             }
         }
 
-        $e = new NotFoundException('No such thirdparty API.');
-        $e->setResponse(Response::create());
-        throw $e;
+        throw new NotFoundException('No such thirdparty API.');
     }
 
     /**

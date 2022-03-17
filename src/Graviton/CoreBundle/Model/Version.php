@@ -14,4 +14,12 @@ use Graviton\RestBundle\Model\DocumentModel;
  */
 class Version extends DocumentModel
 {
+
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        parent::__construct(__DIR__.'/../Resources/config/schema/Version.json');
+    }
 }

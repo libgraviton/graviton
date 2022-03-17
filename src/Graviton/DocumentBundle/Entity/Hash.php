@@ -20,7 +20,7 @@ class Hash extends \ArrayObject implements \JsonSerializable
      *
      * @return object
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : mixed
     {
         $data = $this->getArrayCopy();
         if (empty($data)) {

@@ -133,11 +133,15 @@ services:
         abstract: true
         class: "%graviton.rest.model.documentmodel.class%"
         parent: "graviton.schema.model.schemamodel"
-        arguments:
-          - '@graviton.rest.service.query'
-          - "@graviton.rest.restutils"
-          - "@event_dispatcher"
-          - "%graviton.rest.not_modifiable.origin.records%"
+        calls:
+          - method: setQueryService
+            arguments: ['@graviton.rest.service.query']
+          - method: setEventDispatcher
+            arguments: ['@event_dispatcher']
+          - method: setNotModifiableOriginRecords
+            arguments: ['%graviton.rest.not_modifiable.origin.records%']
+          - method: setRestUtils
+            arguments: ['@graviton.rest.restutils']
 
     # query service -->
     graviton.rest.service.query:
@@ -180,17 +184,6 @@ services:
     #Json Request listener -->
     graviton.rest.listener.jsonrequestlistener:
         class: Graviton\RestBundle\Listener\JsonRequestListener
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onKernelRequest
-
-    #Special mimetypes Request listener -->
-    graviton.rest.listener.specialmimetypesrequestlistener:
-        class: Graviton\RestBundle\Listener\SpecialMimetypeRequestListener
-        arguments:
-          - "@service_container"
         tags:
           -
             name: kernel.event_listener

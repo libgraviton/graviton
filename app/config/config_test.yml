@@ -1,6 +1,5 @@
 imports:
     - { resource: config_dev.yml }
-    - { resource: "@FrameworkBundle/Resources/config/test.xml" }
     - { resource: services_test.yml }
 
 parameters:
@@ -43,8 +42,6 @@ parameters:
 
 framework:
     test: ~
-    session:
-        storage_id: session.storage.mock_file
     profiler:
         enabled: false
         collect: false

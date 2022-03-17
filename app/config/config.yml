@@ -1,15 +1,24 @@
 imports:
+    # the generated params by incenteev (env)
     - { resource: parameters.yml }
+    # default values for build time parameters
+    - { resource: parameters_buildtime.yml }
+    # optional overrides via configured GRAVITON_MERGE_CONFIG env
+    - { resource: 'parameters_buildtime.php' }
     - { resource: services.yml }
 
-parameters:
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    trusted_proxies: '192.0.0.0/8,172.0.0.0/8,10.0.0.0/8'
+    trusted_headers: [ 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix' ]
     secret: "%secret%"
+    php_errors:
+        log: true
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: "%kernel.project_dir%/app/config/routing.yml"
+        utf8: true
         strict_requirements: ~
     form:
         enabled: false
@@ -19,11 +28,7 @@ framework:
         enable_annotations:   false
     default_locale: "%locale%"
     trusted_hosts: ~
-    session:
-        name: graviton
-        # handler_id set to null will use default session handler from php.ini
-        handler_id:  ~
-    fragments:       ~
+    fragments: ~
 
 graviton_common:
     mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
@@ -41,7 +46,7 @@ graviton_common:
         debug_requests: "%graviton.core.httpclient.debugRequests%"
         debug_max_length: "%graviton.core.httpclient.debugMaxLength%"
     deployment:
-        check_package_name: "%graviton.core.checkPackageName%"
+        check_package_name: "%graviton.version.self_package_name%"
 
 # Twig Configuration
 twig:
@@ -115,7 +120,18 @@ graviton_core:
 
 sentry:
     dsn: "%graviton.sentry.dsn%"
+    register_error_listener: false
+    tracing:
+        enabled: false
     options:
+        # see https://github.com/getsentry/sentry-symfony/issues/421
+        ## as we cannot filter here, we disable all and enable those that we want
+        default_integrations: false
         integrations:
             - 'Sentry\Integration\IgnoreErrorsIntegration'
+            - 'Sentry\Integration\RequestIntegration'
+            - 'Sentry\Integration\TransactionIntegration'
+            - 'Sentry\Integration\FrameContextifierIntegration'
+            - 'Sentry\Integration\EnvironmentIntegration'
+            - 'Sentry\Integration\ModulesIntegration'
         environment: "%kernel.environment%"

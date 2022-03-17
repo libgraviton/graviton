@@ -66,7 +66,15 @@ class ReadOnlyServiceTest extends RestTestCase
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
         $content = $client->getResults();
         $this->assertStringContainsString(
-            'No route found for "'.$method.' '.$url .'": Method Not Allowed',
+            'No route found',
+            $content->message
+        );
+        $this->assertStringContainsString(
+            $method,
+            $content->message
+        );
+        $this->assertStringContainsString(
+            'Method Not Allowed',
             $content->message
         );
     }

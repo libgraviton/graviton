@@ -24,6 +24,10 @@ final class InvalidJsonPatchException extends RestException
      */
     public function __construct($message = "Invalid JSON Patch", $prev = null)
     {
-        parent::__construct(Response::HTTP_BAD_REQUEST, $message, $prev);
+        parent::__construct(
+            Response::HTTP_BAD_REQUEST,
+            $message,
+            $prev
+        );
     }
 }
