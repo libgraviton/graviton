@@ -124,7 +124,7 @@ class ServiceManager
                     [
                         'service' => $service['route']
                     ],
-                    false
+                    true
                 ),
                 'profile' => $this->router->generate(
                     'graviton_analytics_service_schema',
