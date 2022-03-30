@@ -78,7 +78,8 @@
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^6.0",
-        "dms/phpunit-arraysubset-asserts": "~0"
+        "dms/phpunit-arraysubset-asserts": "~0",
+        "phan/phan": "^5.3"
     },
     "replace": {
         "symfony/polyfill-ctype": "*",
