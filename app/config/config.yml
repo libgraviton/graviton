@@ -36,6 +36,7 @@ graviton_common:
         instance_id: "%graviton.cache.instance_id%"
         redis_host: "%graviton.cache.redis.host%"
         redis_port: "%graviton.cache.redis.port%"
+        redis_db: 10
         adapter_override: null
     http_client:
         options:
