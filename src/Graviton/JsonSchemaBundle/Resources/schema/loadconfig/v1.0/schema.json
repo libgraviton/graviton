@@ -1,0 +1,589 @@
+{
+  "title": "A JSON Schema for the Graviton 2 LoadConfig JSON file format.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/definition",
+  "definitions": {
+    "collectionName": {
+      "type": "string",
+      "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+    },
+    "fieldName": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "fieldExposedName": {
+      "type": "string"
+    },
+    "fieldDefinitionName": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_]\\w*(?:\\.(?:0\\.)?[a-zA-Z_]\\w*)*(?:\\.0)?$"
+    },
+    "fieldBasicType": {
+      "enum": [
+        "string",
+        "varchar",
+        "text",
+        "int",
+        "bigint",
+        "float",
+        "double",
+        "decimal",
+        "datetime",
+        "boolean",
+        "hash",
+        "object",
+        "extref"
+      ]
+    },
+    "fieldUpperType": {
+      "enum": [
+        "STRING",
+        "VARCHAR",
+        "TEXT",
+        "INT",
+        "BIGINT",
+        "FLOAT",
+        "DOUBLE",
+        "DECIMAL",
+        "DATETIME",
+        "BOOLEAN",
+        "HASH",
+        "OBJECT",
+        "EXTREF"
+      ]
+    },
+    "fieldClassType": {
+      "type": "string",
+      "pattern": "^class:\\\\?[a-zA-Z_][a-zA-Z0-9_]*(\\\\[a-zA-Z_][a-zA-Z0-9_]*)*(\\[\\])?$"
+    },
+    "relationType": {
+      "enum": [
+        "embed",
+        "ref"
+      ]
+    },
+    "routerBase": {
+      "type": "string",
+      "pattern": "^\\\/?[a-z0-9_-]+(\\\/[a-z0-9_-]+)*\\\/?$"
+    },
+    "roleName": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_-]+$"
+    },
+    "definition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Definition ID",
+          "$ref": "#/definitions/collectionName"
+        },
+        "alternateName": {
+          "title": "Alternate name",
+          "description": "If this object is derived from an external system, this would be the original name in that system.",
+          "type": "string"
+        },
+        "isSubDocument": {
+          "title": "Is sub-document",
+          "type": "boolean"
+        },
+        "title": {
+          "title": "Definition title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Definition description",
+          "type": "string"
+        },
+        "jsonRestSource": {
+          "title": "Optional JSON REST based source",
+          "description": "Changes the load behavior of a ml3k LoadConfigObject load to a JSON REST based source as specified in this field, overriding the normal behavior.",
+          "type": "string"
+        },
+        "jsonRestRecordParam": {
+          "title": "GET param used for requesting specific documents",
+          "description": "This is used as part of the URL used when requesting specific versions of ie. /service?<value of property>=1,2,3",
+          "type": "string"
+        },
+        "recordIds": {
+          "title": "Specify what records to load",
+          "description": "When specified the loader will only load the given records from the backend. It will use the jsonRestRecordParam field to decide how URLs to the single records should be built.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "service": {
+          "title": "Service definition",
+          "$ref": "#/definitions/service"
+        },
+        "target": {
+          "title": "Target definition",
+          "$ref": "#/definitions/target"
+        },
+        "source": {
+          "title": "Source list",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/source"
+          }
+        },
+        "loadPackage": {
+          "title": "Package name",
+          "type": "string"
+        },
+        "dependencies": {
+          "title": "Definition dependencies",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/collectionName"
+          }
+        },
+        "solr": {
+          "title": "solr definition",
+          "$ref": "#/definitions/solr"
+        }
+      },
+      "required": [
+        "id",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "readOnly": {
+          "title": "Is service read-only",
+          "type": "boolean"
+        },
+        "versioning": {
+          "title": "Is service version controlled, default false.",
+          "type": "boolean"
+        },
+        "recordOriginModifiable": {
+          "title": "Can record origin be modified",
+          "type": "boolean"
+        },
+        "routerBase": {
+          "title": "Router base path",
+          "$ref": "#/definitions/routerBase"
+        },
+        "parent": {
+          "title": "Parent service ID",
+          "type": "string"
+        },
+        "baseController": {
+          "title": "Base controller class",
+          "type": "string"
+        },
+        "roles": {
+          "title": "Role list",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/roleName"
+          },
+          "uniqueItems": true
+        },
+        "fixtureOrder": {
+          "title": "Fixture order number",
+          "type": "integer"
+        },
+        "fixtures": {
+          "title": "Service fixtures",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/serviceFixture"
+          }
+        },
+        "collectionName": {
+          "title": "Collection name",
+          "$ref": "#/definitions/collectionName"
+        }
+      },
+      "additionalProperties": false
+    },
+    "serviceFixture": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Source type",
+          "$ref": "#/definitions/sourceType"
+        },
+        "params": {
+          "title": "Source params",
+          "$ref": "#/definitions/sourceParams"
+        }
+      },
+      "required": [
+        "type",
+        "params"
+      ],
+      "additionalProperties": false
+    },
+    "sourceType": {
+      "type": "string"
+    },
+    "sourceParams": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "indexes": {
+          "title": "Target indexes",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetIndex"
+          }
+        },
+        "textIndexes": {
+          "title": "Target Text Search Indexes, field and weight",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetTextIndex"
+          }
+        },
+        "relations": {
+          "title": "Target relations",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetRelation"
+          }
+        },
+        "fields": {
+          "title": "Target fields",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetField"
+          }
+        },
+        "connectionName": {
+          "title": "Connection name",
+          "type": "string"
+        },
+        "collectionName": {
+          "title": "Collection name",
+          "$ref": "#/definitions/collectionName"
+        },
+        "sqlFile": {
+          "title": "SQL file path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "targetIndex": {
+      "type": "string"
+    },
+    "targetTextIndex": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "title": "Weighted key name name to be solved in Search criteria",
+          "type": "string"
+        },
+        "weight": {
+          "title": "Importance criteria",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "field",
+        "weight"
+      ]
+    },
+    "targetRelation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Relation type",
+          "$ref": "#/definitions/relationType"
+        },
+        "collectionName": {
+          "title": "Related collection name",
+          "$ref": "#/definitions/collectionName"
+        },
+        "localProperty": {
+          "title": "Local relation property",
+          "$ref": "#/definitions/fieldDefinitionName"
+        },
+        "localValueField": {
+          "title": "Local value field",
+          "$ref": "#/definitions/fieldDefinitionName"
+        },
+        "foreignProperty": {
+          "title": "Foreign relation field",
+          "$ref": "#/definitions/fieldName"
+        }
+      },
+      "required": [
+        "type",
+        "localProperty"
+      ],
+      "additionalProperties": false
+    },
+    "targetField": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Field name",
+          "$ref": "#/definitions/fieldDefinitionName"
+        },
+        "defaultValue": {
+          "title": "Default value",
+          "type": [
+            "string",
+            "number",
+            "object",
+            "array",
+            "boolean",
+            "null"
+          ]
+        },
+        "groups": {
+          "title": "A list of groups this field belongs to. Those can be used for various purposes on the backend.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alternateName": {
+          "title": "Alternate name",
+          "description": "If this field is derived from an external system, this would be the original name in that system.",
+          "type": "string"
+        },
+        "type": {
+          "title": "Field type",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/fieldBasicType"
+            },
+            {
+              "$ref": "#/definitions/fieldUpperType"
+            },
+            {
+              "$ref": "#/definitions/fieldClassType"
+            }
+          ]
+        },
+        "alternateType": {
+          "title": "Alternate type",
+          "description": "If this field is derived from an external system, this would be the original type in that system.",
+          "type": "string"
+        },
+        "exposeAs": {
+          "title": "Field title",
+          "$ref": "#/definitions/fieldExposedName"
+        },
+        "title": {
+          "title": "Field title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Field description",
+          "type": "string"
+        },
+        "length": {
+          "title": "Field length",
+          "type": "integer",
+          "minimum": 0
+        },
+        "minLength": {
+          "title": "Field length",
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxLength": {
+          "title": "Field length",
+          "type": "integer",
+          "minimum": 0
+        },
+        "readOnly": {
+          "title": "Is field read-only",
+          "type": "boolean"
+        },
+        "required": {
+          "title": "Is field required",
+          "type": "boolean"
+        },
+        "translatable": {
+          "title": "Is field translatable",
+          "type": "boolean"
+        },
+        "recordOriginException": {
+          "title": "Is field an exception to the recordOrigin rule",
+          "type": "boolean"
+        },
+        "constraints": {
+          "title": "Field constraints",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetFieldConstraint"
+          }
+        },
+        "collection": {
+          "title": "Allowed extref collections",
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/collectionName"
+              },
+              {
+                "enum": [
+                  "*"
+                ]
+              }
+            ]
+          },
+          "uniqueItems": true
+        },
+        "explodeBy": {
+          "title": "For internal usage only",
+          "type": "string"
+        },
+        "x-dynamic-key": {
+          "title": "Dynamic Key Specification",
+          "description": "Use this if you need to expose array objects as an object using parts of the object as key. Gets transported into internal graviton schemas as a whole if specified.",
+          "$ref": "#/definitions/xDynamicKey"
+        },
+        "searchable": {
+          "title": "Can the defined field be searched by search RQL term, weight based query indexing",
+          "type": "integer",
+          "minimum": 0
+        },
+        "hidden": {
+          "title": "If true, this field will not be serialized",
+          "type": "boolean"
+        },
+        "restrictions": {
+          "title": "A list of restriction handlers (which are registered through RestrictionManager) that are applied to this field",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "targetFieldConstraint": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Constraint name",
+          "type": "string"
+        },
+        "options": {
+          "title": "Constraint options",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetFieldConstraintOption"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "targetFieldConstraintOption": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Constraint option name",
+          "type": "string"
+        },
+        "value": {
+          "title": "Constraint option value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "xDynamicKey": {
+      "type": "object",
+      "properties": {
+        "document-id": {
+          "title": "Document ID",
+          "description": "Document type of document that shall has it's id used as object key.",
+          "type": "string"
+        },
+        "repository-method": {
+          "title": "Repository Method",
+          "description": "Method that is to be called on the document repository corresponding to the given document-id.",
+          "type": "string"
+        },
+        "ref-field": {
+          "title": "Ref Field",
+          "description": "Which field in a document to find out what it's key should be when it needs to be exposed as object (ie. using additionalProperties) on it's parent. if it's nested just seperate the fields by a period. E.g. lvl1.lvl2.lvl3. Graviton currently uses the id from the results of this call as key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document-id",
+        "repository-method",
+        "ref-field"
+      ]
+    },
+    "solr": {
+      "type": "object",
+      "properties": {
+        "aggregate": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/solrFieldDefinition"
+          }
+        }
+      },
+      "required": [
+        "aggregate",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "solrFieldDefinition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "weight"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -9,8 +9,10 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
@@ -22,6 +24,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -41,7 +44,7 @@ class RestController extends AbstractController
     private $logger;
 
     /**
-     * @var DocumentModel
+     * @var ModelInterface
      */
     private $model;
 
@@ -184,6 +187,8 @@ class RestController extends AbstractController
 
         $document = $this->getModel()->getSerialised($id, $request);
 
+        $this->addRequestAttributes($request);
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent($document);
@@ -220,14 +225,13 @@ class RestController extends AbstractController
     /**
      * Set the model class
      *
-     * @param DocumentModel $model Model class
+     * @param ModelInterface $model Model class
      *
      * @return self
      */
-    public function setModel(DocumentModel $model)
+    public function setModel(ModelInterface $model)
     {
         $this->model = $model;
-
         return $this;
     }
 
@@ -251,6 +255,8 @@ class RestController extends AbstractController
         $content = $this->restUtils->serialize($data);
 
         $this->logger->info('REST: allAction -> sending response');
+
+        $this->addRequestAttributes($request);
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
@@ -291,6 +297,8 @@ class RestController extends AbstractController
             'Location',
             $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
         );
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -338,10 +346,12 @@ class RestController extends AbstractController
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($record, false);
+            $this->getModel()->insertRecord($record);
         } else {
-            $this->getModel()->updateRecord($id, $record, false);
+            $this->getModel()->updateRecord($id, $record);
         }
+
+        $this->addRequestAttributes($request);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -385,7 +395,7 @@ class RestController extends AbstractController
                 $patch = new Patch($jsonDocument, $request->getContent());
                 $patchedDocument = $patch->apply();
             } catch (\Exception $e) {
-                throw new InvalidJsonPatchException($e->getMessage());
+                throw new InvalidJsonPatchException(prev: $e);
             }
         } catch (\Exception $e) {
             throw $e;
@@ -403,6 +413,8 @@ class RestController extends AbstractController
         // Update object
         $this->getModel()->updateRecord($id, $record);
 
+        $this->addRequestAttributes($request);
+
         // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set(
@@ -416,17 +428,20 @@ class RestController extends AbstractController
     /**
      * Deletes a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
+     * @param Request $request request
      *
      * @return Response $response Result of the action
      */
-    public function deleteAction($id)
+    public function deleteAction($id, Request $request)
     {
         $this->logger->info('REST: deleteAction');
 
         $response = $this->getResponse();
         $this->model->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -457,6 +472,8 @@ class RestController extends AbstractController
             $corsMethods = 'GET, OPTIONS';
         }
         $request->attributes->set('corsMethods', $corsMethods);
+
+        $this->addRequestAttributes($request);
 
         return $response;
     }
@@ -504,35 +521,39 @@ class RestController extends AbstractController
         $request->attributes->set('corsMethods', $corsMethods);
         $response->setContent($this->restUtils->serialize($schema));
 
+        $this->addRequestAttributes($request);
+
         return $response;
     }
 
     /**
      * Security needs to be enabled to get Object.
      *
-     * @return String
+     * @return UserInterface
+     *
      * @throws UsernameNotFoundException
      */
-    public function getSecurityUser()
+    public function getSecurityUser() : ?UserInterface
     {
         return $this->securityUtils->getSecurityUser();
     }
 
     /**
-     * validates user input and if successful returns the request input
+     * add some attributes to request
      *
      * @param Request $request request
      *
-     * @return object deserialized model
+     * @return void
      */
-    protected function validateAndGetRequestModel(Request $request)
+    private function addRequestAttributes(Request $request)
     {
-        // Get the response object from container
-        $response = $this->getResponse();
-        $model = $this->getModel();
-
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-
-        return $this->restUtils->validateRequest($request->getContent(), $model);
+        // try to set mongo collection name as varnishTag
+        $repository = $this->getModel()->getRepository();
+        if ($repository != null) {
+            $classNameParts = explode('\\', $repository->getDocumentName());
+            if (is_array($classNameParts)) {
+                $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
+            }
+        }
     }
 }

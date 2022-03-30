@@ -15,6 +15,7 @@ use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,6 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 use Graviton\RestBundle\Controller\RestController;
-use Doctrine\Common\Cache\CacheProvider;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -67,18 +67,18 @@ final class RestUtils implements RestUtilsInterface
     private $schemaValidator;
 
     /**
-     * @var CacheProvider
+     * @var CacheItemPoolInterface
      */
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface $container       container
-     * @param Router             $router          router
-     * @param Serializer         $serializer      serializer
-     * @param LoggerInterface    $logger          PSR logger (e.g. Monolog)
-     * @param SchemaUtils        $schemaUtils     schema utils
-     * @param Validator          $schemaValidator schema validator
-     * @param CacheProvider      $cacheProvider   Cache service
+     * @param ContainerInterface     $container       container
+     * @param Router                 $router          router
+     * @param Serializer             $serializer      serializer
+     * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
+     * @param SchemaUtils            $schemaUtils     schema utils
+     * @param Validator              $schemaValidator schema validator
+     * @param CacheItemPoolInterface $cacheProvider   Cache service
      */
     public function __construct(
         ContainerInterface $container,
@@ -87,7 +87,7 @@ final class RestUtils implements RestUtilsInterface
         LoggerInterface $logger,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
-        CacheProvider $cacheProvider
+        CacheItemPoolInterface $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
@@ -225,30 +225,21 @@ final class RestUtils implements RestUtilsInterface
 
         // is request body empty
         if ($content === '') {
-            $e = new NoInputException();
-            $e->setResponse($response);
-            throw $e;
+            throw new NoInputException();
         }
 
         $input = json_decode($content, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            $e = new MalformedInputException($this->getLastJsonErrorMessage());
-            $e->setErrorType(json_last_error());
-            $e->setResponse($response);
-            throw $e;
+            throw new MalformedInputException(jsonError: json_last_error_msg());
         }
         if (!is_array($input)) {
-            $e = new MalformedInputException('JSON request body must be an object');
-            $e->setResponse($response);
-            throw $e;
+            throw new MalformedInputException('JSON request body must be an object');
         }
 
         if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
             // we need to check for id mismatches....
             if ($request->attributes->get('id') != $input['id']) {
-                $e = new MalformedInputException('Record ID in your payload must be the same');
-                $e->setResponse($response);
-                throw $e;
+                throw new MalformedInputException('Record ID in your payload must be the same');
             }
         }
 
@@ -256,11 +247,9 @@ final class RestUtils implements RestUtilsInterface
             array_key_exists('id', $input) &&
             !$model->isIdInPostAllowed()
         ) {
-            $e = new MalformedInputException(
+            throw new MalformedInputException(
                 '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
             );
-            $e->setResponse($response);
-            throw $e;
         }
     }
 
@@ -285,22 +274,6 @@ final class RestUtils implements RestUtilsInterface
     }
 
     /**
-     * Used for backwards compatibility to PHP 5.4
-     *
-     * @return string
-     */
-    private function getLastJsonErrorMessage()
-    {
-        $message = 'Unable to decode JSON string';
-
-        if (function_exists('json_last_error_msg')) {
-            $message = json_last_error_msg();
-        }
-
-        return $message;
-    }
-
-    /**
      * Get the serializer
      *
      * @return Serializer
@@ -318,10 +291,12 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getOptionRoutes()
     {
-        $cached = $this->cacheProvider->fetch('cached_restutils_route_options');
-        if ($cached) {
-            return $cached;
+        $cacheItem = $this->cacheProvider->getItem('cached_restutils_route_options');
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
         $ret = array_filter(
             $this->router->getRouteCollection()->all(),
             function ($route) {
@@ -339,7 +314,10 @@ final class RestUtils implements RestUtilsInterface
                 return is_null($route->getRequirement('id'));
             }
         );
-        $this->cacheProvider->save('cached_restutils_route_options', $ret);
+
+        $cacheItem->set($ret);
+        $this->cacheProvider->save($cacheItem);
+
         return $ret;
     }
 
@@ -355,10 +333,12 @@ final class RestUtils implements RestUtilsInterface
     public function getRoutesByBasename($baseName)
     {
         $cacheId = 'cached_restutils_route_'.$baseName;
-        $cached = $this->cacheProvider->fetch($cacheId);
-        if ($cached) {
-            return $cached;
+        $cacheItem = $this->cacheProvider->getItem($cacheId);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
         $ret = [];
         $collections = $this->router->getRouteCollection()->all();
         foreach ($collections as $routeName => $route) {
@@ -366,7 +346,10 @@ final class RestUtils implements RestUtilsInterface
                 $ret[$routeName] = $route;
             }
         }
-        $this->cacheProvider->save($cacheId, $ret);
+
+        $cacheItem->set($ret);
+        $this->cacheProvider->save($cacheItem);
+
         return $ret;
     }
 
@@ -400,7 +383,13 @@ final class RestUtils implements RestUtilsInterface
     public function getControllerFromRoute(Route $route)
     {
         $ret = false;
-        $actionParts = explode(':', $route->getDefault('_controller'));
+
+        $controllerName = $route->getDefault('_controller');
+        if (substr_count($controllerName, ':') == 1) {
+            $controllerName = str_replace(':', '::', $controllerName);
+        }
+
+        $actionParts = explode('::', $controllerName);
 
         if (count($actionParts) == 2) {
             $ret = $this->container->get($actionParts[0]);
@@ -453,7 +442,7 @@ final class RestUtils implements RestUtilsInterface
 
             return $this->serializeContent($result);
         } catch (\Exception $e) {
-            throw new SerializationException($e);
+            throw new SerializationException(prev: $e);
         }
     }
 
@@ -475,7 +464,7 @@ final class RestUtils implements RestUtilsInterface
                 $documentClass
             );
         } catch (\Exception $e) {
-            throw new DeserializationException("Deserialization failed", $e);
+            throw new DeserializationException(prev: $e);
         }
 
         return $record;

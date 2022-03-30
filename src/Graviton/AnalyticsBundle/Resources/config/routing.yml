@@ -1,12 +1,12 @@
 graviton_analytics_homepage:
     path:     /
     methods: [GET]
-    defaults: { _controller: graviton.analytics.defaut_controller:indexAction }
+    defaults: { _controller: graviton.analytics.defaut_controller::indexAction }
 
 graviton_analytics_options:
     path:     /{req}
     methods: [OPTIONS]
-    defaults: { _controller: graviton.analytics.defaut_controller:optionsAction }
+    defaults: { _controller: graviton.analytics.defaut_controller::optionsAction }
     requirements:
         req: ".+"
 
@@ -15,11 +15,11 @@ graviton_analytics_service:
     methods: [GET]
     requirements:
         service: "[A-Za-z0-9_-]+"
-    defaults: { _controller: graviton.analytics.defaut_controller:serviceAction }
+    defaults: { _controller: graviton.analytics.defaut_controller::serviceAction }
 
 graviton_analytics_service_schema:
     path:     /schema/{service}
     methods: [GET]
     requirements:
         service: "[A-Za-z0-9_-]+"
-    defaults: { _controller: graviton.analytics.defaut_controller:serviceSchemaAction }
+    defaults: { _controller: graviton.analytics.defaut_controller::serviceSchemaAction }

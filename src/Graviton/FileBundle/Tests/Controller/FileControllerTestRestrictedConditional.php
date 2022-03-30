@@ -20,7 +20,7 @@ class FileControllerTestRestrictedConditional extends FileControllerTestRestrict
      *
      * @var string
      */
-    protected $environment = 'test_restricted_conditional';
+    protected static $environment = 'test_restricted_conditional';
 
     /**
      * custom client options

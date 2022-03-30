@@ -76,22 +76,63 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $restUtils;
 
     /**
-     * @param QueryService             $queryService               query service
-     * @param RestUtils                $restUtils                  Rest utils
-     * @param EventDispatcherInterface $eventDispatcher            Kernel event dispatcher
-     * @param array                    $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * set query service
+     *
+     * @param QueryService $queryService qs
+     *
+     * @return void
      */
-    public function __construct(
-        QueryService $queryService,
-        RestUtils $restUtils,
-        EventDispatcherInterface $eventDispatcher,
-        $notModifiableOriginRecords
-    ) {
-        parent::__construct();
+    public function setQueryService(QueryService $queryService)
+    {
         $this->queryService = $queryService;
+    }
+
+    /**
+     * set event dispatcher
+     *
+     * @param EventDispatcherInterface $eventDispatcher ed
+     *
+     * @return void
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * set notModifiableOriginRecords
+     *
+     * @param array $notModifiableOriginRecords arr
+     *
+     * @return void
+     */
+    public function setNotModifiableOriginRecords($notModifiableOriginRecords)
+    {
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
+    }
+
+    /**
+     * set restutils
+     *
+     * @param RestUtils $restUtils ru
+     *
+     * @return void
+     */
+    public function setRestUtils(RestUtils $restUtils)
+    {
         $this->restUtils = $restUtils;
+    }
+
+    /**
+     * toggle flag if we should use mongodb secondary
+     *
+     * @param bool $isUseSecondary if secondary or not
+     *
+     * @return void
+     */
+    public function setIsUseSecondary(bool $isUseSecondary): void
+    {
+        $this->queryService->setIsUseSecondary($isUseSecondary);
     }
 
     /**
@@ -131,27 +172,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param object $entity       entity to insert
-     * @param bool   $returnEntity true to return entity
-     * @param bool   $doFlush      if we should flush or not after insert
+     * @param object $entity entity to insert
      *
      * @return Object|null entity or null
      */
-    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
+    public function insertRecord($entity)
     {
         $this->manager->persist($this->dispatchPrePersistEvent($entity));
-
-        if ($doFlush) {
-            $this->manager->flush([$entity]);
-        }
+        $this->manager->flush([$entity]);
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
 
-        if ($returnEntity) {
-            return $this->find($entity->getId());
-        }
-        return null;
+        return $entity;
     }
 
     /**
@@ -218,13 +251,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId   id of entity to update
-     * @param Object $entity       new entity
-     * @param bool   $returnEntity true to return entity
+     * @param string $documentId id of entity to update
+     * @param Object $entity     new entity
      *
      * @return Object|null
      */
-    public function updateRecord($documentId, $entity, $returnEntity = true)
+    public function updateRecord($documentId, $entity)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
         if (!is_null($documentId)) {
@@ -243,10 +275,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
 
-        if ($returnEntity) {
-            return $entity;
-        }
-        return null;
+        return $entity;
     }
 
     /**
@@ -387,9 +416,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $originValue = strtolower(trim($record->getRecordOrigin()));
 
             if (in_array($originValue, $values)) {
-                $msg = sprintf("Must not be one of the following keywords: %s", implode(', ', $values));
-
-                throw new RecordOriginModifiedException($msg);
+                throw new RecordOriginModifiedException(
+                    sprintf(
+                        "'recordOrigin' must not be one of the following keywords: %s",
+                        implode(', ', $values)
+                    )
+                );
             }
         }
     }

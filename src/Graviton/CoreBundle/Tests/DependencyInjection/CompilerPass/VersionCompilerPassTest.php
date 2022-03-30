@@ -5,6 +5,9 @@
 
 namespace Graviton\CoreBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\CommonBundle\Component\Deployment\VersionInformation;
+use Graviton\CoreBundle\Compiler\VersionCompilerPass;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
@@ -23,48 +26,55 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
         $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
             ->disableOriginalConstructor()
             ->getMock();
+
         $containerDouble
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameter')
-            ->with('kernel.root_dir')
-            ->willReturn(__DIR__.'/Resources/version');
+            ->willReturnOnConsecutiveCalls(
+                'graviton/graviton',
+                ['symfony/symfony'],
+                ['php']
+            );
 
         // what we expect to be set
         $containerDouble
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('setParameter')
-            ->with(
-                'graviton.core.version.data',
+            ->withConsecutive(
                 [
-                    'self' => 'v20.7.0',
-                    'symfony/symfony' => 'v1.0.1',
-                    'php' => PHP_VERSION
+                    'graviton.core.version.data',
+                    [
+                        'self' => 'v20.7.0',
+                        'symfony/symfony' => 'v1.0.1',
+                        'php' => PHP_VERSION
+                    ]
+                ],
+                [
+                    'graviton.core.version.header',
+                    'self: v20.7.0; symfony/symfony: v1.0.1;'
                 ]
             );
-        $containerDouble
-            ->expects($this->at(2))
-            ->method('setParameter')
-            ->with(
-                'graviton.core.version.header',
-                'self: v20.7.0; symfony/symfony: v1.0.1;'
-            );
 
+        $prettyVersion = new class extends VersionInformation {
 
-        $sutDouble = $this->getMockBuilder('Graviton\CoreBundle\Compiler\VersionCompilerPass')
-            ->disableOriginalConstructor()
-            ->setMethods(['getPackageVersion'])
-            ->getMock();
-        $sutDouble
-            ->expects($this->at(0))
-            ->method('getPackageVersion')
-            ->with('graviton/graviton')
-            ->willReturn('v20.7.0');
-        $sutDouble
-            ->expects($this->at(1))
-            ->method('getPackageVersion')
-            ->with('symfony/symfony')
-            ->willReturn('v1.0.1');
+            /**
+             * get version
+             *
+             * @param string $packageName package name
+             *
+             * @return Version version
+             */
+            public function getPrettyVersion($packageName) : ?string
+            {
+                if ($packageName == 'graviton/graviton') {
+                    return 'v20.7.0';
+                }
 
-        $sutDouble->process($containerDouble);
+                return 'v1.0.1';
+            }
+        };
+
+        $sut = new VersionCompilerPass($prettyVersion);
+        $sut->process($containerDouble);
     }
 }

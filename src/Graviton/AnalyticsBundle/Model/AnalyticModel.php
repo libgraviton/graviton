@@ -25,6 +25,7 @@ class AnalyticModel
     protected $cacheTime;
     protected $params = [];
     protected $processor;
+    protected $useSecondary = false;
 
     /**
      * get Database
@@ -118,6 +119,21 @@ class AnalyticModel
         }
 
         return $this->collection[$pipelineName];
+    }
+
+    /**
+     * gets all collections involved in this analytic
+     *
+     * @return string[] array of collection names
+     */
+    public function getAllCollections()
+    {
+        if (is_array($this->collection)) {
+            return $this->collection;
+        } elseif (is_null($this->collection)) {
+            return [];
+        }
+        return [$this->collection];
     }
 
     /**
@@ -317,5 +333,27 @@ class AnalyticModel
     public function setParams($params)
     {
         $this->params = $params;
+    }
+
+    /**
+     * get UseSecondary
+     *
+     * @return bool UseSecondary
+     */
+    public function isUseSecondary()
+    {
+        return $this->useSecondary;
+    }
+
+    /**
+     * set UseSecondary
+     *
+     * @param bool $useSecondary useSecondary
+     *
+     * @return void
+     */
+    public function setUseSecondary($useSecondary)
+    {
+        $this->useSecondary = $useSecondary;
     }
 }

@@ -22,7 +22,7 @@ final class NoInputException extends RestException
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
      */
-    public function __construct($message = "No Content", $prev = null)
+    public function __construct($message = "No input data", $prev = null)
     {
         parent::__construct(Response::HTTP_BAD_REQUEST, $message, $prev);
     }

@@ -6,7 +6,8 @@
 namespace Graviton\FileBundle\Manager;
 
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
-use GravitonDyn\FileBundle\Document\File as FileDocument;
+use Graviton\RestBundle\Model\DocumentModel;
+use GravitonDyn\FileBundle\Document\File;
 use GravitonDyn\FileBundle\Document\FileMetadataBase;
 use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
 use League\Flysystem\Filesystem;
@@ -16,12 +17,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use GravitonDyn\FileBundle\Document\File as DocumentFile;
-use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Filesystem\Filesystem as SfFileSystem;
-use GravitonDyn\FileBundle\Model\File as DocumentModel;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -36,11 +34,6 @@ class FileManager
     private $fileSystem;
 
     /**
-     * @var DocumentManager
-     */
-    private $documentManager;
-
-    /**
      * @var array allowedMimeTypes Control files to be saved and returned
      */
     private $allowedMimeTypes = [];
@@ -53,15 +46,12 @@ class FileManager
     /**
      * FileManager constructor.
      *
-     * @param Filesystem      $fileSystem      file system abstraction layer for s3 and more
-     * @param ManagerRegistry $managerRegistry MongoDB registry manager
+     * @param Filesystem $fileSystem file system abstraction layer for s3 and more
      */
     public function __construct(
-        Filesystem $fileSystem,
-        ManagerRegistry $managerRegistry
+        Filesystem $fileSystem
     ) {
         $this->fileSystem = $fileSystem;
-        $this->documentManager = $managerRegistry->getManager();
     }
 
     /**
@@ -91,13 +81,12 @@ class FileManager
     /**
      * Will update the response object with provided file data
      *
-     * @param Response     $response response
-     * @param DocumentFile $file     File document object from DB
+     * @param File $file File document object from DB
      *
      * @return Response
      * @throws InvalidArgumentException if invalid info fetched from fileSystem
      */
-    public function buildGetContentResponse(Response $response, FileDocument $file)
+    public function buildGetContentResponse(File $file)
     {
         /** @var FileMetadataBase $metadata */
         $metadata = $file->getMetadata();
@@ -105,11 +94,9 @@ class FileManager
             throw new InvalidArgumentException('Loaded file have no valid metadata');
         }
 
-        // We use file's mimeType, just in case none we use DB's.
         $mimeType = null;
-
         if ($this->readFileSystemMimeType) {
-            $mimeType = $this->fileSystem->getMimetype($file->getId());
+            $mimeType = $this->fileSystem->mimeType($file->getId());
         }
         if (!$mimeType) {
             $mimeType = $metadata->getMime();
@@ -118,6 +105,14 @@ class FileManager
             throw new InvalidArgumentException('File mime type: '.$mimeType.' is not allowed as response.');
         }
 
+        $fileStream = $this->fileSystem->readStream($file->getId());
+
+        $response = new StreamedResponse(
+            function () use ($fileStream) {
+                echo stream_get_contents($fileStream);
+            }
+        );
+
         // Create Response
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_INLINE,
@@ -125,12 +120,12 @@ class FileManager
         );
 
         $response
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->fileSystem->read($file->getId()));
+            ->setStatusCode(Response::HTTP_OK);
         $response
             ->headers->set('Content-Type', $mimeType);
         $response
             ->headers->set('Content-Disposition', $disposition);
+
         return $response;
     }
 
@@ -148,20 +143,20 @@ class FileManager
         // will save using a stream
         $fp = fopen($filepath, 'r+');
 
-        $this->fileSystem->putStream($id, $fp);
+        $this->fileSystem->writeStream($id, $fp, ['ContentType' => mime_content_type($filepath)]);
 
         // close file
         fclose($fp);
     }
 
     /**
-     * @param DocumentFile  $document File Document
+     * @param File          $document File Document
      * @param Request       $request  Request bag
      * @param DocumentModel $model    File Document Model
-     * @return DocumentFile
+     * @return File
      */
     public function handleSaveRequest(
-        FileDocument $document,
+        File $document,
         Request $request,
         DocumentModel $model
     ) {
@@ -184,7 +179,7 @@ class FileManager
             throw new InvalidArgumentException('File id and Request id must match.');
         }
 
-        $document = $this->buildFileDocument($document, $file, $original);
+        $document = $this->buildFile($document, $file, $original);
         if (!$document->getId()) {
             $n = new UuidGenerator();
             $uuid = (string) $n->generateV4();
@@ -227,14 +222,14 @@ class FileManager
     /**
      * Create the basic needs for a file
      *
-     * @param DocumentFile $document Post or Put file document
+     * @param File         $document Post or Put file document
      * @param UploadedFile $file     To be used in set metadata
-     * @param DocumentFile $original If there is a original document
+     * @param File         $original If there is a original document
      *
-     * @return DocumentFile
+     * @return File
      * @throws InvalidArgumentException
      */
-    private function buildFileDocument(FileDocument $document, $file, $original)
+    private function buildFile(File $document, $file, $original)
     {
         $now = new \DateTime();
 
@@ -293,11 +288,11 @@ class FileManager
     /**
      * Simple validation for post/put request
      *
-     * @param DocumentFile $document  File document
-     * @param string       $requestId Request ID
+     * @param File   $document  File document
+     * @param string $requestId Request ID
      * @return bool
      */
-    private function validIdRequest(FileDocument $document, $requestId)
+    private function validIdRequest(File $document, $requestId)
     {
         if (!$requestId && !$document->getId()) {
             return true;
@@ -317,7 +312,7 @@ class FileManager
      */
     public function remove($id)
     {
-        if ($this->fileSystem->has($id)) {
+        if ($this->fileSystem->fileExists($id)) {
             $this->fileSystem->delete($id);
         }
     }

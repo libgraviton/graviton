@@ -9,10 +9,11 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
-use Graviton\PhpProxy\Proxy;
+use Graviton\CommonBundle\Component\HttpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Laminas\Diactoros\Uri;
 use Psr\Http\Message\UriInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -21,7 +22,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Zend\Diactoros\Uri;
 
 /**
  * general controller for all proxy staff
@@ -152,13 +152,7 @@ class ProxyController
             $response = (new HttpFoundationFactory())->createResponse($e->getResponse());
         } catch (ServerException $serverException) {
             $response = (new HttpFoundationFactory())->createResponse($serverException->getResponse());
-        } catch (TransformationException $e) {
-            $message = json_encode(
-                ['code' => 404, 'message' => 'HTTP 404 Not found']
-            );
-
-            throw new NotFoundHttpException($message, $e);
-        } catch (RequestException $e) {
+        } catch (TransformationException | RequestException $e) {
             $message = json_encode(
                 ['code' => 404, 'message' => 'HTTP 404 Not found']
             );
@@ -223,13 +217,17 @@ class ProxyController
     protected function decideApiAndEndpoint($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
+        $query = parse_url($url, PHP_URL_QUERY);
+        if ($query) {
+            $query = '?' . $query;
+        }
 
         $pattern = array (
             "@schema\/@",
             "@\/3rdparty\/@",
             "@\/item$@",
         );
-        $path = preg_replace($pattern, '', $path);
+        $path = preg_replace($pattern, '', $path . $query);
 
         //get api name and endpoint
         $apiName = substr($path, 0, strpos($path, '/'));
@@ -259,9 +257,7 @@ class ProxyController
             }
         }
 
-        $e = new NotFoundException('No such thirdparty API.');
-        $e->setResponse(Response::create());
-        throw $e;
+        throw new NotFoundException('No such thirdparty API.');
     }
 
     /**

@@ -69,23 +69,25 @@ class AppKernel extends Kernel
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Symfony\Bundle\MonologBundle\MonologBundle(),
-            new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
-            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
+            new \Graviton\CommonBundle\GravitonCommonBundle(),
+            new \Sentry\SentryBundle\SentryBundle()
         );
 
-        if ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false) {
+        $nonProdEnv = ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false);
+
+        if ($nonProdEnv) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
         }
 
-        if ('prod' === $this->getEnvironment()) {
-            $bundles[] = new \Sentry\SentryBundle\SentryBundle();
+        if ($nonProdEnv && class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
+            $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
         }
 
         // our own bundles!

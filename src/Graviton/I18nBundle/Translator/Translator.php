@@ -5,12 +5,12 @@
 
 namespace Graviton\I18nBundle\Translator;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Document\Translation;
 use MongoDB\Collection;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -41,14 +41,9 @@ class Translator
     private $defaultLanguage;
 
     /**
-     * @var CacheProvider
+     * @var CacheItemPoolInterface
      */
     private $cache;
-
-    /**
-     * @var CacheProvider
-     */
-    private $cacheRewrite;
 
     /**
      * @var int
@@ -63,26 +58,23 @@ class Translator
     /**
      * Translator constructor.
      *
-     * @param DocumentManager $manager         manager
-     * @param string          $defaultLanguage default language
-     * @param CacheProvider   $cache           cache adapter
-     * @param CacheProvider   $cacheRewrite    cache adapter for rewrites
-     * @param int             $cacheNameDepth  how many characters of the original is used as cache pool divider
+     * @param DocumentManager        $manager         manager
+     * @param string                 $defaultLanguage default language
+     * @param CacheItemPoolInterface $cache           cache adapter
+     * @param int                    $cacheNameDepth  how many characters of the original is used as cache pool divider
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function __construct(
         DocumentManager $manager,
         $defaultLanguage,
-        CacheProvider $cache,
-        CacheProvider $cacheRewrite,
+        CacheItemPoolInterface $cache,
         $cacheNameDepth
     ) {
         $this->translationCollection = $manager->getDocumentCollection(Translation::class);
         $this->languageCollection = $manager->getDocumentCollection(Language::class);
         $this->defaultLanguage = $defaultLanguage;
         $this->cache = $cache;
-        $this->cacheRewrite = $cacheRewrite;
         $this->cacheNameDepth = (int) $cacheNameDepth;
     }
 
@@ -184,9 +176,10 @@ class Translator
             return $this->languages;
         }
 
-        $this->languages = $this->cacheRewrite->fetch(self::CACHE_KEY_LANGUAGES);
+        $cacheItem = $this->cache->getItem(self::CACHE_KEY_LANGUAGES);
+        $this->languages = $cacheItem->get();
 
-        if ($this->languages === false) {
+        if (!is_array($this->languages)) {
             $this->languages = array_map(
                 function ($record) {
                     return $record['_id'];
@@ -198,7 +191,8 @@ class Translator
 
             $this->languages = array_values($this->languages);
 
-            $this->cacheRewrite->save(self::CACHE_KEY_LANGUAGES, $this->languages);
+            $cacheItem->set($this->languages);
+            $this->cache->save($cacheItem);
         }
 
         return $this->languages;
@@ -212,7 +206,7 @@ class Translator
     public function removeCachedLanguages()
     {
         $this->languages = [];
-        $this->cacheRewrite->delete(self::CACHE_KEY_LANGUAGES);
+        $this->cache->deleteItem(self::CACHE_KEY_LANGUAGES);
     }
 
     /**
@@ -224,7 +218,12 @@ class Translator
      */
     private function getFromCache($original)
     {
-        $cacheContent = $this->cache->fetch($this->getCacheKey($original));
+        $cacheItem = $this->cache->getItem($this->getCacheKey($original));
+        if (!$cacheItem->isHit()) {
+            return null;
+        }
+
+        $cacheContent = $cacheItem->get();
         if (is_array($cacheContent) && isset($cacheContent[$original])) {
             return $cacheContent[$original];
         }
@@ -243,14 +242,17 @@ class Translator
     private function saveToCache($original, $translations)
     {
         $cacheKey = $this->getCacheKey($original);
-        $cacheContent = $this->cache->fetch($cacheKey);
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        $cacheContent = $cacheItem->get();
         if (is_array($cacheContent)) {
             $cacheContent[$original] = $translations;
         } else {
             $cacheContent = [$original => $translations];
         }
 
-        $this->cache->save($cacheKey, $cacheContent);
+        $cacheItem->set($cacheContent);
+        $this->cache->save($cacheItem);
     }
 
     /**
@@ -263,10 +265,18 @@ class Translator
     private function removeFromCache($original)
     {
         $cacheKey = $this->getCacheKey($original);
-        $cacheContent = $this->cache->fetch($this->getCacheKey($original));
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if (!$cacheItem->isHit()) {
+            return;
+        }
+
+        $cacheContent = $cacheItem->get();
         if (is_array($cacheContent) && isset($cacheContent[$original])) {
             unset($cacheContent[$original]);
-            $this->cache->save($cacheKey, $cacheContent);
+
+            $cacheItem->set($cacheContent);
+            $this->cache->save($cacheItem);
         }
     }
 
@@ -282,7 +292,7 @@ class Translator
         return sprintf(
             'translator_%s_%s',
             implode('.', $this->getLanguages()),
-            str_pad(strtolower(substr($original, 0, $this->cacheNameDepth)), $this->cacheNameDepth, '.')
+            sha1($original)
         );
     }
 }

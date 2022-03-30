@@ -15,7 +15,7 @@ services:
     factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
     public: true
     arguments:
-      - "GravitonI18nBundle:Language"
+      - Graviton\I18nBundle\Document\Language
 
   graviton.i18n.model.language:
     class: "%graviton.i18n.model.language.class%"
@@ -36,6 +36,8 @@ services:
           - "@graviton.i18n.model.language"
     tags:
       - name: "graviton.rest"
+        collection: Language
+        router-base: /i18n/language/
 
   graviton.i18n.listener.contentlanguageresponse:
     class: "%graviton.i18n.listener.contentlanguageresponse.class%"
@@ -52,8 +54,7 @@ services:
     arguments:
       - "@doctrine_mongodb.odm.default_document_manager"
       - "%graviton.translator.default.locale%"
-      - "@=service(parameter('graviton.cache.provider.service_id'))"
-      - "@graviton.cache.provider.file"
+      - "@graviton.cache.adapter.app"
       - "%graviton.translator.cache_name_depth%"
 
   graviton.i18n.listener.i18nlanguagecachinginvalidationlistener:

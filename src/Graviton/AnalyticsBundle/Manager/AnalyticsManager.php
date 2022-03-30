@@ -13,6 +13,7 @@ use Graviton\DocumentBundle\Service\DateConverter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client;
+use MongoDB\Driver\ReadPreference;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -94,6 +95,16 @@ class AnalyticsManager
         // all data will be here first..
         $data = [];
 
+        // check for readpreference
+        $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY);
+        if ($model->isUseSecondary()) {
+            $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+        }
+        $aggregateOptions = array_merge(
+            $this->aggregateOptions,
+            ['readPreference' => $readPreference]
+        );
+
         if (!$model->getMultipipeline()) {
             $dbName = $model->getDatabase();
             if (is_null($dbName)) {
@@ -101,7 +112,7 @@ class AnalyticsManager
             }
             $collection = $this->connection->selectCollection($dbName, $model->getCollection());
             $pipeline = $this->executePreAggregateEvent($pipeline);
-            $data[] = $collection->aggregate($pipeline, $this->aggregateOptions)->toArray();
+            $data[] = $collection->aggregate($pipeline, $aggregateOptions)->toArray();
         } else {
             foreach ($pipeline as $pipelineName => $definition) {
                 $dbName = $model->getDatabase($pipelineName);
@@ -113,7 +124,7 @@ class AnalyticsManager
                     $model->getCollection($pipelineName)
                 );
                 $definition = $this->executePreAggregateEvent($definition);
-                $data[$pipelineName] = $collection->aggregate($definition, $this->aggregateOptions)->toArray();
+                $data[$pipelineName] = $collection->aggregate($definition, $aggregateOptions)->toArray();
             }
         }
 

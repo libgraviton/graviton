@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\Document(collection="{{ collection }}")
  * @ODM\InheritanceType("COLLECTION_PER_CLASS")
  *
- * {{ doctrineIndexesAnnotation(collection, indexes, ensureIndexes, textIndexes) }}
+{{ doctrineIndexesAnnotation(collection, indexes, ensureIndexes, textIndexes) }}
  */
 class {{ document }} extends {{ document }}Base
 {

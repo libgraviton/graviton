@@ -3,39 +3,22 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="app/bootstrap.tests.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage>
     <include>
-      <directory>src</directory>
+      <directory>src/Graviton/**</directory>
     </include>
+
     <exclude>
-      <directory>src/*/*Bundle/Tests</directory>
-      <directory>src/*/*Bundle/*Bundle/Tests</directory>
-      <directory>src/*/*Bundle/Resources</directory>
-      <directory>src/*/Bundle/*Bundle/Resources</directory>
-      <directory>src/*/Bundle/DependencyInjection</directory>
-      <directory>src/GravitonDyn</directory>
+      <directory>**/Tests/**</directory>
+      <directory>**/Exception/**</directory>
+      <directory>**/Composer/**</directory>
+      <directory>**/Resources/**</directory>
+      <directory>**/*Bundle.php</directory>
+      <directory>**/TestBundle/**</directory>
     </exclude>
+
   </coverage>
   <testsuites>
-    <testsuite name="integration">
-      <directory>src/*/*Bundle/Tests/Controller</directory>
-      <directory>src/*/*Bundle/Tests/Integration</directory>
-      <directory>src/*/Bundle/*Bundle/Tests/Controller</directory>
-      <directory>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</directory>
-      <file>src/Graviton/FileBundle/Tests/FileManagerTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListenerTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</file>
-    </testsuite>
-    <testsuite name="unit">
+    <testsuite name="all">
       <directory>src/*/*Bundle/Tests</directory>
-      <directory>src/*/Bundle/*Bundle/Tests</directory>
-      <exclude>src/*/*Bundle/Tests/Controller</exclude>
-      <exclude>src/*/*Bundle/Tests/Integration</exclude>
-      <exclude>src/*/Bundle/*Bundle/Tests/Controller</exclude>
-      <exclude>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</exclude>
-      <exclude>src/Graviton/FileBundle/Tests/FileManagerTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListenerTest.php</exclude>
-      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>

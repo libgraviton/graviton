@@ -22,7 +22,7 @@ class RecordOriginModifiedException extends RestException
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
      */
-    public function __construct($message = "Record must not be modified", $prev = null)
+    public function __construct(string $message, $prev = null)
     {
         parent::__construct(Response::HTTP_BAD_REQUEST, $message, $prev);
     }

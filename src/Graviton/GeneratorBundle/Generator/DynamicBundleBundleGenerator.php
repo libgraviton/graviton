@@ -44,8 +44,12 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function generate(array $bundleList, $bundleBundleNamespace, $bundleName, $targetFilename)
-    {
+    public function generate(
+        array $bundleList,
+        $bundleBundleNamespace,
+        $bundleName,
+        $targetFilename
+    ) {
         $absoluteList = [];
         foreach ($bundleList as $namespace) {
             $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .

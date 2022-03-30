@@ -25,6 +25,10 @@ class DirStrategy implements StrategyInterface
      */
     public function supports($input)
     {
+        if (empty($input)) {
+            return false;
+        }
+
         return is_dir($input);
     }
 

@@ -5,7 +5,6 @@
 
 namespace Graviton\AnalyticsBundle\Manager;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
@@ -13,6 +12,7 @@ use Graviton\DocumentBundle\Service\DateConverter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -28,7 +28,6 @@ use Symfony\Component\Routing\Router;
 class ServiceManager
 {
     /** Cache name for services */
-    const CACHE_KEY_SERVICES = 'analytics_services';
     const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
@@ -38,7 +37,7 @@ class ServiceManager
     /** @var AnalyticsManager */
     protected $analyticsManager;
 
-    /** @var CacheProvider */
+    /** @var CacheItemPoolInterface */
     protected $cacheProvider;
 
     /** @var DateConverter */
@@ -72,18 +71,18 @@ class ServiceManager
     /**
      * ServiceConverter constructor.
      *
-     * @param RequestStack     $requestStack      Sf Request information service
-     * @param AnalyticsManager $analyticsManager  Db Manager and query control
-     * @param CacheProvider    $cacheProvider     Cache service
-     * @param DateConverter    $dateConverter     date converter
-     * @param Router           $router            To manage routing generation
-     * @param int              $cacheTimeMetadata How long to cache metadata
-     * @param array            $analyticsServices the services
+     * @param RequestStack           $requestStack      Sf Request information service
+     * @param AnalyticsManager       $analyticsManager  Db Manager and query control
+     * @param CacheItemPoolInterface $cacheProvider     Cache service
+     * @param DateConverter          $dateConverter     date converter
+     * @param Router                 $router            To manage routing generation
+     * @param int                    $cacheTimeMetadata How long to cache metadata
+     * @param array                  $analyticsServices the services
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
-        CacheProvider $cacheProvider,
+        CacheItemPoolInterface $cacheProvider,
         DateConverter $dateConverter,
         Router $router,
         $cacheTimeMetadata,
@@ -107,9 +106,10 @@ class ServiceManager
      */
     public function getServices()
     {
-        $services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES_URLS);
-        if (is_array($services)) {
-            return $services;
+        $cacheItem = $this->cacheProvider->getItem(self::CACHE_KEY_SERVICES_URLS);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
 
         $services = [];
@@ -124,7 +124,7 @@ class ServiceManager
                     [
                         'service' => $service['route']
                     ],
-                    false
+                    true
                 ),
                 'profile' => $this->router->generate(
                     'graviton_analytics_service_schema',
@@ -135,11 +135,11 @@ class ServiceManager
                 )
             ];
         }
-        $this->cacheProvider->save(
-            self::CACHE_KEY_SERVICES_URLS,
-            $services,
-            $this->cacheTimeMetadata
-        );
+
+        $cacheItem->set($services);
+        $cacheItem->expiresAfter($this->cacheTimeMetadata);
+        $this->cacheProvider->save($cacheItem);
+
         return $services;
     }
 
@@ -163,33 +163,54 @@ class ServiceManager
     }
 
     /**
+     * Get the analytic model for current request
+     *
+     * @return AnalyticModel analytic model
+     */
+    public function getCurrentAnalyticModel()
+    {
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+
+        // Locate the model definition
+        return $this->getAnalyticModel($serviceRoute);
+    }
+
+    /**
+     * Gets all collections involved in this analytics
+     *
+     * @return string[] name of collections
+     */
+    public function getMongoCollections()
+    {
+        return $this->getCurrentAnalyticModel()->getAllCollections();
+    }
+
+    /**
      * Will map and find data for defined route
      *
      * @return array
      */
     public function getData()
     {
-        $serviceRoute = $this->requestStack->getCurrentRequest()
-                                           ->get('service');
-
-        // Locate the model definition
-        $model = $this->getAnalyticModel($serviceRoute);
+        $model = $this->getCurrentAnalyticModel();
 
         $cacheTime = $model->getCacheTime();
-        $cacheKey = $this->getCacheKey($model);
+        $cacheItem = $this->cacheProvider->getItem($this->getCacheKey($model));
 
         //Cached data if configured
         if ($cacheTime &&
             !$this->requestStack->getCurrentRequest()->headers->has($this->skipCacheHeaderName) &&
-            $cache = $this->cacheProvider->fetch($cacheKey)
+            $cacheItem->isHit()
         ) {
-            return $cache;
+            return $cacheItem->get();
         }
 
         $data = $this->analyticsManager->getData($model, $this->getServiceParameters($model));
 
         if ($cacheTime) {
-            $this->cacheProvider->save($cacheKey, $data, $cacheTime);
+            $cacheItem->set($data);
+            $cacheItem->expiresAfter($cacheTime);
+            $this->cacheProvider->save($cacheItem);
         }
 
         return $data;

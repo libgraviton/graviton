@@ -4,6 +4,7 @@
     "service": {
         "readOnly": false,
         "routerBase": "/core/app/",
+        "useSecondary": true,
         "fixtures": []
     },
     "target": {

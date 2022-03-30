@@ -62,10 +62,10 @@ class GenerateDynamicBundleCommand extends Command
     private $serviceWhitelist = null;
 
     /** @var string|null */
-    private $syntheticFields = null;
+    private $syntheticFields;
 
     /** @var string|null */
-    private $ensureIndexes = null;
+    private $ensureIndexes;
 
     /**
      * @var LoaderInterface
@@ -147,10 +147,10 @@ class GenerateDynamicBundleCommand extends Command
         $this->syntheticFields = $syntheticFields;
         $this->ensureIndexes = $ensureIndexes;
 
-        if ($bundleAdditions !== null && $bundleAdditions !== '') {
+        if (!empty($bundleAdditions)) {
             $this->bundleAdditions = $bundleAdditions;
         }
-        if ($serviceWhitelist !== null && $serviceWhitelist !== '') {
+        if (!empty($serviceWhitelist)) {
             $this->serviceWhitelist = $serviceWhitelist;
         }
     }

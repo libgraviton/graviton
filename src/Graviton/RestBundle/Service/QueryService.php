@@ -10,6 +10,7 @@ use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use MongoDB\Driver\ReadPreference;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +66,11 @@ class QueryService
     protected $eventDispatcher;
 
     /**
+     * @var bool toggles if we should send readpref 'secondarypreferred'
+     */
+    private $isUseSecondary = false;
+
+    /**
      * @param LoggerInterface          $logger                 logger
      * @param VisitorInterface         $visitor                visitor
      * @param integer                  $paginationDefaultLimit default pagination limit
@@ -80,6 +86,18 @@ class QueryService
         $this->visitor = $visitor;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * toggle flag if we should use mongodb secondary
+     *
+     * @param bool $isUseSecondary if secondary or not
+     *
+     * @return void
+     */
+    public function setIsUseSecondary(bool $isUseSecondary): void
+    {
+        $this->isUseSecondary = $isUseSecondary;
     }
 
     /**
@@ -105,9 +123,16 @@ class QueryService
 
         $this->applyRqlQuery();
 
+        if ($this->isUseSecondary) {
+            $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+        } else {
+            $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY);
+        }
+
         // dispatch our event if normal builder
         if ($this->queryBuilder instanceof Builder) {
             $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
+            $this->queryBuilder = $this->queryBuilder->setReadPreference($readPreference);
         }
 
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
@@ -117,9 +142,17 @@ class QueryService
              */
             $this->queryBuilder->hydrate($repository->getClassName());
 
-            $this->logger->info('QueryService: Aggregate query');
+            $this->logger->info(
+                'QueryService: Aggregate query',
+                [
+                    'readPref' => $readPreference->getModeString()
+                ]
+            );
 
-            $records = array_values($this->queryBuilder->execute()->toArray());
+            $records = array_values(
+                $this->queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
+            );
+
             $request->attributes->set('recordCount', count($records));
 
             $returnValue = $records;
@@ -128,17 +161,23 @@ class QueryService
              * this is or the "all" action -> multiple documents returned
              */
 
-            $this->logger->info(
-                'QueryService: allAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
-            );
-
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
             $countQueryBuilder->count()->limit(0)->skip(0);
             $totalCount = $countQueryBuilder->getQuery()->execute();
 
-            $records = array_values($this->queryBuilder->getQuery()->execute()->toArray());
+            $mainQuery = $this->queryBuilder->getQuery();
+
+            $this->logger->info(
+                'QueryService: allAction query',
+                [
+                    'q' => $mainQuery->getQuery(),
+                    'totalCount' => $totalCount,
+                    'readPref' => $readPreference->getModeString()
+                ]
+            );
+
+            $records = array_values($mainQuery->execute()->toArray());
 
             $request->attributes->set('totalCount', $totalCount);
             $request->attributes->set('recordCount', count($records));
@@ -152,7 +191,7 @@ class QueryService
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
             );
 
             $query = $this->queryBuilder->getQuery();
@@ -240,14 +279,16 @@ class QueryService
         }
 
         if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
+            $currentQuery = $this->queryBuilder->getQuery()->getQuery();
 
             /*** default sort ***/
-            if (!array_key_exists('sort', $this->queryBuilder->getQuery()->getQuery())) {
+
+            if (!array_key_exists('sort', $currentQuery)) {
                 $this->queryBuilder->sort('_id');
             }
 
             /*** pagination stuff ***/
-            if (!array_key_exists('limit', $this->queryBuilder->getQuery()->getQuery())) {
+            if (!array_key_exists('limit', $currentQuery)) {
                 $this->queryBuilder->skip($this->getPaginationSkip());
                 $this->queryBuilder->limit($this->getPaginationPageSize());
             }

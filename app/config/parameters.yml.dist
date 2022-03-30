@@ -1,7 +1,5 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
-    graviton.core.checkPackageName: 'graviton/graviton'
-
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
@@ -11,24 +9,10 @@ parameters:
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
     graviton.log.level: "info"
     graviton.sentry.dsn: null
-    graviton.sentry.dontReport:
-        - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
-        - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
-        - "Graviton\\RqlParser\\Exception\\SyntaxErrorException"
-        - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # proxy settings for HttpClient and possibly more
     graviton.proxy: null
     graviton.noproxy: null
-
-    # if set to a path, documentbundle will search this also for generated bundles
-    # important: this should best be a path relative to the graviton root dir! (./app/../)
-    graviton.generator.dynamicbundle.dir: null
-    #graviton.generator.synthetic_fields: 'int:tenant'
-    graviton.generator.synthetic_fields: null
-    graviton.generator.synthetic_fields_expose_on: null
-    #graviton.generator.ensure_indexes: hans,test2
-    graviton.generator.ensure_indexes: null
 
     # which serializer groups should be (de)serialized on this instance
     graviton.rest.serializer.groups: null
@@ -61,23 +45,15 @@ parameters:
     # security related parameters
     graviton.security.authentication.allow_anonymous: true
     graviton.security.authentication.test_username: false
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
     graviton.security.authentication.strategy.cookie.key: graviton_user
-    graviton.security.authentication.strategy.subnet.key: 127.0.0.0/24
+    graviton.security.authentication.strategy.subnet.key: 0.0.0.0/0
     graviton.security.authentication.strategy.subnet.header_field: x-graviton-authentication
     graviton.security.authentication.strategy.header.key: graviton_user
-
-    # If strategy multi then define which strategies to be used. Will be compiled
-    graviton.security.authentication.strategy.multi.services:
-      - graviton.security.authentication.strategy.subnet
-      - graviton.security.authentication.strategy.cookie
-      - graviton.security.authentication.strategy.header
 
     graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
     graviton.security.authentication.provider.model.query_field: false
 
     graviton.security.services.whitelist: {}
-    graviton.rest.special_mimetypes: {}
 
     graviton.analytics.cache_time.metadata: 10
 
@@ -88,7 +64,7 @@ parameters:
     graviton.file.allowed.mime_types: []
     graviton.file.read_filesystem_mimetype: true
 
-    graviton.file.local.storage_directory: "%kernel.root_dir%/files"
+    graviton.file.local.storage_directory: '%kernel.project_dir%/app/files'
 
     graviton.file.s3.endpoint: null
     graviton.file.s3.version: latest
@@ -161,15 +137,16 @@ parameters:
     graviton.writelock.randomwaiturls:
       - /event/status
 
-    # caching related settings
-    # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
-    # for redis use:
-    #    graviton.cache.provider.service_id: graviton.cache.provider.redis
+    # you can set this to a value if you want to override the determined cache adapter to use
+    graviton.cache.provider.override: null
+    # some id to differentiate "instances" upon redeployments for shared distributed caches
+    graviton.cache.instance_id: grv
 
-    # this is the service that should be distributed when using multiple replicas
-    graviton.cache.provider.service_id: graviton.cache.provider.local
-    # this should always point to a local cache adapter for performance reasons
-    graviton.cache.provider.service_id_local: graviton.cache.provider.local
-    graviton.cache.redis.host: localhost
+    #graviton.cache.redis.host: localhost
+    graviton.cache.redis.host: null
     graviton.cache.redis.port: 6379
+
+    # would be "127.0.0.1:9080", hostname and port to varnish
+    graviton.cache.server.hostname: null
+    graviton.cache.server.header: xkey
 

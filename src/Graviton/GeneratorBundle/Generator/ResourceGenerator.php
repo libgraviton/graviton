@@ -287,6 +287,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
+            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->setParameter('reservedFieldnames', $reservedFieldNames)
@@ -348,7 +349,7 @@ class ResourceGenerator extends AbstractGenerator
     {
         $this->filesystem->dumpFile(
             $this->servicesFile,
-            Yaml::dump(array_merge($this->parameters, $this->services))
+            Yaml::dump(array_merge($this->parameters, $this->services), 4)
         );
     }
 
@@ -419,11 +420,6 @@ class ResourceGenerator extends AbstractGenerator
 
         $documentName = $parameters['base'] . 'Document\\' . $parameters['document'];
 
-        $this->addParameter(
-            $documentName,
-            $docName . '.class'
-        );
-
         $this->addService(
             $docName,
             null,
@@ -432,7 +428,7 @@ class ResourceGenerator extends AbstractGenerator
             [],
             null,
             null,
-            '%'. $docName . '.class%'
+            $documentName
         );
 
         $this->addParameter(
@@ -458,7 +454,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $parameters['bundle'] . ':' . $document
+                    'value' => $documentName
                 )
             ),
             $this->repositoryFactoryService,
@@ -474,7 +470,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
+                    'value' => $documentName.'Embedded'
                 )
             ),
             $this->repositoryFactoryService,
@@ -679,6 +675,10 @@ class ResourceGenerator extends AbstractGenerator
                     // router base defined?
                     $routerBase = $this->json->getRouterBase();
                     if ($routerBase !== false) {
+                        if (!\str_ends_with($routerBase, '/')) {
+                            $routerBase .= '/';
+                        }
+
                         $thisTag['router-base'] = $routerBase;
                     }
                 }
@@ -768,25 +768,13 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateModel(array $parameters, $dir, $document)
     {
-        $this->renderFile(
-            'model/Model.php.twig',
-            $dir . '/Model/' . $document . '.php',
-            $parameters
-        );
-
-        $this->renderFile(
-            'model/Model.php.twig',
-            $dir . '/Model/' . $document . 'Embedded.php',
-            array_merge($parameters, ['document' => $document.'Embedded'])
-        );
-
         if ($this->generateSchema) {
-            $this->renderFile(
+            $this->renderFileAsJson(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . '.json',
                 array_merge($parameters, ['isEmbedded' => false])
             );
-            $this->renderFile(
+            $this->renderFileAsJson(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
                 array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
@@ -799,37 +787,54 @@ class ResourceGenerator extends AbstractGenerator
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
         $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
 
-        $this->addParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
+        // calls for normal
+        $calls = [
+            [
+                'method' => 'setRepository',
+                'service' => $repoName
+            ]
+        ];
+
+        // set secondary connection?
+        if ($parameters['isUseSecondaryConnection']) {
+            $calls[] = [
+                'method' => 'setIsUseSecondary',
+                'arguments' => [true]
+            ];
+        }
 
         // normal service
         $this->addService(
             $paramName,
             'graviton.rest.model',
-            array(
+            $calls,
+            arguments: [
                 [
-                    'method' => 'setRepository',
-                    'service' => $repoName
-                ],
-            ),
-            null
-        );
-
-        // embedded service
-        $this->addParameter(
-            $parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded',
-            $paramName . 'embedded.class'
+                    'type' => 'string',
+                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
+                        '/Resources/config/schema/'.$parameters['document'].'.json\')'
+                ]
+            ],
+            className: 'Graviton\RestBundle\Model\DocumentModel'
         );
 
         $this->addService(
             $paramName . 'embedded',
             'graviton.rest.model',
-            array(
+            [
                 [
                     'method' => 'setRepository',
                     'service' => $repoName . 'embedded'
                 ],
-            ),
-            null
+            ],
+            arguments: [
+                [
+                    'type' => 'string',
+                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
+                        '/Resources/config/schema/'.$parameters['document'].'Embedded.json\')'
+                ]
+            ],
+            className: 'Graviton\RestBundle\Model\DocumentModel'
         );
     }
 
@@ -861,11 +866,6 @@ class ResourceGenerator extends AbstractGenerator
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
 
-        $this->addParameter(
-            $baseController,
-            $paramName . '.class'
-        );
-
         $controllerCalls = [
             [
                 'method' => 'setModel',
@@ -888,7 +888,8 @@ class ResourceGenerator extends AbstractGenerator
             $paramName,
             $parameters['parent'],
             $controllerCalls,
-            'graviton.rest'
+            'graviton.rest',
+            className: $baseController
         );
     }
 

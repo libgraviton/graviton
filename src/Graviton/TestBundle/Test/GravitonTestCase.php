@@ -156,7 +156,7 @@ class GravitonTestCase extends WebTestCase
             if (null !== static::$kernel) {
                 static::$kernel->shutdown();
             }
-            $kernel = static::$kernel = $this->createKernel(['environment' => $this->environment]);
+            $kernel = static::$kernel = $this->createKernel(['environment' => self::$environment]);
             $kernel->boot();
         } else {
             $kernel = $this->getContainer()->get('kernel');

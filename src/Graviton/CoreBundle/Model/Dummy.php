@@ -14,4 +14,11 @@ use Graviton\RestBundle\Model\DocumentModel;
  */
 class Dummy extends DocumentModel
 {
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        parent::__construct(__DIR__.'/../Resources/config/schema/Dummy.json');
+    }
 }

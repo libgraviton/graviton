@@ -1,3 +1,18 @@
+parameters:
+  graviton.schema.listener.canonicalschemaresponse.class: Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener
+  graviton.schema.model.schemamodel.class: Graviton\SchemaBundle\Model\SchemaModel
+  graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
+  graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory
+  graviton.schema.constraint.builder.class: Graviton\SchemaBundle\Constraint\ConstraintBuilder
+  graviton.schema.constraint.utils.class: Graviton\SchemaBundle\Constraint\ConstraintUtils
+  graviton.schema.constraint.incrementaldate.class: Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint
+  graviton.schema.constraint.readonlyfield.class: Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint
+  graviton.schema.constraint.versionservice.class: Graviton\SchemaBundle\Constraint\VersionServiceConstraint
+  graviton.schema.constraint.recordorigin.class: Graviton\SchemaBundle\Constraint\RecordOriginConstraint
+  graviton.schema.serializer.handler.additionalproperties.class: Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler
+  graviton.schema.serializer.handler.type.class: Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler
+  graviton.schema.serializer.handler.enum.class: Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler
+
 services:
     graviton.schema.listener.canonicalschemaresponse:
         class: "%graviton.schema.listener.canonicalschemaresponse.class%"
@@ -10,6 +25,7 @@ services:
             method: onKernelResponse
 
     graviton.schema.model.schemamodel:
+        abstract: true
         class: "%graviton.schema.model.schemamodel.class%"
         calls:
           -
@@ -114,7 +130,7 @@ services:
           - "%graviton.document.field.names%"
           - "%graviton.rest.schema_variation.enable%"
           - "@graviton.schema.constraint.builder"
-          - "@graviton.cache.provider.file"
+          - "@graviton.cache.adapter.app"
           - "@graviton.core.service.jmespath"
           - "@graviton.18n.utils"
 

@@ -514,6 +514,22 @@ class JsonDefinition
     }
 
     /**
+     * flag that says if the reads should go to the secondary connection
+     *
+     * @return bool
+     */
+    public function isUseSecondaryConnection() {
+        $retVal = false;
+        if ($this->def->getService() !== null
+            && is_object($this->def->getService())
+            && $this->def->getService()->isUseSecondary() == true) {
+            $retVal = true;
+        }
+
+        return $retVal;
+    }
+
+    /**
      * @return string
      */
     public function getServiceCollection()

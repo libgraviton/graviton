@@ -1,14 +1,19 @@
 parameters:
-  graviton.swagger.generation_dir: "%kernel.cache_dir%/../../"
+  graviton.swagger.generation_dir: "%kernel.project_dir%/app/"
 
 services:
+
+    graviton.swagger.schema.model:
+      class: Graviton\SchemaBundle\Model\SchemaModel
+      arguments:
+        - '@=service("kernel").locateResource("@GravitonSchemaBundle/Resources/config/schema/SchemaModel.json")'
 
     # swagger service - a service that generates swagger spec -->
     graviton.rest.apidoc:
         class: Graviton\SwaggerBundle\Service\Swagger
         arguments:
           - "@graviton.rest.restutils"
-          - "@graviton.schema.model.schemamodel"
+          - "@graviton.swagger.schema.model"
           - "@graviton.schema.utils"
           - "%graviton.core.version.data%"
 
