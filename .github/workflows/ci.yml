@@ -27,6 +27,7 @@ jobs:
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
+        continue-on-error: true
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -37,6 +38,7 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
         uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
         with:
           key: graviton-php81-{hash}
           restore-keys: |
