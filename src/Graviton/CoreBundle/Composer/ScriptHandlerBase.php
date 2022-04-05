@@ -46,20 +46,21 @@ abstract class ScriptHandlerBase
      *
      * @param CommandEvent $event      Event
      * @param string       $consoleDir Console dir
-     * @param string       $cmd        Command
+     * @param array        $cmd        Command
      * @param int          $timeout    Timeout
      *
      * @return void
      */
-    protected static function executeCommand(Event $event, $consoleDir, $cmd, $timeout = 300)
+    protected static function executeCommand(Event $event, $consoleDir, array $cmd, $timeout = 300)
     {
-        $php = escapeshellarg(self::getPhp(false));
-        $console = escapeshellarg($consoleDir.'/console');
+        $command = [self::getPhp(false), $consoleDir.'/console'];
+
         if ($event->getIO()->isDecorated()) {
-            $console .= ' --ansi';
+            $command[] = '--ansi';
         }
 
-        $process = new Process($php.' '.$console.' '.$cmd, null, null, null, $timeout);
+        $command = array_merge($command, $cmd);
+        $process = new Process($command, null, null, null, $timeout);
         $process->run(
             function ($type, $buffer) use ($event) {
                 $event->getIO()->write($buffer, false);
@@ -70,7 +71,7 @@ abstract class ScriptHandlerBase
             throw new \RuntimeException(
                 sprintf(
                     'An error occurred when executing the "%s" command.',
-                    escapeshellarg($cmd)
+                    implode(' ', $command)
                 )
             );
         }

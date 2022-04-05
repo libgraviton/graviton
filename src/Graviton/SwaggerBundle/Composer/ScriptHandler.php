@@ -28,8 +28,11 @@ class ScriptHandler extends ScriptHandlerBase
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:swagger:generate');
 
-        self::executeCommand($event, $consolePath, $cmd);
+        self::executeCommand(
+            $event,
+            $consolePath,
+            ['graviton:swagger:generate']
+        );
     }
 }
