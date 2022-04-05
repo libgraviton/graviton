@@ -31,6 +31,7 @@ services:
             event: "kernel.terminate"
             method: "onKernelTerminate"
         arguments:
+          - "@logger"
           - "@graviton.rabbitmq.producer.extamqp"
           - "@router"
           - "@request_stack"
