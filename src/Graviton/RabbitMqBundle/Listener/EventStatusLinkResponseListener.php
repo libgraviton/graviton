@@ -162,6 +162,7 @@ class EventStatusLinkResponseListener
         $workerRelativeUrl,
         $transientHeaders
     ) {
+        $this->logger = $logger;
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
         $this->requestStack = $requestStack;
