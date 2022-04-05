@@ -28,8 +28,11 @@ class ScriptHandler extends ScriptHandlerBase
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:generate:dynamicbundles').' --json';
 
-        self::executeCommand($event, $consolePath, $cmd);
+        self::executeCommand(
+            $event,
+            $consolePath,
+            ['graviton:generate:dynamicbundles', '--json']
+        );
     }
 }
