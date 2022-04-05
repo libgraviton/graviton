@@ -15,6 +15,7 @@ use Graviton\RabbitMqBundle\Producer\ProducerInterface;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Laminas\Diactoros\Uri;
 use MongoDB\BSON\Regex;
+use Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -32,6 +33,11 @@ use GravitonDyn\EventStatusBundle\Document\EventStatus;
  */
 class EventStatusLinkResponseListener
 {
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var ProducerInterface Producer for publishing messages.
@@ -119,6 +125,7 @@ class EventStatusLinkResponseListener
     private $queueToSend = [];
 
     /**
+     * @param Logger                   $logger                            logger
      * @param ProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface          $router                            Router dependency
      * @param RequestStack             $requestStack                      Request stack
@@ -137,6 +144,7 @@ class EventStatusLinkResponseListener
      * @param array                    $transientHeaders                  headers to be included from request in event
      */
     public function __construct(
+        Logger $logger,
         ProducerInterface $rabbitMqProducer,
         RouterInterface $router,
         RequestStack $requestStack,
@@ -237,6 +245,7 @@ class EventStatusLinkResponseListener
     public function onKernelTerminate(TerminateEvent $event)
     {
         foreach ($this->queueToSend as $queueName => $payload) {
+            $this->logger->info('Sending message to queue', ['queue' => $queueName, 'message' => $payload]);
             $this->rabbitMqProducer->send($queueName, $payload);
         }
     }
