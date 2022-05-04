@@ -216,7 +216,7 @@ class GeneratorExtension implements ExtensionInterface
                 $dir
             );
 
-            $nameParts[] = str_replace([',', '-', '+', '.'], '_', $field);
+            $nameParts[] = str_replace([',', '-', '+', '.'], '-', $field);
             if ($dir == 'asc') {
                 $nameParts[] = '0';
             } else {
@@ -229,7 +229,7 @@ class GeneratorExtension implements ExtensionInterface
         return sprintf(
             '@ODM\Index(keys={%s}, name="%s", background=true)',
             $keys,
-            implode('__', $nameParts)
+            implode('_', $nameParts)
         );
     }
 
