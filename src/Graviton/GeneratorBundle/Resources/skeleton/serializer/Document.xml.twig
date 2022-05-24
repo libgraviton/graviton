@@ -44,6 +44,16 @@
     </property>
 {% endfor %}
 
+    <!-- the lastModifiedAt/by fields -->
+{%- set exposeLastModifiedBy = (not hasDefinedField(json, 'lastModifiedBy')) | json_encode -%}
+{%- set exposeLastModifiedAt = (not hasDefinedField(json, 'lastModifiedAt')) | json_encode -%}
+
+      <property name="_lastModifiedBy" type="string" accessor-setter="setLastModifiedBy" accessor-getter="getLastModifiedBy" serialized-name="lastModifiedBy" exclude="{{ exposeLastModifiedBy }}"/>
+      <property name="_lastModifiedAt" accessor-setter="setLastModifiedAt" accessor-getter="getLastModifiedAt" serialized-name="lastModifiedAt" exclude="{{ exposeLastModifiedAt }}">
+        <type><![CDATA[DateTime]]></type>
+      </property>
+    <!-- the lastModifiedAt/by fields end -->
+
 {%-  set excludeSynthetic = (not (exposeSyntheticFields(json) and not isEmbedded)) | json_encode -%}
 
     <!-- synthetic fields start -->

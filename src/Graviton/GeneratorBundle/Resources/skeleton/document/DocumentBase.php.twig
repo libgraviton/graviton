@@ -59,16 +59,16 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     *
     * @ODM\Field(type="date")
     */
-    protected $lastModifiedAt;
+    protected $_lastModifiedAt;
 
     public function getLastModifiedAt()
     {
-        return $this->lastModifiedAt;
+        return $this->_lastModifiedAt;
     }
 
     public function setLastModifiedAt($lastModifiedAt)
     {
-        $this->lastModifiedAt = $lastModifiedAt;
+        $this->_lastModifiedAt = $lastModifiedAt;
     }
 
     /**
@@ -76,16 +76,16 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     *
     * @ODM\Field(type="string")
     */
-    protected $lastModifiedBy;
+    protected $_lastModifiedBy;
 
     public function getLastModifiedBy()
     {
-        return $this->lastModifiedBy;
+        return $this->_lastModifiedBy;
     }
 
     public function setLastModifiedBy($lastModifiedBy)
     {
-        $this->lastModifiedBy = $lastModifiedBy;
+        $this->_lastModifiedBy = $lastModifiedBy;
     }
 
     /**
