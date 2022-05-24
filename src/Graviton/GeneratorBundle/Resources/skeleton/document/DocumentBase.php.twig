@@ -55,6 +55,40 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     }
 
     /**
+    * @var Date $lastModifiedAt
+    *
+    * @ODM\Field(type="date")
+    */
+    protected $lastModifiedAt;
+
+    public function getLastModifiedAt()
+    {
+        return $this->lastModifiedAt;
+    }
+
+    public function setLastModifiedAt($lastModifiedAt)
+    {
+        $this->lastModifiedAt = $lastModifiedAt;
+    }
+
+    /**
+    * @var string $lastModifiedBy
+    *
+    * @ODM\Field(type="string")
+    */
+    protected $lastModifiedBy;
+
+    public function getLastModifiedBy()
+    {
+        return $this->lastModifiedBy;
+    }
+
+    public function setLastModifiedBy($lastModifiedBy)
+    {
+        $this->lastModifiedBy = $lastModifiedBy;
+    }
+
+    /**
     * @var Date $deletedDate
     *
     * @ODM\Field(type="date")
