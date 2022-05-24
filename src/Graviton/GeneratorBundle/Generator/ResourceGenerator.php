@@ -267,7 +267,9 @@ class ResourceGenerator extends AbstractGenerator
         $reservedFieldNames = array_merge(
             $reservedFieldNames,
             [
-                'deletedDate'
+                'deletedDate',
+                'lastModifiedBy',
+                'lastModifiedAt'
             ]
         );
 
