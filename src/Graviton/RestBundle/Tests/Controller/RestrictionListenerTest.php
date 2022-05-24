@@ -239,16 +239,25 @@ class RestrictionListenerTest extends RestTestCase
         $record->value = 103;
 
         $client = static::createRestClient($this->clientOptions);
-        $client->put('/testcase/multitenant/103', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
+        $client->put(
+            '/testcase/multitenant/103',
+            $record,
+            [],
+            [],
+            [
+                'HTTP_X-GRAVITON-CLIENT' => '5',
+                'HTTP_X-GRAVITON-USER' => 'tester1'
+            ]
+        );
 
         // check it isn't visible to other tenants..
         $this->assertsRecordNotExists(6, '/testcase/multitenant/103');
 
         // but to our clientId!
-        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
+        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103, 'tester1');
 
         // and to no client
-        $this->assertsRecordExists(null, '/testcase/multitenant/103', 103);
+        $this->assertsRecordExists(null, '/testcase/multitenant/103', 103, 'tester1');
     }
 
     /**
@@ -265,7 +274,16 @@ class RestrictionListenerTest extends RestTestCase
         $record->value = 103;
 
         $client = static::createRestClient($this->clientOptions);
-        $client->put('/testcase/multitenant/103', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
+        $client->put(
+            '/testcase/multitenant/103',
+            $record,
+            [],
+            [],
+            [
+                'HTTP_X-GRAVITON-CLIENT' => '5',
+                'HTTP_X-GRAVITON-USER' => 'testerpatcher'
+            ]
+        );
 
         // make sure it exists
         $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
@@ -293,10 +311,11 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
         // tenant still should be 5 but with updated value!
-        $this->assertsRecordExists(5, '/testcase/multitenant/103', 3334);
+        $this->assertsRecordExists(5, '/testcase/multitenant/103', 3334, 'anonymous');
 
         // admin can see the record!
-        $this->assertsRecordExists(null, '/testcase/multitenant/103', 3334);
+        // should be user anonymous as the last one had no header..
+        $this->assertsRecordExists(null, '/testcase/multitenant/103', 3334, 'anonymous');
     }
 
     /**
@@ -404,7 +423,7 @@ class RestrictionListenerTest extends RestTestCase
      *
      * @return void
      */
-    private function assertsRecordExists($tenant, $url, $value)
+    private function assertsRecordExists($tenant, $url, $value, $lastModifiedBy = null)
     {
         $server = [];
         if (!is_null($tenant)) {
@@ -419,6 +438,16 @@ class RestrictionListenerTest extends RestTestCase
             $entity = $this->repository->find(basename($url));
             $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
             $this->assertEquals($tenant, $entity->getClientId());
+        }
+
+        if (!is_null($lastModifiedBy)) {
+            $this->assertEquals($lastModifiedBy, $client->getResults()->lastModifiedBy);
+            $this->assertNotNull($client->getResults()->lastModifiedBy);
+
+            $entity = $this->repository->find(basename($url));
+            $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
+            $this->assertEquals($lastModifiedBy, $entity->getLastModifiedBy());
+            $this->assertInstanceOf(\DateTime::class, $entity->getLastModifiedAt());
         }
     }
 

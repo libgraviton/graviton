@@ -129,6 +129,14 @@ class RestrictionListener
      */
     public function onEntityPrePersistOrDelete(EntityPrePersistEvent $event)
     {
+        // do we have an identity? -> set on entity!
+        if ($this->securityUtils->isSecurityUser() &&
+            ($event->getEntity() instanceof \ArrayAccess)
+        ) {
+            $event->getEntity()['_lastModifiedBy'] = $this->securityUtils->getSecurityUsername();
+            $event->getEntity()['_lastModifiedAt'] = new \DateTime();
+        }
+
         if (!$this->securityUtils->hasDataRestrictions() ||
             !($event->getEntity() instanceof \ArrayAccess)
         ) {
