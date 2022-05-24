@@ -73,7 +73,7 @@
         "phpunit/phpunit": "~9|~8",
         "squizlabs/php_codesniffer": "~3",
 
-        "graviton/test-services-bundle": "^2.9.0",
+        "graviton/test-services-bundle": "dev-develop",
         "graviton/mongodb-fixtures-bundle": "~3",
         "libgraviton/codesniffer": "~2",
 
