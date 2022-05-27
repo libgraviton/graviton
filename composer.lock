@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de028eea412572f1a45e5cc35c36d725",
+    "content-hash": "63a384a1353458225ec1e2f0f4517f56",
     "packages": [
         {
             "name": "async-aws/core",
@@ -5313,16 +5313,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v5.4.8",
+            "version": "v5.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "42e79c604c84891f2fd89d61a21e9f8c8fd7aedd"
+                "reference": "6e5280eac0a58404b33e6a20c9aedc8d4b7b2754"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/42e79c604c84891f2fd89d61a21e9f8c8fd7aedd",
-                "reference": "42e79c604c84891f2fd89d61a21e9f8c8fd7aedd",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6e5280eac0a58404b33e6a20c9aedc8d4b7b2754",
+                "reference": "6e5280eac0a58404b33e6a20c9aedc8d4b7b2754",
                 "shasum": ""
             },
             "require": {
@@ -5513,7 +5513,7 @@
             ],
             "support": {
                 "issues": "https://github.com/symfony/symfony/issues",
-                "source": "https://github.com/symfony/symfony/tree/v5.4.8"
+                "source": "https://github.com/symfony/symfony/tree/v5.4.9"
             },
             "funding": [
                 {
@@ -5529,7 +5529,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-27T17:22:41+00:00"
+            "time": "2022-05-27T07:09:22+00:00"
         },
         {
             "name": "thefrozenfire/swagger",
@@ -5996,23 +5996,22 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "dev-develop",
+            "version": "v2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "96fdc42caec03207cb2b1e4be1c47ff8f0cd7ccb"
+                "reference": "62d9aff77d3c4cc9f9feaf5e1433e0631ed06de9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/96fdc42caec03207cb2b1e4be1c47ff8f0cd7ccb",
-                "reference": "96fdc42caec03207cb2b1e4be1c47ff8f0cd7ccb",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/62d9aff77d3c4cc9f9feaf5e1433e0631ed06de9",
+                "reference": "62d9aff77d3c4cc9f9feaf5e1433e0631ed06de9",
                 "shasum": ""
             },
             "require-dev": {
                 "graviton/analytics-base": "*",
                 "graviton/analytics-mongoshell-converter": "*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -6032,9 +6031,9 @@
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.10.0"
             },
-            "time": "2022-05-24T15:14:13+00:00"
+            "time": "2022-05-27T07:35:58+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -8453,9 +8452,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "graviton/test-services-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
