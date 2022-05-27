@@ -91,6 +91,18 @@ class Extension implements ExtensionInterface
                 function (JsonDefinition $json) {
                     return CoreUtils::subjectMatchesStringWildcards($this->exposeSyntheticMap, $json->getRouterBase());
                 }
+            ),
+            // tells if a given field is included in json definition
+            new TwigFunction(
+                'hasDefinedField',
+                function (JsonDefinition $json, string $fieldName) : bool {
+                    foreach ($json->getFields() as $field) {
+                        if ($field->getName() == $fieldName) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
             )
         ];
     }
