@@ -26,12 +26,12 @@ class RestrictionListener
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var SecurityUtils
      */
-    private $securityUtils;
+    private SecurityUtils $securityUtils;
 
     /**
      * @var RequestStack
@@ -41,12 +41,12 @@ class RestrictionListener
     /**
      * @var bool
      */
-    private $persistRestrictions;
+    private bool $persistRestrictions;
 
     /**
      * @var bool
      */
-    private $restrictSolr;
+    private bool $restrictSolr;
 
     /**
      * HttpHeader constructor.
@@ -61,8 +61,8 @@ class RestrictionListener
         LoggerInterface $logger,
         SecurityUtils $securityUtils,
         RequestStack $requestStack,
-        $persistRestrictions = true,
-        $restrictSolr = true
+        bool $persistRestrictions = true,
+        bool $restrictSolr = true
     ) {
         $this->logger = $logger;
         $this->securityUtils = $securityUtils;
@@ -129,6 +129,7 @@ class RestrictionListener
      */
     public function onEntityPrePersistOrDelete(EntityPrePersistEvent $event)
     {
+        // do we have an identity? -> set on entity!
         if (!$this->securityUtils->hasDataRestrictions() ||
             !($event->getEntity() instanceof \ArrayAccess)
         ) {
@@ -139,7 +140,7 @@ class RestrictionListener
             $this->logger->info(
                 'RESTRICTION onPrePersist DISABLED'
             );
-            return $event;
+            return $this->setChangeTrackingData($event);
         }
 
         $entity = $event->getEntity();
@@ -170,13 +171,28 @@ class RestrictionListener
             );
 
             $entity[$fieldName] = $currentTenant;
-
-            if (is_null($fieldValue)) {
-                continue;
-            }
         }
 
         $event->setEntity($entity);
+
+        return $this->setChangeTrackingData($event);
+    }
+
+    /**
+     * add change tracking to event
+     *
+     * @param EntityPrePersistEvent $event event
+     *
+     * @return EntityPrePersistEvent event
+     */
+    private function setChangeTrackingData(EntityPrePersistEvent $event)
+    {
+        if ($this->securityUtils->isSecurityUser() &&
+            ($event->getEntity() instanceof \ArrayAccess)
+        ) {
+            $event->getEntity()['_lastModifiedBy'] = $this->securityUtils->getSecurityUsername();
+            $event->getEntity()['_lastModifiedAt'] = new \DateTime();
+        }
 
         return $event;
     }
