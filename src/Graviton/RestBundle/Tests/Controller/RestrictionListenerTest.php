@@ -208,7 +208,16 @@ class RestrictionListenerTest extends RestTestCase
         $record->value = 55;
 
         $client = static::createRestClient($this->clientOptions);
-        $client->post('/testcase/multitenant/', $record, [], [], ['HTTP_X-GRAVITON-CLIENT' => '5']);
+        $client->post(
+            '/testcase/multitenant/',
+            $record,
+            [],
+            [],
+            [
+                'HTTP_X-GRAVITON-CLIENT' => '5',
+                'HTTP_X-GRAVITON-USER' => 'testposter'
+            ]
+        );
 
         $location = $client->getResponse()->headers->get('Location');
 
@@ -220,7 +229,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertsRecordNotExists(6, $location);
 
         // but to our clientId!
-        $this->assertsRecordExists(5, $location, 55);
+        $this->assertsRecordExists(5, $location, 55, 'testposter');
 
         // and to no client
         $this->assertsRecordExists(null, $location, 55);
@@ -286,7 +295,7 @@ class RestrictionListenerTest extends RestTestCase
         );
 
         // make sure it exists
-        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
+        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103, 'testerpatcher');
 
         // now we want to write it again under tenant 6
         $client = static::createRestClient($this->clientOptions);
@@ -297,7 +306,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
 
         // make sure nothing changed in db!
-        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
+        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103, 'testerpatcher');
 
         // clientId 6 still should not see the record
         $this->assertsRecordNotExists(6, '/testcase/multitenant/103');
@@ -337,12 +346,21 @@ class RestrictionListenerTest extends RestTestCase
 
         // admin wants to PATCH a tenant record..
         $client = static::createRestClient($this->clientOptions);
-        $client->request('PATCH', '/testcase/multitenant/100', [], [], [], $patchJson);
+        $client->request(
+            'PATCH',
+            '/testcase/multitenant/100',
+            [],
+            [],
+            [
+                'HTTP_X-GRAVITON-USER' => 'testerpatcher'
+            ],
+            $patchJson
+        );
 
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         // should be under same tenant
-        $this->assertsRecordExists(5, '/testcase/multitenant/100', 300);
+        $this->assertsRecordExists(5, '/testcase/multitenant/100', 300, 'testerpatcher');
 
         // wrong tenant to other tenant
         $client = static::createRestClient($this->clientOptions);
@@ -368,10 +386,20 @@ class RestrictionListenerTest extends RestTestCase
         );
 
         $client = static::createRestClient($this->clientOptions);
-        $client->request('PATCH', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '5'], $patchJson);
+        $client->request(
+            'PATCH',
+            '/testcase/multitenant/100',
+            [],
+            [],
+            [
+                'HTTP_X-GRAVITON-CLIENT' => '5',
+                'HTTP_X-GRAVITON-USER' => 'testerpatcher2'
+            ],
+            $patchJson
+        );
 
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertsRecordExists(5, '/testcase/multitenant/100', 400);
+        $this->assertsRecordExists(5, '/testcase/multitenant/100', 400, 'testerpatcher2');
     }
 
     /**
@@ -414,9 +442,10 @@ class RestrictionListenerTest extends RestTestCase
     /**
      * assert that a record exists
      *
-     * @param mixed  $tenant tenant
-     * @param string $url    url
-     * @param string $value  value
+     * @param mixed  $tenant         tenant
+     * @param string $url            url
+     * @param string $value          value
+     * @param string $lastModifiedBy modified by
      *
      * @throws \Doctrine\ODM\MongoDB\LockException
      * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
@@ -435,6 +464,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals($value, $client->getResults()->value);
 
         if (!is_null($tenant)) {
+            $this->repository->clear();
             $entity = $this->repository->find(basename($url));
             $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
             $this->assertEquals($tenant, $entity->getClientId());
@@ -444,6 +474,7 @@ class RestrictionListenerTest extends RestTestCase
             $this->assertEquals($lastModifiedBy, $client->getResults()->lastModifiedBy);
             $this->assertNotNull($client->getResults()->lastModifiedBy);
 
+            $this->repository->clear();
             $entity = $this->repository->find(basename($url));
             $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
             $this->assertEquals($lastModifiedBy, $entity->getLastModifiedBy());
