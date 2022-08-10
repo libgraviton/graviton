@@ -34,7 +34,7 @@
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "~1",
+        "graviton/common-bundle": "dev-feature/opentracing",
         "graviton/rql-parser-bundle": "^3.0.2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
