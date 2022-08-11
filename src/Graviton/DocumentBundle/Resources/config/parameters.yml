@@ -3,7 +3,7 @@ parameters:
     graviton.document.service.dateconverter.class: Graviton\DocumentBundle\Service\DateConverter
     graviton.document.service.collectioncache.class: Graviton\DocumentBundle\Service\CollectionCache
     graviton.document.service.solrquery.class: Graviton\DocumentBundle\Service\SolrQuery
-    graviton.document.service.solrquery.client.class: Solarium\Client
+    graviton.document.service.solrquery.client.class: Solarium\Core\Client\Client
     graviton.document.service.solrquery.client.adapter.class: Solarium\Core\Client\Adapter\Curl
     graviton.document.listener.extreferencesearchlistener.class: Graviton\DocumentBundle\Listener\ExtReferenceSearchListener
     graviton.document.listener.rqlsearch.class: Graviton\DocumentBundle\Listener\RqlSearchNodeListener
