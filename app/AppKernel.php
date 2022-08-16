@@ -75,6 +75,7 @@ class AppKernel extends Kernel
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
+            new \Auxmoney\OpentracingBundle\OpentracingBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()
         );

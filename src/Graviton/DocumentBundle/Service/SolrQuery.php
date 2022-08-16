@@ -7,7 +7,7 @@ namespace Graviton\DocumentBundle\Service;
 
 use Graviton\Rql\Node\SearchNode;
 use Psr\Log\LoggerInterface;
-use Solarium\Client;
+use Solarium\Core\Client\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\RqlParser\Node\LimitNode;

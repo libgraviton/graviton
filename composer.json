@@ -29,12 +29,12 @@
         "ext-mbstring": "*",
 
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.10.0",
+        "ext-mongodb": "^1.14.0",
         "ext-amqp": "~1",
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "~1",
+        "graviton/common-bundle": "~2",
         "graviton/rql-parser-bundle": "^3.0.2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
