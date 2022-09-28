@@ -200,7 +200,7 @@ class GeneratorExtension implements ExtensionInterface
         $nameParts = [];
 
         // parse for options
-        preg_match("/(.*)\[(.*)\]/iU",$index, $matches);
+        preg_match("/(.*)\[(.*)\]/iU", $index, $matches);
 
         $indexOptions = null;
         if (isset($matches[2]) && !empty($matches[2])) {
@@ -259,9 +259,13 @@ class GeneratorExtension implements ExtensionInterface
             '@ODM\Index(%s)',
             implode(
                 ', ',
-                array_map(function ($key, $val) {
-                    return $key.'='.$val;
-                }, array_keys($indexAttributes), $indexAttributes)
+                array_map(
+                    function ($key, $val) {
+                        return $key.'='.$val;
+                    },
+                    array_keys($indexAttributes),
+                    $indexAttributes
+                )
             )
         );
     }
