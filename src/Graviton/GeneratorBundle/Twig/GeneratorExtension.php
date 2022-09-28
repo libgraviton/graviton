@@ -176,7 +176,6 @@ class GeneratorExtension implements ExtensionInterface
         if (!empty($textIndexes)) {
             $indexes[] = $this->getDoctrineTextIndexAnnotation($collectionName, $textIndexes);
         }
-        //return '@ODM\Indexes({'.implode(', ', $indexes).'})';
 
         $indexLines = array_map(
             function ($singleIndexLine) {
@@ -199,17 +198,28 @@ class GeneratorExtension implements ExtensionInterface
     {
         $keys = [];
         $nameParts = [];
+
+        // parse for options
+        preg_match("/(.*)\[(.*)\]/iU",$index, $matches);
+
+        $indexOptions = null;
+        if (isset($matches[2]) && !empty($matches[2])) {
+            $index = $matches[1];
+            $indexOptions = str_replace(';', ',', $matches[2]);
+        }
+
         $fields = explode(',', trim($index));
 
         foreach ($fields as $field) {
             $dir = 'asc';
-            if (substr($field, 0, 1) == '-') {
+            if (str_starts_with($field, '-')) {
                 $field = substr($field, 1);
                 $dir = 'desc';
             }
-            if (substr($field, 0, 1) == '+') {
+            if (str_starts_with($field, '+')) {
                 $field = substr($field, 1);
             }
+
             $keys[] = sprintf(
                 '"%s"="%s"',
                 $field,
@@ -226,10 +236,33 @@ class GeneratorExtension implements ExtensionInterface
 
         $keys = implode(', ', $keys);
 
-        return sprintf(
-            '@ODM\Index(keys={%s}, name="%s", background=true)',
-            $keys,
+        $indexAttributes = [];
+        $indexAttributes['keys'] = sprintf(
+            '{%s}',
+            $keys
+        );
+        $indexAttributes['name'] = sprintf(
+            '"%s"',
             implode('_', $nameParts)
+        );
+        $indexAttributes['background'] = 'true';
+
+        // options?
+        if (!is_null($indexOptions)) {
+            $indexAttributes['options'] = sprintf(
+                '{%s}',
+                $indexOptions
+            );
+        }
+
+        return sprintf(
+            '@ODM\Index(%s)',
+            implode(
+                ', ',
+                array_map(function ($key, $val) {
+                    return $key.'='.$val;
+                }, array_keys($indexAttributes), $indexAttributes)
+            )
         );
     }
 
