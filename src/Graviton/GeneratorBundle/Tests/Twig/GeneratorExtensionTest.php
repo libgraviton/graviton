@@ -79,7 +79,7 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"dude"="asc"}, name="dude_0", background=true, '.
+                    ' * @ODM\Index(keys={"dude"="asc"}, name="dude_0_ttl", background=true, '.
                     'options={"expireAfterSeconds"=30,"sparse"=true})'
             ],
             'index-multi-options' => [
@@ -88,7 +88,7 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"fred"="asc", "dude"="desc"}, name="fred_0_dude_1", background=true, '.
+                    ' * @ODM\Index(keys={"fred"="asc", "dude"="desc"}, name="fred_0_dude_1_ttl", background=true, '.
                     'options={"expireAfterSeconds"=30,"sparse"=true})'
             ]
         ];
