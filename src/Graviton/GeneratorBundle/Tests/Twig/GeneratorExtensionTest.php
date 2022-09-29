@@ -72,6 +72,24 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 'expected' =>
                     ' * @ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="hans_1_fred_1_id_0",'.
                     ' background=true)'
+            ],
+            'index-options' => [
+                'indexes' => [
+                    'dude["expireAfterSeconds"=30;"sparse"=true]'
+                ],
+                'ensureIndexes' => null,
+                'expected' =>
+                    ' * @ODM\Index(keys={"dude"="asc"}, name="dude_0_ttl", background=true, '.
+                    'options={"expireAfterSeconds"=30,"sparse"=true})'
+            ],
+            'index-multi-options' => [
+                'indexes' => [
+                    'fred,-dude["expireAfterSeconds"=30;"sparse"=true]'
+                ],
+                'ensureIndexes' => null,
+                'expected' =>
+                    ' * @ODM\Index(keys={"fred"="asc", "dude"="desc"}, name="fred_0_dude_1_ttl", background=true, '.
+                    'options={"expireAfterSeconds"=30,"sparse"=true})'
             ]
         ];
     }
