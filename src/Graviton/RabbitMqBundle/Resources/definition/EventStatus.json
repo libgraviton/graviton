@@ -7,7 +7,6 @@
   },
   "target": {
     "indexes": [
-      "createDate",
       "eventName",
       "status.status,status.workerId",
       "information.workerId,information.content",
