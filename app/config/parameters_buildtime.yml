@@ -21,3 +21,4 @@ parameters:
     - Graviton\JsonSchemaBundle\Exception\ValidationException
     - Graviton\RqlParser\Exception\SyntaxErrorException
     - Graviton\AnalyticsBundle\Exception\AnalyticUsageException
+    - Graviton\ExceptionBundle\Exception\NotFoundException
