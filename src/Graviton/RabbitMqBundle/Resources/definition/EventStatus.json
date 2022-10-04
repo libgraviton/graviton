@@ -11,7 +11,7 @@
       "eventName",
       "status.status,status.workerId",
       "information.workerId,information.content",
-      "createDate[\"expireAfterSeconds\"=1209600,\"sparse\"=true]"
+      "createDate[\"expireAfterSeconds\"=7257600,\"sparse\"=true]"
     ],
     "relations": [],
     "fields": [
