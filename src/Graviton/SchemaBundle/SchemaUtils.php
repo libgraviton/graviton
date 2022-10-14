@@ -291,6 +291,7 @@ class SchemaUtils
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
             $property->setType($meta->getTypeOfField($field));
+            $property->setRegexPattern($model->getValuePattern($field));
             $property->setGroups($model->getGroupsOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
             $property->setOnVariation($model->getOnVariaton($field));

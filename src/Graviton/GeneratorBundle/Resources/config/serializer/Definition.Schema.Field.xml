@@ -10,6 +10,9 @@
         <property name="type"
                   type="string"
                   serialized-name="type"/>
+        <property name="valuePattern"
+                  type="string"
+                  serialized-name="valuePattern"/>
         <property name="length"
                   type="integer"
                   serialized-name="length"/>

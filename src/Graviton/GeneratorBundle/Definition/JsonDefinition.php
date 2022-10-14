@@ -371,13 +371,13 @@ class JsonDefinition
      */
     private function processSimpleField($name, Schema\Field $definition)
     {
-        if (strpos($definition->getType(), 'class:') === 0) {
+        if (str_starts_with($definition->getType(), 'class:')) {
             $field = new JsonDefinitionRel($name, $definition, $this->getRelation($name));
         } else {
             $field = new JsonDefinitionField($name, $definition);
         }
 
-        if (substr($definition->getType(), -2) === '[]') {
+        if (str_ends_with($definition->getType(), '[]')) {
             $field = new JsonDefinitionArray($name, $field);
         }
 

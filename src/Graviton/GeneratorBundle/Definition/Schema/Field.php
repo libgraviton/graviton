@@ -25,6 +25,8 @@ class Field
      * @var string
      */
     private $type;
+
+    private ?string $valuePattern = null;
     /**
      * @var int
      */
@@ -141,6 +143,28 @@ class Field
     {
         $this->type = $type;
         return $this;
+    }
+
+    /**
+     * get
+     *
+     * @return string|null pattern
+     */
+    public function getValuePattern(): ?string
+    {
+        return $this->valuePattern;
+    }
+
+    /**
+     * set
+     *
+     * @param string|null $valuePattern pattern
+     *
+     * @return void
+     */
+    public function setValuePattern(?string $valuePattern): void
+    {
+        $this->valuePattern = $valuePattern;
     }
 
     /**
