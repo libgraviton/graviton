@@ -6363,16 +6363,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.11.0",
+            "version": "v2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "c7a873986d5fa007601bce378923abd4dc911401"
+                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/c7a873986d5fa007601bce378923abd4dc911401",
-                "reference": "c7a873986d5fa007601bce378923abd4dc911401",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/ae58a854f7674101181df3d3dc11bf0ce854c57e",
+                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e",
                 "shasum": ""
             },
             "require-dev": {
@@ -6398,9 +6398,9 @@
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.11.0"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.11.1"
             },
-            "time": "2022-10-14T11:13:48+00:00"
+            "time": "2022-10-14T11:57:56+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
