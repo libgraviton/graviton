@@ -100,7 +100,8 @@ class JsonDefinitionRelTest extends BaseJsonDefinitionFieldTest
                     'searchable'            => 0,
                     'recordOriginException' => false,
                     'hidden'                => false,
-                    'onVariation'           => null
+                    'onVariation'           => null,
+                    'valuePattern'          => null
                 ]
             ),
             $field->getDefAsArray()
