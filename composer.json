@@ -162,7 +162,6 @@
                     "graviton.rabbitmq.user": "RABBITMQ_USER",
                     "graviton.rabbitmq.password": "RABBITMQ_PASSWORD",
                     "graviton.rabbitmq.vhost": "RABBITMQ_VHOST",
-                    "graviton.proxy.swagger.sources": "PROXY_SWAGGER_SOURCES",
                     "graviton.security.authentication.allow_anonymous": "SECURITY_AUTHENTICATION_ALLOW_ANONYMOUS",
                     "graviton.security.authentication.test_username": "SECURITY_AUTHENTICATION_TEST_USERNAME",
                     "graviton.security.authentication.strategy.header.key": "SECURITY_AUTHENTICATION_STRATEGY_HEADER_KEY",
