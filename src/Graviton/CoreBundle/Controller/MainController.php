@@ -48,11 +48,11 @@ class MainController
     private $pathWhitelist;
 
     /**
-     * @param Router                   $router                   router
-     * @param RestUtilsInterface       $restUtils                rest-utils from GravitonRestBundle
-     * @param EventDispatcherInterface $eventDispatcher          event dispatcher
-     * @param array                    $additionalRoutes         custom routes
-     * @param array                    $pathWhitelist            serviec path that always get aded to the main page
+     * @param Router                   $router           router
+     * @param RestUtilsInterface       $restUtils        rest-utils from GravitonRestBundle
+     * @param EventDispatcherInterface $eventDispatcher  event dispatcher
+     * @param array                    $additionalRoutes custom routes
+     * @param array                    $pathWhitelist    service path that always get added to the main page
      */
     public function __construct(
         Router $router,
