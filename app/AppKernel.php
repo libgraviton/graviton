@@ -87,7 +87,7 @@ class AppKernel extends Kernel
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
         }
 
-        if ($nonProdEnv && class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
+        if (class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
             $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
         }
 
