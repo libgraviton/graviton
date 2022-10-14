@@ -119,9 +119,9 @@
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
         ],
         "check": [
-            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
-            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
+            "./vendor/bin/phpcbf -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcbf -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcbf -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
         ],
         "reset-cache": [
             "./bin/console cache:clear",
