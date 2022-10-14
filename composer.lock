@@ -1554,16 +1554,16 @@
         },
         {
             "name": "graviton/link-header-rel-parser",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/link-header-rel-parser.git",
-                "reference": "8d14f176ee024c2d593b5a81e8d0bf1eed55c25c"
+                "reference": "4c7eb4ba4131ef9b1c2f4253fabdbfebe33f223e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/link-header-rel-parser/zipball/8d14f176ee024c2d593b5a81e8d0bf1eed55c25c",
-                "reference": "8d14f176ee024c2d593b5a81e8d0bf1eed55c25c",
+                "url": "https://api.github.com/repos/libgraviton/link-header-rel-parser/zipball/4c7eb4ba4131ef9b1c2f4253fabdbfebe33f223e",
+                "reference": "4c7eb4ba4131ef9b1c2f4253fabdbfebe33f223e",
                 "shasum": ""
             },
             "require": {
@@ -1586,9 +1586,9 @@
             "description": "A small library that parses and generates RESTful Link headers with rel attributes (relations)",
             "support": {
                 "issues": "https://github.com/libgraviton/link-header-rel-parser/issues",
-                "source": "https://github.com/libgraviton/link-header-rel-parser/tree/master"
+                "source": "https://github.com/libgraviton/link-header-rel-parser/tree/v1.0.1"
             },
-            "time": "2019-06-21T09:09:28+00:00"
+            "time": "2022-10-14T06:52:08+00:00"
         },
         {
             "name": "graviton/mongodb-migrations",
