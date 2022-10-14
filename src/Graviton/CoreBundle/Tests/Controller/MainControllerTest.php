@@ -127,17 +127,9 @@ class MainControllerTest extends RestTestCase
                 )
             );
 
-        $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
-        $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
-        $configuration = [
-            'petstore' => [
-                'prefix' => 'petstore',
-                'uri' => 'http://petstore.swagger.io/v2/swagger.json'
-            ]
-        ];
 
         $optionRoutes = [
             "graviton.core.rest.app.options"     => $routerDouble,
@@ -148,13 +140,10 @@ class MainControllerTest extends RestTestCase
             ->setConstructorArgs(
                 [
                     $routerDouble,
-                    $responseDouble,
                     $restUtilsDouble,
                     $dispatcherDouble,
-                    $apiLoaderDouble,
                     [],
-                    [],
-                    $configuration
+                    []
                 ]
             )->getMock();
 

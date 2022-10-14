@@ -46,11 +46,6 @@ class ResourceGenerator extends AbstractGenerator
     protected $parameters = [];
 
     /**
-     * @var string
-     */
-    protected $parametersFile;
-
-    /**
      * @var array
      */
     protected $services = [];

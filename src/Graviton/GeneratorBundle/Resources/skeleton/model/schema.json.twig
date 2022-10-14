@@ -39,46 +39,50 @@
     "{{ field.fieldName }}": {
         "title": {{ field.title|json_encode() }},
 
+{% if field.valuePattern is defined and not field.valuePattern is empty %}
+        "pattern": {{ field.valuePattern|json_encode() }},
+{% endif %}
+
 {% if field.collection is defined and field.type == 'extref' %}
-      "collection": {{ field.collection|json_encode() }},
+        "collection": {{ field.collection|json_encode() }},
 {% endif %}
 
 {% if field.readOnly is defined and field.readOnly == true %}
-      "readOnly": {{ field.readOnly|json_encode() }},
+        "readOnly": {{ field.readOnly|json_encode() }},
 {% endif %}
 
 {% if field.recordOriginException is defined and field.recordOriginException == true %}
-      "recordOriginException": {{ field.recordOriginException|json_encode() }},
+        "recordOriginException": {{ field.recordOriginException|json_encode() }},
 {% endif %}
 
 {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-      "x-dynamic-key": {
-          "document-id": "{{ field.xDynamicKey.documentId }}",
-          "repository-method": "{{ field.xDynamicKey.repositoryMethod }}",
-          "ref-field": "{{ field.xDynamicKey.refField }}"
-      },
+        "x-dynamic-key": {
+            "document-id": "{{ field.xDynamicKey.documentId }}",
+            "repository-method": "{{ field.xDynamicKey.repositoryMethod }}",
+            "ref-field": "{{ field.xDynamicKey.refField }}"
+        },
 {% endif %}
 
 {% if attribute(field, "groups") is defined and field.groups %}
-      "x-groups": {{ field.groups|json_encode() }},
+        "x-groups": {{ field.groups|json_encode() }},
 {% else %}
-      "x-groups": [],
+        "x-groups": [],
 {% endif %}
 
-      "x-restrictions": {{ field.restrictions|json_encode() }},
+        "x-restrictions": {{ field.restrictions|json_encode() }},
 
 {% if field.constraints is defined and field.constraints != null %}
-      "x-constraints": {{ field.constraints|json_encode() }},
+        "x-constraints": {{ field.constraints|json_encode() }},
 {% endif %}
 
 {% if field.onVariation is defined %}
-    "x-onvariation": {{ field.onVariation|json_encode() }},
+        "x-onvariation": {{ field.onVariation|json_encode() }},
 {% endif %}
 
 {% if field.description is defined and field.description != '' %}
-      "description": {{ field.description|json_encode() }}
+        "description": {{ field.description|json_encode() }}
 {% else %}
-      "description": "@todo replace me"
+        "description": "@todo replace me"
 {% endif %}
 
 {% if field.required is defined and field.required == true %}

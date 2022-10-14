@@ -121,7 +121,8 @@ class DefinitionElementTest extends GravitonTestCase
             'searchable' => 1,
             'recordOriginException' => false,
             'hidden' => false,
-            'onVariation' => null
+            'onVariation' => null,
+            'valuePattern' => null
         );
 
         $this->assertEquals($def, $field->getDefAsArray());
