@@ -105,12 +105,6 @@ oneup_flysystem:
         graviton:
             adapter: '%graviton.file.backend%'
 
-graviton_proxy:
-    sources:
-        swagger: "%graviton.proxy.swagger.sources%"
-        custom: "%graviton.proxy.custom.sources%"
-        redirect: "%graviton.proxy.redirect.sources%"
-
 graviton_core:
     service_name:
         - graviton.core.static.version.get

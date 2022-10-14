@@ -21,13 +21,10 @@ services:
       public: true
       arguments:
         - "@router"
-        - "@?graviton.rest.response"
         - "@graviton.rest.restutils"
         - "@event_dispatcher"
-        - "@graviton.proxy.service.apiloader"
         - "%graviton.core.links%"
         - "%graviton.core.main.path.whitelist%"
-        - "%graviton.proxy.sources%"
 
     graviton.core.model.version:
         class: "%graviton.core.model.version.class%"

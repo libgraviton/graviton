@@ -130,10 +130,6 @@ parameters:
     # how to call git on this machine
     graviton.git.cmd: git
 
-    graviton.proxy.swagger.sources: {}
-    graviton.proxy.custom.sources: {}
-    graviton.proxy.redirect.sources: {}
-
     graviton.writelock.randomwaiturls:
       - /event/status
 

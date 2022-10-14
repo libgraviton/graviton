@@ -16,7 +16,6 @@ use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
-use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
@@ -38,7 +37,7 @@ class AppKernel extends Kernel
      *
      * @var string
      */
-    protected $projectDir = __DIR__.'/../';
+    protected string $projectDir = __DIR__.'/../';
 
     /**
      * {@inheritDoc}
@@ -64,7 +63,7 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
@@ -78,9 +77,9 @@ class AppKernel extends Kernel
             new \Auxmoney\OpentracingBundle\OpentracingBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()
-        );
+        ];
 
-        $nonProdEnv = ($this->getEnvironment() == 'dev' || strpos($this->getEnvironment(), 'test') !== false);
+        $nonProdEnv = ($this->getEnvironment() == 'dev' || str_contains($this->getEnvironment(), 'test'));
 
         if ($nonProdEnv) {
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
@@ -108,8 +107,7 @@ class AppKernel extends Kernel
                 new GravitonSwaggerBundle(),
                 new GravitonFileBundle(),
                 new GravitonRabbitMqBundle(),
-                new GravitonMigrationBundle(),
-                new GravitonProxyBundle(),
+                new GravitonMigrationBundle()
             ]
         );
 
