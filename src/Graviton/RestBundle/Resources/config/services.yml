@@ -89,6 +89,9 @@ services:
           - method: setSecurityUtils
             arguments:
               - "@graviton.security.service.utils"
+    Graviton\RestBundle\RestListener\ValueInitializerListener:
+      parent: graviton.rest.listener.abstract
+      class: Graviton\RestBundle\RestListener\ValueInitializerListener
 
     #Routing -->
     #Routing collection -->
