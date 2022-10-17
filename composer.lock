@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dfcde395f16ac76903be311eda12bdd",
+    "content-hash": "dafadde4fa4d0443600f96b180e29cbe",
     "packages": [
         {
             "name": "async-aws/core",
@@ -6363,22 +6363,23 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.11.1",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e"
+                "reference": "03cbb328b5efbf72f83227000a7935897512eaac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/ae58a854f7674101181df3d3dc11bf0ce854c57e",
-                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/03cbb328b5efbf72f83227000a7935897512eaac",
+                "reference": "03cbb328b5efbf72f83227000a7935897512eaac",
                 "shasum": ""
             },
             "require-dev": {
                 "graviton/analytics-base": "*",
                 "graviton/analytics-mongoshell-converter": "*"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -6398,9 +6399,9 @@
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.11.1"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
             },
-            "time": "2022-10-14T11:57:56+00:00"
+            "time": "2022-10-17T12:00:15+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -8764,7 +8765,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "graviton/test-services-bundle": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

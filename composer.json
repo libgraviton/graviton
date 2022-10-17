@@ -73,7 +73,7 @@
         "phpunit/phpunit": "~9|~8",
         "squizlabs/php_codesniffer": "~3",
 
-        "graviton/test-services-bundle": "^2.10.0",
+        "graviton/test-services-bundle": "dev-develop",
         "graviton/mongodb-fixtures-bundle": "~3",
         "libgraviton/codesniffer": "~2",
 
@@ -119,6 +119,11 @@
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
         ],
         "check": [
+            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
+        ],
+        "fix": [
             "./vendor/bin/phpcbf -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
             "./vendor/bin/phpcbf -p --standard=PSR2 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
             "./vendor/bin/phpcbf -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/"
