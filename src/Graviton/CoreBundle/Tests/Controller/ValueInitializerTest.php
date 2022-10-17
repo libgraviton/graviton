@@ -20,8 +20,9 @@ class ValueInitializerTest extends RestTestCase
     /**
      * test regexes
      *
-     * @param string $value                value
-     * @param int    $expectedResponseCode code
+     * @param string $type        type
+     * @param ?int   $checkLower  lower
+     * @param ?int   $checkHigher higher
      *
      * @dataProvider dataProvider
      *
@@ -79,6 +80,11 @@ class ValueInitializerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * data provider
+     *
+     * @return array[] data
+     */
     public function dataProvider()
     {
         return [

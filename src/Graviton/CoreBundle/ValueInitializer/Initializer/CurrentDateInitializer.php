@@ -14,7 +14,14 @@ use Graviton\CoreBundle\ValueInitializer\ValueInitializerInterface;
  */
 class CurrentDateInitializer implements ValueInitializerInterface
 {
-    public function getInitialValue(mixed $presentValue)
+    /**
+     * gets the value
+     *
+     * @param mixed $presentValue value
+     *
+     * @return mixed value
+     */
+    public function getInitialValue(mixed $presentValue) : mixed
     {
         if ($presentValue === null) {
             return new \DateTime();

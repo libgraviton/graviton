@@ -70,7 +70,9 @@ class SymfonyService
     }
 
     /**
-     * @param string $parent
+     * @param string $parent parent
+     *
+     * @return void
      */
     public function setParent(?string $parent): void
     {
@@ -108,7 +110,9 @@ class SymfonyService
     }
 
     /**
-     * @param string[] $arguments
+     * @param string[] $arguments arguments
+     *
+     * @return void
      */
     public function setArguments(array $arguments): void
     {

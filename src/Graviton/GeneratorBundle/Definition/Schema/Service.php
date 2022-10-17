@@ -348,7 +348,9 @@ class Service
     }
 
     /**
-     * @param array $services
+     * @param array $services services
+     *
+     * @return void
      */
     public function setServices(array $services): void
     {
