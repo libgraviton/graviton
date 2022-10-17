@@ -1661,16 +1661,16 @@
         },
         {
             "name": "graviton/mongodb-migrations-bundle",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-migrations-bundle.git",
-                "reference": "29ea3b5e6c299ee1ba5242a2aa872e5a142a4b1e"
+                "reference": "a7b5db65de8ab47017fecaf1aac81c0efb151fcd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-migrations-bundle/zipball/29ea3b5e6c299ee1ba5242a2aa872e5a142a4b1e",
-                "reference": "29ea3b5e6c299ee1ba5242a2aa872e5a142a4b1e",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-migrations-bundle/zipball/a7b5db65de8ab47017fecaf1aac81c0efb151fcd",
+                "reference": "a7b5db65de8ab47017fecaf1aac81c0efb151fcd",
                 "shasum": ""
             },
             "require": {
@@ -1711,9 +1711,9 @@
             ],
             "support": {
                 "issues": "https://github.com/libgraviton/mongodb-migrations-bundle/issues",
-                "source": "https://github.com/libgraviton/mongodb-migrations-bundle/tree/v2.0.0"
+                "source": "https://github.com/libgraviton/mongodb-migrations-bundle/tree/v2.0.1"
             },
-            "time": "2019-12-13T09:24:36+00:00"
+            "time": "2022-10-17T12:48:09+00:00"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -4018,16 +4018,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.10.0",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "87fa2d526e56737a2ae8fa201a61b15efae59b8a"
+                "reference": "7d1e81213b0c7eb8d5a9f524456cbc2778ed5c65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/87fa2d526e56737a2ae8fa201a61b15efae59b8a",
-                "reference": "87fa2d526e56737a2ae8fa201a61b15efae59b8a",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/7d1e81213b0c7eb8d5a9f524456cbc2778ed5c65",
+                "reference": "7d1e81213b0c7eb8d5a9f524456cbc2778ed5c65",
                 "shasum": ""
             },
             "require": {
@@ -4057,9 +4057,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.10.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.11.0"
             },
-            "time": "2022-10-12T19:19:18+00:00"
+            "time": "2022-10-14T13:32:28+00:00"
         },
         {
             "name": "psr/cache",
@@ -6363,16 +6363,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.11.1",
+            "version": "v2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e"
+                "reference": "638cb22ab512622fb7df929c408ac38af117f137"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/ae58a854f7674101181df3d3dc11bf0ce854c57e",
-                "reference": "ae58a854f7674101181df3d3dc11bf0ce854c57e",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/638cb22ab512622fb7df929c408ac38af117f137",
+                "reference": "638cb22ab512622fb7df929c408ac38af117f137",
                 "shasum": ""
             },
             "require-dev": {
@@ -6398,9 +6398,9 @@
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.11.1"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.14.0"
             },
-            "time": "2022-10-14T11:57:56+00:00"
+            "time": "2022-10-17T14:41:04+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -6949,25 +6949,30 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.6.1",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "77a32518733312af16a44300404e945338981de3"
+                "reference": "48f445a408c131e38cab1c235aa6d2bb7a0bb20d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/77a32518733312af16a44300404e945338981de3",
-                "reference": "77a32518733312af16a44300404e945338981de3",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/48f445a408c131e38cab1c235aa6d2bb7a0bb20d",
+                "reference": "48f445a408c131e38cab1c235aa6d2bb7a0bb20d",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "phpdocumentor/reflection-common": "^2.0"
             },
             "require-dev": {
                 "ext-tokenizer": "*",
-                "psalm/phar": "^4.8"
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.8",
+                "phpstan/phpstan-phpunit": "^1.1",
+                "phpunit/phpunit": "^9.5",
+                "rector/rector": "^0.13.9",
+                "vimeo/psalm": "^4.25"
             },
             "type": "library",
             "extra": {
@@ -6993,9 +6998,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.1"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.2"
             },
-            "time": "2022-03-15T21:29:03+00:00"
+            "time": "2022-10-14T12:47:21+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

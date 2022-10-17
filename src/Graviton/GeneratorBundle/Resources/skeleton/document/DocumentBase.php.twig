@@ -128,10 +128,10 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     protected ${{ syntheticField.name }};
 {% endfor %}
 
-public function getDeleteddate()
-{
-return $this->deletedDate;
-}
+    public function getDeleteddate()
+    {
+        return $this->deletedDate;
+    }
 
 {% if isrecordOriginFlagSet %}
 
@@ -142,7 +142,7 @@ return $this->deletedDate;
     */
     public function isRecordOriginModifiable()
     {
-    return {{ recordOriginModifiable }};
+        return {{ recordOriginModifiable }};
     }
 
     /**
@@ -152,7 +152,7 @@ return $this->deletedDate;
     */
     public function getRecordOrigin()
     {
-    return $this->recordOrigin;
+        return $this->recordOrigin;
     }
 
     /**
@@ -164,8 +164,8 @@ return $this->deletedDate;
     */
     public function setRecordOrigin($recordOrigin)
     {
-    $this->recordOrigin = $recordOrigin;
-    return $this;
+        $this->recordOrigin = $recordOrigin;
+        return $this;
     }
 {% endif %}
 
@@ -175,17 +175,17 @@ return $this->deletedDate;
     /**
     * Get {{ field.fieldName }}
     *
-    {% if 'Graviton' in field.type %}
-        * @return \{{ field.type }} ${{ field.fieldName }}
-    {% else %}
-        * @return {{ field.type }} ${{ field.fieldName }}
-    {% endif %}
+{% if 'Graviton' in field.type %}
+    * @return \{{ field.type }} ${{ field.fieldName }}
+{% else %}
+    * @return {{ field.type }} ${{ field.fieldName }}
+{% endif %}
     */
-    {% if field.type == 'boolean' %}
-        public function is{{ field.fieldName|capitalize }}()
-    {% else %}
-        public function get{{ field.fieldName|capitalize }}()
-    {% endif %}
+{% if field.type == 'boolean' %}
+    public function is{{ field.fieldName|capitalize }}()
+{% else %}
+    public function get{{ field.fieldName|capitalize }}()
+{% endif %}
     {
         if ($this->{{ field.fieldName }} instanceof \Doctrine\Common\Collections\Collection) {
           $data = $this->{{ field.fieldName }}->toArray();
@@ -193,21 +193,21 @@ return $this->deletedDate;
           $data = $this->{{ field.fieldName }};
         }
 
-    {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
+{% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($data, '{{ field.xDynamicKey.refField }}');
-    {% else %}
+{% else %}
         return $data;
-    {% endif %}
+{% endif %}
     }
 
     /**
     * Set {{ field.fieldName }}
     *
-    {% if 'Graviton' in field.type %}
-        * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
-    {% else %}
-        * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
-    {% endif %}
+{% if 'Graviton' in field.type %}
+    * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
+{% else %}
+    * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+{% endif %}
     *
     * @return self
     */
@@ -247,10 +247,10 @@ return $this->deletedDate;
         */
         public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
         {
-        if (!is_array($this->{{ field.fieldName }})) {
-            $this->{{ field.fieldName }} = [];
-        }
-        $this->{{ field.fieldName }}[] = ${{ field.singularName }};
+            if (!is_array($this->{{ field.fieldName }})) {
+                $this->{{ field.fieldName }} = [];
+            }
+            $this->{{ field.fieldName }}[] = ${{ field.singularName }};
         }
 
         /**
@@ -262,13 +262,13 @@ return $this->deletedDate;
         */
         public function remove{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{ field.singularName }})
         {
-        {% if '[]' in field.type and 'Graviton' in field.type %}
-            $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
-        {% else %}
-            $this->{{ field.fieldName }} = array_diff($this->{{ field.fieldName }}, [${{ field.singularName }}]);
-        {% endif %}
+            {% if '[]' in field.type and 'Graviton' in field.type %}
+                $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
+            {% else %}
+                $this->{{ field.fieldName }} = array_diff($this->{{ field.fieldName }}, [${{ field.singularName }}]);
+            {% endif %}
 
-        return $this;
+            return $this;
         }
     {% endif %}
 {% endfor %}

@@ -20,7 +20,7 @@
                   type="string"
                   serialized-name="baseController"/>
         <property name="baseControllerCalls"
-                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall&gt;"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall&gt;"
                   serialized-name="baseControllerCalls"/>
         <property name="roles"
                   type="array&lt;string&gt;"
@@ -40,5 +40,8 @@
         <property name="listeners"
                   type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ServiceListener&gt;"
                   serialized-name="listeners"/>
+        <property name="services"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\SymfonyService&gt;"
+                  serialized-name="services"/>
     </class>
 </serializer>

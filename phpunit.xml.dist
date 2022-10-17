@@ -5,7 +5,6 @@
     <include>
       <directory>src/Graviton/**</directory>
     </include>
-
     <exclude>
       <directory>**/Tests/**</directory>
       <directory>**/Exception/**</directory>
@@ -14,7 +13,6 @@
       <directory>**/*Bundle.php</directory>
       <directory>**/TestBundle/**</directory>
     </exclude>
-
   </coverage>
   <testsuites>
     <testsuite name="all">
@@ -26,7 +24,7 @@
     <ini name="date.timezone" value="UTC"/>
     <ini name="xdebug.max_nesting_level" value="200"/>
     <ini name="memory_limit" value="-1"/>
-    <env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>
+    <!--<env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>-->
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
   </php>
   <listeners>

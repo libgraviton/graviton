@@ -59,7 +59,7 @@ class AppKernel extends Kernel
     /**
      * {@inheritDoc}
      *
-     * @return Array
+     * @return array bundles
      */
     public function registerBundles()
     {
