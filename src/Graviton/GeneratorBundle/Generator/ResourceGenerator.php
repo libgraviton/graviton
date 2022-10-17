@@ -8,7 +8,8 @@ namespace Graviton\GeneratorBundle\Generator;
 use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Schema\ServiceListener;
-use Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall;
+use Graviton\GeneratorBundle\Definition\Schema\SymfonyService;
+use Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Graviton\RestBundle\Controller\RestController;
@@ -478,6 +479,34 @@ class ResourceGenerator extends AbstractGenerator
 
         // are there any rest listeners defined?
         if ($parameters['json']->getDef()->getService() != null) {
+            // services
+            $services = $parameters['json']->getDef()->getService()->getServices();
+            if (!empty($services)) {
+                /**
+                 * @var $services SymfonyService[]
+                 */
+                foreach ($services as $service) {
+                    $arguments = array_map(
+                        function ($t) {
+                            return ['value' => $t];
+                        },
+                        $service->getArguments()
+                    );
+
+                    $this->addService(
+                        $service->getServiceName(),
+                        $service->getParent(),
+                        $service->getCalls(),
+                        null,
+                        $arguments,
+                        null,
+                        null,
+                        $service->getServiceName()
+                    );
+                }
+            }
+
+            // listeners
             $listeners = $parameters['json']->getDef()->getService()->getListeners();
 
             $restListenerEventMap = [
@@ -581,21 +610,21 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * add service to services.yml
      *
-     * @param string $id             id of new service
-     * @param string $parent         parent for service
-     * @param array  $calls          methodCalls to add
-     * @param string $tag            tag name or empty if no tag needed
-     * @param array  $arguments      service arguments
-     * @param string $factoryService factory service id
-     * @param string $factoryMethod  factory method name
-     * @param string $className      class name to override
-     * @param bool   $public         if public or not
+     * @param string      $id             id of new service
+     * @param string|null $parent         parent for service
+     * @param array       $calls          methodCalls to add
+     * @param string      $tag            tag name or empty if no tag needed
+     * @param array       $arguments      service arguments
+     * @param string      $factoryService factory service id
+     * @param string      $factoryMethod  factory method name
+     * @param string      $className      class name to override
+     * @param bool        $public         if public or not
      *
      * @return void
      */
     protected function addService(
         $id,
-        $parent = null,
+        ?string $parent = null,
         array $calls = [],
         $tag = null,
         array $arguments = [],
@@ -636,7 +665,7 @@ class ResourceGenerator extends AbstractGenerator
 
         // calls
         foreach ($calls as $call) {
-            if ($call instanceof ServiceListenerCall) {
+            if ($call instanceof SymfonyServiceCall) {
                 $service['calls'][] = [
                     $call->getMethod(),
                     $call->getArguments()
