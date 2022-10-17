@@ -59,6 +59,15 @@ class SchemaConstraintsTest extends RestTestCase
     {
         return [
 
+            // Empty
+
+            'empty-string' => [
+                'field' => 'emptyField',
+                'acceptedValue' => '',
+                'rejectedValue' => 'h',
+                'errorMessage' => 'Must be at most 0 characters long'
+            ],
+
             // Choice
 
             'choice-string' => [

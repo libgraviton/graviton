@@ -33,8 +33,16 @@ class ValueInitializerTest extends RestTestCase
         $docId = uniqid('test');
         $data = [
             'id' => $docId,
-            'type' => $type
+            'type' => $type,
+            'currentDateField' => '19999-10-17T15:42:26+02:00'
         ];
+
+        // should fail as dates must be empty
+        $client = static::createRestClient();
+        $client->put('/testcase/value-initializer/'.$docId, $data);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+
+        unset($data['currentDateField']);
 
         $client = static::createRestClient();
         $client->put('/testcase/value-initializer/'.$docId, $data);
