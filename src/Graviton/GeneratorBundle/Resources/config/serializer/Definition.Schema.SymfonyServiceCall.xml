@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
-    <class name="Graviton\GeneratorBundle\Definition\Schema\ServiceListenerCall">
+    <class name="Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall">
         <property name="method"
                   type="string"
                   serialized-name="method"/>

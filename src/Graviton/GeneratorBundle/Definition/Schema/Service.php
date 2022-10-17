@@ -42,7 +42,7 @@ class Service
      */
     private $baseController;
     /**
-     * @var ServiceListenerCall[]
+     * @var SymfonyServiceCall[]
      */
     private $baseControllerCalls = [];
     /**
@@ -69,6 +69,10 @@ class Service
      * @var array
      */
     private $listeners = [];
+    /**
+     * @var array
+     */
+    private $services = [];
 
     /**
      * @return string
@@ -137,7 +141,7 @@ class Service
     }
 
     /**
-     * @param ServiceListenerCall[] $baseControllerCalls calls
+     * @param SymfonyServiceCall[] $baseControllerCalls calls
      *
      * @return void
      */
@@ -333,5 +337,21 @@ class Service
     public function setListeners($listeners)
     {
         $this->listeners = $listeners;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServices(): array
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param array $services
+     */
+    public function setServices(array $services): void
+    {
+        $this->services = $services;
     }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\SymfonyService">
+        <property name="serviceName"
+                  type="string"
+                  serialized-name="serviceName"/>
+        <property name="className"
+                  type="string"
+                  serialized-name="className"/>
+        <property name="arguments"
+                  type="array&lt;string&gt;"
+                  serialized-name="arguments"/>
+        <property name="calls"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall&gt;"
+                  serialized-name="calls"/>
+    </class>
+</serializer>
