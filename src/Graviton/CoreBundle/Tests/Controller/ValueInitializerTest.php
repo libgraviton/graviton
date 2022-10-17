@@ -23,13 +23,16 @@ class ValueInitializerTest extends RestTestCase
      * @param string $value                value
      * @param int    $expectedResponseCode code
      *
+     * @dataProvider dataProvider
+     *
      * @return void
      */
-    public function testValueInitializer()
+    public function testValueInitializer(string $type, ?int $checkLower = null, ?int $checkHigher = null)
     {
         $docId = uniqid('test');
         $data = [
-            'id' => $docId
+            'id' => $docId,
+            'type' => $type
         ];
 
         $client = static::createRestClient();
@@ -41,16 +44,54 @@ class ValueInitializerTest extends RestTestCase
 
         $obj = $client->getResults();
         $this->assertNotNull($obj, $obj->currentDateField);
+        $this->assertNotNull($obj, $obj->expireDateField);
+
+        $createDate = \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->currentDateField);
+        $expireDate = \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->expireDateField);
 
         // see if we can parse it
-        $this->assertInstanceOf(
-            \DateTime::class,
-            \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->currentDateField)
-        );
+        $this->assertInstanceOf(\DateTime::class, $createDate);
+        $this->assertInstanceOf(\DateTime::class, $expireDate);
 
-        // try to update it.. (change the date)
+        // calculate diff between the two!
+        $dateDiff = $expireDate->diff($createDate);
+        $this->assertGreaterThan($checkLower, $dateDiff->days);
+        $this->assertLessThan($checkHigher, $dateDiff->days);
+
+        // try to change the type
+        $existingObj = clone $obj;
+        $existingObj->type = "newtype";
+
+        $client = static::createRestClient();
+        $client->put('/testcase/value-initializer/'.$docId, $existingObj);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+
+        // to other known type
+        $existingObj->type = "anothertype";
+
+        $client = static::createRestClient();
+        $client->put('/testcase/value-initializer/'.$docId, $existingObj);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+
+        // try to update it.. (removing dates)
         $client = static::createRestClient();
         $client->put('/testcase/value-initializer/'.$docId, $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+    }
+
+    public function dataProvider()
+    {
+        return [
+            [
+                'test1',
+                29,
+                31
+            ],
+            [
+                'test2',
+                299,
+                301
+            ]
+        ];
     }
 }
