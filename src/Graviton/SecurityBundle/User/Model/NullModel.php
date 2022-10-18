@@ -167,6 +167,18 @@ class NullModel implements ModelInterface
     }
 
     /**
+     * pattern
+     *
+     * @param string $field field
+     *
+     * @return string pattern
+     */
+    public function getValuePattern($field)
+    {
+        return null;
+    }
+
+    /**
      * Variations
      *
      * @return array Variations

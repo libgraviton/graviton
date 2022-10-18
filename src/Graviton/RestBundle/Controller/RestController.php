@@ -12,7 +12,6 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
-use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;

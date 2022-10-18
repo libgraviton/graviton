@@ -1,6 +1,6 @@
 <?php
 /**
- * DecimalConstraintBuilder class file
+ * EmptyConstraintBuilder class file
  */
 
 namespace Graviton\SchemaBundle\Constraint\Builder;
@@ -13,15 +13,8 @@ use Graviton\SchemaBundle\Document\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DecimalConstraintBuilder implements ConstraintBuilderInterface
+class EmptyConstraintBuilder implements ConstraintBuilderInterface
 {
-
-    /**
-     * the pattern to use
-     *
-     * @var string
-     */
-    private string $pattern = '^[+\-]?\d+(\.\d+)?$';
 
     /**
      * if this builder supports a given constraint
@@ -33,7 +26,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Decimal' || substr($type, -9) == '\\Decimal' /* temporary to support some locked bundles */);
+        return ($type === 'Empty');
     }
 
     /**
@@ -48,10 +41,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        if (in_array('string', $property->getType()->getTypes())) {
-            $property->setRegexPattern($this->pattern);
-        }
-
+        $property->setMaxLength(0);
         return $property;
     }
 }

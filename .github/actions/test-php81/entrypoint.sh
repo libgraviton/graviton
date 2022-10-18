@@ -2,13 +2,17 @@
 
 set -e
 
+export MONGODB_URI=mongodb://mongodb:27017/db
+
 echo "APP_ENV=test" > .env.local
 echo "APP_DEBUG=0" >> .env.local
+echo "MONGODB_URI=${MONGODB_URI}" >> .env.local
+
+composer configure
 
 bash prepare-for-tests.sh
 
-export MONGODB_URI=mongodb://mongodb:27017/db
-composer configure
+cat app/config/parameters.yml
 
 composer check
 

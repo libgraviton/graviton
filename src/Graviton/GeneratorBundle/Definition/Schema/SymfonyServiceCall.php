@@ -11,7 +11,7 @@ namespace Graviton\GeneratorBundle\Definition\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ServiceListenerCall
+class SymfonyServiceCall
 {
 
     /**

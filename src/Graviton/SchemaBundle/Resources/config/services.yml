@@ -75,6 +75,8 @@ services:
       class: Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder
     graviton.schema.constraint.count:
       class: Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder
+    graviton.schema.constraint.empty:
+      class: Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder
 
     # constraint builder -->
     graviton.schema.constraint.builder:
@@ -104,6 +106,10 @@ services:
             method: addConstraintBuilder
             arguments:
               - "@graviton.schema.constraint.count"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.empty"
 
     graviton.schema.constraint.utils:
         class: "%graviton.schema.constraint.utils.class%"

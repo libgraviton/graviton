@@ -325,6 +325,18 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Get defined pattern on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getValuePattern($field)
+    {
+        return $this->getSchemaField($field, 'pattern', null);
+    }
+
+    /**
      * get variations
      *
      * @return array variations

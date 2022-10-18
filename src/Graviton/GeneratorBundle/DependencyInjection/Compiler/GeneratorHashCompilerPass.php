@@ -30,7 +30,7 @@ class GeneratorHashCompilerPass implements CompilerPassInterface
         $dir = $container->getParameter('graviton.generator.dynamicbundle.dir');
 
         $dynHash = '';
-        if (is_dir($dir)) {
+        if (!empty($dir) && is_dir($dir)) {
             $finder = (new Finder())
                 ->in($dir)
                 ->files()

@@ -49,7 +49,7 @@ class JsonExceptionListener
         $exception = $event->getThrowable();
 
         if ($this->logger instanceof Logger) {
-            $this->logger->critical($exception);
+            $this->logger->critical($exception, ['exception' => $exception]);
         }
 
         // Should return a error 400 bad request
