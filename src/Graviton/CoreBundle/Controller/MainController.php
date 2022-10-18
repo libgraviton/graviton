@@ -9,6 +9,7 @@ use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -179,5 +180,17 @@ class MainController
     {
         return (substr($val['$ref'], -1) === '/')
             || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
+    }
+
+    /**
+     * Return OPTIONS results.
+     *
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of the action
+     */
+    public function optionsAction(Request $request)
+    {
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }
