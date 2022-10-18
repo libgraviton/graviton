@@ -235,7 +235,7 @@ class GeneratorExtension implements ExtensionInterface
         }
 
         // does options contain ttl index stuff? if so, change name a bit..
-        if (str_contains($indexOptions, 'expireAfterSeconds')) {
+        if (!empty($indexOptions) && str_contains($indexOptions, 'expireAfterSeconds')) {
             $nameParts[] = 'ttl';
         }
 
