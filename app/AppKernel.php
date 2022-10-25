@@ -74,10 +74,13 @@ class AppKernel extends Kernel
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
-            new \Auxmoney\OpentracingBundle\OpentracingBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()
         ];
+
+        if (isset($_ENV['TRACING_ENABLED']) && $_ENV['TRACING_ENABLED'] == 'true') {
+            $bundles[] = new \Auxmoney\OpentracingBundle\OpentracingBundle();
+        }
 
         $nonProdEnv = ($this->getEnvironment() == 'dev' || str_contains($this->getEnvironment(), 'test'));
 
