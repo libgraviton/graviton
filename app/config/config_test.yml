@@ -8,6 +8,9 @@ parameters:
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
 
+    security.cors.allowed_origins: vcap.me,test.ch
+    security.cors.allow_credentials: test.ch
+
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
         - graviton_user
