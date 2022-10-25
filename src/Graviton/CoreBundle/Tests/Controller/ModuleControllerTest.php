@@ -252,7 +252,6 @@ class ModuleControllerTest extends RestTestCase
             '<http://localhost/core/module/'.$moduleId.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -645,7 +644,6 @@ class ModuleControllerTest extends RestTestCase
             '<http://localhost/core/module/'.$moduleId.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -669,7 +667,6 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEmpty($response->getContent());
 
         $client->request('GET', '/core/module/'.$moduleId);

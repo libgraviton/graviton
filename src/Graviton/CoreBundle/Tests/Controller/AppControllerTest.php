@@ -77,8 +77,7 @@ class AppControllerTest extends RestTestCase
         $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
         $this->assertEquals('http://localhost/core/app/', $linkHeader->getRel('self')->getUri());
 
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('DENY', $response->headers->get('X-Frame-Options'));
+        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -455,7 +454,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/admin>; rel="self"',
             $response->headers->get('Link')
         );
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -790,7 +789,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEmpty($response->getContent());
 
         $client->request('GET', '/core/app/tablet');
@@ -834,6 +833,60 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
+    }
+
+    /**
+     * test cors origin
+     *
+     * @return void
+     */
+    public function testCorsOriginHandling()
+    {
+        $client = static::createRestClient();
+
+        $client->request(
+            'OPTIONS',
+            '/core/app/hello',
+            [],
+            [],
+            [
+                'HTTP_ORIGIN' => 'http://subdomain.test.ch'
+            ]
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(
+            'http://subdomain.test.ch',
+            $response->headers->get('access-control-allow-origin')
+        );
+
+        $this->assertEquals(
+            'true',
+            $response->headers->get('access-control-allow-credentials')
+        );
+
+        // no credentials
+        $client = static::createRestClient();
+
+        $client->request(
+            'OPTIONS',
+            '/core/app/hello',
+            [],
+            [],
+            [
+                'HTTP_ORIGIN' => 'http://subdomain.vcap.me'
+            ]
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(
+            'http://subdomain.vcap.me',
+            $response->headers->get('access-control-allow-origin')
+        );
+
+        $this->assertNull($response->headers->get('access-control-allow-credentials'));
     }
 
     /**
