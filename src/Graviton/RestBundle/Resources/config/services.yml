@@ -3,7 +3,6 @@ parameters:
   graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
   graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
   graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
-  graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener
   graviton.rest.request.class: Symfony\Component\HttpFoundation\Request
   graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
   graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
@@ -17,7 +16,6 @@ parameters:
   graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
   graviton.rest.not_modifiable.origin.records:
     - "core"
-  graviton.rest.headers.x-versioning: !php/const Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME
 
 services:
 
@@ -243,119 +241,6 @@ services:
             event: graviton.rest.response
             method: onKernelResponse
 
-    #Cors listener (move the addHeader calls somewhere else... -->
-    graviton.rest.listener.corsresponselistener:
-        class: "%graviton.rest.listener.corsresponselistener.class%"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.response
-            method: onKernelResponse
-        calls:
-          -
-            method: addHeader
-            arguments:
-              - Link
-          -
-            method: addHeader
-            arguments:
-              - Accept
-          -
-            method: addHeader
-            arguments:
-              - X-Requested-With
-          -
-            method: addHeader
-            arguments:
-              - Content-Type
-          -
-            method: addHeader
-            arguments:
-              - Origin
-          -
-            method: addHeader
-            arguments:
-              - Cache-Control
-          -
-            method: addHeader
-            arguments:
-              - ETag
-          -
-            method: addHeader
-            arguments:
-              - Date
-          -
-            method: addHeader
-            arguments:
-              - Access-Control-Allow-Methods
-          -
-            method: addHeader
-            arguments:
-              - Content-Language
-          -
-            method: addHeader
-            arguments:
-              - Location
-          -
-            method: addHeader
-            arguments:
-              - X-Total-Count
-          -
-            method: addHeader
-            arguments:
-              - X-Record-Count
-          -
-            #clients need this to read the current version in case of a versioned service -->
-            method: addHeader
-            arguments:
-              - "%graviton.rest.headers.x-versioning%"
-          -
-            method: addAllowHeader
-            arguments:
-              - Cache-Control
-          -
-            method: addAllowHeader
-            arguments:
-              - Content-Type
-          -
-            method: addAllowHeader
-            arguments:
-              - Content-Language
-          -
-            method: addAllowHeader
-            arguments:
-              - If-None-Match
-          -
-            method: addAllowHeader
-            arguments:
-              - X-Analytics-No-Cache
-          -
-            #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
-            method: addAllowHeader
-            arguments:
-              - X-REST-Token
-          -
-            #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
-            method: addAllowHeader
-            arguments:
-              - X-AUTH-Token
-          -
-            #we need to allow this header since new clients like E11 use it -->
-            method: addAllowHeader
-            arguments:
-              - Pragma
-          -
-            #we need to allow this header for basic auth environments -->
-            method: addAllowHeader
-            arguments:
-              - Authorization
-          -
-            #static headers -->
-            method: addStaticHeader
-            arguments:
-              - X-Frame-Options
-              - DENY
-
     #X-Version response listener -->
     graviton.rest.listener.xversionresponselistener:
         class: "%graviton.rest.listener.xversionresponselistener.class%"
@@ -366,7 +251,6 @@ services:
             name: kernel.event_listener
             event: graviton.rest.response
             method: onKernelResponse
-
 
     #RQL query listener (see RqlQueryDecoratorCompilerPass) -->
     graviton.rest.listener.rqlqueryrequestlistener:

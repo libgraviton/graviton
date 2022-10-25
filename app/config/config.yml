@@ -38,6 +38,38 @@ graviton_common:
         redis_port: "%graviton.cache.redis.port%"
         redis_db: 10
         adapter_override: null
+    http:
+        cors:
+            origins_allowed: '%security.cors.allowed_origins%'
+            origins_credentials_allowed: '%security.cors.allow_credentials%'
+            headers_allowed:
+                - Cache-Control
+                - Content-Type
+                - Content-Language
+                - If-None-Match
+                - X-Analytics-No-Cache
+                - Pragma
+            headers_exposed:
+                - Link
+                - Accept
+                - X-Requested-With
+                - Content-Type
+                - Origin
+                - Cache-Control
+                - ETag
+                - Date
+                - Content-Language
+                - Location
+                - X-Total-Count
+                - X-Record-Count
+                - !php/const Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME
+            methods_allowed:
+                - GET
+                - POST
+                - PUT
+                - PATCH
+                - DELETE
+                - OPTIONS
     http_client:
         options:
             stream: false

@@ -95,7 +95,7 @@ class RestTestCase extends GravitonTestCase
      */
     public function assertCorsHeaders($methods, $response)
     {
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
     }
 
