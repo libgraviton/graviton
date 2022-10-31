@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dabd12077427fab449988df1b5b1ea8",
+    "content-hash": "2dfcde395f16ac76903be311eda12bdd",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1504,7 +1504,7 @@
         },
         {
             "name": "graviton/common-bundle",
-            "version": "dev-support/2.x",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
@@ -1548,7 +1548,7 @@
             "description": "Common functionality for our php apps",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/support/2.x"
+                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/v2.4.0"
             },
             "time": "2022-10-31T06:37:19+00:00"
         },
@@ -8764,9 +8764,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "graviton/common-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
