@@ -15,12 +15,6 @@ parameters:
     graviton.proxy: null
     graviton.noproxy: null
 
-    # comma separated list of allowed origins (hostnames or hostnames mask [like .subdomain.com])
-    security.cors.allowed_origins: null
-
-    # comma separated list of origins where cors credentials will be allowed (hostnames or hostnames mask [like .subdomain.com])
-    security.cors.allow_credentials: null
-
     # which serializer groups should be (de)serialized on this instance
     graviton.rest.serializer.groups: null
     # if true, then the 'x-groups' header can override the serialized groups

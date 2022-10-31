@@ -175,8 +175,6 @@
                     "graviton.security.authentication.strategy.subnet.header_field": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_HEADER_FIELD",
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD",
-                    "security.cors.allowed_origins": "GRAVITON_CORS_ALLOWED_ORIGINS",
-                    "security.cors.allow_credentials": "GRAVITON_CORS_ALLOWED_CREDENTIALS_ORIGINS",
                     "graviton.cache.instance_id": "CACHE_INSTANCE_ID",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",
