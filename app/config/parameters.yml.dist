@@ -56,6 +56,19 @@ parameters:
 
     graviton.security.services.whitelist: {}
 
+    # audit log related settings
+    security.audit.enabled: true
+    security.audit.logger_url: null
+    security.audit.ignore_methods:
+        - GET
+        - OPTIONS
+        - HEAD
+    security.audit.record_payload: false
+    security.audit.record_payload_exception_list:
+        - '/file/*'
+        - '/auth'
+        - '/security/*'
+
     graviton.analytics.cache_time.metadata: 10
 
     # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml

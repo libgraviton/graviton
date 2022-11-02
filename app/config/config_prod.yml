@@ -9,7 +9,7 @@ monolog:
             path: "%graviton.log.path%"
             level: "%graviton.log.level%"
             channels: ["!event", "!doctrine", "!php"]
-            formatter: "log_formatter"
+            formatter: Graviton\CommonBundle\Component\Logging\SecurityFormatter
         sentry:
             type: sentry
             level: !php/const Monolog\Logger::ERROR
