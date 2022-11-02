@@ -8,6 +8,9 @@ parameters:
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
 
+    security.cors.allowed_origins: vcap.me,test.ch
+    security.cors.allow_credentials: test.ch
+
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
         - graviton_user
@@ -54,6 +57,40 @@ monolog:
     handler:
         name: main
         type: "test"
+
+graviton_common:
+    http:
+        cors:
+            origins_allowed: '%security.cors.allowed_origins%'
+            origins_credentials_allowed: '%security.cors.allow_credentials%'
+            headers_allowed:
+                - Cache-Control
+                - Content-Type
+                - Content-Language
+                - If-None-Match
+                - X-Analytics-No-Cache
+                - Pragma
+            headers_exposed:
+                - Link
+                - Accept
+                - X-Requested-With
+                - Content-Type
+                - Origin
+                - Cache-Control
+                - ETag
+                - Date
+                - Content-Language
+                - Location
+                - X-Total-Count
+                - X-Record-Count
+                - !php/const Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME
+            methods_allowed:
+                - GET
+                - POST
+                - PUT
+                - PATCH
+                - DELETE
+                - OPTIONS
 
 # DoctrineMongoDB Configuration
 # see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html

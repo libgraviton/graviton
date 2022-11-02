@@ -93,3 +93,21 @@ the various subsystems.
 - [AnalyticsBundle](src/Graviton/AnalyticsBundle/README.md)
 
 And not to forget, the all important [CHANGELOG](https://github.com/libgraviton/graviton/releases).
+
+### Tracing
+
+This component comes with a tracing bundle, but it is deactivated by default. To enable it, one must set this ENVs:
+
+```
+TRACING_ENABLED=true
+```
+
+This enables the bundle. Then you need to set the `jaeger-bundle` specific envs:
+
+```
+AUXMONEY_OPENTRACING_AGENT_HOST=zipkin-hostname # hostname to jaeger
+AUXMONEY_OPENTRACING_AGENT_PORT=6831 # port to jaeger
+AUXMONEY_OPENTRACING_SAMPLER_VALUE=true # const sampler value (sends always if true or never if false)
+```
+
+See [this](https://packagist.org/packages/auxmoney/opentracing-bundle-core) and [this](https://packagist.org/packages/auxmoney/opentracing-bundle-jaeger) page about the 2 bundles.

@@ -39,7 +39,10 @@ class DefaultControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('OPTIONS', '/analytics/schema/app');
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
-        $this->assertEquals('GET, OPTIONS', $client->getResponse()->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEquals(
+            'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+            $client->getResponse()->headers->get('Access-Control-Allow-Methods')
+        );
         $this->assertEmpty($client->getResults());
     }
 
