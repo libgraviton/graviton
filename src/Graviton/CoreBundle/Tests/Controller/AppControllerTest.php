@@ -76,8 +76,6 @@ class AppControllerTest extends RestTestCase
 
         $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
         $this->assertEquals('http://localhost/core/app/', $linkHeader->getRel('self')->getUri());
-
-        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -454,7 +452,6 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/admin>; rel="self"',
             $response->headers->get('Link')
         );
-        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -789,7 +786,6 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEmpty($response->getContent());
 
         $client->request('GET', '/core/app/tablet');
@@ -818,75 +814,6 @@ class AppControllerTest extends RestTestCase
 
         $this->assertStringContainsString('showInMenu', $results[0]->propertyPath);
         $this->assertEquals('String value found, but a boolean is required', $results[0]->message);
-    }
-
-    /**
-     * test getting schema information
-     *
-     * @return void
-     */
-    public function testGetAppSchemaInformation()
-    {
-        $client = static::createRestClient();
-        $client->request('OPTIONS', '/core/app/hello');
-
-        $response = $client->getResponse();
-
-        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
-    }
-
-    /**
-     * test cors origin
-     *
-     * @return void
-     */
-    public function testCorsOriginHandling()
-    {
-        $client = static::createRestClient();
-
-        $client->request(
-            'OPTIONS',
-            '/core/app/hello',
-            [],
-            [],
-            [
-                'HTTP_ORIGIN' => 'http://subdomain.test.ch'
-            ]
-        );
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(
-            'http://subdomain.test.ch',
-            $response->headers->get('access-control-allow-origin')
-        );
-
-        $this->assertEquals(
-            'true',
-            $response->headers->get('access-control-allow-credentials')
-        );
-
-        // no credentials
-        $client = static::createRestClient();
-
-        $client->request(
-            'OPTIONS',
-            '/core/app/hello',
-            [],
-            [],
-            [
-                'HTTP_ORIGIN' => 'http://subdomain.vcap.me'
-            ]
-        );
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(
-            'http://subdomain.vcap.me',
-            $response->headers->get('access-control-allow-origin')
-        );
-
-        $this->assertNull($response->headers->get('access-control-allow-credentials'));
     }
 
     /**
@@ -945,12 +872,6 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('array', $results->type);
         $this->assertIsAppSchema($results->items);
         $this->assertEquals('en', $results->items->properties->name->required[0]);
-
-        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
-        $this->assertContains(
-            'Link',
-            explode(',', $response->headers->get('Access-Control-Expose-Headers'))
-        );
 
         $this->assertStringContainsString(
             '<http://localhost/schema/core/app/collection>; rel="self"',

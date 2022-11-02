@@ -20,4 +20,4 @@ monolog:
             path: "%graviton.log.path%"
             level: "debug"
             channels: ["!event"]
-            formatter: "log_formatter"
+            formatter: Graviton\CommonBundle\Component\Logging\SecurityFormatter

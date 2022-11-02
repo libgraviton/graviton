@@ -48,7 +48,6 @@ class DefaultController
     {
         $resp = new Response();
         $resp->setStatusCode(Response::HTTP_NO_CONTENT);
-        $resp->headers->set("Access-Control-Allow-Methods", "GET, OPTIONS");
         return $resp;
     }
 

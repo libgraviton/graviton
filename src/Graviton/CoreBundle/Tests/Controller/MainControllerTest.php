@@ -163,20 +163,4 @@ class MainControllerTest extends RestTestCase
             $determineServices->invokeArgs($controller, [$optionRoutes])
         );
     }
-
-    /**
-     * @return void
-     */
-    public function testOptionsResponse()
-    {
-        $client = static::createRestClient();
-        $client->request('OPTIONS', '/');
-
-        $response = $client->getResponse();
-
-        $this->assertStringContainsString(
-            'If-None-Match',
-            $response->headers->get('Access-Control-Allow-Headers')
-        );
-    }
 }

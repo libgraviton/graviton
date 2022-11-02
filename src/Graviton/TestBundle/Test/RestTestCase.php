@@ -86,20 +86,6 @@ class RestTestCase extends GravitonTestCase
     }
 
     /**
-     * assertion for checking cors headers
-     *
-     * @param string $methods  methods to check for
-     * @param object $response response to load headers from
-     *
-     * @return void
-     */
-    public function assertCorsHeaders($methods, $response)
-    {
-        $this->assertNull($response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
-    }
-
-    /**
      * assert that putting a fetched resource fails
      *
      * @param string $url    url

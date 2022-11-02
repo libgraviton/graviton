@@ -7,7 +7,6 @@ imports:
     - { resource: 'parameters_buildtime.php' }
     - { resource: services.yml }
 
-
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
@@ -30,6 +29,8 @@ framework:
     trusted_hosts: ~
     fragments: ~
 
+######### ORIGINAL UNTEN
+
 graviton_common:
     mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
     cache:
@@ -38,6 +39,17 @@ graviton_common:
         redis_port: "%graviton.cache.redis.port%"
         redis_db: 10
         adapter_override: null
+    audit:
+        enabled: "%security.audit.enabled%"
+        active_user_tracking_enabled: false # no use tracking
+        fallback_mongodb: false # no mongodb fallback!
+        app_name: 'graviton'
+        response_header_name: 'X-Graviton-Audit-ID'
+        skip_on_header_presence: 'X-Gateway-Audit-ID' # do nothing if downstream already recorded the event!
+        record_payload: "%security.audit.record_payload%"
+        record_payload_exceptions: "%security.audit.record_payload_exception_list%"
+        ignore_methods: "%security.audit.ignore_methods%"
+        logger_url: "%security.audit.logger_url%"
     http_client:
         options:
             stream: false
