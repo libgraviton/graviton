@@ -481,11 +481,6 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('array', $results->type);
         $this->assertIsFileSchema($results->items);
 
-        $this->assertContains(
-            'Link',
-            explode(',', $response->headers->get('Access-Control-Expose-Headers'))
-        );
-
         $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
 
         $this->assertEquals(
