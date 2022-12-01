@@ -29,7 +29,7 @@
         "ext-mbstring": "*",
 
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.14.0",
+        "ext-mongodb": "^1.15.0",
         "ext-amqp": "~1",
 
         "incenteev/composer-parameter-handler": "^2.1.0",
