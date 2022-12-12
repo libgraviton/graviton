@@ -49,7 +49,7 @@
 {%- set exposeCreatedAt = (not hasDefinedField(json, 'createdAt')) | json_encode -%}
 
       <property name="_createdBy" type="string" accessor-setter="setCreatedBy" accessor-getter="getCreatedBy" serialized-name="createdBy" exclude="{{ exposeCreatedBy }}"/>
-      <property name="_createdAt" accessor-setter="setCreatedAt" accessor-getter="getCreatedAt" serialized-name="lastCreatedAt" exclude="{{ exposeCreatedAt }}">
+      <property name="_createdAt" accessor-setter="setCreatedAt" accessor-getter="getCreatedAt" serialized-name="createdAt" exclude="{{ exposeCreatedAt }}">
         <type><![CDATA[DateTime]]></type>
       </property>
     <!-- the createdAt/by fields end -->
