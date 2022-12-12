@@ -46,7 +46,7 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit\Framework\TestCase
             ->expects($this->once())
             ->method('setParameter')
             ->with(
-                'graviton.document.field.names',
+                'graviton.document.visible_field.names',
                 [
                     $baseNamespace.'\A' => [
                         'id'        => 'id',

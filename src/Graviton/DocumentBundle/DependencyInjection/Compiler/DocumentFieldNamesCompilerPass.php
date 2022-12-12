@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
+ * persists a map which fields are exposed by each service!
+ *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
@@ -38,7 +40,7 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
             $map[$document->getClass()] = $this->getFieldNames($document);
         }
 
-        $container->setParameter('graviton.document.field.names', $map);
+        $container->setParameter('graviton.document.visible_field.names', $map);
     }
 
     /**
@@ -51,6 +53,11 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
     {
         $result = [];
         foreach ($document->getFields() as $field) {
+            // only include those who are NOT excluded in serializer!
+            if ($field->isSerializerExcluded()) {
+                continue; // skip!
+            }
+
             $result[$field->getFieldName()] = $field->getExposedName();
         }
         return $result;
