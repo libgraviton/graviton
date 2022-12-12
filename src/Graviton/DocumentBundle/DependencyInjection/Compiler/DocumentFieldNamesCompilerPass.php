@@ -53,8 +53,8 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
     {
         $result = [];
         foreach ($document->getFields() as $field) {
-            // only include those who are NOT excluded in serializer!
-            if ($field->isSerializerExcluded()) {
+            // only include those who are NOT excluded in serializer -> except id!
+            if ($field->isSerializerExcluded() && $field->getType() != 'id') {
                 continue; // skip!
             }
 
