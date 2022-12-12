@@ -17,7 +17,7 @@ class Field extends AbstractField
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * Constructor
@@ -29,6 +29,7 @@ class Field extends AbstractField
      * @param bool   $required              Is required
      * @param bool   $searchable            Is searchable
      * @param bool   $recordOriginException Is an exception to record origin
+     * @param bool   $isSerializerExcluded  isSerializerExcluded
      */
     public function __construct(
         $type,
@@ -37,7 +38,8 @@ class Field extends AbstractField
         $readOnly,
         $required,
         $searchable,
-        $recordOriginException
+        $recordOriginException,
+        bool $isSerializerExcluded = false
     ) {
         $this->type = $type;
         parent::__construct(
@@ -46,7 +48,8 @@ class Field extends AbstractField
             $readOnly,
             $required,
             $searchable,
-            $recordOriginException
+            $recordOriginException,
+            $isSerializerExcluded
         );
     }
 

@@ -124,7 +124,7 @@ class SecurityUtils
         if ($this->isSecurityUser()) {
             return $this->securityUser->getUsername();
         }
-        throw new UsernameNotFoundException('No security user');
+        return 'anonymous';
     }
 
     /**

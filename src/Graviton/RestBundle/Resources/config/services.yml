@@ -143,6 +143,8 @@ services:
             arguments: ['%graviton.rest.not_modifiable.origin.records%']
           - method: setRestUtils
             arguments: ['@graviton.rest.restutils']
+          - method: setSecurityUtils
+            arguments: ['@graviton.security.service.utils']
 
     # query service -->
     graviton.rest.service.query:

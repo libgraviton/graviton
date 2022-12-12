@@ -961,7 +961,7 @@ class ShowcaseControllerTest extends RestTestCase
 
         // embed case - check the embedded 'contactCode'
         $this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
-        $this->assertObjectHasAttribute('id', $schema->properties->contactCode->properties);
+        $this->assertObjectNotHasAttribute('id', $schema->properties->contactCode->properties);
     }
 
     /**
