@@ -5,8 +5,11 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\AppBundle\Document\App;
+use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -459,7 +462,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testPostApp()
+    public function testPostAndUpdateApp()
     {
         $testApp = new \stdClass;
         $testApp->name = new \stdClass;
@@ -467,7 +470,7 @@ class AppControllerTest extends RestTestCase
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
-        $client->post('/core/app/', $testApp);
+        $client->post('/core/app/', $testApp, server: ['HTTP_X-GRAVITON-USER' => 'user1']);
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -475,8 +478,11 @@ class AppControllerTest extends RestTestCase
         $this->assertNull($results);
         $this->assertStringContainsString('/core/app/', $response->headers->get('Location'));
 
+        $recordLocation = $response->headers->get('Location');
+
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $recordLocation);
+
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -488,6 +494,39 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+
+        // keep this
+        $recordId = $results->id;
+
+        // PATCH IT
+
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/name/de',
+                    'value' => 'Mein neuer Name'
+                ]
+            ]
+        );
+        $client->request('PATCH', $recordLocation, [], [], ['HTTP_X-GRAVITON-USER' => 'user2'], $patchJson);
+
+        /**
+         * CHECK METADATA FIELDS (_createdBy/_lastModifiedBy)
+         */
+
+        /**
+         * @var $dm DocumentManager
+         */
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+
+        $collection = $dm->getDocumentCollection(App::class);
+        $dbRecord = $collection->findOne(['_id' => $recordId]);
+        $this->assertEquals('user1', $dbRecord['_createdBy']);
+        $this->assertTrue($dbRecord['_createdAt'] instanceof UTCDateTime);
+        $this->assertEquals('user2', $dbRecord['_lastModifiedBy']);
+        $this->assertTrue($dbRecord['_lastModifiedAt'] instanceof UTCDateTime);
     }
 
     /**

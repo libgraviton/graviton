@@ -55,6 +55,40 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     }
 
     /**
+    * @var Date $createdAt
+    *
+    * @ODM\Field(type="date")
+    */
+    protected $_createdAt;
+
+    public function getCreatedAt()
+    {
+        return $this->_createdAt;
+    }
+
+    public function setCreatedAt($createdAt)
+    {
+        $this->_createdAt = $createdAt;
+    }
+
+    /**
+    * @var string $createdBy
+    *
+    * @ODM\Field(type="string")
+    */
+    protected $_createdBy;
+
+    public function getCreatedBy()
+    {
+        return $this->_createdBy;
+    }
+
+    public function setCreatedBy($createdBy)
+    {
+        $this->_createdBy = $createdBy;
+    }
+
+    /**
     * @var Date $lastModifiedAt
     *
     * @ODM\Field(type="date")

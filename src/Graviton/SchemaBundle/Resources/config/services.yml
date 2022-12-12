@@ -133,7 +133,7 @@ services:
           - "@jms_serializer"
           - "%graviton.document.type.extref.mapping%"
           - "%graviton.document.eventmap%"
-          - "%graviton.document.field.names%"
+          - "%graviton.document.visible_field.names%"
           - "%graviton.rest.schema_variation.enable%"
           - "@graviton.schema.constraint.builder"
           - "@graviton.cache.adapter.app"

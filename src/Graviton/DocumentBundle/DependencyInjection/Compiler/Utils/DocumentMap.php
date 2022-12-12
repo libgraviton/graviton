@@ -167,7 +167,6 @@ class DocumentMap
                         !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                         ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                         !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                        !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                     );
                 } else {
                     $fields[] = new Field(
@@ -178,7 +177,7 @@ class DocumentMap
                         ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                         $serializerField === null ? false : $serializerField['searchable'],
                         !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                        !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
+                        !empty($serializerField['exclude']) ? $serializerField['exclude'] : false
                     );
                 }
             } elseif ($classProperty instanceof ODM\ReferenceOne || $classProperty instanceof ODM\EmbedOne) {
@@ -198,7 +197,6 @@ class DocumentMap
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                    !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
             } elseif ($classProperty instanceof ODM\ReferenceMany || $classProperty instanceof ODM\EmbedMany) {
                 $doctrineField['type'] = $classProperty->targetDocument;
@@ -217,7 +215,6 @@ class DocumentMap
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                    !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
             }
         }
@@ -330,6 +327,7 @@ class DocumentMap
                     'fieldType'   => $this->getSerializerFieldType($element),
                     'exposedName' => $element->getAttribute('serialized-name') ?: $element->getAttribute('name'),
                     'readOnly'    => $element->getAttribute('read-only') === 'true',
+                    'exclude'     => $element->getAttribute('exclude') === 'true',
                     'searchable'  => (int) $element->getAttribute('searchable')
                 ];
             },

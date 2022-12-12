@@ -272,7 +272,7 @@ class EventStatusLinkResponseListener
         $obj->setEvent($this->generateRoutingKey());
         $obj->setDocumenturl($this->requestStack->getCurrentRequest()->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
-        $obj->setCoreUserId($this->getSecurityUsername());
+        $obj->setCoreUserId($this->securityUtils->getSecurityUsername());
 
         // transient header?
         foreach ($this->transientHeaders as $headerName) {
@@ -353,7 +353,7 @@ class EventStatusLinkResponseListener
         }
 
         // Set username to Event
-        $eventStatus->setUserid($this->getSecurityUsername());
+        $eventStatus->setUserid($this->securityUtils->getSecurityUsername());
 
         // send predispatch for other stuff happening (like restrictions)
         $event = new EntityPrePersistEvent();
@@ -421,20 +421,6 @@ class EventStatusLinkResponseListener
             },
             $query->execute()->toArray()
         );
-    }
-
-    /**
-     * Security needs to be enabled to get
-     *
-     * @return String
-     */
-    private function getSecurityUsername()
-    {
-        if ($this->securityUtils->isSecurityUser()) {
-            return $this->securityUtils->getSecurityUsername();
-        }
-
-        return '';
     }
 
     /**

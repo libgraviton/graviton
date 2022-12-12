@@ -38,6 +38,7 @@ class AbstractField
      * @var bool
      */
     private $recordOriginException;
+    private bool $isSerializerExcluded;
 
     /**
      * Constructor
@@ -48,6 +49,7 @@ class AbstractField
      * @param bool   $required              Is required
      * @param bool   $searchable            Is searchable
      * @param bool   $recordOriginException Is an exception to record origin
+     * @param bool   $isSerializerExcluded  isSerializerExcluded
      */
     public function __construct(
         $fieldName,
@@ -55,7 +57,8 @@ class AbstractField
         $readOnly,
         $required,
         $searchable,
-        $recordOriginException
+        $recordOriginException,
+        $isSerializerExcluded = false
     ) {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
@@ -63,6 +66,7 @@ class AbstractField
         $this->required = $required;
         $this->searchable = $searchable;
         $this->recordOriginException = $recordOriginException;
+        $this->isSerializerExcluded = $isSerializerExcluded;
     }
 
     /**
@@ -145,5 +149,13 @@ class AbstractField
     public function setRecordOriginException($recordOriginException)
     {
         $this->recordOriginException = $recordOriginException;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSerializerExcluded(): bool
+    {
+        return $this->isSerializerExcluded;
     }
 }
