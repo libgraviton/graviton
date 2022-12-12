@@ -186,11 +186,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $entity = $this->dispatchPrePersistEvent($entity);
 
         // ensure meta fields!
-        if (is_callable([$entity, 'setCreatedBy'])) {
-            $entity->setCreatedBy($this->securityUtils->getSecurityUsername());
+        if (is_callable([$entity, 'set_CreatedBy'])) {
+            $entity->set_CreatedBy($this->securityUtils->getSecurityUsername());
         }
-        if (is_callable([$entity, 'setCreatedAt'])) {
-            $entity->setCreatedAt(new \DateTime());
+        if (is_callable([$entity, 'set_CreatedAt'])) {
+            $entity->set_CreatedAt(new \DateTime());
         }
 
         $this->manager->persist($entity);
@@ -289,11 +289,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->manager->clear();
 
             // pass old attrs to new one.
-            if (is_callable([$entity, 'setCreatedBy']) && !empty($existing['_createdBy'])) {
-                $entity->setCreatedBy($existing['_createdBy']);
+            if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
+                $entity->set_CreatedBy($existing['_createdBy']);
             }
-            if (is_callable([$entity, 'setCreatedAt']) && !empty($existing['_createdAt'])) {
-                $entity->setCreatedAt($existing['_createdAt']);
+            if (is_callable([$entity, 'set_CreatedAt']) && !empty($existing['_createdAt'])) {
+                $entity->set_CreatedAt($existing['_createdAt']);
             }
         }
 
