@@ -12,6 +12,7 @@ use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\RestBundle\Service\QueryService;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
@@ -62,18 +63,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var array
      */
     protected $notModifiableOriginRecords;
-    /**
-     * @var DocumentManager
-     */
-    protected $manager;
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-    /**
-     * @var RestUtils
-     */
-    private $restUtils;
+    protected DocumentManager $manager;
+    protected EventDispatcherInterface $eventDispatcher;
+    private RestUtils $restUtils;
+    private SecurityUtils $securityUtils;
 
     /**
      * set query service
@@ -85,6 +78,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function setQueryService(QueryService $queryService)
     {
         $this->queryService = $queryService;
+    }
+
+    /**
+     * set security utils
+     *
+     * @param SecurityUtils $securityUtils utils
+     *
+     * @return void
+     */
+    public function setSecurityUtils(SecurityUtils $securityUtils)
+    {
+        $this->securityUtils = $securityUtils;
     }
 
     /**
@@ -178,8 +183,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
-        $this->manager->persist($this->dispatchPrePersistEvent($entity));
-        $this->manager->flush([$entity]);
+        $entity = $this->dispatchPrePersistEvent($entity);
+
+        // ensure meta fields!
+        if (is_callable([$entity, 'setCreatedBy'])) {
+            $entity->setCreatedBy($this->securityUtils->getSecurityUsername());
+        }
+        if (is_callable([$entity, 'setCreatedAt'])) {
+            $entity->setCreatedAt(new \DateTime());
+        }
+
+        $this->manager->persist($entity);
+        $this->manager->flush();
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
@@ -259,17 +274,40 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function updateRecord($documentId, $entity)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
+
         if (!is_null($documentId)) {
+            $collection = $this->manager->getDocumentCollection($entity::class);
+            $existing = $collection->findOne(
+                ['_id' => $documentId],
+                ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
+            );
+
             $this->deleteById($documentId);
+
             // detach so odm knows it's gone
             $this->manager->detach($entity);
             $this->manager->clear();
+
+            // pass old attrs to new one.
+            if (is_callable([$entity, 'setCreatedBy']) && !empty($existing['_createdBy'])) {
+                $entity->setCreatedBy($existing['_createdBy']);
+            }
+            if (is_callable([$entity, 'setCreatedAt']) && !empty($existing['_createdAt'])) {
+                $entity->setCreatedAt($existing['_createdAt']);
+            }
+        }
+
+        if (is_callable([$entity, 'setLastModifiedBy'])) {
+            $entity->setLastModifiedBy($this->securityUtils->getSecurityUsername());
+        }
+        if (is_callable([$entity, 'setLastModifiedAt'])) {
+            $entity->setLastModifiedAt(new \DateTime());
         }
 
         $entity = $this->manager->merge($entity);
 
         $this->manager->persist($entity);
-        $this->manager->flush([$entity]);
+        $this->manager->flush();
         $this->manager->detach($entity);
 
         // Fire ModelEvent
