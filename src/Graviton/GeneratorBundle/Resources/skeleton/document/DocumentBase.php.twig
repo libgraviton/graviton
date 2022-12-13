@@ -61,12 +61,12 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     */
     protected $_createdAt;
 
-    public function getCreatedAt()
+    public function get_CreatedAt()
     {
         return $this->_createdAt;
     }
 
-    public function setCreatedAt($createdAt)
+    public function set_CreatedAt($createdAt)
     {
         $this->_createdAt = $createdAt;
     }
@@ -78,12 +78,12 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     */
     protected $_createdBy;
 
-    public function getCreatedBy()
+    public function get_CreatedBy()
     {
         return $this->_createdBy;
     }
 
-    public function setCreatedBy($createdBy)
+    public function set_CreatedBy($createdBy)
     {
         $this->_createdBy = $createdBy;
     }

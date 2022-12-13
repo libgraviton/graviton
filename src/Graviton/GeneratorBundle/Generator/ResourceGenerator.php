@@ -264,8 +264,8 @@ class ResourceGenerator extends AbstractGenerator
             $reservedFieldNames,
             [
                 'deletedDate',
-                'createdBy',
-                'createdAt',
+                '_createdBy',
+                '_createdAt',
                 'lastModifiedBy',
                 'lastModifiedAt'
             ]
