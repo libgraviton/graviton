@@ -98,6 +98,8 @@ parameters:
     graviton.solr.url: null
     # how many characters does a search term need to make it fuzzy?
     graviton.solr.fuzzy_bridge: 5
+    # how many characters needed until we start searching literal (before only fuzzy/wildcard)
+    graviton.solr.literal_bridge: 5
     # how many characters does a search term need to make it wildcard?
     graviton.solr.wildcard_bridge: 3
     # if the terms should ANDed together or not

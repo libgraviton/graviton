@@ -121,6 +121,7 @@ class RqlSearchNodeListenerTest extends TestCase
             'http://localhost/solr',
             5,
             3,
+            2,
             true,
             [
                 'MyNiceDocument' => 'fieldName^2 fieldNameTwo^3',

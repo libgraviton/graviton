@@ -209,6 +209,7 @@
                     "graviton.solr.url": "SOLR_URL",
                     "graviton.solr.fuzzy_bridge": "SOLR_FUZZY_BRIDGE",
                     "graviton.solr.wildcard_bridge": "SOLR_WILDCARD_BRIDGE",
+                    "graviton.solr.literal_bridge": "SOLR_LITERAL_BRIDGE",
                     "graviton.solr.andify_terms": "SOLR_ANDIFY_TERMS"
                 }
             },
