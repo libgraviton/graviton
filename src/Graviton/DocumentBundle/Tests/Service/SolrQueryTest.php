@@ -101,6 +101,7 @@ class SolrQueryTest extends TestCase
             'http://solr:3033',
             5,
             4,
+            5,
             $andifyTerms,
             [
                 $className => $classFields
@@ -165,10 +166,10 @@ class SolrQueryTest extends TestCase
             ],
             'simple-search-wildcard' => [
                 'hans',
-                '(hans || hans*)',
+                '(hans*)',
                 true
             ],
-            'simple-search-fuzzy' => [
+            'simple-search-liteal-fuzzy' => [
                 'hanso',
                 '(hanso || hanso~)',
                 true
@@ -180,22 +181,22 @@ class SolrQueryTest extends TestCase
             ],
             'forced-fuzzy-from-client' => [
                 'hans~', // this *should* be fuzzy as from config, but client wants wildcard
-                '(hans || hans~)',
+                '(hans~)',
                 true
             ],
             'forced-mixed-from-client' => [
                 'hansomat* han~',
-                '(hansomat || hansomat*) && (han || han~)',
+                '(hansomat || hansomat*) && (han~)',
                 true
             ],
             'simple-combined-no-andify' => [
                 'han hans hanso',
-                'han (hans || hans*) (hanso || hanso~)',
+                'han (hans*) (hanso || hanso~)',
                 false
             ],
             'simple-combined-with-andify' => [
                 'han hans hanso',
-                'han && (hans || hans*) && (hanso || hanso~)',
+                'han && (hans*) && (hanso || hanso~)',
                 true
             ],
             'alphanumeric-iban' => [

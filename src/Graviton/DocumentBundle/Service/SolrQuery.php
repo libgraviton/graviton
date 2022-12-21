@@ -46,6 +46,11 @@ class SolrQuery
     private $solrWildcardBridge;
 
     /**
+     * @var int
+     */
+    private $solrLiteralBridge;
+
+    /**
      * @var boolean
      */
     private $andifyTerms;
@@ -108,6 +113,7 @@ class SolrQuery
      * @param string          $solrUrl                url to solr
      * @param int             $solrFuzzyBridge        fuzzy bridge
      * @param int             $solrWildcardBridge     wildcard bridge
+     * @param int             $solrLiteralBridge      literal bridge
      * @param boolean         $andifyTerms            andify terms or not?
      * @param array           $solrMap                solr class field weight map
      * @param int             $paginationDefaultLimit default pagination limit
@@ -119,6 +125,7 @@ class SolrQuery
         $solrUrl,
         $solrFuzzyBridge,
         $solrWildcardBridge,
+        $solrLiteralBridge,
         $andifyTerms,
         array $solrMap,
         $paginationDefaultLimit,
@@ -131,6 +138,7 @@ class SolrQuery
         }
         $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
         $this->solrWildcardBridge = (int) $solrWildcardBridge;
+        $this->solrLiteralBridge = (int) $solrLiteralBridge;
         $this->andifyTerms = (boolean) $andifyTerms;
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
@@ -389,12 +397,21 @@ class SolrQuery
             $term = substr($term, 0, -1);
         }
 
-        return sprintf(
-            '(%s || %s%s)',
-            $term,
-            $term,
-            $modifier
-        );
+        // only do full term if length gte literalBridge
+        if (strlen($term) >= $this->solrLiteralBridge) {
+            return sprintf(
+                '(%s || %s%s)',
+                $term,
+                $term,
+                $modifier
+            );
+        } else {
+            return sprintf(
+                '(%s%s)',
+                $term,
+                $modifier
+            );
+        }
     }
 
     /**
