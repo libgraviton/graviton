@@ -64,7 +64,7 @@
       </property>
     <!-- the lastModifiedAt/by fields end -->
 
-{%-  set excludeSynthetic = (not (exposeSyntheticFields(json) and not isEmbedded)) | json_encode -%}
+{%-  set excludeSynthetic = (not (exposeSyntheticFields(json))) | json_encode -%}
 
     <!-- synthetic fields start -->
 {%- for field in syntheticFields %}
