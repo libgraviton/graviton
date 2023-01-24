@@ -73,10 +73,12 @@ class QueryService
     private ?string $enableMongoDbCounterHeaderName;
 
     /**
-     * @param LoggerInterface          $logger                 logger
-     * @param VisitorInterface         $visitor                visitor
-     * @param integer                  $paginationDefaultLimit default pagination limit
-     * @param EventDispatcherInterface $eventDispatcher        event dispatcher
+     * @param LoggerInterface          $logger                         logger
+     * @param VisitorInterface         $visitor                        visitor
+     * @param integer                  $paginationDefaultLimit         default pagination limit
+     * @param EventDispatcherInterface $eventDispatcher                event dispatcher
+     * @param bool                     $mongoDbCounterEnabled          mongoDbCounterEnabled
+     * @param ?string                  $enableMongoDbCounterHeaderName enableMongoDbCounterHeaderName
      */
     public function __construct(
         LoggerInterface $logger,
@@ -166,7 +168,9 @@ class QueryService
             /**
              * this is or the "all" action -> multiple documents returned
              */
-            $shouldCalculateTotal = ($this->mongoDbCounterEnabled || $request->headers->has($this->enableMongoDbCounterHeaderName));
+            $shouldCalculateTotal = (
+                $this->mongoDbCounterEnabled || $request->headers->has($this->enableMongoDbCounterHeaderName)
+            );
             $totalCount = null;
 
             if ($shouldCalculateTotal) {
