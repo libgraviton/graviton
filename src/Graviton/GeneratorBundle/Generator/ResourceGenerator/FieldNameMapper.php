@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
-use Doctrine\Inflector\InflectorFactory;
+use Symfony\Component\String\Inflector\EnglishInflector;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -16,16 +16,16 @@ class FieldNameMapper implements FieldMapperInterface
 {
 
     /**
-     * @var \Doctrine\Inflector\Inflector $inflector
+     * @var EnglishInflector $inflector
      */
-    private $inflector;
+    private EnglishInflector $inflector;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->inflector = InflectorFactory::create()->build();
+        $this->inflector = new EnglishInflector();
     }
 
     /**
