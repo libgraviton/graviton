@@ -94,7 +94,7 @@ services:
       class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
       factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
       arguments:
-        - 'GravitonCoreBundle:Dummy'
+        - Graviton\CoreBundle\Document\Dummy
 
     graviton.core.model.dummy:
       class: Graviton\CoreBundle\Model\Dummy
