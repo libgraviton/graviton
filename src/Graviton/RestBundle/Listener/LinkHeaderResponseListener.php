@@ -63,7 +63,7 @@ class LinkHeaderResponseListener
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
-        $this->linkHeader = LinkHeader::fromString($response->headers->get('link', null));
+        $this->linkHeader = LinkHeader::fromString($response->headers->get('link'));
 
         // add common headers
         $this->addCommonHeaders($request, $response);
@@ -73,7 +73,7 @@ class LinkHeaderResponseListener
         // dispatch this!
 
         // add paging Link element when applicable
-        if ($routeType == 'all' && $request->attributes->get('paging')) {
+        if ($routeType == 'all') {
             $this->generatePagingLinksHeaders($routeName, $request, $response);
         }
 
@@ -214,41 +214,48 @@ class LinkHeaderResponseListener
     {
         $this->generateLinks(
             $routeName,
-            $request->attributes->get('page'),
-            $request->attributes->get('numPages'),
-            $request->attributes->get('perPage'),
             $request
         );
 
-        $response->headers->set(
-            'X-Total-Count',
-            (string) $request->attributes->get('totalCount')
-        );
+        if ($request->attributes->has('totalCount')) {
+            $response->headers->set(
+                'X-Total-Count',
+                (string) $request->attributes->get('totalCount')
+            );
+        }
     }
 
     /**
      * generate headers for all paging links
      *
-     * @param string  $route    name of route
-     * @param integer $page     page to link to
-     * @param integer $numPages number of all pages
-     * @param integer $perPage  number of records per page
-     * @param Request $request  request to get rawRql from
+     * @param string  $route   name of route
+     * @param Request $request request to get rawRql from
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages, $perPage, Request $request)
+    private function generateLinks($route, Request $request): void
     {
+        // perPage is always needed -> don't do anything if not here..
+        $perPage = $request->attributes->get('perPage');
+
+        if (empty($perPage)) {
+            return;
+        }
+
+        $page = $request->attributes->get('page');
+        $numPages = $request->attributes->get('numPages');
+        $hasNextPage = $request->attributes->get('hasNextPage', false);
+
         if ($page > 2) {
             $this->generateLink($route, 1, $perPage, 'first', $request);
         }
         if ($page > 1) {
             $this->generateLink($route, $page - 1, $perPage, 'prev', $request);
         }
-        if ($page < $numPages) {
+        if ($hasNextPage === true || ($numPages != null && $page < $numPages)) {
             $this->generateLink($route, $page + 1, $perPage, 'next', $request);
         }
-        if ($page != $numPages) {
+        if ($numPages != null && $page != $numPages) {
             $this->generateLink($route, $numPages, $perPage, 'last', $request);
         }
     }

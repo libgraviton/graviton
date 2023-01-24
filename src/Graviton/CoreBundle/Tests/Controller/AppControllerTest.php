@@ -110,11 +110,6 @@ class AppControllerTest extends RestTestCase
             'http://localhost/core/app/?limit(10,10)',
             $linkHeader->getRel('next')->getUri()
         );
-
-        $this->assertEquals(
-            'http://localhost/core/app/?limit(10,10)',
-            $linkHeader->getRel('last')->getUri()
-        );
     }
 
     /**
@@ -134,7 +129,8 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', '/core/app/?like(id,app-*)');
 
         $this->assertEquals(10, count($client->getResults()));
-        $this->assertEquals("15", $client->getResponse()->headers->get('x-total-count'));
+        $this->assertEquals(10, $client->getResponse()->headers->get('x-record-count'));
+        $this->assertStringContainsString('"next"', $client->getResponse()->headers->get('link'));
 
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?eq(id,app-2)');
@@ -178,11 +174,6 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="last"',
-            $response->headers->get('Link')
-        );
-
         // check for false
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?eq(showInMenu,false)');
@@ -219,12 +210,14 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1,1)>; rel="last"',
+        // make sure we have *no* last..
+        $this->assertStringNotContainsString(
+            '; rel="last"',
             $response->headers->get('Link')
         );
 
-        $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        // no total count header!
+        $this->assertFalse($response->headers->has('X-Total-Count'));
         $this->assertSame('1', $response->headers->get('X-Record-Count'));
 
         /*** pagination tests **/
@@ -250,12 +243,115 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        // also no next!
+        $this->assertStringNotContainsString(
+            'rel="next"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertFalse($response->headers->has('X-Total-Count'));
         $this->assertSame('1', $response->headers->get('X-Record-Count'));
 
         /*** pagination with different rql test **/
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?limit(1)&select(id)&sort(-order)');
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
+
+        $this->assertEquals(
+            'http://localhost/core/app/?select(id)&sort(-order)&limit(1)',
+            $linkHeader->getRel('self')->getUri()
+        );
+
+        $this->assertEquals(
+            'http://localhost/core/app/?select(id)&sort(-order)&limit(1,1)',
+            $linkHeader->getRel('next')->getUri()
+        );
+
+        $this->assertStringNotContainsString(
+            'rel="last"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertStringNotContainsString(
+            'rel="prev"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertFalse($response->headers->has('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
+    }
+
+    /**
+     * rql limit() should *never* be overwritten by default value
+     *
+     * @return void
+     */
+    public function testGetAppPagingWithRqlAndForcedTotalCount()
+    {
+        // does limit work?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?limit(1)', [], [], ['HTTP_X-GRAVITON-TOTAL-COUNT' => '1']);
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?limit(1)>; rel="self"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?limit(1,1)>; rel="next"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?limit(1,1)>; rel="last"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
+
+        /*** pagination tests **/
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?limit(1,1)', [], [], ['HTTP_X-GRAVITON-TOTAL-COUNT' => '1']);
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?limit(1,1)>; rel="self"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?limit(1)>; rel="prev"',
+            $response->headers->get('Link')
+        );
+
+        // we're on the 'last' page - so 'last' should not be in in Link header
+        $this->assertStringNotContainsString(
+            'rel="last"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
+
+        /*** pagination with different rql test **/
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app/?limit(1)&select(id)&sort(-order)',
+            [],
+            [],
+            ['HTTP_X-GRAVITON-TOTAL-COUNT' => '1']
+        );
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();

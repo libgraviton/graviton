@@ -154,6 +154,8 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
+          - "%graviton.rest.calculate_total_record_count%"
+          - "%graviton.rest.total_count_enable_header_name%"
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:

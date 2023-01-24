@@ -118,11 +118,6 @@ class ModuleControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/module/?limit(1,5)>; rel="last"',
-            $response->headers->get('Link')
-        );
-
         $this->assertEquals('http://localhost/core/app/admin', $client->getResults()[0]->app->{'$ref'});
     }
 

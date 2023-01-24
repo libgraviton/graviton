@@ -139,6 +139,10 @@ parameters:
 
     # pagination defaults
     graviton.rest.pagination.limit: 10
+    # enable return of total count headers on rest AllAction?
+    graviton.rest.calculate_total_record_count: false
+    # name of http header to force total count header?
+    graviton.rest.total_count_enable_header_name: x-graviton-total-count
 
     # how to call composer on this machine
     graviton.composer.cmd: composer
