@@ -7,7 +7,6 @@ namespace Graviton\RestBundle\Service;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\ModelQueryEvent;
-use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
 use MongoDB\Driver\ReadPreference;
@@ -68,7 +67,10 @@ class QueryService
     /**
      * @var bool toggles if we should send readpref 'secondarypreferred'
      */
-    private $isUseSecondary = false;
+    private bool $isUseSecondary = false;
+
+    private bool $mongoDbCounterEnabled;
+    private ?string $enableMongoDbCounterHeaderName;
 
     /**
      * @param LoggerInterface          $logger                 logger
@@ -79,13 +81,17 @@ class QueryService
     public function __construct(
         LoggerInterface $logger,
         VisitorInterface $visitor,
-        $paginationDefaultLimit,
-        EventDispatcherInterface $eventDispatcher
+        int $paginationDefaultLimit,
+        EventDispatcherInterface $eventDispatcher,
+        bool $mongoDbCounterEnabled,
+        ?string $enableMongoDbCounterHeaderName
     ) {
         $this->logger = $logger;
         $this->visitor = $visitor;
-        $this->paginationDefaultLimit = intval($paginationDefaultLimit);
+        $this->paginationDefaultLimit = $paginationDefaultLimit;
         $this->eventDispatcher = $eventDispatcher;
+        $this->mongoDbCounterEnabled = $mongoDbCounterEnabled;
+        $this->enableMongoDbCounterHeaderName = $enableMongoDbCounterHeaderName;
     }
 
     /**
@@ -160,11 +166,35 @@ class QueryService
             /**
              * this is or the "all" action -> multiple documents returned
              */
+            $shouldCalculateTotal = ($this->mongoDbCounterEnabled || $request->headers->has($this->enableMongoDbCounterHeaderName));
+            $totalCount = null;
 
-            // count queryBuilder
-            $countQueryBuilder = clone $this->queryBuilder;
-            $countQueryBuilder->count()->limit(0)->skip(0);
-            $totalCount = $countQueryBuilder->getQuery()->execute();
+            if ($shouldCalculateTotal) {
+                // count queryBuilder
+                $countQueryBuilder = clone $this->queryBuilder;
+                $countQueryBuilder->count()
+                                  ->limit(0)
+                                  ->skip(0);
+                $totalCount = $countQueryBuilder->getQuery()
+                                                ->execute();
+            }
+
+            /*
+             * PAGINATION TRICK:
+             * - increase limit by 1
+             * - see if we get that one more -> if so, we know that there's a "next" page..
+             * - only return the original limit amount of records.
+             */
+
+            $mainQueryParts = $this->queryBuilder->getQuery()->getQuery();
+            if (!isset($mainQueryParts['limit'])) {
+                $mainQueryParts['limit'] = $this->getPaginationPageSize();
+            }
+
+            // save original size!
+            $originalPagesize = $mainQueryParts['limit'];
+            // set one more on querybuilder!
+            $this->queryBuilder->limit($originalPagesize + 1);
 
             $mainQuery = $this->queryBuilder->getQuery();
 
@@ -172,6 +202,7 @@ class QueryService
                 'QueryService: allAction query',
                 [
                     'q' => $mainQuery->getQuery(),
+                    'totalCountEnabled' => $shouldCalculateTotal,
                     'totalCount' => $totalCount,
                     'readPref' => $readPreference->getModeString()
                 ]
@@ -179,8 +210,19 @@ class QueryService
 
             $records = array_values($mainQuery->execute()->toArray());
 
-            $request->attributes->set('totalCount', $totalCount);
+            // paging: one more or not?
+            $hasNextPage = false;
+            if (count($records) > $originalPagesize) {
+                $hasNextPage = true;
+                // remove the surplus one!
+                array_pop($records);
+            }
+
+            if (!empty($totalCount)) {
+                $request->attributes->set('totalCount', $totalCount);
+            }
             $request->attributes->set('recordCount', count($records));
+            $request->attributes->set('hasNextPage', $hasNextPage);
 
             $returnValue = $records;
         } else {
@@ -208,16 +250,17 @@ class QueryService
             }
         }
 
-        // need to set paging information?
-        if (!is_null($returnValue) && $request->attributes->has('totalCount')) {
-            $numPages = (int) ceil($request->attributes->get('totalCount') / $this->getPaginationPageSize());
+        // set attributes
+        if (!is_null($returnValue)) {
             $page = (int) ceil($this->getPaginationSkip() / $this->getPaginationPageSize()) + 1;
-            if ($numPages > 1) {
-                $request->attributes->set('paging', true);
-                $request->attributes->set('page', $page);
+            $request->attributes->set('page', $page);
+
+            $request->attributes->set('startAt', $this->getPaginationSkip());
+            $request->attributes->set('perPage', $this->getPaginationPageSize());
+
+            if ($request->attributes->has('totalCount')) {
+                $numPages = (int) ceil($request->attributes->get('totalCount') / $this->getPaginationPageSize());
                 $request->attributes->set('numPages', $numPages);
-                $request->attributes->set('startAt', $this->getPaginationSkip());
-                $request->attributes->set('perPage', $this->getPaginationPageSize());
             }
         }
 
