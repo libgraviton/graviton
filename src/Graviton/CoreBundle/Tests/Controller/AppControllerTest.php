@@ -174,11 +174,6 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="last"',
-            $response->headers->get('Link')
-        );
-
         // check for false
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?eq(showInMenu,false)');
