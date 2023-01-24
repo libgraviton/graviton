@@ -203,6 +203,8 @@
                     "graviton.rest.data_restriction.persist": "DATA_RESTRICTION_PERSIST",
                     "graviton.rest.data_restriction.solr": "DATA_RESTRICTION_SOLR",
                     "graviton.rest.data_restriction.conditional.persist.map": "DATA_RESTRICTION_CONDITIONAL_PERSIST_MAP",
+                    "graviton.rest.calculate_total_record_count": "CALCULATE_TOTAL_RECORD_COUNT",
+                    "graviton.rest.total_count_enable_header_name": "TOTAL_RECORD_COUNT_ENABLE_HEADER_NAME",
                     "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
                     "graviton.analytics.cache_time.metadata": "ANALYTICS_CACHE_TIME_METADATA",
                     "graviton.sentry.dsn": "SENTRY_DSN",
