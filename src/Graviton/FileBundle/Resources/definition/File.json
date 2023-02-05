@@ -122,6 +122,12 @@
         "description": "additional property value",
         "required": true,
         "translatable": false
+      },
+      {
+        "name": "metadata.isSigned",
+        "type": "boolean",
+        "title": "Is Signed",
+        "description": "Defines if the file is digitally signed"
       }
     ]
   }
