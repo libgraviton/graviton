@@ -16,5 +16,6 @@ COPY --from=composer:2 --chown=www-data:root /usr/bin/composer /usr/local/bin/co
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /usr/local/bin/composer /entrypoint.sh
+RUN git config --system --add safe.directory *
 
 ENTRYPOINT ["/entrypoint.sh"]
