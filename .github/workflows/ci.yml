@@ -1,4 +1,4 @@
-name: CI
+name: Graviton CI
 
 on:
   push:
@@ -7,54 +7,82 @@ on:
     branches: [ develop ]
 
 jobs:
-  build:
-
-    name: PHP 8.1
-
+  symfony:
+    name: Symfony (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: read
-
+    # Docs: https://docs.github.com/en/actions/using-containerized-services
     services:
       mongodb:
         image: mongo:6.0
+        ports:
+          - 27017/tcp
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.1', '8.2']
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Cache Composer packages
+      # Docs: https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          #tools: phpunit-bridge
+          extensions: mbstring, xml, ctype, iconv, intl, amqp, mongodb, zip
+          coverage: pcov
+
+      # Local MySQL service in GitHub hosted environments is disabled by default.
+      # If you are using it instead of service containers, make sure you start it.
+      # - name: Start mysql service
+      #   run: sudo systemctl start mysql.service
+
+      - name: Get composer cache directory
         id: composer-cache
-        uses: actions/cache@v2
-        continue-on-error: true
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Docker Layer Caching
-        # You may pin to the exact commit or the version.
-        # uses: satackey/action-docker-layer-caching@46d2c640b1d8ef50d185452ad6fb324e6bd1d052
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
         with:
-          key: graviton-php81-{hash}
-          restore-keys: |
-            graviton-php81-
+          path: ${{ steps.composer-cache.outputs.dir }}
+          # Use composer.json for key, if composer.lock is not committed.
+          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Run composer and tests (with coverage)
-        uses: ./.github/actions/test-php81
-        with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      - name: Junit Report to Annotations
-        # You may pin to the exact commit or the version.
-        # uses: ashley-taylor/junit-report-annotations-action@562e0277515cae408f30ad1ea2d6dea44fc1df87
-        uses: ashley-taylor/junit-report-annotations-action@1.3
+      - name: Prepare tests
+        run: |
+          export MONGODB_URI=mongodb://mongodb:27017/db
+          echo "APP_ENV=test" > .env.local
+          echo "APP_DEBUG=0" >> .env.local
+          echo "MONGODB_URI=${MONGODB_URI}" >> .env.local
+          
+          composer configure
+          bash prepare-for-tests.sh
+          cat app/config/parameters.yml
+          
+          composer check
+
+      - name: Run tests
+        run: |
+          php -dextension=pcov -dpcov.enabled=1 -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
+
+      - name: Upload coverage
+        run: |
+          composer global require php-coveralls/php-coveralls
+          COVERALLS_REPO_TOKEN=${GITHUB_TOKEN} php ${HOME}/.composer/vendor/bin/php-coveralls --coverage_clover=${PWD}/coverage.clover --root_dir=${PWD}/src/Graviton/ -o /tmp/coveralls.json -v
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - uses: ashley-taylor/junit-report-annotations-action@1.4
+        if: always()
         with:
-          # github token
           access-token: ${{ secrets.GITHUB_TOKEN }}
-          # glob to junit xml files
           path: phpunit_junit.xml
