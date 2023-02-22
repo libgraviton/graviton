@@ -39,7 +39,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          #tools: phpunit-bridge
+          tools: php-coveralls/php-coveralls
           extensions: mbstring, xml, ctype, iconv, intl, amqp, mongodb, zip
           coverage: pcov
 
@@ -77,15 +77,9 @@ jobs:
         run: |
           php -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
 
-      - name: Coveralls Upload coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload coverage
+      - name: Upload Coveralls coverage
         run: |
-          composer global require php-coveralls/php-coveralls
-          php ${HOME}/.composer/vendor/bin/php-coveralls --coverage_clover=${PWD}/coverage.clover --root_dir=${PWD}/src/Graviton/ -o /tmp/coveralls.json -v
+          php-coveralls --coverage_clover=${PWD}/coverage.clover --root_dir=${PWD}/src/Graviton/ -o /tmp/coveralls.json -v
         env:
           COVERALLS_REPO_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           COVERALLS_FLAG_NAME: '${{ matrix.php-versions }}'
@@ -95,3 +89,4 @@ jobs:
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: phpunit_junit.xml
+          name: "PHPUnit Report ${{ matrix.php-versions }}"
