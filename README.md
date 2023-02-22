@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/libgraviton/graviton/actions/workflows/ci.yml/badge.svg)](https://github.com/libgraviton/graviton/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/libgraviton/graviton/badge.svg?branch=develop)](https://coveralls.io/github/libgraviton/graviton?branch=develop)
-[![Latest Stable Version](https://poser.pugx.org/graviton/graviton/v/stable.svg)](https://packagist.org/packages/graviton/graviton)
-[![Total Downloads](https://poser.pugx.org/graviton/graviton/downloads.svg)](https://packagist.org/packages/graviton/graviton)
-[![License](https://poser.pugx.org/graviton/graviton/license.svg)](https://packagist.org/packages/graviton/graviton)
+![Packagist Version](https://img.shields.io/packagist/v/graviton/graviton)
+![Packagist Downloads](https://img.shields.io/packagist/dt/graviton/graviton)
+![Packagist License](https://img.shields.io/packagist/l/graviton/graviton)
 
 Graviton is a Symfony and Doctrine Mongo ODM based REST server generation toolkit. So it stores all data in MongoDB.
 
