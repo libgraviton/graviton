@@ -59,7 +59,6 @@ jobs:
 
       - name: Prepare tests
         run: |
-          export MONGODB_URI=mongodb://mongodb:27017/db
           echo "APP_ENV=test" > .env.local
           echo "APP_DEBUG=0" >> .env.local
           echo "MONGODB_URI=${MONGODB_URI}" >> .env.local
@@ -69,10 +68,12 @@ jobs:
           cat app/config/parameters.yml
           
           composer check
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports['27017'] }}/db
 
       - name: Run tests
         run: |
-          php -dextension=pcov -dpcov.enabled=1 -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
+          php -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
 
       - name: Upload coverage
         run: |
