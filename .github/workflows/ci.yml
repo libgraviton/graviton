@@ -8,7 +8,7 @@ on:
 
 jobs:
   symfony:
-    name: Symfony (PHP ${{ matrix.php-versions }})
+    name: Graviton CI (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-latest
 
     # Docs: https://docs.github.com/en/actions/using-containerized-services
@@ -21,7 +21,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2']
+        php-versions: ['8.1']
+        experimental: [false]
+        # these are allowed to fail!
+        include:
+          - python: '8.2'
+            experimental: true
+
+    continue-on-error: ${{ matrix.experimental }}
 
     steps:
       - name: Checkout
@@ -35,11 +42,6 @@ jobs:
           #tools: phpunit-bridge
           extensions: mbstring, xml, ctype, iconv, intl, amqp, mongodb, zip
           coverage: pcov
-
-      # Local MySQL service in GitHub hosted environments is disabled by default.
-      # If you are using it instead of service containers, make sure you start it.
-      # - name: Start mysql service
-      #   run: sudo systemctl start mysql.service
 
       - name: Get composer cache directory
         id: composer-cache
@@ -75,12 +77,18 @@ jobs:
         run: |
           php -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
 
+      - name: Coveralls Upload coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload coverage
         run: |
           composer global require php-coveralls/php-coveralls
-          COVERALLS_REPO_TOKEN=${GITHUB_TOKEN} php ${HOME}/.composer/vendor/bin/php-coveralls --coverage_clover=${PWD}/coverage.clover --root_dir=${PWD}/src/Graviton/ -o /tmp/coveralls.json -v
+          php ${HOME}/.composer/vendor/bin/php-coveralls --coverage_clover=${PWD}/coverage.clover --root_dir=${PWD}/src/Graviton/ -o /tmp/coveralls.json -v
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          COVERALLS_REPO_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          COVERALLS_FLAG_NAME: '${{ matrix.php-versions }}'
 
       - uses: ashley-taylor/junit-report-annotations-action@1.4
         if: always()
