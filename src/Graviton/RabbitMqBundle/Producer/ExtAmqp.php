@@ -86,7 +86,15 @@ class ExtAmqp implements ProducerInterface
             $queue->setFlags(AMQP_DURABLE);
             $queue->declareQueue();
 
-            $exchange->publish($message, $routingKey, AMQP_NOPARAM, ['content_type' => 'application/json']);
+            $exchange->publish(
+                $message,
+                $routingKey,
+                AMQP_NOPARAM,
+                [
+                    'content_type' => 'application/json',
+                    'timestamp' => time()
+                ]
+            );
 
             if ($this->logger instanceof LoggerInterface) {
                 $this->logger->info(
