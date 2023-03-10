@@ -67,7 +67,7 @@
         "type": "array",
         "title": "Permissions",
         "description": "Permissions for links",
-        "required": false,
+        "required": false
       }
     ]
   }
