@@ -61,6 +61,13 @@
         "description": "Links to categories",
         "exposeAs": "$ref",
         "collection": ["*"]
+      },
+      {
+        "name": "permissions",
+        "type": "array",
+        "title": "Permissions",
+        "description": "Permissions for links",
+        "required": false,
       }
     ]
   }
