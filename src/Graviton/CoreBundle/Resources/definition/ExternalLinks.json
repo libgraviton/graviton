@@ -63,8 +63,8 @@
         "collection": ["*"]
       },
       {
-        "name": "permissions",
-        "type": "array",
+        "name": "permissions.0",
+        "type": "varchar",
         "title": "Permissions",
         "description": "Permissions for links",
         "required": false
