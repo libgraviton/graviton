@@ -18,6 +18,12 @@ use Symfony\Component\Yaml\Yaml;
  */
 class RuntimeParamScriptHandler
 {
+    /**
+     * build params
+     *
+     * @param Event $event event
+     * @return void
+     */
     public static function buildParameters(Event $event)
     {
         $extras = $event->getComposer()->getPackage()->getExtra();
@@ -42,9 +48,9 @@ class RuntimeParamScriptHandler
 
         file_put_contents(
             'app/config/parameters_runtime.yml',
-            "# This file is auto-generated during the composer install\n" . Yaml::dump($yaml, 99));
+            "# This file is auto-generated during the composer install\n" . Yaml::dump($yaml, 99)
+        );
 
-        var_dump($parameters);
-
+        $event->getIO()->write('<info>Wrote file app/config/parameters_runtime.yml</info>');
     }
 }
