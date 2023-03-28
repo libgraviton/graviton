@@ -42,7 +42,7 @@ class RuntimeParamScriptHandler
         foreach ($extras['incenteev-parameters'] as $file) {
             if (!empty($file['env-map'])) {
                 foreach ($file['env-map'] as $paramName => $envName) {
-                    if (isset($_ENV[$envName])) {
+                    if (isset($_ENV[$envName]) && !empty($value)) {
                         $parameters[$paramName] = Inline::parse($_ENV[$envName]);
                     }
                 }
