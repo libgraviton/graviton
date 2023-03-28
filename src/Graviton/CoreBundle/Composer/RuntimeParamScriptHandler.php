@@ -27,9 +27,16 @@ class RuntimeParamScriptHandler
     public static function buildParameters(Event $event)
     {
         $extras = $event->getComposer()->getPackage()->getExtra();
-        if (!isset($extras['incenteev-parameters'])) {
+        if (empty($extras['incenteev-parameters'])) {
             return;
         }
+
+        // destination?
+        if (empty($extras['graviton-runtime-file'])) {
+            return;
+        }
+
+        $destinationFile = $extras['graviton-runtime-file'];
 
         $parameters = [];
         foreach ($extras['incenteev-parameters'] as $file) {
@@ -47,10 +54,10 @@ class RuntimeParamScriptHandler
         ];
 
         file_put_contents(
-            'app/config/parameters_runtime.yml',
+            $destinationFile,
             "# This file is auto-generated during the composer install\n" . Yaml::dump($yaml, 99)
         );
 
-        $event->getIO()->write('<info>Wrote file app/config/parameters_runtime.yml</info>');
+        $event->getIO()->write('<info>Wrote file "'.$destinationFile.'"</info>');
     }
 }

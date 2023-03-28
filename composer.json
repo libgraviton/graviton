@@ -148,6 +148,7 @@
     "extra": {
         "symfony-app-dir": "./bin",
         "symfony-web-dir": "./public",
+        "graviton-runtime-file": "app/config/parameters_runtime.yml",
         "incenteev-parameters": [
             {
                 "file": "app/config/parameters.yml",
