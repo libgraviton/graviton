@@ -36,7 +36,7 @@ class RestrictionCompilerPass implements CompilerPassInterface
             foreach ($mapConfigured as $headerName => $fieldName) {
                 $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
                 if (count($fieldSpec) != 1) {
-                    throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
+                    throw new \LogicException("Wrong data restriction value as '{$headerName}' '{$fieldName}'");
                 }
 
                 $map[$headerName] = array_pop($fieldSpec);

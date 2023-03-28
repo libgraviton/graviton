@@ -71,7 +71,7 @@ class Version20181008102600 extends AbstractMigration
             try {
                 $targetCollection->insertOne($rec);
             } catch (\Exception $e) {
-                echo "Skipping already existing translation of original '${original}'".PHP_EOL;
+                echo "Skipping already existing translation of original '{$original}'".PHP_EOL;
             }
         }
     }

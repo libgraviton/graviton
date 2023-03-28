@@ -13,6 +13,7 @@ src/Doctrine/*
 src/Graviton/DocumentBundle/Entity/*.defaultLanguage
 app/config/parameters.yml
 app/config/parameters_dev.yml
+app/config/parameters_runtime.yml
 app/config/parameters_local.xml
 app/files/
 app/config/deploy.yml
