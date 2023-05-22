@@ -37,6 +37,8 @@ class RecordOriginConstraint
      */
     private $changedObjectPaths = [];
 
+    private ConstraintUtils $utils;
+
     /**
      * RecordOriginConstraint constructor.
      *

@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ConstraintUtils
 {
 
+    private DocumentManager $dm;
+    private RestUtils $restUtils;
+
     /**
      * @var array
      */
@@ -35,10 +38,7 @@ class ConstraintUtils
      */
     private $currentData;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * Constructor.
