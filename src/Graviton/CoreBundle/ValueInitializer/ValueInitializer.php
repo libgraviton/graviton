@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\ValueInitializer;
 
 use Graviton\CoreBundle\ValueInitializer\Initializer\CurrentDateInitializer;
+use Graviton\CoreBundle\ValueInitializer\Initializer\CurrentDateSetter;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -27,6 +28,7 @@ class ValueInitializer
     private static function initialize(): void
     {
         self::$initializers['currentDate'] = new CurrentDateInitializer();
+        self::$initializers['currentDateSet'] = new CurrentDateSetter();
     }
 
     /**
