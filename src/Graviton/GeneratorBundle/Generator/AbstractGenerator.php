@@ -7,6 +7,7 @@ namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\GeneratorBundle\Twig\Extension;
 use Graviton\GeneratorBundle\Twig\GeneratorExtension;
+use Seld\JsonLint\JsonParser;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -133,7 +134,16 @@ abstract class AbstractGenerator
      */
     protected function renderFileAsJson($template, $target, $parameters)
     {
-        $content = json_decode($this->render($template, $parameters));
+        $json = $this->render($template, $parameters);
+        $parser = new JsonParser();
+
+        $lint = $parser->lint($json);
+        if ($lint != null) {
+            echo "ERROR IN FILE ".$target.PHP_EOL;
+            throw $lint;
+        }
+
+        $content = json_decode($json);
 
         $this->fs->dumpFile(
             $target,
