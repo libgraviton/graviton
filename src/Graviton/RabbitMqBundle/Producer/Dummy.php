@@ -16,6 +16,7 @@ class Dummy implements ProducerInterface
 {
 
     private array $eventList = [];
+    private LoggerInterface $logger;
 
     /**
      * set logger instance
