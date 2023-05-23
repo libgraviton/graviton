@@ -73,14 +73,14 @@ class SolrQuery
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     /**
      * if the full search term matches one of these patterns, the whole thing is sent quoted to solr
      *
      * @var array
      */
-    private $fullTermPatterns = [
+    private array $fullTermPatterns = [
         '/^[0-9]+ [0-9\.]{9,}$/i'
     ];
 
@@ -89,20 +89,24 @@ class SolrQuery
      *
      * @var string
      */
-    private $fieldQueryPattern = '/(.{2,}):(.+)/i';
+    private string $fieldQueryPattern = '/(.{2,}):(.+)/i';
 
     /**
      * stuff that does not get andified/quoted/whatever
      *
      * @var array
      */
-    private $queryOperators = [
+    private array $queryOperators = [
         'AND',
         'NOT',
         'OR',
         '&&',
         '||',
         '!',
+        '-'
+    ];
+
+    private array $metaCharacters = [
         '-'
     ];
 
@@ -275,7 +279,7 @@ class SolrQuery
             $i++;
 
             // is this an operator?
-            if (array_search($term, $this->queryOperators) !== false) {
+            if (in_array($term, $this->queryOperators)) {
                 $fullSearchElements[] = $term;
                 $hasPreviousOperator = true;
                 continue;
@@ -389,27 +393,48 @@ class SolrQuery
      */
     private function doAndNotPrefixSingleTerm($term, $modifier)
     {
+        // put this aside
+        $originalTerm = $term;
+
         // already modifier there?
         $last = substr($term, -1);
-        if ($last == '~' || $last == '*') {
+        if (str_ends_with($term, '~') || str_ends_with($term, '*')) {
             // clean from term, override modifier from client
             $modifier = $last;
             $term = substr($term, 0, -1);
+            $originalTerm = $term;
+        }
+
+        // in case of wildcard (modifier == '*'), we have 2 modes: normal and regex
+        // regex we use if the term contains any characters included in $this->metaCharacters
+        $hasMetaCharacter = false;
+        if ($modifier == '*') {
+            foreach ($this->metaCharacters as $character) {
+                if (strpos($term, $character) > 0) {
+                    $term = str_replace($character, '[' . $character . ']', $term);
+                    $hasMetaCharacter = true;
+                }
+            }
+        }
+
+        // change to regex if metacharacter or normal expr if not
+        if ($hasMetaCharacter) {
+            $term = sprintf('/%s.*/', $term);
+        } else {
+            $term = sprintf('%s%s', $term, $modifier);
         }
 
         // only do full term if length gte literalBridge
-        if (strlen($term) >= $this->solrLiteralBridge) {
+        if (strlen($originalTerm) >= $this->solrLiteralBridge && $originalTerm != $term) {
             return sprintf(
-                '(%s || %s%s)',
-                $term,
-                $term,
-                $modifier
+                '(%s || %s)',
+                $originalTerm,
+                $term
             );
         } else {
             return sprintf(
-                '(%s%s)',
-                $term,
-                $modifier
+                '(%s)',
+                $term
             );
         }
     }

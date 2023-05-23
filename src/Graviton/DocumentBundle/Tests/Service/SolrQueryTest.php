@@ -253,6 +253,21 @@ class SolrQueryTest extends TestCase
                 'peter isBool:true noBool:false',
                 '(peter || peter~) && isBool:T && noBool:F',
                 true
+            ],
+            'metacharacters1' => [
+                'b-5a',
+                '(/b[-]5a.*/)',
+                true
+            ],
+            'metacharacters2' => [
+                'p-5a ag',
+                '(/p[-]5a.*/) && ag',
+                true
+            ],
+            'metacharacters-over-literal' => [
+                'p-5a-another ag',
+                '(p-5a-another || p-5a-another~) && ag',
+                true
             ]
         ];
     }
