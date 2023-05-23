@@ -20,6 +20,7 @@ class ReadOnlyFieldConstraint
      * @var array
      */
     private $fieldMap;
+    private ConstraintUtils $utils;
 
     /**
      * ReadOnlyFieldConstraint constructor.

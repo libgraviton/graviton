@@ -57,9 +57,9 @@
 
 {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         "x-dynamic-key": {
-            "document-id": "{{ field.xDynamicKey.documentId }}",
-            "repository-method": "{{ field.xDynamicKey.repositoryMethod }}",
-            "ref-field": "{{ field.xDynamicKey.refField }}"
+            "document-id": {{ field.xDynamicKey.documentId|json_encode() }},
+            "repository-method": {{ field.xDynamicKey.repositoryMethod|json_encode() }},
+            "ref-field": {{ field.xDynamicKey.refField|json_encode() }}
         },
 {% endif %}
 

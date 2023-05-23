@@ -8,6 +8,7 @@ namespace Graviton\SchemaBundle\Constraint;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,10 +27,9 @@ class VersionServiceConstraint
     /** @var int */
     private $version;
 
-    /**
-     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
-     */
-    private $accessor;
+    private PropertyAccessor $accessor;
+
+    private ConstraintUtils $utils;
 
     /**
      * ReadOnlyFieldConstraint constructor.

@@ -16,6 +16,9 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class IncrementalDateFieldConstraint
 {
+
+    private ConstraintUtils $utils;
+
     /**
      * Constructor
      *
