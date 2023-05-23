@@ -57,10 +57,12 @@ class ValueInitializerTest extends RestTestCase
 
         $createDate = \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->currentDateField);
         $expireDate = \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->expireDateField);
+        $alwaysCurrentDate = \DateTime::createFromFormat(DateTimeInterface::ATOM, $obj->alwaysCurrentDate);
 
         // see if we can parse it
         $this->assertInstanceOf(\DateTime::class, $createDate);
         $this->assertInstanceOf(\DateTime::class, $expireDate);
+        $this->assertInstanceOf(\DateTime::class, $alwaysCurrentDate);
 
         // calculate diff between the two!
         $dateDiff = $expireDate->diff($createDate);
