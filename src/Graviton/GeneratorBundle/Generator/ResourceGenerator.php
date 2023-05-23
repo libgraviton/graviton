@@ -658,7 +658,7 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         foreach ($arguments as $argument) {
-            if ($argument['type'] == 'service') {
+            if (!empty($argument['type']) && $argument['type'] == 'service') {
                 $service['arguments'][] = '@'.$argument['id'];
             } else {
                 $service['arguments'][] = $argument['value'];
