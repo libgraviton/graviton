@@ -55,7 +55,7 @@ class SolrDefinitionCompilerPassTest extends TestCase
             ->method('setParameter')
             ->willReturnCallback(
                 function ($paramA, $paramB) use ($double) {
-                    $double[$paramA] = $paramA;
+                    $double[$paramA] = $paramB;
                 }
             );
 
