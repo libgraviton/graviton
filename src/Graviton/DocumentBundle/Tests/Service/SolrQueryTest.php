@@ -106,6 +106,9 @@ class SolrQueryTest extends TestCase
             [
                 $className => $classFields
             ],
+            [
+                $className => 'score asc'
+            ],
             10,
             $solrClient,
             $requestStack
