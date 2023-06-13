@@ -38,32 +38,37 @@ class SolrQuery
     /**
      * @var int
      */
-    private $solrFuzzyBridge;
+    private int $solrFuzzyBridge;
 
     /**
      * @var int
      */
-    private $solrWildcardBridge;
+    private int $solrWildcardBridge;
 
     /**
      * @var int
      */
-    private $solrLiteralBridge;
+    private int $solrLiteralBridge;
 
     /**
      * @var boolean
      */
-    private $andifyTerms;
+    private bool $andifyTerms;
 
     /**
      * @var array
      */
-    private $solrMap;
+    private array $solrMap;
+
+    /**
+     * @var array
+     */
+    private array $solrMapSort;
 
     /**
      * @var int
      */
-    private $paginationDefaultLimit;
+    private int $paginationDefaultLimit;
 
     /**
      * @var Client
@@ -120,6 +125,7 @@ class SolrQuery
      * @param int             $solrLiteralBridge      literal bridge
      * @param boolean         $andifyTerms            andify terms or not?
      * @param array           $solrMap                solr class field weight map
+     * @param array           $solrMapSort            solr class field sort map
      * @param int             $paginationDefaultLimit default pagination limit
      * @param Client          $solrClient             solr client
      * @param RequestStack    $requestStack           request stack
@@ -132,6 +138,7 @@ class SolrQuery
         $solrLiteralBridge,
         $andifyTerms,
         array $solrMap,
+        array $solrMapSort,
         $paginationDefaultLimit,
         Client $solrClient,
         RequestStack $requestStack
@@ -145,6 +152,7 @@ class SolrQuery
         $this->solrLiteralBridge = (int) $solrLiteralBridge;
         $this->andifyTerms = (boolean) $andifyTerms;
         $this->solrMap = $solrMap;
+        $this->solrMapSort = $solrMapSort;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
         $this->requestStack = $requestStack;
@@ -200,6 +208,14 @@ class SolrQuery
             $query->setStart($limitNode->getOffset())->setRows($limitNode->getLimit());
         } else {
             $query->setStart(0)->setRows($this->paginationDefaultLimit);
+        }
+
+        // sort?
+        if (!empty($this->solrMapSort[$this->className])) {
+            $query->addParam(
+                'sort',
+                $this->solrMapSort[$this->className]
+            );
         }
 
         $this->logger->info(
@@ -451,14 +467,14 @@ class SolrQuery
             $endpointConfig['path'] = '/';
         }
 
-        if (substr($endpointConfig['path'], -1) != '/') {
+        if (!str_ends_with($endpointConfig['path'], '/')) {
             $endpointConfig['path'] .= '/';
         }
 
         // for solarium >5 -> strip "solr/" from path if it exists
         $stripPath = 'solr/';
         if (strlen($endpointConfig['path']) > strlen($stripPath) &&
-            substr($endpointConfig['path'], strlen($stripPath) * -1) == $stripPath
+            str_ends_with($endpointConfig['path'], $stripPath)
         ) {
             $endpointConfig['path'] = substr(
                 $endpointConfig['path'],
