@@ -127,6 +127,7 @@ class RqlSearchNodeListenerTest extends TestCase
                 'MyNiceDocument' => 'fieldName^2 fieldNameTwo^3',
                 'MyOtherNiceDocument' => 'fieldName^20 fieldNameTwo^30'
             ],
+            [],
             2,
             $this->solrClient,
             $this->requestStack
