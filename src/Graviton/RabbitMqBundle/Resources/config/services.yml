@@ -1,5 +1,11 @@
 services:
 
+    Graviton\RabbitMqBundle\Controller\StatusUpdateController:
+      arguments:
+        - '@?gravitondyn.eventstatus.model.eventstatus'
+      tags:
+        - name: controller.service_arguments
+
     graviton.rabbitmq.document.queueevent:
         class: "%graviton.rabbitmq.document.queueevent.class%"
 
