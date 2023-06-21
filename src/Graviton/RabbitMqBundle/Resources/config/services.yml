@@ -3,6 +3,7 @@ services:
     Graviton\RabbitMqBundle\Controller\StatusUpdateController:
       arguments:
         - '@?gravitondyn.eventstatus.model.eventstatus'
+        - '@graviton.rest.restutils'
       tags:
         - name: controller.service_arguments
 

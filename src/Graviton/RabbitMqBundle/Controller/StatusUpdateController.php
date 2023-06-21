@@ -7,7 +7,9 @@ namespace Graviton\RabbitMqBundle\Controller;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Service\RestUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
+use GravitonDyn\EventStatusBundle\Document\EventStatusInformationEmbedded;
 use GravitonDyn\EventStatusBundle\Document\EventStatusStatus;
 use GravitonDyn\EventStatusBundle\Document\EventStatusStatusActionEmbedded;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,17 +25,20 @@ class StatusUpdateController
 {
 
     private ?DocumentModel $model;
+    private RestUtils $restUtils;
 
     /**
-     * @param DocumentModel|null $model model
+     * @param DocumentModel|null $model     model
+     * @param RestUtils          $restUtils restutils
      */
-    public function __construct(?DocumentModel $model)
+    public function __construct(?DocumentModel $model, RestUtils $restUtils)
     {
         $this->model = $model;
+        $this->restUtils = $restUtils;
     }
 
     /**
-     * renders a favicon
+     * updates the state of an eventstatus
      *
      * @param Request $request request
      *
@@ -45,7 +50,8 @@ class StatusUpdateController
             return new JsonResponse(
                 [
                     'message' => 'you can update an event status directly using this route using PUT /event/status/' .
-                        '{eventId}/{workerId}/{status}/{actionId?} (last param actionId is optional)'
+                        '{eventId}/{workerId}/{status}/{actionId?} (last param actionId is optional). ' .
+                        'in the body you can include a new "information" entry if necessary.'
                 ]
             );
         }
@@ -87,10 +93,35 @@ class StatusUpdateController
             );
         }
 
+        // information entry?
+        $json = \json_decode($request->getContent(), true);
+        if (!empty($json) && is_array($json) && count($json) > 0) {
+            /**
+             * @var $informationItem EventStatusInformationEmbedded
+             */
+            $informationItem = $this->restUtils->deserializeContent(
+                $request->getContent(),
+                EventStatusInformationEmbedded::class
+            );
+
+            if (!empty($informationItem->getContent()) &&
+                !empty($informationItem->getWorkerid()) &&
+                !empty($informationItem->getType())
+            ) {
+                $existingRecord->setInformation(
+                    array_merge(
+                        is_array($existingRecord->getInformation()) ? $existingRecord->getInformation() : [],
+                        [$informationItem]
+                    )
+                );
+            }
+        }
+
         $this->model->updateRecord($eventId, $existingRecord);
 
         return new Response();
     }
+
 
     /**
      * gets an action
