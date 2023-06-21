@@ -14,6 +14,10 @@ graviton_security_routing:
     resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /
 
+graviton_rabbitmq_routing:
+    resource: "@GravitonRabbitMqBundle/Resources/config/routing.yml"
+    prefix: /
+
 # this goes to our RouteLoader in the CoreBundle, which in turn loads RouteLoaders tagged by the "graviton.routing.loader" service tag
 graviton_core_routeloader_routing:
     resource: "."
