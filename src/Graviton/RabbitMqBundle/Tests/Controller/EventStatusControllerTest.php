@@ -191,6 +191,17 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals('opened', $results->status[0]->status);
         $this->assertEquals('http://localhost/event/action/'.$action->id, $results->status[0]->action->{'$ref'});
+
+        // set status through direct route
+        $client = static::createRestClient($this->clientOptions);
+        $client->put('/event/status/mynewstatus2/testworker/working/manfred', []);
+
+        // fetch it
+        $client = static::createRestClient($this->clientOptions);
+        $client->request('GET', '/event/status/mynewstatus2');
+        $results = $client->getResults();
+        $this->assertEquals("working", $results->status[0]->status);
+        $this->assertTrue(str_ends_with($results->status[0]->action->{'$ref'}, '/manfred'));
     }
 
 
