@@ -121,7 +121,7 @@ final class RestUtils implements RestUtilsInterface
             // get routes from same controller
             foreach ($this->getRoutesByBasename($baseName) as $routeName => $route) {
                 // don't put schema stuff
-                if (strpos('schema', strtolower($routeName)) === false) {
+                if (!str_contains('schema', strtolower($routeName))) {
                     $ret[$baseName][$routeName] = $route;
                 }
             }
