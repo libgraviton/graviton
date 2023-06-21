@@ -68,7 +68,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
             }
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(
-                sprintf('Error while determening route for %s', $path),
+                sprintf('Error while determining route for %s', $path),
                 0,
                 $e
             );
