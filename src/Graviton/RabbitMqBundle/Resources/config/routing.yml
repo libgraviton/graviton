@@ -1,0 +1,7 @@
+graviton_rabbit_event_status_update:
+    path: /event/status/{eventId}/{workerId}/{status}/{actionId?}
+    methods: [GET, PUT, OPTIONS]
+    requirements:
+        status: '^(opened|working|ignored|done|failed)$'
+    defaults:
+        _controller: Graviton\RabbitMqBundle\Controller\StatusUpdateController::updateStatusAction
