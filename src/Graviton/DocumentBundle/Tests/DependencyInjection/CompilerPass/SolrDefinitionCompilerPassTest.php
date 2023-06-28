@@ -29,6 +29,7 @@ class SolrDefinitionCompilerPassTest extends TestCase
         $customSorter = 'if(def(field1,false),1, if( def(field2,false),2,3 )  ) asc, score desc';
 
         $_ENV['SOLR_A_SORT'] = $customSorter;
+        $_ENV['SOLR_A_BOOST'] = 'feld^2';
 
         $documentMap = new DocumentMap(
             ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Extref']),
@@ -68,8 +69,10 @@ class SolrDefinitionCompilerPassTest extends TestCase
         ];
 
         $expectedResultSort = [
-            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\A' =>
-                $customSorter
+            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\A' => [
+                'sort' => $customSorter,
+                'boost' => 'feld^2'
+            ]
         ];
 
         $this->assertEquals(
@@ -79,9 +82,10 @@ class SolrDefinitionCompilerPassTest extends TestCase
 
         $this->assertEquals(
             $expectedResultSort,
-            $double['graviton.document.solr.map_sort']
+            $double['graviton.document.solr.extra_params']
         );
 
         unset($_ENV['SOLR_A_SORT']);
+        unset($_ENV['SOLR_A_BOOST']);
     }
 }
