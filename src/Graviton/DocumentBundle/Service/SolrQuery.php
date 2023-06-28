@@ -63,7 +63,7 @@ class SolrQuery
     /**
      * @var array
      */
-    private array $solrMapSort;
+    private array $solrExtraParams;
 
     /**
      * @var int
@@ -125,7 +125,7 @@ class SolrQuery
      * @param int             $solrLiteralBridge      literal bridge
      * @param boolean         $andifyTerms            andify terms or not?
      * @param array           $solrMap                solr class field weight map
-     * @param array           $solrMapSort            solr class field sort map
+     * @param array           $solrExtraParams        extra params
      * @param int             $paginationDefaultLimit default pagination limit
      * @param Client          $solrClient             solr client
      * @param RequestStack    $requestStack           request stack
@@ -138,7 +138,7 @@ class SolrQuery
         $solrLiteralBridge,
         $andifyTerms,
         array $solrMap,
-        array $solrMapSort,
+        array $solrExtraParams,
         $paginationDefaultLimit,
         Client $solrClient,
         RequestStack $requestStack
@@ -152,7 +152,7 @@ class SolrQuery
         $this->solrLiteralBridge = (int) $solrLiteralBridge;
         $this->andifyTerms = (boolean) $andifyTerms;
         $this->solrMap = $solrMap;
-        $this->solrMapSort = $solrMapSort;
+        $this->solrExtraParams = $solrExtraParams;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
         $this->requestStack = $requestStack;
@@ -211,11 +211,13 @@ class SolrQuery
         }
 
         // sort?
-        if (!empty($this->solrMapSort[$this->className])) {
-            $query->addParam(
-                'sort',
-                $this->solrMapSort[$this->className]
-            );
+        if (!empty($this->solrExtraParams[$this->className])) {
+            foreach ($this->solrExtraParams[$this->className] as $param => $value) {
+                $query->addParam(
+                    $param,
+                    $value
+                );
+            }
         }
 
         $this->logger->info(

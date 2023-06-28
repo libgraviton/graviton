@@ -30,7 +30,15 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $this->documentMap = $container->get('graviton.document.map');
-        $documentSortMap = [];
+
+        $envMap = [
+            'SOLR_%s_SORT' => 'sort',
+            'SOLR_%s_BF' => 'bf',
+            'SOLR_%s_BQ' => 'bq',
+            'SOLR_%s_BOOST' => 'boost'
+        ];
+
+        $extraParams = [];
 
         $map = [];
         foreach ($this->documentMap->getDocuments() as $document) {
@@ -38,16 +46,18 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
             if (is_array($solrFields) && !empty($solrFields)) {
                 $map[$document->getClass()] = $this->getSolrWeightString($solrFields, $document->getClass());
 
-                // any sort spec given by ENV?
-                $envNameSort = sprintf("SOLR_%s_SORT", strtoupper($this->getCoreName($document->getClass())));
-                if (!empty($_ENV[$envNameSort])) {
-                    $documentSortMap[$document->getClass()] = $_ENV[$envNameSort];
+                // extra params
+                foreach ($envMap as $envName => $paramName) {
+                    $envName = sprintf($envName, strtoupper($this->getCoreName($document->getClass())));
+                    if (!empty($_ENV[$envName])) {
+                        $extraParams[$document->getClass()][$paramName] = $_ENV[$envName];
+                    }
                 }
             }
         }
 
         $container->setParameter('graviton.document.solr.map', $map);
-        $container->setParameter('graviton.document.solr.map_sort', $documentSortMap);
+        $container->setParameter('graviton.document.solr.extra_params', $extraParams);
     }
 
     /**
