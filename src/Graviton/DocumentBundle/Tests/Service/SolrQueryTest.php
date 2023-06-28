@@ -107,7 +107,9 @@ class SolrQueryTest extends TestCase
                 $className => $classFields
             ],
             [
-                $className => 'score asc'
+                $className => [
+                    'sort' => 'sort asc'
+                ]
             ],
             10,
             $solrClient,

@@ -42,7 +42,7 @@ services:
       - "%graviton.solr.literal_bridge%"
       - "%graviton.solr.andify_terms%"
       - "%graviton.document.solr.map%"
-      - "%graviton.document.solr.map_sort%"
+      - "%graviton.document.solr.extra_params%"
       - "%graviton.rest.pagination.limit%"
       - "@graviton.document.service.solrquery.client"
       - "@request_stack"
