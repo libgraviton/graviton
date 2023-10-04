@@ -10,6 +10,7 @@
       "eventName",
       "status.status,status.workerId",
       "information.workerId,information.content",
+      "eventResource.ref.$id,tenant",
       "createDate[\"expireAfterSeconds\"=7257600,\"sparse\"=true]"
     ],
     "relations": [],
