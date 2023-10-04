@@ -13,7 +13,8 @@
   "target": {
     "indexes": [
       "metadata.language",
-      "links"
+      "links",
+      "metadata.additionalProperties.name,metadata.additionalProperties.value"
     ],
     "relations": [],
     "fields": [
