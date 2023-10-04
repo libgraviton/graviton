@@ -226,7 +226,7 @@ class GeneratorExtension implements ExtensionInterface
                 $dir
             );
 
-            $nameParts[] = str_replace([',', '-', '+', '.'], '-', $field);
+            $nameParts[] = str_replace([',', '-', '+', '.', '$'], '-', $field);
             if ($dir == 'asc') {
                 $nameParts[] = '0';
             } else {
