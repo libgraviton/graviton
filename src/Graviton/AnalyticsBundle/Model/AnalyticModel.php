@@ -137,11 +137,28 @@ class AnalyticModel
         return [$this->collection];
     }
 
-    public function getCacheInvalidationCollections() {
+    /**
+     * get collections that need to be invalidated in cache
+     *
+     * @return array|string[]
+     */
+    public function getCacheInvalidationCollections()
+    {
         return array_merge(
             $this->getAllCollections(),
             $this->cacheInvalidationCollections
         );
+    }
+
+    /**
+     * set collections
+     *
+     * @param array $collections collections
+     * @return void
+     */
+    public function setCacheInvalidationCollections($collections)
+    {
+        $this->cacheInvalidationCollections = $collections;
     }
 
     /**
