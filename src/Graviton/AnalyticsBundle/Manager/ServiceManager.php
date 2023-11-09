@@ -27,18 +27,11 @@ use Symfony\Component\Routing\Router;
  */
 class ServiceManager
 {
-    /** Cache name for services */
-    const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
-    const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
-
     /** @var RequestStack */
     protected $requestStack;
 
     /** @var AnalyticsManager */
     protected $analyticsManager;
-
-    /** @var CacheItemPoolInterface */
-    protected $cacheProvider;
 
     /** @var DateConverter */
     protected $dateConverter;
@@ -49,19 +42,11 @@ class ServiceManager
     /** @var string */
     protected $directory;
 
-    /** @var int */
-    protected $cacheTimeMetadata;
-
     /** @var Filesystem */
     protected $fs;
 
     /** @var JsonMapper */
     private $jsonMapper;
-
-    /**
-     * @var string
-     */
-    private $skipCacheHeaderName = 'x-analytics-no-cache';
 
     /**
      * @var array
@@ -71,29 +56,23 @@ class ServiceManager
     /**
      * ServiceConverter constructor.
      *
-     * @param RequestStack           $requestStack      Sf Request information service
-     * @param AnalyticsManager       $analyticsManager  Db Manager and query control
-     * @param CacheItemPoolInterface $cacheProvider     Cache service
-     * @param DateConverter          $dateConverter     date converter
-     * @param Router                 $router            To manage routing generation
-     * @param int                    $cacheTimeMetadata How long to cache metadata
-     * @param array                  $analyticsServices the services
+     * @param RequestStack     $requestStack      Sf Request information service
+     * @param AnalyticsManager $analyticsManager  Db Manager and query control
+     * @param DateConverter    $dateConverter     date converter
+     * @param Router           $router            To manage routing generation
+     * @param array            $analyticsServices the services
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
-        CacheItemPoolInterface $cacheProvider,
         DateConverter $dateConverter,
         Router $router,
-        $cacheTimeMetadata,
         $analyticsServices
     ) {
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
-        $this->cacheProvider = $cacheProvider;
         $this->dateConverter = $dateConverter;
         $this->router = $router;
-        $this->cacheTimeMetadata = $cacheTimeMetadata;
         $this->fs = new Filesystem();
         $this->analyticsServices = $analyticsServices;
         $this->jsonMapper = new JsonMapper();
@@ -106,12 +85,6 @@ class ServiceManager
      */
     public function getServices()
     {
-        $cacheItem = $this->cacheProvider->getItem(self::CACHE_KEY_SERVICES_URLS);
-
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
         $services = [];
         foreach ($this->analyticsServices as $name => $service) {
             if (is_numeric($name)) {
@@ -135,10 +108,6 @@ class ServiceManager
                 )
             ];
         }
-
-        $cacheItem->set($services);
-        $cacheItem->expiresAfter($this->cacheTimeMetadata);
-        $this->cacheProvider->save($cacheItem);
 
         return $services;
     }
@@ -193,41 +162,7 @@ class ServiceManager
     public function getData()
     {
         $model = $this->getCurrentAnalyticModel();
-
-        $cacheTime = $model->getCacheTime();
-        $cacheItem = $this->cacheProvider->getItem($this->getCacheKey($model));
-
-        //Cached data if configured
-        if ($cacheTime &&
-            !$this->requestStack->getCurrentRequest()->headers->has($this->skipCacheHeaderName) &&
-            $cacheItem->isHit()
-        ) {
-            return $cacheItem->get();
-        }
-
-        $data = $this->analyticsManager->getData($model, $this->getServiceParameters($model));
-
-        if ($cacheTime) {
-            $cacheItem->set($data);
-            $cacheItem->expiresAfter($cacheTime);
-            $this->cacheProvider->save($cacheItem);
-        }
-
-        return $data;
-    }
-
-    /**
-     * generate a cache key also based on query
-     *
-     * @param AnalyticModel $schema schema
-     *
-     * @return string cache key
-     */
-    private function getCacheKey($schema)
-    {
-        return self::CACHE_KEY_SERVICES_PREFIX
-            . $schema->getRoute()
-            . sha1(serialize($this->requestStack->getCurrentRequest()->query->all()));
+        return $this->analyticsManager->getData($model, $this->getServiceParameters($model));
     }
 
     /**

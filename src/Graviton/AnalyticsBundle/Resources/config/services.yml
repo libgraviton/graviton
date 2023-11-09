@@ -29,10 +29,8 @@ services:
         arguments:
             - "@request_stack"
             - "@graviton.analytics.analytics_manager"
-            - "@graviton.cache.adapter.app"
             - "@graviton.document.service.dateconverter"
             - "@router"
-            - "%graviton.analytics.cache_time.metadata%"
             - "%analytics.services%"
 
     graviton.analytics.homepage_listener:
