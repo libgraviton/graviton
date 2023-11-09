@@ -60,11 +60,21 @@ class DefaultController
      */
     public function serviceAction(Request $request)
     {
-        $request->attributes->set('varnishTags', $this->serviceManager->getMongoCollections());
+        $request->attributes->set(
+            'varnishTags',
+            $this->serviceManager->getCurrentAnalyticModel()->getCacheInvalidationCollections()
+        );
 
-        return new JsonResponse(
+        $resp = new JsonResponse(
             $this->serviceManager->getData()
         );
+
+        $cacheTime = $this->serviceManager->getCurrentAnalyticModel()->getCacheTime();
+        if (!empty($cacheTime) && $cacheTime > 0) {
+            $resp->setCache(['max_age' => $cacheTime, 'public' => true]);
+        }
+
+        return $resp;
     }
 
     /**
