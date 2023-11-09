@@ -20,6 +20,7 @@ class AnalyticModel
     protected $class;
     protected $route;
     protected $aggregate = [];
+    protected $cacheInvalidationCollections = [];
     protected $schema;
     protected $type;
     protected $cacheTime;
@@ -134,6 +135,13 @@ class AnalyticModel
             return [];
         }
         return [$this->collection];
+    }
+
+    public function getCacheInvalidationCollections() {
+        return array_merge(
+            $this->getAllCollections(),
+            $this->cacheInvalidationCollections
+        );
     }
 
     /**
