@@ -69,8 +69,6 @@ parameters:
         - '/auth'
         - '/security/*'
 
-    graviton.analytics.cache_time.metadata: 10
-
     # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
     graviton.file.backend: local
 
@@ -162,7 +160,6 @@ parameters:
     graviton.cache.redis.host: null
     graviton.cache.redis.port: 6379
 
-    # would be "127.0.0.1:9080", hostname and port to varnish
-    graviton.cache.server.hostname: null
+    # header name to set for varnish in front
     graviton.cache.server.header: xkey
 

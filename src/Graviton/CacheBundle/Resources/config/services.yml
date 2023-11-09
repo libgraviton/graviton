@@ -23,7 +23,6 @@ services:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
       arguments:
         - "@logger"
-        - "%graviton.cache.server.hostname%"
         - "%graviton.cache.server.header%"
 
     graviton.cache.adapter.app:
