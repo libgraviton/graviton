@@ -342,12 +342,14 @@ class SolrQueryTest extends TestCase
                 'p-5a ag',
                 '(/p[-]5a.*/) && (ag*)'
             ],
-
             'jp-love1' => [
                 'jean-pierre',
                 '("jean-pierre" || /jean[-]pierre.*/)'
             ],
-
+            'jp-love2' => [
+                '"jean-pierre"',
+                '("jean-pierre" || /"jean[-]pierre".*/)'
+            ],
             'metacharacters-over-literal' => [
                 'p-5a-another ag',
                 '("p-5a-another" || /p[-]5a[-]another.*/) && (ag*)'
