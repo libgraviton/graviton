@@ -69,6 +69,13 @@
         "description": "Permissions for links",
         "explodeBy": ",",
         "required": false
+      },
+      {
+        "name": "importance",
+        "type": "varchar",
+        "title": "Importance",
+        "description": "Importance of the link",
+        "required": false
       }
     ]
   }
