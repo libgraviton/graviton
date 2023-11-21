@@ -444,9 +444,23 @@ class SolrQuery
 
         // only do full term if length gte literalBridge
         if (strlen($originalTerm) >= $this->solrLiteralBridge && $originalTerm != $term) {
+            // case when $originalTerm contains some characters, we want to quote it in original form!
+            $quoteOnContaining = ['-']; // "-" for jean-pierre!
+            $shouldQuoteOriginal = false;
+            foreach ($quoteOnContaining as $char) {
+                if (str_contains($originalTerm, $char)) {
+                    $shouldQuoteOriginal = true;
+                    break;
+                }
+            }
+
+            if (str_starts_with($originalTerm, "\"") && str_ends_with($originalTerm, "\"")) {
+                $shouldQuoteOriginal = false;
+            }
+
             return sprintf(
                 '(%s || %s)',
-                $originalTerm,
+                $shouldQuoteOriginal ? '"'.$originalTerm.'"' : $originalTerm,
                 $term
             );
         } else {

@@ -22,13 +22,21 @@ class SolrQueryTest extends TestCase
     /**
      * setup type we want to test
      *
-     * @param string  $expectedQuery expected query
-     * @param boolean $andifyTerms   if terms should be ANDified
+     * @param string  $expectedQuery  expected query
+     * @param boolean $andifyTerms    if terms should be ANDified
+     * @param int     $fuzzyBridge    fuzzy bridge
+     * @param int     $wildcardBridge wildcard bridge
+     * @param int     $literalBridge  literal bridge
      *
      * @return SolrQuery sut
      */
-    private function getMock($expectedQuery, $andifyTerms = false)
-    {
+    private function getMock(
+        $expectedQuery,
+        $andifyTerms = false,
+        $fuzzyBridge = 5,
+        $wildcardBridge = 4,
+        $literalBridge = 5
+    ) {
         $className = '\Test\Class';
         $classFields = 'fieldA^1 fieldB^2';
 
@@ -99,9 +107,9 @@ class SolrQueryTest extends TestCase
         $solr = new SolrQuery(
             $logger,
             'http://solr:3033',
-            5,
-            4,
-            5,
+            $fuzzyBridge,
+            $wildcardBridge,
+            $literalBridge,
             $andifyTerms,
             [
                 $className => $classFields
@@ -269,10 +277,80 @@ class SolrQueryTest extends TestCase
                 '(/p[-]5a.*/) && ag',
                 true
             ],
+            'jp-love1' => [
+                'jean-pierre',
+                '("jean-pierre" || jean-pierre~)',
+                true
+            ],
             'metacharacters-over-literal' => [
                 'p-5a-another ag',
-                '(p-5a-another || p-5a-another~) && ag',
+                '("p-5a-another" || p-5a-another~) && ag',
                 true
+            ]
+        ];
+    }
+
+    /**
+     * verify that the correct search term is given with a certain input
+     *
+     * @dataProvider solrQueryHandlingDataProviderSecond
+     *
+     * @param string $searchTerm    term
+     * @param string $expectedQuery what should be sent to solr
+     *
+     * @return void
+     */
+    public function testSolrQueryHandlingOtherSettings($searchTerm, $expectedQuery)
+    {
+        $solr = $this->getMock($expectedQuery, true, 9999, 1);
+
+        $searchNode = new SearchNode(explode(' ', $searchTerm));
+        $limitNode = new LimitNode(10, 0);
+
+        $solr->query($searchNode, $limitNode);
+    }
+
+    /**
+     * data provider for solr test
+     *
+     * @return array searches
+     */
+    public function solrQueryHandlingDataProviderSecond()
+    {
+        return [
+            'simple-search' => [
+                'han',
+                '(han*)'
+            ],
+            'simple-search-andified' => [
+                'han ha2',
+                '(han*) && (ha2*)'
+            ],
+            'only numbers' => [
+                '2131412434142',
+                '"2131412434142"'
+            ],
+            'simple-search-account-syntax' => [
+                '99 1.123.456.78',
+                '"99 1.123.456.78"'
+            ],
+            'metacharacters1' => [
+                'b-5a',
+                '(/b[-]5a.*/)'
+            ],
+            'metacharacters2' => [
+                'p-5a ag',
+                '(/p[-]5a.*/) && (ag*)'
+            ],
+
+            'jp-love1' => [
+                'jean-pierre',
+                '("jean-pierre" || /jean[-]pierre.*/)'
+            ],
+
+            'metacharacters-over-literal' => [
+                'p-5a-another ag',
+                '("p-5a-another" || /p[-]5a[-]another.*/) && (ag*)'
             ]
         ];
     }
