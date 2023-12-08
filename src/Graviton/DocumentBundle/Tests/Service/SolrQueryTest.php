@@ -157,6 +157,26 @@ class SolrQueryTest extends TestCase
     public function solrQueryHandlingDataProvider()
     {
         return [
+            'tel-search' => [
+                '087 32 11',
+                '"+41873211"',
+                true
+            ],
+            'tel-search-mixed' => [
+                '087 32 11 muster',
+                '"+41873211" (muster || muster~)',
+                true
+            ],
+            'int-tel-search' => [
+                '+1 55 55 11',
+                '"+1555511"',
+                true
+            ],
+            'int-tel-search-mixed' => [
+                'muster +1 55 55 11',
+                '"+1555511" (muster || muster~)',
+                true
+            ],
             'simple-search' => [
                 'han',
                 'han',
