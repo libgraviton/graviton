@@ -346,14 +346,16 @@ class SolrQuery
             $fullSearchElements[] = $singleTerm;
         }
 
-        return implode(
-            ' ',
-            // incorporate knownPatterns here again!
-            array_merge(
-                array_values($knownPatterns['found']),
-                $fullSearchElements
-            )
-        );
+        $baseWordQuery = trim(implode(' ', $fullSearchElements));
+
+        // add our knownPatterns again!
+        $knownPatterns = trim(implode(' '.$glue.' ', array_values($knownPatterns['found'])));
+        if (!empty($knownPatterns) && !empty($baseWordQuery)) {
+            // add glue if needed
+            $knownPatterns .= ' '.$glue;
+        }
+
+        return trim($baseWordQuery.' '.$knownPatterns);
     }
 
     /**
