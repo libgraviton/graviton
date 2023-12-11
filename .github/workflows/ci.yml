@@ -24,9 +24,9 @@ jobs:
         php-versions: ['8.2']
         experimental: [false]
         # these are allowed to fail!
-        #include:
-        #  - php-versions: '8.2'
-        #    experimental: true
+        include:
+          - php-versions: '8.3'
+            experimental: true
 
     continue-on-error: ${{ matrix.experimental }}
 
