@@ -29,8 +29,8 @@
         "ext-mbstring": "*",
 
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.15.0",
-        "ext-amqp": "~1",
+        "ext-mongodb": "^1.17.0",
+        "ext-amqp": "~2",
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
