@@ -146,7 +146,7 @@ class SolrQuery
         // these are the patterns we recognize in the full query and replace with other stuff
         $this->partPatterns = [
             'ch-tel-no-prefix' => [
-                'pattern' => '\d{3} \d{2} \d{2}', // pattern without end/beginning!!
+                'pattern' => '\d{3} \d{3} \d{2} \d{2}', // pattern without end/beginning!!
                 'cleanup' => function ($input) {
                     $fullMatch = $input[0];
 
@@ -159,7 +159,7 @@ class SolrQuery
                 }
             ],
             'tel-int-but-spaces-prefix' => [
-                'pattern' => '\+?\d{1,3} \d{2,3} \d{2,3} \d{2,3}',
+                'pattern' => '\+?\d{1,3} \d{2,3} \d{2,3} \d{2,3} \d{2,3}',
                 'cleanup' => function ($input) {
                     $fullMatch = $input[0];
 
