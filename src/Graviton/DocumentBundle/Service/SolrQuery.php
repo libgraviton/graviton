@@ -195,7 +195,7 @@ class SolrQuery
             'normal-field' => [
                 'pattern' => '[\S]+',
                 'cleanup' => function ($input) {
-                    return '"'.trim($input[0]).'"';
+                    return trim($this->getSingleTerm($input[0]));
                 }
             ]
         ];
@@ -313,65 +313,31 @@ class SolrQuery
         $fullTerm = $node->getSearchQuery();
 
         $knownPatterns = $this->scanForKnownPatterns($fullTerm);
-
-        // remaining back to fullTerm!
-        $fullTerm = $knownPatterns['remaining'];
-
-        // split and drop empty terms
-        $terms = array_filter(
-            explode(' ', $fullTerm),
-            function ($term) {
-                return !empty($term);
-            }
-        );
-
-        $i = 0;
-        $hasPreviousOperator = false;
-        $fullSearchElements = [];
-
         $glue = $this->andifyTerms ? '&&' : '';
 
-        foreach ($terms as $term) {
-            $i++;
+        $searchExpression = '';
 
-            // is this an operator?
-            if (in_array($term, $this->queryOperators)) {
-                $fullSearchElements[] = $term;
-                $hasPreviousOperator = true;
-                continue;
-            }
-
-            $singleTerm = $this->getSingleTerm($term);
-
-            if ($i > 1 && $hasPreviousOperator == false && !empty($glue)) {
-                $fullSearchElements[] = $glue;
-            } else {
-                $hasPreviousOperator = false;
-            }
-
-            $fullSearchElements[] = $singleTerm;
+        if (!is_array($knownPatterns['found'])) {
+            return $searchExpression;
         }
 
-        $baseWordQuery = trim(implode(' ', $fullSearchElements));
+        $i = 1;
+        $numberOfMatches = count($knownPatterns['found']);
+        foreach ($knownPatterns['found'] as $match) {
+            $searchExpression .= $match['matching'].' ';
 
-        $knownQuery = '';
-        if (is_array($knownPatterns['found'])) {
-            foreach ($knownPatterns['found'] as $found) {
-                $knownQuery .= $found['matching'].' ';
-                if (!empty($found['operator'])) {
-                    $knownQuery .= $found['operator'].' ';
+            if (!empty($match['operator'])) {
+                $searchExpression .= $match['operator'].' ';
+            } else {
+                if ($i < $numberOfMatches && !empty($glue)) {
+                    $searchExpression .= $glue.' ';
                 }
             }
+
+            $i++;
         }
 
-        // add our knownPatterns again!
-        $knownPatterns = trim(implode(' '.$glue.' ', array_values($knownPatterns['found'])));
-        if (!empty($knownPatterns) && !empty($baseWordQuery)) {
-            // add glue if needed
-            $knownPatterns .= ' '.$glue;
-        }
-
-        return trim($baseWordQuery.' '.$knownPatterns);
+        return trim($searchExpression);
     }
 
     /**
@@ -381,7 +347,8 @@ class SolrQuery
      *
      * @return array parsed things
      */
-    private function scanForKnownPatterns($input) : array {
+    private function scanForKnownPatterns($input) : array
+    {
         // get operator part!
         $operatorPatterns = implode('|', array_map('preg_quote', $this->queryOperators));
         $foundPatterns = [];
@@ -390,21 +357,17 @@ class SolrQuery
         while (!$oneRoundNoMatch) {
             $matched = false;
             foreach ($this->partPatterns as $name => $part) {
-
                 // complete pattern!
-                $pattern = "/" . $part['pattern'] . "[\s]*(" . $operatorPatterns . ")?/i";
+                $pattern = "/^" . $part['pattern'] . "[\s]*(" . $operatorPatterns . ")?/i";
 
-                preg_match($pattern, $input, $match);
+                preg_match($pattern, trim($input), $match);
 
                 if (empty($match)) {
                     continue;
                 }
 
-                // matched something!
-                $matched = true;
-
                 // remove from input!
-                $input = str_replace($match[0], '', $input);
+                $input = trim(str_replace($match[0], '', $input));
 
                 // extract operator if present!
                 $lastElement = trim(array_pop($match));
@@ -438,6 +401,10 @@ class SolrQuery
                     'matching' => $matching,
                     'operator' => $queryOperator
                 ];
+
+                // we matched something in this iteration. start from the top again!
+                $matched = true;
+                break;
             }
 
             // one round not matched?
@@ -482,6 +449,7 @@ class SolrQuery
             '',
             $term
         );
+
         if (ctype_digit($formatted)) {
             return '"'.$term.'"';
         }

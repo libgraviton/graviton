@@ -157,9 +157,14 @@ class SolrQueryTest extends TestCase
     public function solrQueryHandlingDataProvider()
     {
         return [
+            'simple-combined-with-andify' => [
+                'han hans hanso',
+                'han && (hans*) && (hanso || hanso~)',
+                true
+            ],
             'own-operator-2-NOT' => [
                 'peter && year:>40 && month:<10 -segment:15 -segment:90',
-                '(peter || peter~) && year:[40 TO *] && month:[* TO 10] && -segment:"15" && -segment:"90"',
+                '(peter || peter~) && year:[40 TO *] && month:[* TO 10] NOT segment:"15" NOT segment:"90"',
                 true
             ],
             'tel-search' => [
@@ -169,7 +174,7 @@ class SolrQueryTest extends TestCase
             ],
             'tel-search-mixed' => [
                 '087 32 11 muster',
-                '"+41873211" (muster || muster~)',
+                '"+41873211" && (muster || muster~)',
                 true
             ],
             'int-tel-search' => [
@@ -179,7 +184,7 @@ class SolrQueryTest extends TestCase
             ],
             'int-tel-search-mixed' => [
                 'muster +1 55 55 11',
-                '"+1555511" (muster || muster~)',
+                '(muster || muster~) && "+1555511"',
                 true
             ],
             'simple-search' => [
@@ -232,11 +237,6 @@ class SolrQueryTest extends TestCase
                 'han (hans*) (hanso || hanso~)',
                 false
             ],
-            'simple-combined-with-andify' => [
-                'han hans hanso',
-                'han && (hans*) && (hanso || hanso~)',
-                true
-            ],
             'alphanumeric-iban' => [
                 'CH0000000111111111111',
                 '"CH0000000111111111111"',
@@ -270,7 +270,7 @@ class SolrQueryTest extends TestCase
             ],
             'own-operator-1-NOT-OP' => [
                 'peter -segment:15',
-                '(peter || peter~) && -segment:"15"',
+                '(peter || peter~) NOT segment:"15"',
                 true
             ],
             'own-operator-1-||-BOOL' => [
@@ -280,7 +280,7 @@ class SolrQueryTest extends TestCase
             ],
             'own-operator-1-||-BOOL-OP' => [
                 'peter || segment:15 -segment:16',
-                '(peter || peter~) || segment:"15" && -segment:"16"',
+                '(peter || peter~) || segment:"15" NOT segment:"16"',
                 true
             ],
             'word-and-bool' => [
@@ -354,6 +354,11 @@ class SolrQueryTest extends TestCase
             'simple-search-account-syntax' => [
                 '99 1.123.456.78',
                 '"99 1.123.456.78"'
+            ],
+            'tel-search' => [
+                '087 32 11',
+                '"+41873211"',
+                true
             ],
             'metacharacters1' => [
                 'b-5a',
