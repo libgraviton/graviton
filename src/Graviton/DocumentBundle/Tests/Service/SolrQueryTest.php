@@ -157,6 +157,11 @@ class SolrQueryTest extends TestCase
     public function solrQueryHandlingDataProvider()
     {
         return [
+            'int-tel-search-short' => [
+                '+41 79 521 21 21',
+                '"+41795212121"',
+                true
+            ],
             'simple-combined-with-andify' => [
                 'han hans hanso',
                 'han && (hans*) && (hanso || hanso~)',
@@ -168,23 +173,23 @@ class SolrQueryTest extends TestCase
                 true
             ],
             'tel-search' => [
-                '087 32 11',
-                '"+41873211"',
+                '087 532 11 11',
+                '"+41875321111"',
                 true
             ],
             'tel-search-mixed' => [
-                '087 32 11 muster',
-                '"+41873211" && (muster || muster~)',
+                '087 332 11 11 muster',
+                '"+41873321111" && (muster || muster~)',
                 true
             ],
             'int-tel-search' => [
-                '+1 55 55 11',
-                '"+1555511"',
+                '+1 55 555 11 11',
+                '"+1555551111"',
                 true
             ],
             'int-tel-search-mixed' => [
-                'muster +1 55 55 11',
-                '(muster || muster~) && "+1555511"',
+                'muster +1 55 555 11 11',
+                '(muster || muster~) && "+1555551111"',
                 true
             ],
             'simple-search' => [
@@ -356,8 +361,8 @@ class SolrQueryTest extends TestCase
                 '"99 1.123.456.78"'
             ],
             'tel-search' => [
-                '087 32 11',
-                '"+41873211"',
+                '087 321 11 11',
+                '"+41873211111"',
                 true
             ],
             'metacharacters1' => [
