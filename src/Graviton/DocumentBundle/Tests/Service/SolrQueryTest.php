@@ -157,6 +157,11 @@ class SolrQueryTest extends TestCase
     public function solrQueryHandlingDataProvider()
     {
         return [
+            'own-operator-2-NOT' => [
+                'peter && year:>40 && month:<10 -segment:15 -segment:90',
+                '(peter || peter~) && year:[40 TO *] && month:[* TO 10] && -segment:"15" && -segment:"90"',
+                true
+            ],
             'tel-search' => [
                 '087 32 11',
                 '"+41873211"',
@@ -252,11 +257,7 @@ class SolrQueryTest extends TestCase
                 '"99 1.123.456.78"',
                 true
             ],
-            'own-operator-2-NOT' => [
-                'peter && year:>40 && month:<10 -segment:15 -segment:90',
-                '(peter || peter~) && year:[40 TO *] && month:[* TO 10] && -segment:"15" && -segment:"90"',
-                true
-            ],
+
             'own-operator-1-NOT' => [
                 'peter NOT segment:15',
                 '(peter || peter~) NOT segment:"15"',

@@ -146,7 +146,7 @@ class SolrQuery
         // these are the patterns we recognize in the full query and replace with other stuff
         $this->partPatterns = [
             'ch-tel-no-prefix' => [
-                'pattern' => '/\d{3} \d{2} \d{2}/i',
+                'pattern' => '\d{3} \d{2} \d{2}', // pattern without end/beginning!!
                 'cleanup' => function ($input) {
                     $fullMatch = $input[0];
 
@@ -159,7 +159,7 @@ class SolrQuery
                 }
             ],
             'tel-int-but-spaces-prefix' => [
-                'pattern' => '/\+?\d{1,3} \d{2,3} \d{2,3} \d{2,3}/i',
+                'pattern' => '\+?\d{1,3} \d{2,3} \d{2,3} \d{2,3}',
                 'cleanup' => function ($input) {
                     $fullMatch = $input[0];
 
@@ -167,13 +167,13 @@ class SolrQuery
                 }
             ],
             'account-nr' => [
-                'pattern' => '/^[0-9]+ [0-9\.]{9,}$/i',
+                'pattern' => '[0-9]{0,3}+ [0-9\.]{9,}',
                 'cleanup' => function ($input) {
                     return '"'.$input[0].'"';
                 }
             ],
             'solr-field-query' => [
-                'pattern' => '/[\S]{2,}:[\S]{1,}/i',
+                'pattern' => '[\S]{2,}:[\S]{1,}',
                 'cleanup' => function ($input) {
                     $fieldNameParts = explode(':', $input[0]);
                     $fieldName = $fieldNameParts[0];
@@ -190,6 +190,12 @@ class SolrQuery
                     }
 
                     return $fieldName.':'.$fieldValue;
+                }
+            ],
+            'normal-field' => [
+                'pattern' => '[\S]+',
+                'cleanup' => function ($input) {
+                    return '"'.trim($input[0]).'"';
                 }
             ]
         ];
@@ -348,6 +354,16 @@ class SolrQuery
 
         $baseWordQuery = trim(implode(' ', $fullSearchElements));
 
+        $knownQuery = '';
+        if (is_array($knownPatterns['found'])) {
+            foreach ($knownPatterns['found'] as $found) {
+                $knownQuery .= $found['matching'].' ';
+                if (!empty($found['operator'])) {
+                    $knownQuery .= $found['operator'].' ';
+                }
+            }
+        }
+
         // add our knownPatterns again!
         $knownPatterns = trim(implode(' '.$glue.' ', array_values($knownPatterns['found'])));
         if (!empty($knownPatterns) && !empty($baseWordQuery)) {
@@ -366,19 +382,45 @@ class SolrQuery
      * @return array parsed things
      */
     private function scanForKnownPatterns($input) : array {
+        // get operator part!
+        $operatorPatterns = implode('|', array_map('preg_quote', $this->queryOperators));
         $foundPatterns = [];
-        foreach ($this->partPatterns as $name => $part) {
-            preg_match_all($part['pattern'], $input, $matches, PREG_SET_ORDER);
 
-            if (empty($matches)) {
-                continue;
-            }
+        $oneRoundNoMatch = false;
+        while (!$oneRoundNoMatch) {
+            $matched = false;
+            foreach ($this->partPatterns as $name => $part) {
 
-            foreach ($matches as $match) {
-                // does match!
+                // complete pattern!
+                $pattern = "/" . $part['pattern'] . "[\s]*(" . $operatorPatterns . ")?/i";
+
+                preg_match($pattern, $input, $match);
+
+                if (empty($match)) {
+                    continue;
+                }
+
+                // matched something!
+                $matched = true;
 
                 // remove from input!
                 $input = str_replace($match[0], '', $input);
+
+                // extract operator if present!
+                $lastElement = trim(array_pop($match));
+                $queryOperator = null;
+                // is it operator?
+                if (in_array($lastElement, $this->queryOperators)) {
+                    $queryOperator = $lastElement;
+
+                    // remove from whole match!
+                    if (str_ends_with($match[0], $queryOperator)) {
+                        $match[0] = trim(substr($match[0], 0, strlen($queryOperator) * -1));
+                    }
+                } else {
+                    // no operator, put back!
+                    $match[] = $lastElement;
+                }
 
                 // cleaner?
                 if (isset($part['cleanup']) && is_callable($part['cleanup'])) {
@@ -387,7 +429,20 @@ class SolrQuery
                     $matching = $match[0];
                 }
 
-                $foundPatterns[] = $matching;
+                // change operator
+                if ($queryOperator == '-') {
+                    $queryOperator = "NOT";
+                }
+
+                $foundPatterns[] = [
+                    'matching' => $matching,
+                    'operator' => $queryOperator
+                ];
+            }
+
+            // one round not matched?
+            if (!$matched) {
+                $oneRoundNoMatch = true;
             }
         }
 
