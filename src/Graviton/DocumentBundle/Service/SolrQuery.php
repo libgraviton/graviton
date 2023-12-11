@@ -80,21 +80,7 @@ class SolrQuery
      */
     private RequestStack $requestStack;
 
-    /**
-     * if the full search term matches one of these patterns, the whole thing is sent quoted to solr
-     *
-     * @var array
-     */
-    private array $fullTermPatterns = [
-        '/^[0-9]+ [0-9\.]{9,}$/i'
-    ];
-
-    /**
-     * pattern to match a solr field query
-     *
-     * @var string
-     */
-    private string $fieldQueryPattern = '/(.{2,}):(.+)/i';
+    private array $partPatterns;
 
     /**
      * stuff that does not get andified/quoted/whatever
@@ -156,6 +142,63 @@ class SolrQuery
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
         $this->requestStack = $requestStack;
+
+        // these are the patterns we recognize in the full query and replace with other stuff
+        $this->partPatterns = [
+            'ch-tel-no-prefix' => [
+                'pattern' => '\d{3} \d{2} \d{2}', // pattern without end/beginning!!
+                'cleanup' => function ($input) {
+                    $fullMatch = $input[0];
+
+                    // remove trailing 0
+                    if (str_starts_with($fullMatch, '0')) {
+                        $fullMatch = substr($fullMatch, 1);
+                    }
+
+                    return '"+41'.str_replace(' ', '', $fullMatch).'"';
+                }
+            ],
+            'tel-int-but-spaces-prefix' => [
+                'pattern' => '\+?\d{1,3} \d{2,3} \d{2,3} \d{2,3}',
+                'cleanup' => function ($input) {
+                    $fullMatch = $input[0];
+
+                    return '"'.str_replace(' ', '', $fullMatch).'"';
+                }
+            ],
+            'account-nr' => [
+                'pattern' => '[0-9]{0,3}+ [0-9\.]{9,}',
+                'cleanup' => function ($input) {
+                    return '"'.$input[0].'"';
+                }
+            ],
+            'solr-field-query' => [
+                'pattern' => '[\S]{2,}:[\S]{1,}',
+                'cleanup' => function ($input) {
+                    $fieldNameParts = explode(':', $input[0]);
+                    $fieldName = $fieldNameParts[0];
+                    unset($fieldNameParts[0]);
+                    $fieldValue = implode(':', $fieldNameParts);
+
+                    // change > and <
+                    if ($fieldValue[0] == '<') {
+                        $fieldValue = '[* TO '.substr($fieldValue, 1).']';
+                    } elseif ($fieldValue[0] == '>') {
+                        $fieldValue = '['.substr($fieldValue, 1).' TO *]';
+                    } else {
+                        $fieldValue = $this->getSingleTerm($fieldValue);
+                    }
+
+                    return $fieldName.':'.$fieldValue;
+                }
+            ],
+            'normal-field' => [
+                'pattern' => '[\S]+',
+                'cleanup' => function ($input) {
+                    return trim($this->getSingleTerm($input[0]));
+                }
+            ]
+        ];
     }
 
     /**
@@ -269,52 +312,111 @@ class SolrQuery
     {
         $fullTerm = $node->getSearchQuery();
 
-        foreach ($this->fullTermPatterns as $pattern) {
-            if (preg_match($pattern, $fullTerm, $matches) === 1) {
-                return '"'.$fullTerm.'"';
-            }
+        $knownPatterns = $this->scanForKnownPatterns($fullTerm);
+        $glue = $this->andifyTerms ? '&&' : '';
+
+        $searchExpression = '';
+
+        if (!is_array($knownPatterns['found'])) {
+            return $searchExpression;
         }
 
-        if ($this->andifyTerms) {
-            $glue = '&&';
-        } else {
-            $glue = '';
-        }
+        $i = 1;
+        $numberOfMatches = count($knownPatterns['found']);
+        foreach ($knownPatterns['found'] as $match) {
+            $searchExpression .= $match['matching'].' ';
 
-        // split and drop empty terms
-        $terms = array_filter(
-            explode(' ', $fullTerm),
-            function ($term) {
-                return !empty($term);
-            }
-        );
-
-        $i = 0;
-        $hasPreviousOperator = false;
-        $fullSearchElements = [];
-
-        foreach ($terms as $term) {
-            $i++;
-
-            // is this an operator?
-            if (in_array($term, $this->queryOperators)) {
-                $fullSearchElements[] = $term;
-                $hasPreviousOperator = true;
-                continue;
-            }
-
-            $singleTerm = $this->getSingleTerm($term);
-
-            if ($i > 1 && $hasPreviousOperator == false && !empty($glue)) {
-                $fullSearchElements[] = $glue;
+            if (!empty($match['operator'])) {
+                $searchExpression .= $match['operator'].' ';
             } else {
-                $hasPreviousOperator = false;
+                if ($i < $numberOfMatches && !empty($glue)) {
+                    $searchExpression .= $glue.' ';
+                }
             }
 
-            $fullSearchElements[] = $singleTerm;
+            $i++;
         }
 
-        return implode(' ', $fullSearchElements);
+        return trim($searchExpression);
+    }
+
+    /**
+     * scan for stuff we know and return it, removing from fullTerm,
+     *
+     * @param string $input input
+     *
+     * @return array parsed things
+     */
+    private function scanForKnownPatterns($input) : array
+    {
+        // get operator part!
+        $operatorPatterns = implode('|', array_map('preg_quote', $this->queryOperators));
+        $foundPatterns = [];
+
+        $oneRoundNoMatch = false;
+        while (!$oneRoundNoMatch) {
+            $matched = false;
+            foreach ($this->partPatterns as $name => $part) {
+                // complete pattern!
+                $pattern = "/^" . $part['pattern'] . "[\s]*(" . $operatorPatterns . ")?/i";
+
+                preg_match($pattern, trim($input), $match);
+
+                if (empty($match)) {
+                    continue;
+                }
+
+                // remove from input!
+                $input = trim(str_replace($match[0], '', $input));
+
+                // extract operator if present!
+                $lastElement = trim(array_pop($match));
+                $queryOperator = null;
+                // is it operator?
+                if (in_array($lastElement, $this->queryOperators)) {
+                    $queryOperator = $lastElement;
+
+                    // remove from whole match!
+                    if (str_ends_with($match[0], $queryOperator)) {
+                        $match[0] = trim(substr($match[0], 0, strlen($queryOperator) * -1));
+                    }
+                } else {
+                    // no operator, put back!
+                    $match[] = $lastElement;
+                }
+
+                // cleaner?
+                if (isset($part['cleanup']) && is_callable($part['cleanup'])) {
+                    $matching = $part['cleanup']($match);
+                } else {
+                    $matching = $match[0];
+                }
+
+                // change operator
+                if ($queryOperator == '-') {
+                    $queryOperator = "NOT";
+                }
+
+                $foundPatterns[] = [
+                    'matching' => $matching,
+                    'operator' => $queryOperator
+                ];
+
+                // we matched something in this iteration. start from the top again!
+                $matched = true;
+                break;
+            }
+
+            // one round not matched?
+            if (!$matched) {
+                $oneRoundNoMatch = true;
+            }
+        }
+
+        return [
+            'found' => $foundPatterns,
+            'remaining' => trim($input)
+        ];
     }
 
     /**
@@ -347,6 +449,7 @@ class SolrQuery
             '',
             $term
         );
+
         if (ctype_digit($formatted)) {
             return '"'.$term.'"';
         }
@@ -354,13 +457,8 @@ class SolrQuery
         // everything that is only numbers *and* characters and at least 3 long, we don't fuzzy/wildcard
         // thanks to https://stackoverflow.com/a/7684859/3762521
         $pattern = '/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/';
-        if (strlen($term) > 3 && preg_match($pattern, $term, $matches) === 1) {
+        if (strlen($term) > 3 && preg_match_all($pattern, $term, $matches) === 1) {
             return '"'.$term.'"';
-        }
-
-        // is it a solr field query (like id:333)?
-        if (preg_match($this->fieldQueryPattern, $term) === 1) {
-            return $this->parseSolrFieldQuery($term);
         }
 
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
@@ -375,31 +473,6 @@ class SolrQuery
         return $term;
     }
 
-    /**
-     * parses the special solr field syntax fieldName:fieldValue, converts int ranges
-     *
-     * @param string $fieldQuery the query
-     *
-     * @return string solr compatible expression
-     */
-    private function parseSolrFieldQuery($fieldQuery)
-    {
-        $fieldNameParts = explode(':', $fieldQuery);
-        $fieldName = $fieldNameParts[0];
-        unset($fieldNameParts[0]);
-        $fieldValue = implode(':', $fieldNameParts);
-
-        // change > and <
-        if ($fieldValue[0] == '<') {
-            $fieldValue = '[* TO '.substr($fieldValue, 1).']';
-        } elseif ($fieldValue[0] == '>') {
-            $fieldValue = '['.substr($fieldValue, 1).' TO *]';
-        } else {
-            $fieldValue = $this->getSingleTerm($fieldValue);
-        }
-
-        return $fieldName.':'.$fieldValue;
-    }
 
     /**
      * ORify a single term
