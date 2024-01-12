@@ -12,6 +12,7 @@ services:
     graviton.rest.apidoc:
         class: Graviton\SwaggerBundle\Service\Swagger
         arguments:
+          - "@router"
           - "@graviton.rest.restutils"
           - "@graviton.swagger.schema.model"
           - "@graviton.schema.utils"
@@ -22,14 +23,12 @@ services:
 
     graviton.swagger.command.swaggergenerate:
         class: Graviton\SwaggerBundle\Command\SwaggerGenerateCommand
+        arguments:
+          - "%graviton.generator.hash.all%"
         tags:
           -
             name: console.command
         calls:
-          -
-            method: setContainer
-            arguments:
-              - "@service_container"
           -
             method: setRootDir
             arguments:

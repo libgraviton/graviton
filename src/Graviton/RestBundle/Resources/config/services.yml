@@ -209,7 +209,6 @@ services:
         class: Graviton\RestBundle\Service\RestUtils
         public: true
         arguments:
-          - "@service_container"
           - "@router"
           - "@graviton.rest.serializer"
           - "@logger"

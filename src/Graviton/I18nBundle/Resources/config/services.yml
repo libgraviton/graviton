@@ -13,23 +13,23 @@ services:
   graviton.i18n.repository.language:
     class: "%graviton.i18n.repository.language.class%"
     factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
-    public: true
+    public: false
     arguments:
       - Graviton\I18nBundle\Document\Language
 
   graviton.i18n.model.language:
     class: "%graviton.i18n.model.language.class%"
     parent: "graviton.rest.model"
-    public: true
-    calls:
-      - method: "setRepository"
-        arguments:
-          - "@graviton.i18n.repository.language"
+    public: false
+    arguments:
+      - "%kernel.project_dir%/src/Graviton/I18nBundle/Resources/config/schema/Language.json"
+      - Graviton\I18nBundle\Document\Language
+      - '@doctrine_mongodb.odm.default_document_manager'
 
   graviton.i18n.controller.language:
     class: "%graviton.i18n.controller.language.class%"
     parent: "graviton.rest.controller"
-    public: true
+    public: false
     calls:
       - method: "setModel"
         arguments:
