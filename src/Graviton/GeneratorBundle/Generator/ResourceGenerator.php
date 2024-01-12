@@ -475,6 +475,8 @@ class ResourceGenerator extends AbstractGenerator
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
 
+
+        /*
         $this->addService(
             $repoName . 'embedded',
             null,
@@ -491,6 +493,7 @@ class ResourceGenerator extends AbstractGenerator
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
             false
         );
+        */
 
         // are there any rest listeners defined?
         if ($parameters['json']->getDef()->getService() != null) {
@@ -646,7 +649,7 @@ class ResourceGenerator extends AbstractGenerator
         $factoryService = null,
         $factoryMethod = null,
         $className = null,
-        $public = true
+        $public = false
     ) {
         $service = [];
         $service['public'] = $public;
@@ -833,15 +836,12 @@ class ResourceGenerator extends AbstractGenerator
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
-        $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
+
+        // the Document class name
+        $documentClassName = $parameters['base'].'Document\\'.$document;
 
         // calls for normal
-        $calls = [
-            [
-                'method' => 'setRepository',
-                'service' => $repoName
-            ]
-        ];
+        $calls = [];
 
         // set secondary connection?
         if ($parameters['isUseSecondaryConnection']) {
@@ -862,6 +862,13 @@ class ResourceGenerator extends AbstractGenerator
                         'type' => 'string',
                         'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
                             '/Resources/config/schema/' . $parameters['document'] . '.json\')'
+                    ],
+                    [
+                        'type' => 'string',
+                        'value' => $documentClassName
+                    ],
+                    [
+                        'value' => '@doctrine_mongodb.odm.default_document_manager'
                     ]
                 ],
                 className: 'Graviton\RestBundle\Model\DocumentModel'
@@ -877,6 +884,13 @@ class ResourceGenerator extends AbstractGenerator
                     'type' => 'string',
                     'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
                         '/Resources/config/schema/'.$parameters['document'].'Embedded.json\')'
+                ],
+                [
+                    'type' => 'string',
+                    'value' => $documentClassName.'Embedded'
+                ],
+                [
+                    'value' => '@doctrine_mongodb.odm.default_document_manager'
                 ]
             ],
             className: 'Graviton\RestBundle\Model\DocumentModel'

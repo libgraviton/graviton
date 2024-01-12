@@ -164,9 +164,10 @@ class NullModel extends DocumentModel
     }
 
     /**
-     * OnVariaton
+     * onVariaton
      *
-     * @param string $field
+     * @param string $field field
+     *
      * @return array OnVariaton
      */
     public function getOnVariaton($field)
@@ -187,7 +188,8 @@ class NullModel extends DocumentModel
     /**
      * RequiredFields
      *
-     * @param null $variationName
+     * @param null $variationName variationname
+     *
      * @return array RequiredFields
      */
     public function getRequiredFields($variationName = null)
@@ -198,7 +200,8 @@ class NullModel extends DocumentModel
     /**
      * Constraints
      *
-     * @param string $field
+     * @param string $field field
+     *
      * @return array Constraints
      */
     public function getConstraints($field)

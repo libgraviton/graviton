@@ -68,6 +68,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected string $documentClassName;
     protected DocumentManager $documentManager;
 
+    /**
+     * constructor
+     *
+     * @param string          $jsonSchemaPath    schema path
+     * @param string          $documentClassName class name
+     * @param DocumentManager $documentManager   dm
+     */
     public function __construct(string $jsonSchemaPath, string $documentClassName, DocumentManager $documentManager)
     {
         parent::__construct($jsonSchemaPath);

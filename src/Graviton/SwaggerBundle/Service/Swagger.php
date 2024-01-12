@@ -44,6 +44,9 @@ class Swagger
      */
     private $versionInformation;
 
+    /**
+     * @var Router
+     */
     private Router $router;
 
     /**
@@ -54,6 +57,7 @@ class Swagger
     /**
      * Constructor
      *
+     * @param Router      $router             router
      * @param RestUtils   $restUtils          rest utils
      * @param SchemaModel $schemaModel        schema model instance
      * @param SchemaUtils $schemaUtils        schema utils
@@ -73,7 +77,16 @@ class Swagger
         $this->versionInformation = $versionInformation;
     }
 
-    public function addController(string $name, RestController $controller) {
+    /**
+     * adds a controller
+     *
+     * @param string         $name       name
+     * @param RestController $controller controller
+     *
+     * @return void
+     */
+    public function addController(string $name, RestController $controller)
+    {
         $this->controller[$name] = $controller;
     }
 
@@ -204,14 +217,12 @@ class Swagger
      */
     private function getModelFromRoute(Route $route) : ?ModelInterface
     {
-        // find the controller!
-        $match = $this->router->match($route->getPath());
-
-        if (!is_array($match)) {
+        $controllerName = $route->getDefault('_controller');
+        if (empty($controllerName)) {
             return null;
         }
 
-        $controllerParts = explode('::', $match['_controller']);
+        $controllerParts = explode('::', $controllerName);
         if (empty($controllerParts[0])) {
             return null;
         }
