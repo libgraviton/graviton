@@ -949,7 +949,8 @@ class ResourceGenerator extends AbstractGenerator
             $parameters['parent'],
             $controllerCalls,
             ['graviton.rest', 'controller.service_arguments'],
-            className: $baseController
+            className: $baseController,
+            public: true
         );
     }
 
