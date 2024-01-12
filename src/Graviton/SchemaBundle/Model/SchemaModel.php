@@ -389,7 +389,11 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function getSearchableFields()
     {
-        return $this->schema->searchable;
+        if (!empty($this->schema->searchable)) {
+            return $this->schema->searchable;
+        }
+
+        return [];
     }
 
     /**
