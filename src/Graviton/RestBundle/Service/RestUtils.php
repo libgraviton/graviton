@@ -36,10 +36,6 @@ use Graviton\RestBundle\Controller\RestController;
  */
 final class RestUtils implements RestUtilsInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * @var Serializer
@@ -72,7 +68,6 @@ final class RestUtils implements RestUtilsInterface
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface     $container       container
      * @param Router                 $router          router
      * @param Serializer             $serializer      serializer
      * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
@@ -81,7 +76,6 @@ final class RestUtils implements RestUtilsInterface
      * @param CacheItemPoolInterface $cacheProvider   Cache service
      */
     public function __construct(
-        ContainerInterface $container,
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
@@ -89,7 +83,6 @@ final class RestUtils implements RestUtilsInterface
         Validator $schemaValidator,
         CacheItemPoolInterface $cacheProvider
     ) {
-        $this->container = $container;
         $this->serializer = $serializer;
         $this->router = $router;
         $this->logger = $logger;
@@ -304,7 +297,7 @@ final class RestUtils implements RestUtilsInterface
                     return false;
                 }
                 // ignore all schema routes
-                if (strpos($route->getPath(), '/schema') === 0) {
+                if (str_starts_with($route->getPath(), '/schema')) {
                     return false;
                 }
                 if ($route->getPath() == '/' || $route->getPath() == '/core/version') {
@@ -349,51 +342,6 @@ final class RestUtils implements RestUtilsInterface
 
         $cacheItem->set($ret);
         $this->cacheProvider->save($cacheItem);
-
-        return $ret;
-    }
-
-    /**
-     * Gets the Model assigned to the RestController
-     *
-     * @param Route $route Route
-     *
-     * @return bool|object The model or false
-     * @throws \Exception
-     */
-    public function getModelFromRoute(Route $route)
-    {
-        $ret = false;
-        $controller = $this->getControllerFromRoute($route);
-
-        if ($controller instanceof RestController) {
-            $ret = $controller->getModel();
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Gets the controller from a Route
-     *
-     * @param Route $route Route
-     *
-     * @return bool|object The controller or false
-     */
-    public function getControllerFromRoute(Route $route)
-    {
-        $ret = false;
-
-        $controllerName = $route->getDefault('_controller');
-        if (substr_count($controllerName, ':') == 1) {
-            $controllerName = str_replace(':', '::', $controllerName);
-        }
-
-        $actionParts = explode('::', $controllerName);
-
-        if (count($actionParts) == 2) {
-            $ret = $this->container->get($actionParts[0]);
-        }
 
         return $ret;
     }
