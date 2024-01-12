@@ -301,9 +301,12 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
         }
 
+        if ($this->generateModel) {
+            $this->generateModel($parameters, $bundleDir, $document, $isSubResource);
+        }
+
         if (!$isSubResource) {
             // these only on main resources, not sub!
-            $this->generateModel($parameters, $bundleDir, $document);
 
             if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
                 $this->generateFixtures($parameters, $bundleDir, $document);
@@ -802,20 +805,23 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate model part of a resource
      *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
+     * @param array  $parameters    twig parameters
+     * @param string $dir           base bundle dir
+     * @param string $document      document name
+     * @param bool   $isSubResource if subresource or not
      *
      * @return void
      */
-    protected function generateModel(array $parameters, $dir, $document)
+    protected function generateModel(array $parameters, $dir, $document, $isSubResource)
     {
         if ($this->generateSchema) {
-            $this->renderFileAsJson(
-                'model/schema.json.twig',
-                $dir . '/Resources/config/schema/' . $document . '.json',
-                array_merge($parameters, ['isEmbedded' => false])
-            );
+            if (!$isSubResource) {
+                $this->renderFileAsJson(
+                    'model/schema.json.twig',
+                    $dir . '/Resources/config/schema/' . $document . '.json',
+                    array_merge($parameters, ['isEmbedded' => false])
+                );
+            }
             $this->renderFileAsJson(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
@@ -846,29 +852,26 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         // normal service
-        $this->addService(
-            $paramName,
-            'graviton.rest.model',
-            $calls,
-            arguments: [
-                [
-                    'type' => 'string',
-                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
-                        '/Resources/config/schema/'.$parameters['document'].'.json\')'
-                ]
-            ],
-            className: 'Graviton\RestBundle\Model\DocumentModel'
-        );
+        if (!$isSubResource) {
+            $this->addService(
+                $paramName,
+                'graviton.rest.model',
+                $calls,
+                arguments: [
+                    [
+                        'type' => 'string',
+                        'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
+                            '/Resources/config/schema/' . $parameters['document'] . '.json\')'
+                    ]
+                ],
+                className: 'Graviton\RestBundle\Model\DocumentModel'
+            );
+        }
 
         $this->addService(
             $paramName . 'embedded',
             'graviton.rest.model',
-            [
-                [
-                    'method' => 'setRepository',
-                    'service' => $repoName . 'embedded'
-                ],
-            ],
+            [],
             arguments: [
                 [
                     'type' => 'string',
