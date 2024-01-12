@@ -226,6 +226,7 @@ class ResourceGenerator extends AbstractGenerator
      * @param string $bundleNamespace bundle namespace
      * @param string $bundleName      bundle name
      * @param string $document        document name
+     * @param bool   $isSubResource   if subresource or not
      *
      * @return void
      */
@@ -233,7 +234,8 @@ class ResourceGenerator extends AbstractGenerator
         $bundleDir,
         $bundleNamespace,
         $bundleName,
-        $document
+        $document,
+        bool $isSubResource
     ) {
         $this->readServicesAndParams($bundleDir);
 
@@ -293,22 +295,23 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('reservedFieldnames', $reservedFieldNames)
             ->getParameters();
 
-        $this->generateDocument($parameters, $bundleDir, $document);
+        $this->generateDocument($parameters, $bundleDir, $document, $isSubResource);
 
         if ($this->generateSerializerConfig) {
-            $this->generateSerializer($parameters, $bundleDir, $document);
+            $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
         }
 
-        if ($this->generateModel) {
+        if (!$isSubResource) {
+            // these only on main resources, not sub!
             $this->generateModel($parameters, $bundleDir, $document);
-        }
 
-        if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
-            $this->generateFixtures($parameters, $bundleDir, $document);
-        }
+            if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
+                $this->generateFixtures($parameters, $bundleDir, $document);
+            }
 
-        if ($this->generateController) {
-            $this->generateController($parameters, $bundleDir, $document);
+            if ($this->generateController) {
+                $this->generateController($parameters, $bundleDir, $document);
+            }
         }
 
         $this->persistServicesAndParams();
@@ -356,24 +359,28 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate document part of a resource
      *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
+     * @param array  $parameters    twig parameters
+     * @param string $dir           base bundle dir
+     * @param string $document      document name
+     * @param bool   $isSubResource if subresource or not
      *
      * @return void
      */
-    protected function generateDocument($parameters, $dir, $document)
+    protected function generateDocument($parameters, $dir, $document, bool $isSubResource)
     {
-        $this->renderFile(
-            'document/Document.php.twig',
-            $dir . '/Document/' . $document . '.php',
-            array_merge(
-                $parameters,
-                [
-                    'isEmbedded' => false
-                ]
-            )
-        );
+        if (!$isSubResource) {
+            // only for "real" ones!
+            $this->renderFile(
+                'document/Document.php.twig',
+                $dir . '/Document/' . $document . '.php',
+                array_merge(
+                    $parameters,
+                    [
+                        'isEmbedded' => false
+                    ]
+                )
+            );
+        }
         $this->renderFile(
             'document/DocumentEmbedded.php.twig',
             $dir . '/Document/' . $document . 'Embedded.php',
@@ -390,7 +397,10 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
-        $this->generateServices($parameters, $dir, $document);
+        // services only for main resource!
+        if (!$isSubResource) {
+            $this->generateServices($parameters, $dir, $document);
+        }
     }
 
     /**
@@ -470,7 +480,7 @@ class ResourceGenerator extends AbstractGenerator
             array(
                 array(
                     'type' => 'string',
-                    'value' => $documentName.'Embedded'
+                    'value' => $documentName . 'Embedded'
                 )
             ),
             $this->repositoryFactoryService,
@@ -725,13 +735,14 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate serializer part of a resource
      *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
+     * @param array  $parameters    twig parameters
+     * @param string $dir           base bundle dir
+     * @param string $document      document name
+     * @param bool   $isSubResource if subresource or not
      *
      * @return void
      */
-    protected function generateSerializer(array $parameters, $dir, $document)
+    protected function generateSerializer(array $parameters, $dir, $document, bool $isSubResource)
     {
         $parameters['isEmbedded'] = false;
 
@@ -742,7 +753,6 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    //'noIdField' => true,
                     'realIdField' => true,
                     'isEmbedded' => true
                 ]
@@ -762,16 +772,20 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
             }
         }
-        $this->renderFile(
-            'serializer/Document.xml.twig',
-            $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
-            array_merge(
-                $parameters,
-                [
-                    'realIdField' => false
-                ]
-            )
-        );
+
+        if (!$isSubResource) {
+            $this->renderFile(
+                'serializer/Document.xml.twig',
+                $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
+                array_merge(
+                    $parameters,
+                    [
+                        'realIdField' => false
+                    ]
+                )
+            );
+        }
+
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . 'Base.xml',
