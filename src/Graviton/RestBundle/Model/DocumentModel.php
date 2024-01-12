@@ -51,22 +51,29 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var string[]
      */
     protected $textIndexes = [];
-    /**
-     * @var DocumentRepository
-     */
-    private $repository;
+
     /**
      * @var QueryService
      */
     private $queryService;
+
     /**
      * @var array
      */
     protected $notModifiableOriginRecords;
-    protected DocumentManager $manager;
     protected EventDispatcherInterface $eventDispatcher;
     private RestUtils $restUtils;
     private SecurityUtils $securityUtils;
+
+    protected string $documentClassName;
+    protected DocumentManager $documentManager;
+
+    public function __construct(string $jsonSchemaPath, string $documentClassName, DocumentManager $documentManager)
+    {
+        parent::__construct($jsonSchemaPath);
+        $this->documentClassName = $documentClassName;
+        $this->documentManager = $documentManager;
+    }
 
     /**
      * set query service
@@ -147,21 +154,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function getRepository()
     {
-        return $this->repository;
-    }
-
-    /**
-     * create new app model
-     *
-     * @param DocumentRepository $repository Repository of countries
-     *
-     * @return \Graviton\RestBundle\Model\DocumentModel
-     */
-    public function setRepository(DocumentRepository $repository)
-    {
-        $this->repository = $repository;
-        $this->manager = $repository->getDocumentManager();
-        return $this;
+        return $this->documentManager->getRepository($this->documentClassName);
     }
 
     /**
@@ -193,8 +186,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $entity->set_CreatedAt(new \DateTime());
         }
 
-        $this->manager->persist($entity);
-        $this->manager->flush();
+        $this->documentManager->persist($entity);
+        $this->documentManager->flush();
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
@@ -276,7 +269,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $entity = $this->dispatchPrePersistEvent($entity);
 
         if (!is_null($documentId)) {
-            $collection = $this->manager->getDocumentCollection($entity::class);
+            $collection = $this->documentManager->getDocumentCollection($entity::class);
             $existing = $collection->findOne(
                 ['_id' => $documentId],
                 ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
@@ -285,8 +278,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->deleteById($documentId);
 
             // detach so odm knows it's gone
-            $this->manager->detach($entity);
-            $this->manager->clear();
+            $this->documentManager->detach($entity);
+            $this->documentManager->clear();
 
             // pass old attrs to new one.
             if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
@@ -304,11 +297,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $entity->setLastModifiedAt(new \DateTime());
         }
 
-        $entity = $this->manager->merge($entity);
+        $entity = $this->documentManager->merge($entity);
 
-        $this->manager->persist($entity);
-        $this->manager->flush();
-        $this->manager->detach($entity);
+        $this->documentManager->persist($entity);
+        $this->documentManager->flush();
+        $this->documentManager->detach($entity);
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
@@ -341,8 +334,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if (is_callable([$entity, 'getId']) && $entity->getId() != null) {
             $this->deleteById($entity->getId());
             // detach so odm knows it's gone
-            $this->manager->detach($entity);
-            $this->manager->clear();
+            $this->documentManager->detach($entity);
+            $this->documentManager->clear();
             // Dispatch ModelEvent
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;
@@ -360,7 +353,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function flush($document = null)
     {
-        $this->manager->flush($document);
+        $this->documentManager->flush($document);
     }
 
     /**
