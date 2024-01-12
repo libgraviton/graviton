@@ -173,7 +173,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function findAll(Request $request)
     {
-        return $this->queryService->getWithRequest($request, $this->repository);
+        return $this->queryService->getWithRequest($request, $this->getRepository());
     }
 
     /**
@@ -214,10 +214,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function find($documentId, $forceClear = false)
     {
         if ($forceClear) {
-            $this->repository->clear();
+            $this->getRepository()->clear();
         }
 
-        $builder = $this->repository->createQueryBuilder()
+        $builder = $this->getRepository()->createQueryBuilder()
             ->field('id')
             ->equals($documentId);
 
@@ -250,7 +250,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $request->attributes->set('singleDocument', $documentId);
 
-        $document = $this->queryService->getWithRequest($request, $this->repository);
+        $document = $this->queryService->getWithRequest($request, $this->getRepository());
         if (empty($document)) {
             throw new NotFoundException(
                 sprintf(
@@ -372,7 +372,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     private function deleteById($id)
     {
-        $builder = $this->repository->createQueryBuilder();
+        $builder = $this->getRepository()->createQueryBuilder();
         $builder
             ->remove()
             ->field('id')->equals($id)
@@ -407,8 +407,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function selectSingleFields($id, array $fields, $hydrate = true)
     {
-        $builder = $this->repository->createQueryBuilder();
-        $idField = $this->repository->getClassMetadata()->getIdentifier()[0];
+        $builder = $this->getRepository()->createQueryBuilder();
+        $idField = $this->getRepository()->getClassMetadata()->getIdentifier()[0];
 
         $queryBuilder = $builder
             ->field($idField)->equals($id)
@@ -431,11 +431,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function getEntityClass()
     {
-        if ($this->repository instanceof DocumentRepository) {
-            return $this->repository->getDocumentName();
-        }
-
-        return null;
+        return $this->documentClassName;
     }
 
     /**
@@ -475,7 +471,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     private function dispatchModelEvent($action, $collection)
     {
-        if (!($this->repository instanceof DocumentRepository)) {
+        if (!($this->getRepository() instanceof DocumentRepository)) {
             return;
         }
         if (!method_exists($collection, 'getId')) {
@@ -485,8 +481,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event = new ModelEvent();
         $event->setCollectionId($collection->getId());
         $event->setActionByDispatchName($action);
-        $event->setCollectionName($this->repository->getClassMetadata()->getCollection());
-        $event->setCollectionClass($this->repository->getClassName());
+        $event->setCollectionName($this->getRepository()->getClassMetadata()->getCollection());
+        $event->setCollectionClass($this->getRepository()->getClassName());
         $event->setCollection($collection);
 
         $this->eventDispatcher->dispatch($event, $action);
@@ -503,7 +499,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $event = new EntityPrePersistEvent();
         $event->setEntity($entity);
-        $event->setRepository($this->repository);
+        $event->setRepository($this->getRepository());
         $event = $this->eventDispatcher->dispatch($event, EntityPrePersistEvent::NAME);
         return $event->getEntity();
     }
