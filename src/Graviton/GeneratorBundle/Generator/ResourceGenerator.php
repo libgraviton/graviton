@@ -472,7 +472,8 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
+            true
         );
 
 
