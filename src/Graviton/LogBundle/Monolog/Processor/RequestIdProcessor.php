@@ -6,6 +6,7 @@
 namespace Graviton\LogBundle\Monolog\Processor;
 
 use Graviton\LogBundle\Listener\RequestIdListener;
+use Monolog\LogRecord;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -41,7 +42,7 @@ class RequestIdProcessor
      *
      * @return array new record
      */
-    public function processRecord(array $record)
+    public function format(LogRecord $record): string
     {
         if ($this->requestStack->getCurrentRequest() instanceof Request) {
             $record['extra']['requestId'] = $this->requestStack->getCurrentRequest()->attributes->get(

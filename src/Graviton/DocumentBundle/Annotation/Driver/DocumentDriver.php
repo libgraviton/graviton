@@ -6,15 +6,13 @@
 namespace Graviton\DocumentBundle\Annotation\Driver;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Graviton\Graviton;
 
 /**
@@ -24,6 +22,8 @@ use Graviton\Graviton;
  */
 class DocumentDriver
 {
+
+    use ColocatedMappingDriver;
 
     /**
      * @var string cache location
@@ -41,21 +41,16 @@ class DocumentDriver
     private Reader $reader;
 
     /**
-     * @var \SplFileInfo[] files
-     */
-    private array $classes;
-
-    /**
      * DocumentDriver constructor.
      *
      * @param Reader $reader reader
      * @param null   $paths  paths
      */
-    public function __construct($reader, array $classes)
+    public function __construct($reader, array $paths)
     {
         $this->reader = $reader;
         $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
-        $this->classes = $classes;
+        $this->addPaths($paths);
         $this->loadCache();
     }
 
@@ -91,21 +86,6 @@ class DocumentDriver
      */
     public function getFields($className)
     {
-        /*
-         * $reflectionClass = new ReflectionClass(Foo::class);
-$property = $reflectionClass->getProperty('bar');
-
-$reader = new AnnotationReader();
-$myAnnotation = $reader->getPropertyAnnotation(
-    $property,
-    MyAnnotation::class
-);
-
-echo $myAnnotation->myProperty; // result: "value"
-
-
-         */
-
         if (isset($this->classCache[$className])) {
             return $this->classCache[$className];
         }
@@ -137,5 +117,10 @@ echo $myAnnotation->myProperty; // result: "value"
         }
 
         return $map;
+    }
+
+    public function isTransient(string $className)
+    {
+        return false;
     }
 }
