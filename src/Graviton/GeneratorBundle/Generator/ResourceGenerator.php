@@ -705,11 +705,15 @@ class ResourceGenerator extends AbstractGenerator
         // tags
         if ($tag) {
             if (!is_array($tag)) {
+                $tag = [$tag];
+            }
+
+            foreach ($tag as $singleTag) {
                 $thisTag = [
-                    'name' => $tag
+                    'name' => $singleTag
                 ];
 
-                if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
+                if ($singleTag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
                     $thisTag['collection'] = $this->json->getId();
 
                     // is this read only?
@@ -729,10 +733,6 @@ class ResourceGenerator extends AbstractGenerator
                 }
 
                 $service['tags'][] = $thisTag;
-            } else {
-                foreach ($tag as $tagData) {
-                    $service['tags'][] = $tagData;
-                }
             }
         }
 
