@@ -100,9 +100,9 @@ class WhoAmIControllerTest extends RestTestCase
         $client->request('GET', '/person/whoami', [], [], ['HTTP_x-graviton-auth' => 'mANfreD']);
 
         $this->assertEqualsIgnoringCase('mANfreD', $client->getResults()->username);
-        $this->assertObjectHasAttribute('name', $client->getResults());
-        $this->assertObjectHasAttribute('street', $client->getResults());
-        $this->assertObjectHasAttribute('id', $client->getResults());
+        $this->assertObjectHasProperty('name', $client->getResults());
+        $this->assertObjectHasProperty('street', $client->getResults());
+        $this->assertObjectHasProperty('id', $client->getResults());
     }
 
     /**

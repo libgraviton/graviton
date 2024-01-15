@@ -87,8 +87,8 @@ class RestListenerConditionalRestrictionPersistTest extends RestTestCase
 
         // client should be set normal
         if ($expectedClientId == null) {
-            $this->assertObjectNotHasAttribute('clientId', $result);
-            $this->assertObjectNotHasAttribute('moreField', $result);
+            $this->assertObjectNotHasProperty('clientId', $result);
+            $this->assertObjectNotHasProperty('moreField', $result);
         } else {
             $this->assertEquals($expectedClientId, $result->clientId);
             // make sure the 'moreField' is set to the configured fixed value, not to the header we've sent!

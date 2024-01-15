@@ -370,7 +370,7 @@ class RecordOriginConstraintTest extends RestTestCase
         $client->request('get', '/person/customer/100');
         $customer = $client->getResults();
 
-        $this->assertObjectHasAttribute('createDate', $customer, json_encode($customer));
+        $this->assertObjectHasProperty('createDate', $customer, json_encode($customer));
 
         // Check date and convert it, make a UTC+1 change
         $createDate = Rfc3339::createFromString($customer->createDate);

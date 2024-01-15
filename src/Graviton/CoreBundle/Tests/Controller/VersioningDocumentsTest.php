@@ -48,7 +48,7 @@ class VersioningDocumentsTest extends RestTestCase
         $client->request('GET', '/testcase/versioning-entity/one');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $original = $client->getResults();
-        $this->assertObjectHasAttribute('version', $original, 'Response have no version: '.json_encode($original));
+        $this->assertObjectHasProperty('version', $original, 'Response have no version: '.json_encode($original));
 
         $initialVersion = $original->version;
 
