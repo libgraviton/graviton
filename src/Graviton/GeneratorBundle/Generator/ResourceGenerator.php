@@ -709,9 +709,13 @@ class ResourceGenerator extends AbstractGenerator
             }
 
             foreach ($tag as $singleTag) {
-                $thisTag = [
-                    'name' => $singleTag
-                ];
+                if (!is_array($singleTag)) {
+                    $thisTag = [
+                        'name' => $singleTag
+                    ];
+                } else {
+                    $thisTag = $singleTag;
+                }
 
                 if ($singleTag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
                     $thisTag['collection'] = $this->json->getId();
