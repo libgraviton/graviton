@@ -38,6 +38,7 @@ services:
       - name: "graviton.rest"
         collection: Language
         router-base: /i18n/language/
+      - name: controller.service_arguments
 
   graviton.i18n.listener.contentlanguageresponse:
     class: "%graviton.i18n.listener.contentlanguageresponse.class%"

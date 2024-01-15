@@ -119,7 +119,6 @@ services:
           - "@graviton.rest.response"
           - "@graviton.rest.restutils"
           - "@graviton.rest.router"
-          - "@service_container"
           - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
