@@ -17,6 +17,14 @@ parameters:
   graviton.document.serializer.subscriber.doctrineproxy.class: Graviton\DocumentBundle\Serializer\Subscriber\DoctrineProxySubscriber
 
 services:
+  # commands
+
+  Graviton\DocumentBundle\Command\DocumentIndexesCommand:
+    arguments:
+      - "@doctrine_mongodb.odm.default_document_manager"
+    tags:
+      - name: console.command
+
   graviton.document.service.extrefconverter:
     class: "%graviton.document.service.extrefconverter.class%"
     public: true
