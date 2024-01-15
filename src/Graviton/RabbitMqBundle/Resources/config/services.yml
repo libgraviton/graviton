@@ -1,3 +1,17 @@
+parameters:
+  graviton.rabbitmq.document.queueevent.class: Graviton\RabbitMqBundle\Document\QueueEvent
+  graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener
+  graviton.rabbitmq.document.eventworker.class: GravitonDyn\EventWorkerBundle\Document\EventWorker
+  graviton.rabbitmq.document.eventstatus.class: GravitonDyn\EventStatusBundle\Document\EventStatus
+  graviton.rabbitmq.document.eventstatusstatus.class: GravitonDyn\EventStatusBundle\Document\EventStatusStatusEmbedded
+  graviton.rabbitmq.document.eventstatuseventresource.class: GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded
+  graviton.rabbitmq.validator.validinformationtype.class: Graviton\RabbitMqBundle\Validator\Constraints\ValidInformationTypeValidator
+  graviton.rabbitmq.validator.validstatus.class: Graviton\RabbitMqBundle\Validator\Constraints\ValidStatusValidator
+  graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\ExtAmqp
+
+  # this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
+  graviton.rabbitmq.document.eventstatusstatus.route: gravitondyn.eventstatus.rest.eventstatus.get
+
 services:
 
     Graviton\RabbitMqBundle\Controller\StatusUpdateController:

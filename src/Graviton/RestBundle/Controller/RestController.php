@@ -15,8 +15,6 @@ use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -34,7 +32,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestController extends AbstractController
+class RestController
 {
 
     /**
@@ -46,11 +44,6 @@ class RestController extends AbstractController
      * @var ModelInterface
      */
     private $model;
-
-    /**
-     * @var ContainerInterface service_container
-     */
-    protected $container;
 
     /**
      * @var Response
@@ -86,7 +79,6 @@ class RestController extends AbstractController
      * @param Response           $response    Response
      * @param RestUtils          $restUtils   Rest Utils
      * @param Router             $router      Router
-     * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
      * @param JsonPatchValidator $jsonPatch   Service for validation json patch
      * @param SecurityUtils      $security    The securityUtils service
@@ -95,7 +87,6 @@ class RestController extends AbstractController
         Response $response,
         RestUtils $restUtils,
         Router $router,
-        ContainerInterface $container,
         SchemaUtils $schemaUtils,
         JsonPatchValidator $jsonPatch,
         SecurityUtils $security
@@ -103,7 +94,6 @@ class RestController extends AbstractController
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->container = $container;
         $this->schemaUtils = $schemaUtils;
         $this->jsonPatchValidator = $jsonPatch;
         $this->securityUtils = $security;
@@ -129,22 +119,6 @@ class RestController extends AbstractController
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    /**
-     * Get the container object
-     *
-     * @return \Symfony\Component\DependencyInjection\ContainerInterface
-     *
-     * @obsolete
-     */
-    public function getContainer()
-    {
-        @trigger_error(
-            'Calling getContainer() on '.RestController::class.' is deprecated, inject your dependencies.',
-            E_USER_DEPRECATED
-        );
-        return $this->container;
     }
 
     /**
@@ -528,9 +502,7 @@ class RestController extends AbstractController
     /**
      * Security needs to be enabled to get Object.
      *
-     * @return UserInterface
-     *
-     * @throws UsernameNotFoundException
+     * @return ?UserInterface user
      */
     public function getSecurityUser() : ?UserInterface
     {

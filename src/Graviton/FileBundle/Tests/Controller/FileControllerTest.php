@@ -691,12 +691,12 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('string', $schema->properties->id->type);
         $this->assertEquals('ID', $schema->properties->id->title);
         $this->assertEquals('Unique identifier', $schema->properties->id->description);
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->id);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->id);
 
         // Metadata
         $this->assertEquals('object', $schema->properties->metadata->type);
         $this->assertEquals('Metadata', $schema->properties->metadata->title);
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->metadata);
 
         // Metadata size
         $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
@@ -733,7 +733,7 @@ class FileControllerTest extends RestTestCase
             'Name of the file as it should get displayed to the user.',
             $schema->properties->metadata->properties->filename->description
         );
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->metadata->properties->filename);
 
         // metadata action.command array
         $this->assertContains(
@@ -744,7 +744,7 @@ class FileControllerTest extends RestTestCase
             'Action command array',
             $schema->properties->metadata->properties->action->items->properties->command->title
         );
-        $this->assertObjectNotHasAttribute(
+        $this->assertObjectNotHasProperty(
             'readOnly',
             $schema->properties->metadata->properties->action->items->properties->command
         );
@@ -758,7 +758,7 @@ class FileControllerTest extends RestTestCase
             'Additional Information',
             $schema->properties->metadata->properties->additionalInformation->title
         );
-        $this->assertObjectNotHasAttribute(
+        $this->assertObjectNotHasProperty(
             'readOnly',
             $schema->properties->metadata->properties->additionalInformation
         );
@@ -777,20 +777,20 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('many', $schema->properties->links->format);
         $this->assertEquals('Links', $schema->properties->links->title);
         $this->assertEquals('@todo replace me', $schema->properties->links->description);
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links);
 
 
         // Links items
         $this->assertEquals('object', $schema->properties->links->items->type);
         $this->assertEquals('Links', $schema->properties->links->items->title);
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items);
 
 
         // Links item type
         $this->assertContains('string', $schema->properties->links->items->properties->type->type);
         $this->assertEquals('Type', $schema->properties->links->items->properties->type->title);
         $this->assertEquals('Type of the link.', $schema->properties->links->items->properties->type->description);
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->type);
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items->properties->type);
 
         // Links item $ref
         $this->assertEquals(['string', 'null'], $schema->properties->links->items->properties->{'$ref'}->type);
@@ -814,7 +814,7 @@ class FileControllerTest extends RestTestCase
             $schema->{'x-events'}
         );
 
-        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
+        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Graviton\SecurityBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\SecurityBundle\DependencyInjection\Compiler\RestrictionCompilerPass;
+use Graviton\SecurityBundle\DependencyInjection\Compiler\WhoamiModelCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -40,5 +41,6 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
         $container->addCompilerPass(new RestrictionCompilerPass());
+        $container->addCompilerPass(new WhoamiModelCompilerPass());
     }
 }

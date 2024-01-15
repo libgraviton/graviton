@@ -29,6 +29,10 @@ services:
     graviton.core.model.version:
         class: "%graviton.core.model.version.class%"
         parent: "graviton.rest.model"
+        arguments:
+          - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Version.json"
+          - Graviton\I18nBundle\Document\Version
+          - '@doctrine_mongodb.odm.default_document_manager'
 
     # Request host listener -->
     graviton.core.listener.requesthost:
@@ -99,14 +103,10 @@ services:
     graviton.core.model.dummy:
       class: Graviton\CoreBundle\Model\Dummy
       parent: "graviton.rest.model"
-      public: true
       arguments:
-        - "@graviton.rql.visitor.mongodb"
-      calls:
-        -
-          method: setRepository
-          arguments:
-            - "@graviton.core.repository.dummy"
+        - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Dummy.json"
+        - Graviton\CoreBundle\Document\Dummy
+        - '@doctrine_mongodb.odm.default_document_manager'
 
     graviton.core.document.dummy:
       class: Graviton\CoreBundle\Document\Dummy

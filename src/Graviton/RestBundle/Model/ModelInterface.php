@@ -17,14 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface ModelInterface
 {
-    /**
-     * Set document repository
-     *
-     * @param DocumentRepository $repository document repo
-     *
-     * @return void
-     */
-    public function setRepository(DocumentRepository $repository);
 
     /**
      * get repository instance

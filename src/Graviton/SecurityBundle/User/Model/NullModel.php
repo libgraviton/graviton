@@ -6,6 +6,7 @@
 namespace Graviton\SecurityBundle\User\Model;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\ModelInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,34 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class NullModel implements ModelInterface
+class NullModel extends DocumentModel
 {
-    /**
-     * @var DocumentRepository
-     */
-    private $repository;
-
-    /**
-     * Set document repository
-     *
-     * @param DocumentRepository $repository document repo
-     *
-     * @return void
-     */
-    public function setRepository(DocumentRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
-    /**
-     * get repository instance
-     *
-     * @return DocumentRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
 
     /**
      * Find a single record by id
@@ -189,11 +164,13 @@ class NullModel implements ModelInterface
     }
 
     /**
-     * OnVariaton
+     * onVariaton
+     *
+     * @param string $field field
      *
      * @return array OnVariaton
      */
-    public function getOnVariaton()
+    public function getOnVariaton($field)
     {
         return [];
     }
@@ -211,9 +188,11 @@ class NullModel implements ModelInterface
     /**
      * RequiredFields
      *
+     * @param null $variationName variationname
+     *
      * @return array RequiredFields
      */
-    public function getRequiredFields()
+    public function getRequiredFields($variationName = null)
     {
         return [];
     }
@@ -221,9 +200,11 @@ class NullModel implements ModelInterface
     /**
      * Constraints
      *
+     * @param string $field field
+     *
      * @return array Constraints
      */
-    public function getConstraints()
+    public function getConstraints($field)
     {
         return [];
     }

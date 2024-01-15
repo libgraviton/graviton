@@ -43,7 +43,7 @@ class RequestManager
      */
     public function updateFileRequest(Request $request)
     {
-        $original = $this->requestStack->getMasterRequest();
+        $original = $this->requestStack->getMainRequest();
         $input = $original ? $original->getContent() : false;
 
         if (!$input) {

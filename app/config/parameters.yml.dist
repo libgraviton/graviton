@@ -51,7 +51,7 @@ parameters:
     graviton.security.authentication.strategy.subnet.header_field: x-graviton-authentication
     graviton.security.authentication.strategy.header.key: graviton_user
 
-    graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
+    graviton.security.authentication.provider.model: graviton.core.model.dummy
     graviton.security.authentication.provider.model.query_field: false
 
     graviton.security.services.whitelist: {}

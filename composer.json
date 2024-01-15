@@ -23,7 +23,7 @@
         ]
     },
     "require": {
-        "php": ">=8.2.0",
+        "php": ">=8.3.0",
         "ext-json": "*",
         "ext-ctype": "*",
         "ext-mbstring": "*",
@@ -34,7 +34,7 @@
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "~3",
+        "graviton/common-bundle": "dev-develop as 3.6.0",
         "graviton/rql-parser-bundle": "^3.0.2",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
