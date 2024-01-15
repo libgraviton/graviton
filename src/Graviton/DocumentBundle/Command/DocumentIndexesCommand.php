@@ -12,6 +12,8 @@ use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use JMS\Serializer\SerializerInterface;
+use MongoDB\Client;
+use MongoDB\Collection;
 use MongoDB\Driver\Exception\CommandException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -79,19 +81,145 @@ class DocumentIndexesCommand extends Command
             $this->workOnClass($class);
         }
 
-        $this->manager->getSchemaManager()->ensureIndexes();
+        $client = $this->manager->getClient();
 
-        return 0;
+        // which database?
+        $dbs = $this->manager->getDocumentDatabases();
+        if (count($dbs) < 1) {
+            throw new \LogicException("Could not determine database!");
+        }
+        $db = array_pop($dbs);
+        $dbName = $db->getDatabaseName();
+
+        // delete unused collections!
+        $this->deleteUnusedCollections($client, $dbName);
+
+        // ensure indexes
+        $this->ensureIndexes($client, $dbName);
+
+        return Command::SUCCESS;
+    }
+
+    private function deleteUnusedCollections(Client $client, string $dbName) {
+        $wantToKeep = array_values($this->usedClasses);
+        $db = $client->selectDatabase($dbName);
+
+        foreach ($db->listCollectionNames() as $collectionName) {
+            if (!in_array($collectionName, $wantToKeep)) {
+                // recordcount?
+                $collection = $db->selectCollection($collectionName);
+                if ($collection->countDocuments() < 1) {
+                    $db->dropCollection($collectionName);
+                }
+            }
+
+        }
+    }
+
+    private function ensureIndexes(Client $client, string $dbName) {
+        foreach ($this->usedClasses as $className => $collectionName) {
+            // has indexes?
+            if (empty($this->documentIndexes[$collectionName])) {
+                continue;
+            }
+
+            $this->manager->clear();
+
+            $collection = $client->selectDatabase($dbName)->selectCollection($collectionName);
+
+            $hasIndexes = $this->manager->getSchemaManager()->getDocumentIndexes($className);
+            $hasIndexes2 = $this->getCurrentIndexes($collection);
+            $shouldIndexes = $this->documentIndexes[$collectionName];
+
+            if ($collection->getCollectionName() == 'AccountStatement') {
+                $hans = 3;
+            }
+
+            // first, delete unnecessary ones
+            $this->diffAndDoSomething($collection, $shouldIndexes, $hasIndexes,'deleteRight');
+
+            // first, diff *has* and *should* and create right missing
+            $this->diffAndDoSomething($collection, $hasIndexes, $shouldIndexes, 'createRight');
+        }
+
+    }
+
+    /**
+     * diff left and right index and do something
+     *
+     * @param $leftSide
+     * @param $rightSide
+     * @return void
+     */
+    private function diffAndDoSomething(Collection $collection, $leftSide, $rightSide, $action)
+    {
+
+
+        foreach ($rightSide as $rightIndex) {
+
+
+            // this side options
+            $rightKeys = array($rightIndex['keys'])[0];
+            $rightOptions = array($rightIndex['options'])[0];
+
+            if ($collection->getCollectionName() == 'AccountStatement' && $rightKeys == ['account.$id' => 1]) {
+                $hans = 3;
+            }
+
+            unset($rightOptions['name']);
+
+            // do we have this?
+            $doesRightExist = false;
+            foreach ($leftSide as $leftIndex) {
+                $leftKeys = $leftIndex['keys'];
+                $leftOptions = $leftIndex['options'];
+                unset($leftOptions['name']);
+
+                $doesRightExist = empty(array_diff_assoc($leftKeys, $rightKeys)) && empty(array_diff_assoc($leftOptions, $rightOptions));
+
+                if ($doesRightExist) {
+                    // break if found!
+                    break;
+                }
+            }
+
+            if (!$doesRightExist && $action == 'deleteRight') {
+                try {
+                    $collection->dropIndex($rightIndex['options']['name']);
+                } catch (\Throwable $t) {
+                    $hans = 3;
+                }
+            }
+
+            if (!$doesRightExist && $action == 'createRight') {
+                try {
+                    $collection->createIndex($rightIndex['keys'], $rightIndex['options']);
+                } catch (\Throwable $t) {
+                    $hans = 3;
+                }
+            }
+
+
+        }
+
+
+    }
+
+    private function getCurrentIndexes(Collection $collection)
+    {
+        $indexes = [];
+        foreach ($collection->listIndexes() as $idx) {
+
+            $hans = 3;
+        }
+        $indexes = iterator_to_array($collection->listIndexes());
+        $hans = 3;
     }
 
     private function workOnClass(ClassMetadata $class)
     {
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             return;
-        }
-
-        if ($class->getCollection() == "File") {
-            $hans = 3;
         }
 
         $this->usedClasses[$class->getName()] = $class->getCollection();
@@ -104,17 +232,6 @@ class DocumentIndexesCommand extends Command
                 $targetClass = $class->getAssociationTargetClass($fieldName);
                 $this->workOnClass($this->manager->getMetadataFactory()->getMetadataFor($targetClass));
             }
-        }
-    }
-
-    private function updateIndexesForClass(string $className)
-    {
-        try {
-            $this->manager->getSchemaManager()
-                ->ensureDocumentIndexes($className);
-        } catch (CommandException $e) {
-            // assume some name collision -> delete all indexes..
-            $this->manager->getSchemaManager()->deleteDocumentIndexes($className);
         }
     }
 }
