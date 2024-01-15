@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\Mapping\Driver\AnnotationDriver;
 use Graviton\Graviton;
 
 /**
@@ -23,7 +22,7 @@ use Graviton\Graviton;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DocumentDriver extends AnnotationDriver
+class DocumentDriver
 {
 
     /**
@@ -37,15 +36,26 @@ class DocumentDriver extends AnnotationDriver
     private $classCache = [];
 
     /**
+     * @var Reader reader
+     */
+    private Reader $reader;
+
+    /**
+     * @var \SplFileInfo[] files
+     */
+    private array $classes;
+
+    /**
      * DocumentDriver constructor.
      *
      * @param Reader $reader reader
      * @param null   $paths  paths
      */
-    public function __construct($reader, $paths = null)
+    public function __construct($reader, array $classes)
     {
-        parent::__construct($reader, $paths);
+        $this->reader = $reader;
         $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
+        $this->classes = $classes;
         $this->loadCache();
     }
 
@@ -72,23 +82,6 @@ class DocumentDriver extends AnnotationDriver
     }
 
     /**
-     * only return those that have the MongoDB Document annotation
-     *
-     * @param string $className class name
-     *
-     * @return bool true if yes, false otherwise
-     */
-    public function isTransient($className)
-    {
-        $reflectionClass = new \ReflectionClass($className);
-
-        return (
-            $this->reader->getClassAnnotation($reflectionClass, Document::class) === null &&
-            $this->reader->getClassAnnotation($reflectionClass, EmbeddedDocument::class) === null
-        );
-    }
-
-    /**
      * gets a field
      *
      * @param string $className class name
@@ -98,6 +91,21 @@ class DocumentDriver extends AnnotationDriver
      */
     public function getFields($className)
     {
+        /*
+         * $reflectionClass = new ReflectionClass(Foo::class);
+$property = $reflectionClass->getProperty('bar');
+
+$reader = new AnnotationReader();
+$myAnnotation = $reader->getPropertyAnnotation(
+    $property,
+    MyAnnotation::class
+);
+
+echo $myAnnotation->myProperty; // result: "value"
+
+
+         */
+
         if (isset($this->classCache[$className])) {
             return $this->classCache[$className];
         }
@@ -129,18 +137,5 @@ class DocumentDriver extends AnnotationDriver
         }
 
         return $map;
-    }
-
-    /**
-     * load class metadata - not used here!
-     *
-     * @param string        $className class name
-     * @param ClassMetadata $metadata  metadata
-     *
-     * @return void
-     */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
-    {
-        throw new \LogicException('Not implemented');
     }
 }

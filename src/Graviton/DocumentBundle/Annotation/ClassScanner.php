@@ -70,7 +70,7 @@ class ClassScanner
                 ->filter(
                     function (\SplFileInfo $file) {
                         return (
-                            strpos($file->getPathname(), 'Graviton') !== false
+                            str_contains($file->getPathname(), 'Graviton')
                         );
                     }
                 );
@@ -95,7 +95,19 @@ class ClassScanner
      */
     public static function getDocumentDriver(array $directories = [])
     {
+        $classes = Finder::create()
+            ->files()
+            ->in($directories)
+            ->filter(
+                function (\SplFileInfo $file) {
+                    return (
+                        str_contains($file->getPathname(), '/Document/') &&
+                        str_contains($file->getPathname(), 'Graviton')
+                    );
+                }
+            );
+
         $annotationReader = new AnnotationReader();
-        return new DocumentDriver($annotationReader, $directories);
+        return new DocumentDriver($annotationReader, iterator_to_array($classes));
     }
 }

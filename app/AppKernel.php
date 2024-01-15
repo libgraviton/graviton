@@ -61,7 +61,7 @@ class AppKernel extends Kernel
      *
      * @return array bundles
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
