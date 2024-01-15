@@ -48,7 +48,7 @@
 
         "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
-        "doctrine/mongodb-odm-bundle": "^4.3.0",
+        "doctrine/mongodb-odm-bundle": "~4",
 
         "php-jsonpatch/php-jsonpatch": "~4.0",
         "justinrainbow/json-schema": "~5.2.0",

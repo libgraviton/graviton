@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0bf6f68064215eee98c15ca90080fd07",
+    "content-hash": "e17f8961c767052d386ad9c6d5eb8c55",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1606,12 +1606,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
-                "reference": "84946bc200567b717c6ab4633cb3fa913f41d081"
+                "reference": "9e860719a2aff7541db5aeba32e4b3e15a6b68db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/84946bc200567b717c6ab4633cb3fa913f41d081",
-                "reference": "84946bc200567b717c6ab4633cb3fa913f41d081",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/9e860719a2aff7541db5aeba32e4b3e15a6b68db",
+                "reference": "9e860719a2aff7541db5aeba32e4b3e15a6b68db",
                 "shasum": ""
             },
             "require": {
@@ -1648,7 +1648,7 @@
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/feature/sf64"
             },
-            "time": "2024-01-15T13:36:46+00:00"
+            "time": "2024-01-15T15:14:36+00:00"
         },
         {
             "name": "graviton/link-header-rel-parser",

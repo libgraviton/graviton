@@ -7,6 +7,7 @@ namespace Graviton\LogBundle\Monolog\Processor;
 
 use Graviton\LogBundle\Listener\RequestIdListener;
 use Monolog\LogRecord;
+use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RequestIdProcessor
+class RequestIdProcessor implements ProcessorInterface
 {
 
     /**
@@ -52,5 +53,10 @@ class RequestIdProcessor
         }
 
         return $record;
+    }
+
+    public function __invoke(LogRecord $record)
+    {
+        return $this->format($record);
     }
 }
