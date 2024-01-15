@@ -872,7 +872,8 @@ class ResourceGenerator extends AbstractGenerator
                         'value' => '@doctrine_mongodb.odm.default_document_manager'
                     ]
                 ],
-                className: 'Graviton\RestBundle\Model\DocumentModel'
+                className: 'Graviton\RestBundle\Model\DocumentModel',
+                public: true
             );
         }
 
@@ -894,7 +895,8 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => '@doctrine_mongodb.odm.default_document_manager'
                 ]
             ],
-            className: 'Graviton\RestBundle\Model\DocumentModel'
+            className: 'Graviton\RestBundle\Model\DocumentModel',
+            public: true
         );
     }
 
