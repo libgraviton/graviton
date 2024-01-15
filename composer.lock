@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb1af6c429c442fe53edda76e4f9da08",
+    "content-hash": "046a623faeb9c1f9b4ad2c39ee479169",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1510,16 +1510,16 @@
         },
         {
             "name": "graviton/common-bundle",
-            "version": "dev-develop",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
-                "reference": "7313ca4649d505e396934458f2f848d0dd778df0"
+                "reference": "365736be6511ca06423bc675601eb77c05dd4328"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/7313ca4649d505e396934458f2f848d0dd778df0",
-                "reference": "7313ca4649d505e396934458f2f848d0dd778df0",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/365736be6511ca06423bc675601eb77c05dd4328",
+                "reference": "365736be6511ca06423bc675601eb77c05dd4328",
                 "shasum": ""
             },
             "require": {
@@ -1535,7 +1535,6 @@
             "require-dev": {
                 "phpunit/phpunit": "~9"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1555,9 +1554,9 @@
             "description": "Common functionality for our php apps",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/develop"
+                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/v3.6.0"
             },
-            "time": "2023-12-11T10:09:26+00:00"
+            "time": "2023-12-11T10:09:25+00:00"
         },
         {
             "name": "graviton/link-header-rel-parser",
@@ -8921,18 +8920,9 @@
             "time": "2022-06-03T18:03:27+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "graviton/common-bundle",
-            "version": "dev-develop",
-            "alias": "3.6.0",
-            "alias_normalized": "3.6.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "graviton/common-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
