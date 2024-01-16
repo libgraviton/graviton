@@ -20,13 +20,6 @@ class SwaggerGenerateCommand extends Command
 {
 
     /**
-     * container
-     *
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    /**
      * root dir
      *
      * @var string
@@ -48,6 +41,22 @@ class SwaggerGenerateCommand extends Command
     private $apidoc;
 
     /**
+     * @var string $generatorHash hash
+     */
+    private $generatorHash;
+
+    /**
+     * constructor
+     *
+     * @param $generatorHash hash
+     */
+    public function __construct($generatorHash)
+    {
+        parent::__construct();
+        $this->generatorHash = $generatorHash;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @return void
@@ -60,18 +69,6 @@ class SwaggerGenerateCommand extends Command
             ->setDescription(
                 'Generates swagger.json in web dir'
             );
-    }
-
-    /**
-     * set container
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer($container)
-    {
-        $this->container = $container;
     }
 
     /**
@@ -123,13 +120,12 @@ class SwaggerGenerateCommand extends Command
         $swaggerFile = $this->rootDir . 'swagger.json';
         $swaggerHashFile = $this->rootDir . 'swagger.json.hash';
 
-        $hash = $this->container->getParameter('graviton.generator.hash.all');
         $doGenerate = !($this->filesystem->exists($swaggerFile) && $this->filesystem->exists($swaggerHashFile));
 
         // really don't generate? -> compare hash
         if (!$doGenerate) {
             $currentHash = file_get_contents($swaggerHashFile);
-            if ($hash != $currentHash) {
+            if ($this->generatorHash != $currentHash) {
                 $doGenerate = true;
             }
         }
@@ -142,7 +138,7 @@ class SwaggerGenerateCommand extends Command
 
             $this->filesystem->dumpFile(
                 $swaggerHashFile,
-                $hash
+                $this->generatorHash
             );
 
             echo 'wrote file '.$swaggerFile.PHP_EOL;

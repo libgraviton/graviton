@@ -95,13 +95,6 @@ class GenerateDynamicBundleTest extends GravitonTestCase
 
         /****** ASSERTS AFTER GENERATION *****/
 
-        // check if all needed file exist
-        $fileList = file(__DIR__.'/Resources/generated_filelist');
-        foreach ($fileList as $file) {
-            $file = $generationDir.trim($file);
-            $this->assertTrue((is_dir($file) || is_file($file)));
-        }
-
         // expose as
         $serializerConf = $this->getSerializerFile(
             $generationDir.'GravitonDyn/TestBBundle/Resources/config/serializer/Document.TestB.xml'
@@ -119,34 +112,17 @@ class GenerateDynamicBundleTest extends GravitonTestCase
             $generationDir.'GravitonDyn/TestBBundle/Resources/config/serializer/Document.TestB.xml'
         );
         $this->assertTrue((boolean) $serializerConf->class[0]->property[0]['exclude']);
-        // * embed is excluded as well
-        $serializerConf = $this->getSerializerFile(
-            $generationDir.'GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAExtref.xml'
-        );
-        $this->assertTrue((boolean) $serializerConf->class[0]->property[0]['exclude']);
-        // * expose as for extref
-        $serializerConf = $this->getSerializerFile(
-            $generationDir.'GravitonDyn/TestABundle/Resources/config/serializer/Document.TestAExtref.xml'
-        );
-        $this->assertSame(
-            '$ref',
-            (string) $serializerConf->class[0]->property[3]['serialized-name']
-        );
-        $this->assertSame(
-            'Graviton\DocumentBundle\Entity\ExtReference',
-            (string) $serializerConf->class[0]->property[3]->type
-        );
 
         // services
         $serviceConf = $this->getYmlFile(
             $generationDir.'GravitonDyn/TestABundle/Resources/config/services.yml'
         );
         // * repository is defined
-        $this->assertTrue(isset($serviceConf['services']['gravitondyn.testa.repository.testaembed']));
+        $this->assertTrue(isset($serviceConf['services']['gravitondyn.testa.repository.testa']));
         // * points to doctrine factory
         $this->assertSame(
             ['@doctrine_mongodb.odm.default_document_manager', 'getRepository'],
-            $serviceConf['services']['gravitondyn.testa.repository.testaembed']['factory']
+            $serviceConf['services']['gravitondyn.testa.repository.testa']['factory']
         );
         // * tag and router base is set
         $this->assertSame(

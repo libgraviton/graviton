@@ -75,7 +75,7 @@ class RestrictionListenerTest extends RestTestCase
 
         // make sure our clientId field is not rendered!
         foreach ($results as $result) {
-            $this->assertObjectNotHasAttribute('clientId', $result);
+            $this->assertObjectNotHasProperty('clientId', $result);
         }
 
         // with select()
@@ -104,7 +104,7 @@ class RestrictionListenerTest extends RestTestCase
 
         // make sure our clientId field is not rendered!
         foreach ($results as $result) {
-            $this->assertObjectNotHasAttribute('clientId', $result);
+            $this->assertObjectNotHasProperty('clientId', $result);
         }
 
         // same but for multipipeline doing the same twice
@@ -114,7 +114,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals($expectedCount, count($results->second));
 
         foreach (array_merge($results->first, $results->second) as $result) {
-            $this->assertObjectNotHasAttribute('clientId', $result);
+            $this->assertObjectNotHasProperty('clientId', $result);
         }
     }
 

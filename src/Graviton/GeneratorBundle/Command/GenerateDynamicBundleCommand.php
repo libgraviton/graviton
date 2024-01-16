@@ -486,7 +486,8 @@ class GenerateDynamicBundleCommand extends Command
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
-                $subRecource->getId()
+                $subRecource->getId(),
+                true
             );
         }
 
@@ -504,7 +505,8 @@ class GenerateDynamicBundleCommand extends Command
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
-                $jsonDef->getId()
+                $jsonDef->getId(),
+                false
             );
         }
     }

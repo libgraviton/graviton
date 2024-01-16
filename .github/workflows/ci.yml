@@ -14,19 +14,19 @@ jobs:
     # Docs: https://docs.github.com/en/actions/using-containerized-services
     services:
       mongodb:
-        image: mongo:6.0
+        image: mongo:7.0
         ports:
           - 27017/tcp
 
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.2']
+        php-versions: ['8.3']
         experimental: [false]
         # these are allowed to fail!
-        include:
-          - php-versions: '8.3'
-            experimental: true
+        #include:
+        #  - php-versions: '8.3'
+        #    experimental: true
 
     continue-on-error: ${{ matrix.experimental }}
 

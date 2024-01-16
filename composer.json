@@ -23,7 +23,7 @@
         ]
     },
     "require": {
-        "php": ">=8.2.0",
+        "php": ">=8.3.0",
         "ext-json": "*",
         "ext-ctype": "*",
         "ext-mbstring": "*",
@@ -46,7 +46,7 @@
 
         "jms/serializer-bundle": "~5",
 
-        "doctrine/persistence": "~2",
+        "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
         "doctrine/mongodb-odm-bundle": "^4.3.0",
 

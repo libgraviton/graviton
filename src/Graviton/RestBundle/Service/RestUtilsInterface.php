@@ -78,25 +78,6 @@ interface RestUtilsInterface
     public function getRoutesByBasename($baseName);
 
     /**
-     * Gets the Model assigned to the RestController
-     *
-     * @param Route $route Route
-     *
-     * @return bool|object The model or false
-     * @throws \Exception
-     */
-    public function getModelFromRoute(Route $route);
-
-    /**
-     * Gets the controller from a Route
-     *
-     * @param Route $route Route
-     *
-     * @return bool|object The controller or false
-     */
-    public function getControllerFromRoute(Route $route);
-
-    /**
      * validate raw json input
      *
      * @param Request       $request  request

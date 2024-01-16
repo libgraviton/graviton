@@ -14,24 +14,12 @@ services:
   # provider
   Graviton\SecurityBundle\Authentication\UserProvider:
 
-  graviton.security.authentication.provider.model.noop:
-    class: Graviton\SecurityBundle\User\Model\NullModel
-    public: true
-    calls:
-      -
-        method: setRepository
-        arguments:
-          - "@graviton.core.repository.dummy"
-
   graviton.security.controller.whoami:
     class: Graviton\SecurityBundle\Controller\WhoAmIController
     parent: graviton.rest.controller
-    public: true
+    tags:
+      - graviton.rest
     calls:
-      -
-        method: setModel
-        arguments:
-          - "@=service(parameter('graviton.security.authentication.provider.model'))"
       -
         method: setQueryField
         arguments:

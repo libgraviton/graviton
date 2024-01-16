@@ -187,7 +187,7 @@ class ShowcaseControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/500');
-        $this->assertObjectNotHasAttribute('hiddenField', $client->getResults());
+        $this->assertObjectNotHasProperty('hiddenField', $client->getResults());
     }
 
     /**
@@ -199,15 +199,15 @@ class ShowcaseControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/500?deselect(contact,someOtherField,contacts)');
-        $this->assertObjectNotHasAttribute('contact', $client->getResults());
-        $this->assertObjectNotHasAttribute('someOtherField', $client->getResults());
+        $this->assertObjectNotHasProperty('contact', $client->getResults());
+        $this->assertObjectNotHasProperty('someOtherField', $client->getResults());
         $this->assertEquals([], $client->getResults()->contacts);
 
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?eq(id,string:500)&deselect(contact,someOtherField,contacts)');
         $this->assertTrue(($client->getResults()[0] instanceof \stdClass));
-        $this->assertObjectNotHasAttribute('contact', $client->getResults()[0]);
-        $this->assertObjectNotHasAttribute('someOtherField', $client->getResults()[0]);
+        $this->assertObjectNotHasProperty('contact', $client->getResults()[0]);
+        $this->assertObjectNotHasProperty('someOtherField', $client->getResults()[0]);
         $this->assertEquals([], $client->getResults()[0]->contacts);
     }
 
@@ -698,7 +698,7 @@ class ShowcaseControllerTest extends RestTestCase
         $client->request('GET', '/hans/showcase/500');
 
         $result = $client->getResults();
-        $this->assertObjectHasAttribute('anotherInt', $result);
+        $this->assertObjectHasProperty('anotherInt', $result);
     }
 
     /**
@@ -957,11 +957,11 @@ class ShowcaseControllerTest extends RestTestCase
         // make sure we have an extref field here
         $this->assertEquals('extref', $schema->properties->nestedApps->items->properties->{'$ref'}->format);
         // and that 'id' is not there
-        $this->assertObjectNotHasAttribute('id', $schema->properties->nestedApps->items->properties);
+        $this->assertObjectNotHasProperty('id', $schema->properties->nestedApps->items->properties);
 
         // embed case - check the embedded 'contactCode'
         $this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
-        $this->assertObjectNotHasAttribute('id', $schema->properties->contactCode->properties);
+        $this->assertObjectNotHasProperty('id', $schema->properties->contactCode->properties);
     }
 
     /**

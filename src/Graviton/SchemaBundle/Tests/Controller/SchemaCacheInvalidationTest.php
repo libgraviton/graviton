@@ -27,11 +27,11 @@ class SchemaCacheInvalidationTest extends RestTestCase
         $client->request('GET', '/schema/testcase/schema-cache-invalidation/item');
 
         // 'en' must exist
-        $this->assertObjectHasAttribute('en', $client->getResults()->properties->name->properties);
+        $this->assertObjectHasProperty('en', $client->getResults()->properties->name->properties);
 
         // make sure they not exist before - no properties
-        $this->assertObjectNotHasAttribute('es', $client->getResults()->properties->name->properties);
-        $this->assertObjectNotHasAttribute('properties', $client->getResults()->properties->apps);
+        $this->assertObjectNotHasProperty('es', $client->getResults()->properties->name->properties);
+        $this->assertObjectNotHasProperty('properties', $client->getResults()->properties->apps);
 
         // insert new Language
         $newLang = (object) [
@@ -58,9 +58,9 @@ class SchemaCacheInvalidationTest extends RestTestCase
         $client->request('GET', '/schema/testcase/schema-cache-invalidation/item');
 
         // now, 'es' should be in the translatable schema
-        $this->assertObjectHasAttribute('es', $client->getResults()->properties->name->properties);
+        $this->assertObjectHasProperty('es', $client->getResults()->properties->name->properties);
 
         // and our testapp should be a property of the x-dynamic-key
-        $this->assertObjectHasAttribute('testapp', $client->getResults()->properties->apps->properties);
+        $this->assertObjectHasProperty('testapp', $client->getResults()->properties->apps->properties);
     }
 }

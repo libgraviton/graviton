@@ -5,10 +5,14 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 /**
  * A service that generates a swagger conform service spec dynamically.
@@ -41,23 +45,49 @@ class Swagger
     private $versionInformation;
 
     /**
+     * @var Router
+     */
+    private Router $router;
+
+    /**
+     * @var array stack of controller
+     */
+    private array $controller = [];
+
+    /**
      * Constructor
      *
+     * @param Router      $router             router
      * @param RestUtils   $restUtils          rest utils
      * @param SchemaModel $schemaModel        schema model instance
      * @param SchemaUtils $schemaUtils        schema utils
      * @param array       $versionInformation version information
      */
     public function __construct(
+        Router $router,
         RestUtils $restUtils,
         SchemaModel $schemaModel,
         SchemaUtils $schemaUtils,
         array $versionInformation
     ) {
+        $this->router = $router;
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
         $this->versionInformation = $versionInformation;
+    }
+
+    /**
+     * adds a controller
+     *
+     * @param string         $name       name
+     * @param RestController $controller controller
+     *
+     * @return void
+     */
+    public function addController(string $name, RestController $controller)
+    {
+        $this->controller[$name] = $controller;
     }
 
     /**
@@ -90,8 +120,8 @@ class Swagger
                 }
 
                 /** @var \Graviton\RestBundle\Model\DocumentModel $thisModel */
-                $thisModel = $this->restUtils->getModelFromRoute($route);
-                if ($thisModel === false) {
+                $thisModel = $this->getModelFromRoute($route);
+                if (empty($thisModel)) {
                     throw new \LogicException(
                         sprintf(
                             'Could not resolve route "%s" to model',
@@ -176,6 +206,33 @@ class Swagger
         $ret['paths'] = $paths;
 
         return $ret;
+    }
+
+    /**
+     * returns the model from a route
+     *
+     * @param Route $route route
+     *
+     * @return DocumentModel|null model
+     */
+    private function getModelFromRoute(Route $route) : ?ModelInterface
+    {
+        $controllerName = $route->getDefault('_controller');
+        if (empty($controllerName)) {
+            return null;
+        }
+
+        $controllerParts = explode('::', $controllerName);
+        if (empty($controllerParts[0])) {
+            return null;
+        }
+
+        $controllerName = $controllerParts[0];
+        if (!empty($this->controller[$controllerName])) {
+            return $this->controller[$controllerName]->getModel();
+        }
+
+        return null;
     }
 
     /**
