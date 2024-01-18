@@ -119,6 +119,12 @@ class DocumentDriver
         return $map;
     }
 
+    /**
+     * is transient
+     *
+     * @param string $className classname
+     * @return false
+     */
     public function isTransient(string $className)
     {
         return false;
