@@ -11,24 +11,15 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
- *
- * @ODM\EmbeddedDocument
  */
+#[ODM\EmbeddedDocument]
 class {{ document }}Embedded extends {{ document }}Base
 {
 
-    /**
-    * @var mixed $id
-    *
-    * @ODM\Field(type="string")
-    */
+    #[ODM\Field(type: "string")]
     protected $id;
 
-    /**
-    * @var ObjectId $id
-    *
-    * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
-    */
+    #[ODM\Id(type: "id", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
     protected $realId;
 
     /**

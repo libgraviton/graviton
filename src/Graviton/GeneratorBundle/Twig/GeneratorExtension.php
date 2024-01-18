@@ -126,7 +126,7 @@ class GeneratorExtension implements ExtensionInterface
             }
 
             return sprintf(
-                '@ODM\%s(targetDocument="%s"%s)',
+                '#[ODM\%s(targetDocument: "%s"%s)]',
                 $refType.$refAmount,
                 $className,
                 $addedProperties
@@ -143,7 +143,7 @@ class GeneratorExtension implements ExtensionInterface
         }
 
         return sprintf(
-            '@ODM\Field(type="%s")',
+            '#[ODM\Field(type: "%s")]',
             $fieldType
         );
     }
@@ -261,12 +261,12 @@ class GeneratorExtension implements ExtensionInterface
         }
 
         return sprintf(
-            '@ODM\Index(%s)',
+            '#[ODM\Index(%s)]',
             implode(
                 ', ',
                 array_map(
                     function ($key, $val) {
-                        return $key.'='.$val;
+                        return sprintf('%s="%s"', $key, $val);
                     },
                     array_keys($indexAttributes),
                     $indexAttributes
@@ -302,7 +302,7 @@ class GeneratorExtension implements ExtensionInterface
         );
 
         return sprintf(
-            ' @ODM\Index(keys={%s}, name="%s", background=true, options=%s)',
+            '#[ODM\Index(keys={%s}, name="%s", background=true, options=%s)]',
             implode(', ', $keys),
             $collectionName.'Text',
             json_encode($options)
