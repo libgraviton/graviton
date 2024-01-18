@@ -55,7 +55,7 @@ class GravitonTestCase extends WebTestCase
      * in parent::createRestClient and is otherwise API compatible with said method.
      *
      * @param array $options An array of options to pass to the createKernel class
-     * @param array $server An array of server parameters
+     * @param array $server  An array of server parameters
      *
      * @return Client A Client instance
      */
