@@ -36,27 +36,15 @@ class RequestIdProcessor implements ProcessorInterface
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * processes the record and adds a random request id
-     *
-     * @param array $record record
-     *
-     * @return array new record
-     */
-    public function format(LogRecord $record): string
+    public function __invoke(LogRecord $record): LogRecord
     {
         if ($this->requestStack->getCurrentRequest() instanceof Request) {
-            $record['extra']['requestId'] = $this->requestStack->getCurrentRequest()->attributes->get(
+            $record->extra['requestId'] = $this->requestStack->getCurrentRequest()->attributes->get(
                 RequestIdListener::ATTRIBUTE_NAME,
                 '????'
             );
         }
 
         return $record;
-    }
-
-    public function __invoke(LogRecord $record)
-    {
-        return $this->format($record);
     }
 }
