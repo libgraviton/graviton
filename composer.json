@@ -34,11 +34,11 @@
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "dev-feature/sf64 as 3.6.0",
+        "graviton/common-bundle": "dev-develop",
         "graviton/rql-parser-bundle": "dev-develop",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
-        "graviton/mongodb-migrations-bundle": "dev-develop",
+        "graviton/mongodb-migrations-bundle": "~2",
 
         "symfony/symfony": "~6.4.0",
         "symfony/monolog-bundle": "~3.0",
@@ -48,7 +48,6 @@
 
         "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
-        "doctrine/mongodb-odm-bundle": "~4",
 
         "php-jsonpatch/php-jsonpatch": "~4.0",
         "justinrainbow/json-schema": "~5.2.0",
