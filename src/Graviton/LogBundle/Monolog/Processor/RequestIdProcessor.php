@@ -36,6 +36,13 @@ class RequestIdProcessor implements ProcessorInterface
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * make change
+     *
+     * @param LogRecord $record record
+     *
+     * @return LogRecord record
+     */
     public function __invoke(LogRecord $record): LogRecord
     {
         if ($this->requestStack->getCurrentRequest() instanceof Request) {

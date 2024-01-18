@@ -108,7 +108,7 @@ class GeneratorExtension implements ExtensionInterface
             // object type
             if (isset($field['relType']) && $field['relType'] == 'ref') {
                 $refType = 'Reference';
-                $addedProperties .= ', cascade={"persist","refresh","merge"}, orphanRemoval=false';
+                $addedProperties .= ', cascade: ["persist", "refresh" ,"merge"], orphanRemoval: false';
             } else {
                 $refType = 'Embed';
             }
@@ -116,7 +116,7 @@ class GeneratorExtension implements ExtensionInterface
             $refAmount = 'One';
             if (substr($field['type'], -2) == '[]') {
                 $refAmount = 'Many';
-                $addedProperties .= ', strategy="setArray"';
+                $addedProperties .= ', strategy: "setArray"';
             }
 
             // clean [] if present
@@ -177,14 +177,7 @@ class GeneratorExtension implements ExtensionInterface
             $indexes[] = $this->getDoctrineTextIndexAnnotation($collectionName, $textIndexes);
         }
 
-        $indexLines = array_map(
-            function ($singleIndexLine) {
-                return ' * '.$singleIndexLine;
-            },
-            $indexes
-        );
-
-        return implode(PHP_EOL, $indexLines);
+        return implode(PHP_EOL, $indexes);
     }
 
     /**
@@ -205,7 +198,7 @@ class GeneratorExtension implements ExtensionInterface
         $indexOptions = null;
         if (isset($matches[2]) && !empty($matches[2])) {
             $index = $matches[1];
-            $indexOptions = str_replace(';', ',', $matches[2]);
+            $indexOptions = str_replace([';', '='], [', ', ' => '], $matches[2]);
         }
 
         $fields = explode(',', trim($index));
@@ -220,11 +213,7 @@ class GeneratorExtension implements ExtensionInterface
                 $field = substr($field, 1);
             }
 
-            $keys[] = sprintf(
-                '"%s"="%s"',
-                $field,
-                $dir
-            );
+            $keys[$field] = $dir;
 
             $nameParts[] = str_replace([',', '-', '+', '.', '$'], '-', $field);
             if ($dir == 'asc') {
@@ -239,13 +228,8 @@ class GeneratorExtension implements ExtensionInterface
             $nameParts[] = 'ttl';
         }
 
-        $keys = implode(', ', $keys);
-
         $indexAttributes = [];
-        $indexAttributes['keys'] = sprintf(
-            '{%s}',
-            $keys
-        );
+        $indexAttributes['keys'] = $this->encodeArray($keys);
         $indexAttributes['name'] = sprintf(
             '"%s"',
             implode('_', $nameParts)
@@ -255,7 +239,7 @@ class GeneratorExtension implements ExtensionInterface
         // options?
         if (!is_null($indexOptions)) {
             $indexAttributes['options'] = sprintf(
-                '{%s}',
+                '[%s]',
                 $indexOptions
             );
         }
@@ -266,7 +250,7 @@ class GeneratorExtension implements ExtensionInterface
                 ', ',
                 array_map(
                     function ($key, $val) {
-                        return sprintf('%s="%s"', $key, $val);
+                        return sprintf('%s: %s', $key, $val);
                     },
                     array_keys($indexAttributes),
                     $indexAttributes
@@ -294,7 +278,7 @@ class GeneratorExtension implements ExtensionInterface
         $keys = array_map(
             function ($fieldName) {
                 return sprintf(
-                    '"%s"="text"',
+                    '"%s" => "text"',
                     $fieldName
                 );
             },
@@ -302,10 +286,48 @@ class GeneratorExtension implements ExtensionInterface
         );
 
         return sprintf(
-            '#[ODM\Index(keys={%s}, name="%s", background=true, options=%s)]',
+            '#[ODM\Index(keys: [%s], name: "%s", background: true, options: %s)]',
             implode(', ', $keys),
             $collectionName.'Text',
-            json_encode($options)
+            $this->encodeArray($options)
         );
+    }
+
+    /**
+     * encodes array
+     *
+     * @param array $in in
+     *
+     * @return string encoded
+     */
+    private function encodeArray(array $in) : string
+    {
+        $els = [];
+        foreach ($in as $key => $val) {
+            if (is_array($val)) {
+                $els[] = sprintf("'%s' => %s", $key, $this->encodeArray($val));
+            } else {
+                $els[] = sprintf("'%s' => %s", $key, $this->encodeSingleVal($val));
+            }
+        }
+        return sprintf('[%s]', implode(', ', $els));
+    }
+
+    /**
+     * encode single val
+     *
+     * @param $val val
+     *
+     * @return float|int|string encoded val
+     */
+    private function encodeSingleVal($val)
+    {
+        if (is_bool($val)) {
+            return $val ? 'true' : 'false';
+        }
+        if (is_numeric($val)) {
+            return $val;
+        }
+        return sprintf("'%s'", $val);
     }
 }
