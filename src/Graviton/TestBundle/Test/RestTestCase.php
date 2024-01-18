@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RestTestCase extends GravitonTestCase
 {
+    //private static $_client;
 
     /**
      * resets languages
@@ -46,10 +47,15 @@ class RestTestCase extends GravitonTestCase
      *
      * @return Client A Client instance
      */
-    protected static function createRestClient(array $options = [], array $server = array())
+    /*
+    protected static function createRestClient(array $options = [], array $server = array()) : Client
     {
-        return parent::createClient($options, $server);
-    }
+        if (null == self::$_client) {
+            self::$_client = new Client(parent::createClient($options, $server));
+        }
+
+        return self::$_client;
+    }*/
 
     /**
      * test for content type based on classname based mapping

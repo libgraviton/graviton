@@ -43,7 +43,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @return string kernel class name
      */
-    public static function getKernelClass()
+    public static function getKernelClass(): string
     {
         return AppKernel::class;
     }
@@ -55,11 +55,11 @@ class GravitonTestCase extends WebTestCase
      * in parent::createRestClient and is otherwise API compatible with said method.
      *
      * @param array $options An array of options to pass to the createKernel class
-     * @param array $server  An array of server parameters
+     * @param array $server An array of server parameters
      *
      * @return Client A Client instance
      */
-    protected static function createClient(array $options = [], array $server = array())
+    protected static function createRestClient(array $options = [], array $server = array()): Client
     {
         $environment = 'test';
         if (isset($options['environment'])) {
@@ -90,7 +90,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @return \Graviton\AppKernel
      */
-    public static function createKernel(array $options = array())
+    public static function createKernel(array $options = array()): KernelInterface
     {
         $environment = 'test';
         if (getenv('SYMFONY_ENV') !== false) {
