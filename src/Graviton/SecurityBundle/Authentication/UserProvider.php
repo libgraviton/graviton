@@ -36,7 +36,7 @@ class UserProvider implements UserProviderInterface
      *
      * @return false|UserInterface
      */
-    public function loadUserByIdentifier($username)
+    public function loadUserByIdentifier($username): UserInterface
     {
         if ($username == AnonymousUser::USERNAME) {
             return new AnonymousUser();
@@ -57,19 +57,6 @@ class UserProvider implements UserProviderInterface
     public function refreshUser(UserInterface $user)
     {
         return $user;
-    }
-
-
-    /**
-     * old one
-     *
-     * @param string $username username
-     *
-     * @return UserInterface|void user
-     */
-    public function loadUserByUsername(string $username)
-    {
-        return $this->loadUserByIdentifier($username);
     }
 
     /**

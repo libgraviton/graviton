@@ -13,9 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
- *
- * @ODM\MappedSuperclass
  */
+#[ODM\MappedSuperclass]
 abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface, \ArrayAccess{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
 
@@ -56,9 +55,8 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 
     /**
     * @var Date $createdAt
-    *
-    * @ODM\Field(type="date")
     */
+    #[ODM\Field(type: "date")]
     protected $_createdAt;
 
     public function get_CreatedAt()
@@ -73,9 +71,8 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 
     /**
     * @var string $createdBy
-    *
-    * @ODM\Field(type="string")
     */
+    #[ODM\Field(type: "string")]
     protected $_createdBy;
 
     public function get_CreatedBy()
@@ -90,9 +87,8 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 
     /**
     * @var Date $lastModifiedAt
-    *
-    * @ODM\Field(type="date")
     */
+    #[ODM\Field(type: "date")]
     protected $_lastModifiedAt;
 
     public function getLastModifiedAt()
@@ -107,9 +103,8 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 
     /**
     * @var string $lastModifiedBy
-    *
-    * @ODM\Field(type="string")
     */
+    #[ODM\Field(type: "string")]
     protected $_lastModifiedBy;
 
     public function getLastModifiedBy()
@@ -123,18 +118,16 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     }
 
     /**
-    * @var Date $deletedDate
-    *
-    * @ODM\Field(type="date")
+    * @var \DateTime $deletedDate
     */
+    #[ODM\Field(type: "date")]
     protected $deletedDate;
 
 {% if isrecordOriginFlagSet %}
     /**
     * @var string $recordOrigin
-    *
-    * @ODM\Field(type="string")
     */
+    #[ODM\Field(type: "string")]
     protected $recordOrigin;
 {% endif %}
 
@@ -145,8 +138,8 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     {%~ else %}
      * @var {{ field.type }} ${{ field.fieldName }}
     {%~ endif %}
-     * {{ doctrineFieldAnnotation(field) }}
     */
+    {{ doctrineFieldAnnotation(field) }}
     {%~ if field.type == 'array' %}
     protected ${{ field.fieldName }} = [];
     {%~ else %}
@@ -156,9 +149,7 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
 {% endfor %}
 
 {% for syntheticField in syntheticFields %}
-    /**
-     * {{ doctrineFieldAnnotation(syntheticField) }}
-     */
+    {{ doctrineFieldAnnotation(syntheticField) }}
     protected ${{ syntheticField.name }};
 {% endfor %}
 

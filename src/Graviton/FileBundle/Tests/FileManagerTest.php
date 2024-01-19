@@ -61,7 +61,7 @@ class FileManagerTest extends RestTestCase
         }';
 
         $uploadedFile = $this->getUploadFile('test.txt');
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'POST',
             '/file',
@@ -79,7 +79,7 @@ class FileManagerTest extends RestTestCase
         $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $response = $client->getResponse();
@@ -124,7 +124,7 @@ class FileManagerTest extends RestTestCase
         );
 
         // clean up
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'DELETE',
             $location
@@ -158,7 +158,7 @@ class FileManagerTest extends RestTestCase
         }';
 
         $uploadedFile = $this->getUploadFile('test.txt');
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'POST',
             '/file',
@@ -176,7 +176,7 @@ class FileManagerTest extends RestTestCase
         $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $response = $client->getResponse();
@@ -191,7 +191,7 @@ class FileManagerTest extends RestTestCase
         unset($contentArray['metadata']['createDate']);
 
         // PUT Lets UPDATE some additional Params
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $value = new \stdClass();
         $value->name = 'aField';
         $value->value = 'aValue';
@@ -207,7 +207,7 @@ class FileManagerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $response = $client->getResponse();
@@ -226,7 +226,7 @@ class FileManagerTest extends RestTestCase
             )
         );
         sleep(1);
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request('PATCH', $location, [], [], [], $patchJson);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -238,7 +238,7 @@ class FileManagerTest extends RestTestCase
         $this->assertTrue($pacthedAt > $modifiedAt, 'File patched should have changed modification date and did not');
 
         // clean up
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'DELETE',
             $location
@@ -281,7 +281,7 @@ class FileManagerTest extends RestTestCase
     public function testNormalDirectUpload()
     {
         $upload = $this->getUploadFile('test-file.txt');
-        $client = $this->createClient();
+        $client = $this->createRestClient();
 
         $client->request('POST', '/file', [], [$upload]);
         $response = $client->getResponse();
