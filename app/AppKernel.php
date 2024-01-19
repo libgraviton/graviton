@@ -78,10 +78,6 @@ class AppKernel extends Kernel
             new \Sentry\SentryBundle\SentryBundle()
         ];
 
-        if (isset($_ENV['TRACING_ENABLED']) && $_ENV['TRACING_ENABLED'] == 'true') {
-            $bundles[] = new \Auxmoney\OpentracingBundle\OpentracingBundle();
-        }
-
         $nonProdEnv = ($this->getEnvironment() == 'dev' || str_contains($this->getEnvironment(), 'test'));
 
         if ($nonProdEnv) {
