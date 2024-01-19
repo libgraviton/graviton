@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RestTestCase extends GravitonTestCase
 {
-    //private static $_client;
 
     /**
      * resets languages
@@ -35,27 +34,6 @@ class RestTestCase extends GravitonTestCase
         // clear language cache after each test
         static::createRestClient()->getContainer()->get('graviton.i18n.translator')->removeCachedLanguages();
     }
-
-    /**
-     * Create a REST Client.
-     *
-     * Creates a regular client first so we can profit from the bootstrapping code
-     * in parent::createRestClient and is otherwise API compatible with said method.
-     *
-     * @param array $options An array of options to pass to the createKernel class
-     * @param array $server  An array of server parameters
-     *
-     * @return Client A Client instance
-     */
-    /*
-    protected static function createRestClient(array $options = [], array $server = array()) : Client
-    {
-        if (null == self::$_client) {
-            self::$_client = new Client(parent::createClient($options, $server));
-        }
-
-        return self::$_client;
-    }*/
 
     /**
      * test for content type based on classname based mapping
