@@ -6,6 +6,8 @@
 namespace Graviton\LogBundle\Monolog\Processor;
 
 use Graviton\LogBundle\Listener\RequestIdListener;
+use Monolog\LogRecord;
+use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -14,7 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RequestIdProcessor
+class RequestIdProcessor implements ProcessorInterface
 {
 
     /**
@@ -35,16 +37,16 @@ class RequestIdProcessor
     }
 
     /**
-     * processes the record and adds a random request id
+     * make change
      *
-     * @param array $record record
+     * @param LogRecord $record record
      *
-     * @return array new record
+     * @return LogRecord record
      */
-    public function processRecord(array $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
         if ($this->requestStack->getCurrentRequest() instanceof Request) {
-            $record['extra']['requestId'] = $this->requestStack->getCurrentRequest()->attributes->get(
+            $record->extra['requestId'] = $this->requestStack->getCurrentRequest()->attributes->get(
                 RequestIdListener::ATTRIBUTE_NAME,
                 '????'
             );

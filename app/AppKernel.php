@@ -61,7 +61,7 @@ class AppKernel extends Kernel
      *
      * @return array bundles
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -77,10 +77,6 @@ class AppKernel extends Kernel
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()
         ];
-
-        if (isset($_ENV['TRACING_ENABLED']) && $_ENV['TRACING_ENABLED'] == 'true') {
-            $bundles[] = new \Auxmoney\OpentracingBundle\OpentracingBundle();
-        }
 
         $nonProdEnv = ($this->getEnvironment() == 'dev' || str_contains($this->getEnvironment(), 'test'));
 
