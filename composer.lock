@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a7d23b6c67569d57218cd5933423635",
+    "content-hash": "adfa8b6ab143d54342228e93265c1b33",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1329,16 +1329,16 @@
         },
         {
             "name": "graviton/common-bundle",
-            "version": "dev-develop",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonCommonBundle.git",
-                "reference": "bc943547ed3ec06d26bee69db7efab3d4e47aa5a"
+                "reference": "468800dd52fad466f39f08a2779298e128ab4aaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/bc943547ed3ec06d26bee69db7efab3d4e47aa5a",
-                "reference": "bc943547ed3ec06d26bee69db7efab3d4e47aa5a",
+                "url": "https://api.github.com/repos/libgraviton/GravitonCommonBundle/zipball/468800dd52fad466f39f08a2779298e128ab4aaa",
+                "reference": "468800dd52fad466f39f08a2779298e128ab4aaa",
                 "shasum": ""
             },
             "require": {
@@ -1352,7 +1352,6 @@
             "require-dev": {
                 "phpunit/phpunit": "~9"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1372,9 +1371,9 @@
             "description": "Common functionality for our php apps",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonCommonBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/develop"
+                "source": "https://github.com/libgraviton/GravitonCommonBundle/tree/v4.0.0"
             },
-            "time": "2024-01-18T11:13:09+00:00"
+            "time": "2024-01-18T11:13:08+00:00"
         },
         {
             "name": "graviton/link-header-rel-parser",
@@ -1640,16 +1639,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "dev-develop",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "cec8a3aa3b9a399ae78562dc4dc6c2cb6c7bfb7b"
+                "reference": "09ea7eca412eeb726eaf2d5354e44df6e0f944fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/cec8a3aa3b9a399ae78562dc4dc6c2cb6c7bfb7b",
-                "reference": "cec8a3aa3b9a399ae78562dc4dc6c2cb6c7bfb7b",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/09ea7eca412eeb726eaf2d5354e44df6e0f944fd",
+                "reference": "09ea7eca412eeb726eaf2d5354e44df6e0f944fd",
                 "shasum": ""
             },
             "require": {
@@ -1663,7 +1662,6 @@
                 "squizlabs/php_codesniffer": "~3",
                 "symfony/framework-bundle": "~4|~5"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1683,9 +1681,9 @@
             "description": "Port of the php-rql-parser into the world of Symfony",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonRqlParserBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/develop"
+                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/v3.1.0"
             },
-            "time": "2024-01-15T13:38:31+00:00"
+            "time": "2024-01-19T15:06:17+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -7321,16 +7319,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.15",
+            "version": "9.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "05017b80304e0eb3f31d90194a563fd53a6021f1"
+                "reference": "3767b2c56ce02d01e3491046f33466a1ae60a37f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/05017b80304e0eb3f31d90194a563fd53a6021f1",
-                "reference": "05017b80304e0eb3f31d90194a563fd53a6021f1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3767b2c56ce02d01e3491046f33466a1ae60a37f",
+                "reference": "3767b2c56ce02d01e3491046f33466a1ae60a37f",
                 "shasum": ""
             },
             "require": {
@@ -7404,7 +7402,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.15"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.16"
             },
             "funding": [
                 {
@@ -7420,7 +7418,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-01T16:55:19+00:00"
+            "time": "2024-01-19T07:03:14+00:00"
         },
         {
             "name": "sabre/event",
@@ -8787,8 +8785,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "graviton/common-bundle": 20,
-        "graviton/rql-parser-bundle": 20,
         "graviton/mongodb-fixtures-bundle": 20
     },
     "prefer-stable": true,
