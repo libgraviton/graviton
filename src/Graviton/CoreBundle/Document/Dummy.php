@@ -21,7 +21,7 @@ class Dummy
     /**
      * @var string
      */
-    #[ODM\Id(type: "id", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
+    #[ODM\Id(type: "string", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
     private $id;
 
     /**

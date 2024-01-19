@@ -19,7 +19,7 @@ class Translation
     /**
      * @var string $id
      */
-    #[ODM\Id(type: "id", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
+    #[ODM\Id(type: "string", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
     private $id;
 
     /**

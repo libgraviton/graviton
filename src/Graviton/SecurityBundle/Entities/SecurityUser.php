@@ -44,7 +44,7 @@ class SecurityUser implements UserInterface
      *
      * @return string[] The user roles
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles;
     }
@@ -84,7 +84,7 @@ class SecurityUser implements UserInterface
      *
      * @return string The username
      */
-    public function getUserIdentifier()
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }
