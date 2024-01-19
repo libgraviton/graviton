@@ -5,7 +5,7 @@
 
 namespace Graviton\DocumentBundle\Annotation\Driver;
 
-use Doctrine\Common\Annotations\Reader;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
@@ -36,19 +36,12 @@ class DocumentDriver
     private $classCache = [];
 
     /**
-     * @var Reader reader
-     */
-    private Reader $reader;
-
-    /**
      * DocumentDriver constructor.
      *
-     * @param Reader $reader reader
-     * @param null   $paths  paths
+     * @param array $paths paths
      */
-    public function __construct($reader, array $paths)
+    public function __construct(array $paths)
     {
-        $this->reader = $reader;
         $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
         $this->addPaths($paths);
         $this->loadCache();
@@ -94,12 +87,14 @@ class DocumentDriver
         $map = [];
 
         foreach ($refClass->getProperties() as $property) {
-            $idField = $this->reader->getPropertyAnnotation($property, Id::class);
-            $field = $this->reader->getPropertyAnnotation($property, Field::class);
-            $embedOne = $this->reader->getPropertyAnnotation($property, EmbedOne::class);
-            $embedMany = $this->reader->getPropertyAnnotation($property, EmbedMany::class);
-            $referenceOne = $this->reader->getPropertyAnnotation($property, ReferenceOne::class);
-            $referenceMany = $this->reader->getPropertyAnnotation($property, ReferenceMany::class);
+            $attributes = $property->getAttributes();
+
+            $idField = $this->getPropertyAttribute($attributes, Id::class);
+            $field = $this->getPropertyAttribute($attributes, Field::class);
+            $embedOne = $this->getPropertyAttribute($attributes, EmbedOne::class);
+            $embedMany = $this->getPropertyAttribute($attributes, EmbedMany::class);
+            $referenceOne = $this->getPropertyAttribute($attributes, ReferenceOne::class);
+            $referenceMany = $this->getPropertyAttribute($attributes, ReferenceMany::class);
 
             if (!is_null($field)) {
                 $map[$property->getName()] = $field;
@@ -128,5 +123,28 @@ class DocumentDriver
     public function isTransient(string $className)
     {
         return false;
+    }
+
+    /**
+     * returns the reflectionattribute or null
+     *
+     * @param ?array $attributes attributes
+     * @param string $className  class name
+     *
+     * @return Annotation|null optional attribute
+     */
+    private function getPropertyAttribute(?array $attributes, string $className) : ?Annotation
+    {
+        if (!is_array($attributes)) {
+            return null;
+        }
+
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() == $className) {
+                return $attribute->newInstance();
+            }
+        }
+
+        return null;
     }
 }

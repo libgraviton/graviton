@@ -5,7 +5,6 @@
 
 namespace Graviton\DocumentBundle\Annotation;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Graviton\DocumentBundle\Annotation\Driver\DocumentDriver;
 use Graviton\Graviton;
@@ -95,7 +94,6 @@ class ClassScanner
      */
     public static function getDocumentDriver(array $directories = [])
     {
-        $annotationReader = new AnnotationReader();
-        return new DocumentDriver($annotationReader, $directories);
+        return new DocumentDriver($directories);
     }
 }
