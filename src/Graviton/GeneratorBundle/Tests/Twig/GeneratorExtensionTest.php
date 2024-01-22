@@ -53,8 +53,8 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 'ensureIndexes' => [
                     'fred'
                 ],
-                'expected' => ' * @ODM\Index(keys={"hans"="asc"}, name="hans_0", background=true)'.PHP_EOL.
-                    ' * @ODM\Index(keys={"fred"="asc"}, name="fred_0", background=true)'
+                'expected' => '#[ODM\Index(keys: [\'hans\' => \'asc\'], name: "hans_0", background: true)]'.PHP_EOL.
+                    '#[ODM\Index(keys: [\'fred\' => \'asc\'], name: "fred_0", background: true)]'
             ],
             'compound-normal' => [
                 'indexes' => [
@@ -62,7 +62,8 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"hans"="asc", "fred"="asc"}, name="hans_0_fred_0", background=true)'
+                    '#[ODM\Index(keys: [\'hans\' => \'asc\', \'fred\' => \'asc\'], '.
+                    'name: "hans_0_fred_0", background: true)]'
             ],
             'compound-normal-desc' => [
                 'indexes' => [
@@ -70,8 +71,8 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"hans"="desc", "fred"="desc", "id"="asc"}, name="hans_1_fred_1_id_0",'.
-                    ' background=true)'
+                    '#[ODM\Index(keys: [\'hans\' => \'desc\', \'fred\' => \'desc\', \'id\' => \'asc\'], '.
+                    'name: "hans_1_fred_1_id_0", background: true)]'
             ],
             'index-options' => [
                 'indexes' => [
@@ -79,8 +80,8 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"dude"="asc"}, name="dude_0_ttl", background=true, '.
-                    'options={"expireAfterSeconds"=30,"sparse"=true})'
+                    '#[ODM\Index(keys: [\'dude\' => \'asc\'], name: "dude_0_ttl", background: true, '.
+                    'options: ["expireAfterSeconds" => 30, "sparse" => true])]'
             ],
             'index-multi-options' => [
                 'indexes' => [
@@ -88,8 +89,8 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
                 'ensureIndexes' => null,
                 'expected' =>
-                    ' * @ODM\Index(keys={"fred"="asc", "dude"="desc"}, name="fred_0_dude_1_ttl", background=true, '.
-                    'options={"expireAfterSeconds"=30,"sparse"=true})'
+                    '#[ODM\Index(keys: [\'fred\' => \'asc\', \'dude\' => \'desc\'], name: "fred_0_dude_1_ttl", '.
+                    'background: true, options: ["expireAfterSeconds" => 30, "sparse" => true])]'
             ]
         ];
     }

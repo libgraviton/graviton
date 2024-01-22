@@ -147,6 +147,12 @@ class Swagger
                 $thisPattern = $route->getPath();
                 $entityName = ucfirst($document);
 
+                $prop = $schema->getProperty('id');
+                if (is_null($prop)) {
+                    // no id, don't continue;
+                    continue;
+                }
+
                 $thisPath = $this->getBasicPathStructure(
                     $isCollectionRequest,
                     $entityName,

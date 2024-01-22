@@ -43,7 +43,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @return string kernel class name
      */
-    public static function getKernelClass()
+    public static function getKernelClass(): string
     {
         return AppKernel::class;
     }
@@ -59,7 +59,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @return Client A Client instance
      */
-    protected static function createClient(array $options = [], array $server = array())
+    protected static function createRestClient(array $options = [], array $server = array()): Client
     {
         $environment = 'test';
         if (isset($options['environment'])) {
@@ -90,7 +90,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @return \Graviton\AppKernel
      */
-    public static function createKernel(array $options = array())
+    public static function createKernel(array $options = array()): KernelInterface
     {
         $environment = 'test';
         if (getenv('SYMFONY_ENV') !== false) {

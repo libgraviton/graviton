@@ -5,17 +5,14 @@
 
 namespace Graviton\DocumentBundle\Annotation\Driver;
 
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\Mapping\Driver\AnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Graviton\Graviton;
 
 /**
@@ -23,8 +20,10 @@ use Graviton\Graviton;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DocumentDriver extends AnnotationDriver
+class DocumentDriver
 {
+
+    use ColocatedMappingDriver;
 
     /**
      * @var string cache location
@@ -39,13 +38,12 @@ class DocumentDriver extends AnnotationDriver
     /**
      * DocumentDriver constructor.
      *
-     * @param Reader $reader reader
-     * @param null   $paths  paths
+     * @param array $paths paths
      */
-    public function __construct($reader, $paths = null)
+    public function __construct(array $paths)
     {
-        parent::__construct($reader, $paths);
         $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
+        $this->addPaths($paths);
         $this->loadCache();
     }
 
@@ -72,23 +70,6 @@ class DocumentDriver extends AnnotationDriver
     }
 
     /**
-     * only return those that have the MongoDB Document annotation
-     *
-     * @param string $className class name
-     *
-     * @return bool true if yes, false otherwise
-     */
-    public function isTransient($className)
-    {
-        $reflectionClass = new \ReflectionClass($className);
-
-        return (
-            $this->reader->getClassAnnotation($reflectionClass, Document::class) === null &&
-            $this->reader->getClassAnnotation($reflectionClass, EmbeddedDocument::class) === null
-        );
-    }
-
-    /**
      * gets a field
      *
      * @param string $className class name
@@ -106,12 +87,14 @@ class DocumentDriver extends AnnotationDriver
         $map = [];
 
         foreach ($refClass->getProperties() as $property) {
-            $idField = $this->reader->getPropertyAnnotation($property, Id::class);
-            $field = $this->reader->getPropertyAnnotation($property, Field::class);
-            $embedOne = $this->reader->getPropertyAnnotation($property, EmbedOne::class);
-            $embedMany = $this->reader->getPropertyAnnotation($property, EmbedMany::class);
-            $referenceOne = $this->reader->getPropertyAnnotation($property, ReferenceOne::class);
-            $referenceMany = $this->reader->getPropertyAnnotation($property, ReferenceMany::class);
+            $attributes = $property->getAttributes();
+
+            $idField = $this->getPropertyAttribute($attributes, Id::class);
+            $field = $this->getPropertyAttribute($attributes, Field::class);
+            $embedOne = $this->getPropertyAttribute($attributes, EmbedOne::class);
+            $embedMany = $this->getPropertyAttribute($attributes, EmbedMany::class);
+            $referenceOne = $this->getPropertyAttribute($attributes, ReferenceOne::class);
+            $referenceMany = $this->getPropertyAttribute($attributes, ReferenceMany::class);
 
             if (!is_null($field)) {
                 $map[$property->getName()] = $field;
@@ -132,15 +115,36 @@ class DocumentDriver extends AnnotationDriver
     }
 
     /**
-     * load class metadata - not used here!
+     * is transient
      *
-     * @param string        $className class name
-     * @param ClassMetadata $metadata  metadata
-     *
-     * @return void
+     * @param string $className classname
+     * @return false
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function isTransient(string $className)
     {
-        throw new \LogicException('Not implemented');
+        return false;
+    }
+
+    /**
+     * returns the reflectionattribute or null
+     *
+     * @param ?array $attributes attributes
+     * @param string $className  class name
+     *
+     * @return Annotation|null optional attribute
+     */
+    private function getPropertyAttribute(?array $attributes, string $className) : ?Annotation
+    {
+        if (!is_array($attributes)) {
+            return null;
+        }
+
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() == $className) {
+                return $attribute->newInstance();
+            }
+        }
+
+        return null;
     }
 }

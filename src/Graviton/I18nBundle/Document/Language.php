@@ -13,24 +13,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
- *
- * @ODM\Document
  */
+#[ODM\Document]
 class Language
 {
 
     /**
      * @var string $id
-     *
-     * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
      */
+    #[ODM\Id(type: "string", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
     protected $id;
 
     /**
      * @var string $name
-     *
-     * @ODM\Field(type="translatable")
      */
+    #[ODM\Field(type: "translatable")]
     protected $name;
 
     /**

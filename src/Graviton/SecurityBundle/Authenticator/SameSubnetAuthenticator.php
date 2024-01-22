@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
@@ -61,9 +61,9 @@ class SameSubnetAuthenticator extends AbstractAuthenticator implements Authentic
      *
      * @param Request $request HTTP Request
      *
-     * @return PassportInterface passport
+     * @return Passport passport
      */
-    public function authenticate(Request $request): PassportInterface
+    public function authenticate(Request $request): Passport
     {
         if (!IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
             throw new CustomUserMessageAuthenticationException('User not allowed for subnet auth');

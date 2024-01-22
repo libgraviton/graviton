@@ -12,19 +12,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  *
- * @ODM\Document(collection="{{ collection }}")
- * @ODM\InheritanceType("COLLECTION_PER_CLASS")
- *
-{{ doctrineIndexesAnnotation(collection, indexes, ensureIndexes, textIndexes) }}
  */
+{{ doctrineIndexesAnnotation(collection, indexes, ensureIndexes, textIndexes) }}
+#[ODM\Document(collection: "{{ collection }}")]
+#[ODM\InheritanceType("COLLECTION_PER_CLASS")]
 class {{ document }} extends {{ document }}Base
 {
 
-    /**
-    * @var mixed $id
-    *
-    * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
-    */
+    #[ODM\Id(type: "string", options: ["class" => "Graviton\DocumentBundle\Doctrine\IdGenerator"], strategy: "CUSTOM")]
     protected $id;
 
     /**
