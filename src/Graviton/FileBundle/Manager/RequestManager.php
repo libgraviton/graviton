@@ -50,35 +50,41 @@ class RequestManager
             return $request;
         }
 
-        $part = HttpFoundation::convert($request);
+        $contentType = strtolower($request->headers->get('Content-Type', ''));
 
-        if ($part->isMultiPart()) {
-            // do we have metadata? for a multipart form
-            $metadata = $part->getPartsByName('metadata');
-            if (is_array($metadata) && !empty($metadata)) {
-                $request->request->set('metadata', $metadata[0]->getBody());
+        // json? -> assume only metadata!
+        if (str_contains($contentType, 'application/json')) {
+            // check if valid json and set
+            $data = \json_decode($request->getContent(), true);
+            if (is_array($data)) {
+                $request->request->set('metadata', $request->getContent());
             }
+        } elseif (str_contains($contentType, 'multipart')) {
+            // check multipart
+            $part = HttpFoundation::convert($request);
 
-            // the file itself
-            $upload = $part->getPartsByName('upload');
-            if (is_array($upload) && !empty($upload)) {
-                $uploadPart = $upload[0];
+            if ($part->isMultiPart()) {
+                $metadata = $part->getPartsByName('metadata');
+                if (is_array($metadata) && !empty($metadata)) {
+                    $request->request->set('metadata', $metadata[0]->getBody());
+                }
 
-                $file = $this->extractFileFromString(
-                    $uploadPart->getBody(),
-                    $uploadPart->getFileName()
-                );
+                // the file itself
+                $upload = $part->getPartsByName('upload');
+                if (is_array($upload) && !empty($upload)) {
+                    $uploadPart = $upload[0];
 
-                $request->files->add([$file]);
+                    $file = $this->extractFileFromString(
+                        $uploadPart->getBody(),
+                        $uploadPart->getFileName()
+                    );
+
+                    $request->files->add([$file]);
+                }
             }
-        } elseif ((strpos($request->headers->get('Content-Type'), 'application/json') !== false)
-            && $json = json_decode($part->getBody(), true)
-        ) {
-            // Type json and can be parsed
-            $request->request->set('metadata', json_encode($json));
         } else {
-            // Anything else should be saved as file
-            $file = $this->extractFileFromString($part->getBody());
+            // assume direct file content in body!
+            $file = $this->extractFileFromString($request->getContent());
             if ($file) {
                 $request->files->add([$file]);
             }
