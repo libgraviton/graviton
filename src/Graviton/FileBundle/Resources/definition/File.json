@@ -14,7 +14,8 @@
     "indexes": [
       "metadata.language",
       "links",
-      "metadata.additionalProperties.name,metadata.additionalProperties.value"
+      "metadata.additionalProperties.name,metadata.additionalProperties.value",
+      "metadata.expireDate[\"expireAfterSeconds\"=0,\"sparse\"=true]"
     ],
     "relations": [],
     "fields": [
@@ -82,6 +83,12 @@
         "type": "datetime",
         "title": "Modification date",
         "description": "Timestamp of the last file change."
+      },
+      {
+        "name": "metadata.expireDate",
+        "type": "datetime",
+        "title": "Expire date",
+        "description": "When this file expires."
       },
       {
         "name": "metadata.filename",
