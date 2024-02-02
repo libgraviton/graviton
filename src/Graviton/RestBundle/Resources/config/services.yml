@@ -153,6 +153,7 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
+          - "@graviton.document.service.solrquery"
           - "%graviton.rest.calculate_total_record_count%"
           - "%graviton.rest.total_count_enable_header_name%"
 

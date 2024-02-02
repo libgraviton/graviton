@@ -227,6 +227,18 @@ class SolrQuery
     }
 
     /**
+     * returns if solr is configured for the given classname
+     *
+     * @param string $className class name
+     *
+     * @return bool true if yes
+     */
+    public function hasSolr($className) : bool
+    {
+        return isset($this->solrMap[$className]);
+    }
+
+    /**
      * executes the search on solr using the rql parsing nodes.
      *
      * @param SearchNode     $node      search node
