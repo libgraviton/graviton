@@ -6,6 +6,7 @@ namespace Graviton\RestBundle\Service;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
@@ -64,6 +65,8 @@ class QueryService
      */
     protected $eventDispatcher;
 
+    protected SolrQuery $solrQuery;
+
     /**
      * @var bool toggles if we should send readpref 'secondarypreferred'
      */
@@ -77,6 +80,7 @@ class QueryService
      * @param VisitorInterface         $visitor                        visitor
      * @param integer                  $paginationDefaultLimit         default pagination limit
      * @param EventDispatcherInterface $eventDispatcher                event dispatcher
+     * @param SolrQuery                $solrQuery                      solr query
      * @param bool                     $mongoDbCounterEnabled          mongoDbCounterEnabled
      * @param ?string                  $enableMongoDbCounterHeaderName enableMongoDbCounterHeaderName
      */
@@ -85,6 +89,7 @@ class QueryService
         VisitorInterface $visitor,
         int $paginationDefaultLimit,
         EventDispatcherInterface $eventDispatcher,
+        SolrQuery $solrQuery,
         bool $mongoDbCounterEnabled,
         ?string $enableMongoDbCounterHeaderName
     ) {
@@ -92,6 +97,7 @@ class QueryService
         $this->visitor = $visitor;
         $this->paginationDefaultLimit = $paginationDefaultLimit;
         $this->eventDispatcher = $eventDispatcher;
+        $this->solrQuery = $solrQuery;
         $this->mongoDbCounterEnabled = $mongoDbCounterEnabled;
         $this->enableMongoDbCounterHeaderName = $enableMongoDbCounterHeaderName;
     }
@@ -361,6 +367,10 @@ class QueryService
      */
     private function hasSearchIndex()
     {
+        if ($this->solrQuery->hasSolr($this->repository->getClassName())) {
+            return true;
+        }
+
         $metadata = $this->repository->getClassMetadata();
         $indexes = $metadata->getIndexes();
         if (empty($indexes)) {
