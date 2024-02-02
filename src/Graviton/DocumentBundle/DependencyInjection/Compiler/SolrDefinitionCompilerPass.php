@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\DocumentBundle\Service\SolrQuery;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -38,6 +39,14 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
             'SOLR_%s_BOOST' => 'boost'
         ];
 
+        $envMapExtraParamMask = "SOLR_%s_%s";
+        $envMapExtraParams = [
+            SolrQuery::EXTRA_PARAM_FUZZY_BRIDGE => 'int',
+            SolrQuery::EXTRA_PARAM_LITERAL_BRIDGE => 'int',
+            SolrQuery::EXTRA_PARAM_WILDCARD_BRIDGE => 'int',
+            SolrQuery::EXTRA_PARAM_ANDIFY_TERMS => 'bool'
+        ];
+
         $extraParams = [];
 
         $map = [];
@@ -46,11 +55,26 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
             if (is_array($solrFields) && !empty($solrFields)) {
                 $map[$document->getClass()] = $this->getSolrWeightString($solrFields, $document->getClass());
 
+                $envClassName = strtoupper($this->getCoreName($document->getClass()));
+
                 // extra params
                 foreach ($envMap as $envName => $paramName) {
-                    $envName = sprintf($envName, strtoupper($this->getCoreName($document->getClass())));
+                    $envName = sprintf($envName, $envClassName);
                     if (!empty($_ENV[$envName])) {
                         $extraParams[$document->getClass()][$paramName] = $_ENV[$envName];
+                    }
+                }
+
+                // extra extra params (overrides of normal settings)
+                foreach ($envMapExtraParams as $name => $type) {
+                    $envName = sprintf($envMapExtraParamMask, $envClassName, $name);
+                    if (!empty($_ENV[$envName])) {
+                        $value = match ($type) {
+                            "int" => (int) $_ENV[$envName],
+                            "bool" => ($_ENV[$envName] == 'true'),
+                            default => $_ENV[$envName],
+                        };
+                        $extraParams[$document->getClass()][$name] = $value;
                     }
                 }
             }
