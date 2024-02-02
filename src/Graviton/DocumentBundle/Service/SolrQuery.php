@@ -36,24 +36,9 @@ class SolrQuery
     private $urlParts = [];
 
     /**
-     * @var int
+     * @var array
      */
-    private int $solrFuzzyBridge;
-
-    /**
-     * @var int
-     */
-    private int $solrWildcardBridge;
-
-    /**
-     * @var int
-     */
-    private int $solrLiteralBridge;
-
-    /**
-     * @var boolean
-     */
-    private bool $andifyTerms;
+    private array $defaultSettings = [];
 
     /**
      * @var array
@@ -101,6 +86,11 @@ class SolrQuery
         '-'
     ];
 
+    public const STRING EXTRA_PARAM_WILDCARD_BRIDGE = "WILDCARD_BRIDGE";
+    public const STRING EXTRA_PARAM_FUZZY_BRIDGE = "FUZZY_BRIDGE";
+    public const STRING EXTRA_PARAM_LITERAL_BRIDGE = "LITERAL_BRIDGE";
+    public const STRING EXTRA_PARAM_ANDIFY_TERMS = "ANDIFY_TERMS";
+
     /**
      * Constructor
      *
@@ -133,10 +123,12 @@ class SolrQuery
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
-        $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
-        $this->solrWildcardBridge = (int) $solrWildcardBridge;
-        $this->solrLiteralBridge = (int) $solrLiteralBridge;
-        $this->andifyTerms = (boolean) $andifyTerms;
+
+        $this->defaultSettings[self::EXTRA_PARAM_FUZZY_BRIDGE] = (int) $solrFuzzyBridge;
+        $this->defaultSettings[self::EXTRA_PARAM_WILDCARD_BRIDGE] = (int) $solrWildcardBridge;
+        $this->defaultSettings[self::EXTRA_PARAM_LITERAL_BRIDGE] = (int) $solrLiteralBridge;
+        $this->defaultSettings[self::EXTRA_PARAM_ANDIFY_TERMS] = (bool) $andifyTerms;
+
         $this->solrMap = $solrMap;
         $this->solrExtraParams = $solrExtraParams;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
@@ -239,6 +231,21 @@ class SolrQuery
     }
 
     /**
+     * get setting
+     *
+     * @param string $settingName setting name
+     *
+     * @return mixed value
+     */
+    public function getSetting(string $settingName) : mixed
+    {
+        if (!empty($this->solrExtraParams[$this->className][$settingName])) {
+            return $this->solrExtraParams[$this->className][$settingName];
+        }
+        return $this->defaultSettings[$settingName];
+    }
+
+    /**
      * executes the search on solr using the rql parsing nodes.
      *
      * @param SearchNode     $node      search node
@@ -268,10 +275,12 @@ class SolrQuery
         // sort?
         if (!empty($this->solrExtraParams[$this->className])) {
             foreach ($this->solrExtraParams[$this->className] as $param => $value) {
-                $query->addParam(
-                    $param,
-                    $value
-                );
+                if (!in_array($param, array_keys($this->defaultSettings))) {
+                    $query->addParam(
+                        $param,
+                        $value
+                    );
+                }
             }
         }
 
@@ -325,7 +334,7 @@ class SolrQuery
         $fullTerm = $node->getSearchQuery();
 
         $knownPatterns = $this->scanForKnownPatterns($fullTerm);
-        $glue = $this->andifyTerms ? '&&' : '';
+        $glue = $this->getSetting(self::EXTRA_PARAM_ANDIFY_TERMS) ? '&&' : '';
 
         $searchExpression = '';
 
@@ -474,11 +483,11 @@ class SolrQuery
         }
 
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
-        if (strlen($term) >= $this->solrFuzzyBridge) {
+        if (strlen($term) >= $this->getSetting(self::EXTRA_PARAM_FUZZY_BRIDGE)) {
             return $this->doAndNotPrefixSingleTerm($term, '~');
         }
 
-        if (strlen($term) >= $this->solrWildcardBridge) {
+        if (strlen($term) >= $this->getSetting(self::EXTRA_PARAM_WILDCARD_BRIDGE)) {
             return $this->doAndNotPrefixSingleTerm($term, '*');
         }
 
@@ -528,7 +537,7 @@ class SolrQuery
         }
 
         // only do full term if length gte literalBridge
-        if (strlen($originalTerm) >= $this->solrLiteralBridge && $originalTerm != $term) {
+        if (strlen($originalTerm) >= $this->getSetting(self::EXTRA_PARAM_LITERAL_BRIDGE) && $originalTerm != $term) {
             // case when $originalTerm contains some characters, we want to quote it in original form!
             $quoteOnContaining = ['-']; // "-" for jean-pierre!
             $shouldQuoteOriginal = false;
