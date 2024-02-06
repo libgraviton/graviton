@@ -490,6 +490,56 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * test multipart request
+     *
+     * @return void
+     */
+    public function testMultipartRequest()
+    {
+        $client = static::createRestClient();
+
+        $content = [
+            '--------------------------2f4f7d5be86eaf34',
+            'Content-Disposition: form-data; name="metadata"',
+            '',
+            '{"metadata":{"filename": "argo-logo.png"}}',
+            '--------------------------2f4f7d5be86eaf34',
+            'Content-Disposition: form-data; name="upload"; filename="logo.png"',
+            'Content-Type: image/png',
+            '',
+            file_get_contents(__DIR__.'/resources/logo.png'),
+            '--------------------------2f4f7d5be86eaf34--',
+        ];
+
+        //['CONTENT_TYPE' => 'text/plain'],
+
+        $client->post(
+            "/file/",
+            implode("\r\n", $content),
+            [],
+            [],
+            [
+            'CONTENT_TYPE' => 'multipart/form-data; boundary=------------------------2f4f7d5be86eaf34'
+            ],
+            false
+        );
+
+        $response = $client->getResponse();
+        $location = $response->headers->get('location');
+
+        $client = static::createRestClient();
+        $client->request('GET', $location);
+
+        file_put_contents('/tmp/logo', $client->getResponse()->getContent(false));
+
+        // assert file content
+        $this->assertEquals(
+            file_get_contents(__DIR__.'/resources/logo.png'),
+            $client->getResponse()->getContent(false)
+        );
+    }
+
+    /**
      * test behavior when data sent was multipart/form-data
      *
      * @return void
