@@ -6,6 +6,7 @@
 namespace Graviton\TestBundle;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Client containing some helper methods to be RESTful.
@@ -47,6 +48,16 @@ class Client
     public function getResults()
     {
         return json_decode($this->client->getResponse()->getContent());
+    }
+
+    /**
+     * gets response
+     *
+     * @return Response|null response
+     */
+    public function getResponse() : ?Response
+    {
+        return $this->client->getResponse();
     }
 
     /**
