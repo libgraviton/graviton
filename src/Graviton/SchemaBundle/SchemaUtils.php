@@ -209,7 +209,7 @@ class SchemaUtils
         $cacheKey = 'jsonSchema-'.sha1(implode('.', $cacheDiscriminators));
 
         if ($this->cache->hasItem($cacheKey)) {
-            //return $this->cache->getItem($cacheKey)->get();
+            return $this->cache->getItem($cacheKey)->get();
         }
 
         // build up schema data
