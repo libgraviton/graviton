@@ -85,6 +85,10 @@ parameters:
     graviton.file.s3.credentials.key: null
     graviton.file.s3.credentials.secret: null
 
+    graviton.file.webdav.baseuri: null
+    graviton.file.webdav.username: null
+    graviton.file.webdav.password: null
+
     graviton.core.httpclient.debugRequests: false
     graviton.core.httpclient.debugMaxLength: 5000
     graviton.core.httpclient.verifyPeer: false
