@@ -21,6 +21,7 @@ use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
+use League\FlysystemBundle\FlysystemBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -71,7 +72,7 @@ class AppKernel extends Kernel
             new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
-            new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
+            new FlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
