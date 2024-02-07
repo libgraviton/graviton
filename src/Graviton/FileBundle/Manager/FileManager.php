@@ -94,18 +94,14 @@ class FileManager
             throw new InvalidArgumentException('Loaded file have no valid metadata');
         }
 
-        $mimeType = null;
-        if ($this->readFileSystemMimeType) {
-            $mimeType = $this->fileSystem->mimeType($file->getId());
-        }
-        if (!$mimeType) {
-            $mimeType = $metadata->getMime();
-        }
-        if ($this->allowedMimeTypes && !in_array($mimeType, $this->allowedMimeTypes)) {
+        $fileStream = $this->fileSystem->readStream($file->getId());
+
+        // read metadata
+        $mimeType = mime_content_type($fileStream);
+
+        if (!empty($this->allowedMimeTypes) && !in_array($mimeType, $this->allowedMimeTypes)) {
             throw new InvalidArgumentException('File mime type: '.$mimeType.' is not allowed as response.');
         }
-
-        $fileStream = $this->fileSystem->readStream($file->getId());
 
         $response = new StreamedResponse(
             function () use ($fileStream) {
@@ -143,10 +139,12 @@ class FileManager
         // will save using a stream
         $fp = fopen($filepath, 'r+');
 
-        $this->fileSystem->writeStream($id, $fp, ['ContentType' => mime_content_type($filepath)]);
-
-        // close file
-        fclose($fp);
+        try {
+            $this->fileSystem->writeStream($id, $fp);
+        } finally {
+            // close file
+            fclose($fp);
+        }
     }
 
     /**

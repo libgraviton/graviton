@@ -511,8 +511,6 @@ class FileControllerTest extends RestTestCase
             '--------------------------2f4f7d5be86eaf34--',
         ];
 
-        //['CONTENT_TYPE' => 'text/plain'],
-
         $client->post(
             "/file/",
             implode("\r\n", $content),
