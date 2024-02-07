@@ -52,8 +52,9 @@
         "riverline/multipart-parser": "~2",
         "thefrozenfire/swagger": "=2.0.7",
 
-        "oneup/flysystem-bundle": "~4",
-        "league/flysystem-async-aws-s3": "~2",
+        "league/flysystem-bundle": "^3.0",
+        "league/flysystem-async-aws-s3": "^3.0",
+        "league/flysystem-webdav": "^3.0",
 
         "sentry/sentry-symfony": "~4",
         "sentry/sentry": "~3",
@@ -64,7 +65,8 @@
         "mtdowling/jmespath.php": "^2.4",
 
         "symfony/runtime": "^6.0",
-        "seld/jsonlint": "*"
+        "seld/jsonlint": "*",
+        "league/mime-type-detection": "^1.15"
     },
     "require-dev": {
         "phpunit/phpunit": "~9|~8",
@@ -194,6 +196,9 @@
                     "graviton.file.s3.bucket": "FILE_S3_BUCKET",
                     "graviton.file.s3.credentials.key": "FILE_S3_KEY",
                     "graviton.file.s3.credentials.secret": "FILE_S3_SECRET",
+                    "graviton.file.webdav.baseuri": "FILE_WEBDAV_BASEURI",
+                    "graviton.file.webdav.username":  "FILE_WEBDAV_USERNAME",
+                    "graviton.file.webdav.password": "FILE_WEBDAV_PASSWORD",
                     "graviton.rest.serializer.groups": "SERIALIZER_GROUPS",
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
                     "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",

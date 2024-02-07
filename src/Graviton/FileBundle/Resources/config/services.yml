@@ -8,7 +8,7 @@ services:
         class: "%graviton.file.file_manager.class%"
         public: true
         arguments:
-            - "@oneup_flysystem.graviton_filesystem"
+            - "@storage.backend"
         calls:
           -
             method: setAllowedMimeTypes
@@ -27,6 +27,18 @@ services:
           accessKeySecret: "%graviton.file.s3.credentials.secret%"
           endpoint: "%graviton.file.s3.endpoint%"
           pathStyleEndpoint: true
+
+    graviton.file.webdav.client:
+      class: Sabre\DAV\Client
+      arguments:
+        - baseUri: '%graviton.file.webdav.baseuri%'
+          userName: '%graviton.file.webdav.username%'
+          password: '%graviton.file.webdav.password%'
+
+    graviton.file.webdav.adapter:
+      class: League\Flysystem\WebDAV\WebDAVAdapter
+      arguments:
+        - '@graviton.file.webdav.client'
 
     graviton.file.controller.file:
         class: "%graviton.file.controller.file.class%"

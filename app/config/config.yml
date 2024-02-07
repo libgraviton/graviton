@@ -104,20 +104,24 @@ jms_serializer:
         debug: "%kernel.debug%"
         auto_detection: true
 
-oneup_flysystem:
-    adapters:
-        local:
-            local:
-                location: "%graviton.file.local.storage_directory%"
-        s3:
-            async_aws_s3:
+flysystem:
+    storages:
+        storage.local:
+            adapter: 'local'
+            options:
+                directory: "%graviton.file.local.storage_directory%"
+        storage.s3:
+            adapter: 'asyncaws'
+            options:
                 client: graviton.file.asyncs3.client
                 bucket: "%graviton.file.s3.bucket%"
                 prefix: ''
-
-    filesystems:
-        graviton:
-            adapter: '%graviton.file.backend%'
+        storage.webdav:
+            adapter: 'graviton.file.webdav.adapter'
+        storage.backend:
+            adapter: 'lazy'
+            options:
+                source: 'storage.%graviton.file.backend%'
 
 graviton_core:
     service_name:
