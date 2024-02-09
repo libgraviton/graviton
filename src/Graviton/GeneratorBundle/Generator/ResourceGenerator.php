@@ -82,11 +82,6 @@ class ResourceGenerator extends AbstractGenerator
     private $generateSerializerConfig = true;
 
     /**
-     * @var boolean
-     */
-    private $generateSchema = true;
-
-    /**
      * @var array
      */
     private $syntheticFields = [];
@@ -102,6 +97,11 @@ class ResourceGenerator extends AbstractGenerator
     private $parameterBuilder;
 
     /**
+     * @var SchemaGenerator
+     */
+    private SchemaGenerator $schemaGenerator;
+
+    /**
      * Instantiates generator object
      *
      * @param Filesystem       $filesystem       fs abstraction layer
@@ -111,12 +111,14 @@ class ResourceGenerator extends AbstractGenerator
     public function __construct(
         Filesystem $filesystem,
         FieldMapper $mapper,
-        ParameterBuilder $parameterBuilder
+        ParameterBuilder $parameterBuilder,
+        SchemaGenerator $schemaGenerator
     ) {
         parent::__construct();
         $this->filesystem = $filesystem;
         $this->mapper = $mapper;
         $this->parameterBuilder = $parameterBuilder;
+        $this->schemaGenerator = $schemaGenerator;
     }
 
     /**
@@ -173,18 +175,6 @@ class ResourceGenerator extends AbstractGenerator
     public function setGenerateSerializerConfig($generateSerializerConfig)
     {
         $this->generateSerializerConfig = $generateSerializerConfig;
-    }
-
-    /**
-     * set GenerateSchema
-     *
-     * @param bool $generateSchema generateSchema
-     *
-     * @return void
-     */
-    public function setGenerateSchema($generateSchema)
-    {
-        $this->generateSchema = $generateSchema;
     }
 
     /**
@@ -301,6 +291,12 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
         }
 
+        $this->schemaGenerator->generateSchema(
+            $parameters,
+            $isSubResource,
+                $bundleDir . '/Resources/config/schema/openapi.json'
+            );
+
         if ($this->generateModel) {
             $this->generateModel($parameters, $bundleDir, $document, $isSubResource);
         }
@@ -361,7 +357,6 @@ class ResourceGenerator extends AbstractGenerator
 
     /**
      * generate document part of a resource
-     *
      * @param array  $parameters    twig parameters
      * @param string $dir           base bundle dir
      * @param string $document      document name
@@ -475,26 +470,6 @@ class ResourceGenerator extends AbstractGenerator
             'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
             true
         );
-
-
-        /*
-        $this->addService(
-            $repoName . 'embedded',
-            null,
-            [],
-            null,
-            array(
-                array(
-                    'type' => 'string',
-                    'value' => $documentName . 'Embedded'
-                )
-            ),
-            $this->repositoryFactoryService,
-            'getRepository',
-            'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
-            false
-        );
-        */
 
         // are there any rest listeners defined?
         if ($parameters['json']->getDef()->getService() != null) {
@@ -822,20 +797,32 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateModel(array $parameters, $dir, $document, $isSubResource)
     {
-        if ($this->generateSchema) {
-            if (!$isSubResource) {
-                $this->renderFileAsJson(
-                    'model/schema.json.twig',
-                    $dir . '/Resources/config/schema/' . $document . '.json',
-                    array_merge($parameters, ['isEmbedded' => false])
-                );
-            }
+
+
+        if (!$isSubResource) {
+            /*
+            $this->schemaGenerator->generateSchema(
+                array_merge($parameters, ['isEmbedded' => false]),
+                $dir . '/Resources/config/schema/' . $document . '.json'
+            );
+            */
+            /*
             $this->renderFileAsJson(
                 'model/schema.json.twig',
-                $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
-                array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
+                $dir . '/Resources/config/schema/' . $document . '.json',
+                array_merge($parameters, ['isEmbedded' => false])
             );
+            */
         }
+
+
+        /*
+        $this->renderFileAsJson(
+            'model/schema.json.twig',
+            $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
+            array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
+        );
+        */
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);

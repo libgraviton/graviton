@@ -4,7 +4,6 @@ namespace Graviton\GeneratorBundle\Definition;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\DocumentBundle\Entity\Translatable;
-use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
 
 /**
  * A single field as specified in the json definition
@@ -48,6 +47,22 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_OBJECT => Hash::class,
         self::TYPE_EXTREF => ExtReference::class,
         self::TYPE_TRANSLATABLE => Translatable::class
+    ];
+
+    private static $schemaTypeMap = [
+        self::TYPE_STRING => 'string',
+        self::TYPE_VARCHAR => 'string',
+        self::TYPE_TEXT => 'string',
+        self::TYPE_INTEGER => 'integer',
+        self::TYPE_LONG => 'integer',
+        self::TYPE_FLOAT => 'number',
+        self::TYPE_DOUBLE => 'number',
+        self::TYPE_DECIMAL => 'number',
+        self::TYPE_DATETIME => 'datetime',
+        self::TYPE_BOOLEAN => 'boolean',
+        self::TYPE_OBJECT => 'hash',
+        self::TYPE_EXTREF => '#/components/schemas/GravitonExtRef',
+        self::TYPE_TRANSLATABLE => '#/components/schemas/GravitonTranslatable'
     ];
 
     /**
@@ -100,6 +115,10 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getDefAsArray()
     {
+        if (empty($this->getTypeSchema())) {
+            $hans = 3;
+        }
+
         return [
             'length'                => $this->definition->getLength(),
             'title'                 => $this->definition->getTitle(),
@@ -112,15 +131,13 @@ class JsonDefinitionField implements DefinitionElementInterface
             'searchable'            => $this->definition->getSearchable(),
             'translatable'          => $this->definition->getTranslatable(),
             'collection'            => $this->definition->getCollection(),
-            'groups'                => $this->definition->getGroups(),
-            'onVariation'           => $this->definition->getOnVariation(),
 
             'name'                  => $this->getName(),
             'type'                  => $this->getType(),
             'exposedName'           => $this->getExposedName(),
             'doctrineType'          => $this->getTypeDoctrine(),
             'serializerType'        => $this->getTypeSerializer(),
-            'xDynamicKey'           => $this->getXDynamicKey(),
+            'schemaType'            => $this->getTypeSchema(),
             'relType'               => null,
             'isClassType'           => false,
             'constraints'           => array_map(
@@ -143,6 +160,48 @@ class JsonDefinitionField implements DefinitionElementInterface
 
         // our fallback default
         return self::$doctrineTypeMap[self::TYPE_STRING];
+    }
+
+    /**
+     * returns the field type in json schema
+     *
+     * @return string Type
+     */
+    public function getTypeSchema()
+    {
+        $type = $this->getType();
+
+        if ($this->getName() == 'someObject') {
+            $ss = "";
+        }
+
+        if ($type == 'hash') {
+            $ss = 2;
+        }
+
+        $isArray = false;
+        if (str_ends_with($type, '[]')) {
+            $isArray = true;
+            $type = substr($type, 0, -2);
+        }
+
+        if (isset(self::$schemaTypeMap[$type])) {
+            $type = self::$schemaTypeMap[$type];
+        } else {
+            // classname?
+            if (str_contains($type, '\\Document\\')) {
+                $type = 'class:'.$type;
+            } else {
+                // not mapped!
+                $hans = true;
+
+                $type = 'string';
+            }
+
+
+        }
+
+        return $type;
     }
 
     /**
@@ -171,17 +230,6 @@ class JsonDefinitionField implements DefinitionElementInterface
 
         // our fallback default
         return self::$serializerTypeMap[self::TYPE_STRING];
-    }
-
-    /**
-     * @return XDynamicKey|void
-     */
-    public function getXDynamicKey()
-    {
-        $key = $this->definition->getXDynamicKey();
-        if ($key instanceof XDynamicKey) {
-            return $key;
-        }
     }
 
     /**

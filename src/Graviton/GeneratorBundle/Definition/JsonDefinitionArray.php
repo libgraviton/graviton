@@ -60,7 +60,8 @@ class JsonDefinitionArray implements DefinitionElementInterface
                 'name'              => $this->getName(),
                 'type'              => $this->getType(),
                 'doctrineType'      => $this->getTypeDoctrine(),
-                'serializerType'    => $this->getTypeSerializer()
+                'serializerType'    => $this->getTypeSerializer(),
+                'schemaType'        => $this->getTypeSchema()
             ],
             $this->getHashAnonymousHashRequired()
         );
@@ -110,10 +111,17 @@ class JsonDefinitionArray implements DefinitionElementInterface
     {
         $type = 'array<'.$this->element->getTypeSerializer().'>';
 
-        // if we have a x-dynamic-key field, serializer type must be changed
-        if ($this->element instanceof JsonDefinitionField && !empty($this->element->getXDynamicKey())) {
-            $type = 'array<string, '.$this->element->getTypeSerializer().'>';
-        }
+        return $type;
+    }
+
+    /**
+     * Returns the field type for schema
+     *
+     * @return string Type
+     */
+    public function getTypeSchema()
+    {
+        $type = $this->element->getTypeSchema().'[]';
 
         return $type;
     }

@@ -18,10 +18,6 @@ class Field
      */
     private $name;
     /**
-     * @var array
-     */
-    private $groups;
-    /**
      * @var string
      */
     private $type;
@@ -77,16 +73,6 @@ class Field
     private $collection = [];
 
     /**
-     * @var XDynamicKey
-     */
-    private $xDynamicKey;
-
-    /**
-     * @var array
-     */
-    private $onVariation;
-
-    /**
      * @return string
      */
     public function getName()
@@ -101,29 +87,6 @@ class Field
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * get Groups
-     *
-     * @return array Groups
-     */
-    public function getGroups()
-    {
-        return $this->groups;
-    }
-
-    /**
-     * set Groups
-     *
-     * @param array $groups groups
-     *
-     * @return void
-     */
-    public function setGroups($groups)
-    {
-        $this->groups = $groups;
         return $this;
     }
 
@@ -370,24 +333,6 @@ class Field
     public function setCollection(array $collection)
     {
         $this->collection = $collection;
-        return $this;
-    }
-
-    /**
-     * @return XDynamicKey
-     */
-    public function getXDynamicKey()
-    {
-        return $this->xDynamicKey;
-    }
-
-    /**
-     * @param XDynamicKey $xDynamicKey x-dynamic-key field value
-     * @return $this
-     */
-    public function setXDynamicKey(XDynamicKey $xDynamicKey)
-    {
-        $this->xDynamicKey = $xDynamicKey;
         return $this;
     }
 

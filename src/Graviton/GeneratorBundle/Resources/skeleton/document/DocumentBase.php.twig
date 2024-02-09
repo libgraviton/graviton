@@ -218,11 +218,7 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
           $data = $this->{{ field.fieldName }};
         }
 
-{% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-        return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($data, '{{ field.xDynamicKey.refField }}');
-{% else %}
         return $data;
-{% endif %}
     }
 
     /**

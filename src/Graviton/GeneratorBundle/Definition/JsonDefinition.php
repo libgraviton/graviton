@@ -11,8 +11,6 @@ use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
  * of a mongo collection that exists and serves as a base to generate
  * a bundle.
  *
- * @todo     if this json format serves in more places; move this class
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
@@ -269,9 +267,10 @@ class JsonDefinition
     {
         $hierarchy = [];
         foreach ($this->def->getTarget()->getFields() as $field) {
+            $subFields = $this->createFieldHierarchyRecursive($field, $field->getName());
             $hierarchy = array_merge_recursive(
                 $hierarchy,
-                $this->createFieldHierarchyRecursive($field, $field->getName())
+                $subFields
             );
         }
 
@@ -427,20 +426,6 @@ class JsonDefinition
         }
 
         return $this->def->getService()->getRoles();
-    }
-
-    /**
-     * Provides the variations attribute from the service section
-     *
-     * @return array
-     */
-    public function getVariations()
-    {
-        if ($this->def->getService() === null) {
-            return [];
-        }
-
-        return $this->def->getService()->getVariations();
     }
 
     /**

@@ -16,6 +16,19 @@ use Graviton\SchemaBundle\Document\Schema;
 class EmailConstraintBuilder implements ConstraintBuilderInterface
 {
     /**
+     * gives the constraintbuilder the opportunity to alter the json schema for that field.
+     *
+     * @param array $schemaField     the basic field that will be in the schema
+     * @param array $fieldDefinition definition as seen by the generator
+     *
+     * @return array the altered $schemaField array
+     */
+    public function buildSchema(array $schemaField, array $fieldDefinition) : array
+    {
+        return $schemaField;
+    }
+
+    /**
      * if this builder supports a given constraint
      *
      * @param string $type    Field type

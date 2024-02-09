@@ -76,6 +76,13 @@ interface DefinitionElementInterface
     public function getTypeSerializer();
 
     /**
+     * Get type for schema
+     *
+     * @return string
+     */
+    public function getTypeSchema();
+
+    /**
      * Returns the definition as array
      *
      * @return array definition

@@ -3,7 +3,6 @@ parameters:
   graviton.schema.model.schemamodel.class: Graviton\SchemaBundle\Model\SchemaModel
   graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
   graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory
-  graviton.schema.constraint.builder.class: Graviton\SchemaBundle\Constraint\ConstraintBuilder
   graviton.schema.constraint.utils.class: Graviton\SchemaBundle\Constraint\ConstraintUtils
   graviton.schema.constraint.incrementaldate.class: Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint
   graviton.schema.constraint.readonlyfield.class: Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint
@@ -63,53 +62,68 @@ services:
             format: json
 
     # constraints
-    graviton.schema.constraint.choice:
-      class: Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder
-    graviton.schema.constraint.email:
-      class: Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder
-    graviton.schema.constraint.url:
-      class: Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder
-    graviton.schema.constraint.range:
-      class: Graviton\SchemaBundle\Constraint\Builder\RangeConstraintBuilder
-    graviton.schema.constraint.decimal:
-      class: Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder
-    graviton.schema.constraint.count:
-      class: Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder
-    graviton.schema.constraint.empty:
-      class: Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder
+    Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\RangeConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\ExtrefConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\DatetimeConstraintBuilder:
+      arguments:
+        - "%graviton.document.dateFormatRegex%"
+
+    Graviton\SchemaBundle\Constraint\Builder\HashConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\ArrayOfObjectConstraintBuilder: ~
 
     # constraint builder -->
-    graviton.schema.constraint.builder:
-        class: "%graviton.schema.constraint.builder.class%"
+    Graviton\SchemaBundle\Constraint\ConstraintBuilder:
         calls:
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.choice"
+              - '@Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.email"
+              - '@Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.url"
+              - '@Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.range"
+              - '@Graviton\SchemaBundle\Constraint\Builder\RangeConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.decimal"
+              - '@Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.count"
+              - '@Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:
-              - "@graviton.schema.constraint.empty"
+              - '@Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder'
+          -
+            method: addConstraintBuilder
+            arguments:
+              - '@Graviton\SchemaBundle\Constraint\Builder\ExtrefConstraintBuilder'
+          -
+            method: addConstraintBuilder
+            arguments:
+              - '@Graviton\SchemaBundle\Constraint\Builder\DatetimeConstraintBuilder'
+          -
+            method: addConstraintBuilder
+            arguments:
+              - '@Graviton\SchemaBundle\Constraint\Builder\HashConstraintBuilder'
+          -
+            method: addConstraintBuilder
+            arguments:
+              - '@Graviton\SchemaBundle\Constraint\Builder\ArrayOfObjectConstraintBuilder'
 
     graviton.schema.constraint.utils:
         class: "%graviton.schema.constraint.utils.class%"
@@ -135,10 +149,10 @@ services:
           - "%graviton.document.eventmap%"
           - "%graviton.document.visible_field.names%"
           - "%graviton.rest.schema_variation.enable%"
-          - "@graviton.schema.constraint.builder"
-          - "@graviton.cache.adapter.app"
-          - "@graviton.core.service.jmespath"
-          - "@graviton.18n.utils"
+          - '@Graviton\SchemaBundle\Constraint\ConstraintBuilder'
+          - '@graviton.cache.adapter.app'
+          - '@graviton.core.service.jmespath'
+          - '@graviton.18n.utils'
 
     graviton.schema.constraint.incrementaldate:
         class: "%graviton.schema.constraint.incrementaldate.class%"

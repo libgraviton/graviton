@@ -36,4 +36,14 @@ interface ConstraintBuilderInterface
      * @return Schema the modified property
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options);
+
+    /**
+     * gives the constraintbuilder the opportunity to alter the json schema for that field.
+     *
+     * @param array $schemaField     the basic field that will be in the schema
+     * @param array $fieldDefinition definition as seen by the generator
+     *
+     * @return array the altered $schemaField array
+     */
+    public function buildSchema(array $schemaField, array $fieldDefinition) : array;
 }

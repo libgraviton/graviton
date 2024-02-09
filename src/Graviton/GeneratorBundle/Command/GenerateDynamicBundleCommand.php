@@ -107,10 +107,6 @@ class GenerateDynamicBundleCommand extends Command
      * @var bool
      */
     private $generateSerializerConfig = true;
-    /**
-     * @var bool
-     */
-    private $generateSchema = true;
 
     /**
      * @param LoaderInterface              $definitionLoader      JSON definition loader
@@ -212,13 +208,6 @@ class GenerateDynamicBundleCommand extends Command
                 'Should we generate serializer config?',
                 'true'
             )
-            ->addOption(
-                'generateSchema',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Should we generate schema files?',
-                'true'
-            )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
@@ -245,9 +234,6 @@ class GenerateDynamicBundleCommand extends Command
         }
         if ($input->getOption('generateSerializerConfig') == 'false') {
             $this->generateSerializerConfig = false;
-        }
-        if ($input->getOption('generateSchema') == 'false') {
-            $this->generateSchema = false;
         }
         $this->repositoryFactoryService = $input->getOption('repositoryFactoryService');
 
@@ -476,7 +462,6 @@ class GenerateDynamicBundleCommand extends Command
         $generator->setRepositoryFactoryService($this->repositoryFactoryService);
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
-        $generator->setGenerateSchema($this->generateSchema);
         $generator->setSyntheticFields($this->syntheticFields);
         $generator->setEnsureIndexes($this->ensureIndexes);
 

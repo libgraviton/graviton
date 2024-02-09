@@ -13,7 +13,7 @@ use Graviton\SchemaBundle\Document\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class UrlConstraintBuilder implements ConstraintBuilderInterface
+class ExtrefConstraintBuilder implements ConstraintBuilderInterface
 {
 
     /**
@@ -26,35 +26,20 @@ class UrlConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if ($fieldDefinition['type'] == 'extref') {
+            $hans = 3;
+        }
+
         return $schemaField;
     }
 
-    /**
-     * if this builder supports a given constraint
-     *
-     * @param string $type    Field type
-     * @param array  $options Options
-     *
-     * @return bool
-     */
-    public function supportsConstraint($type, array $options = [])
+    #[\Override] public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Url');
+        // TODO: Implement supportsConstraint() method.
     }
 
-    /**
-     * Adds constraints to the property
-     *
-     * @param string        $fieldName field name
-     * @param Schema        $property  property
-     * @param DocumentModel $model     parent model
-     * @param array         $options   the constraint options
-     *
-     * @return Schema the modified property
-     */
-    public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
+    #[\Override] public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        $property->setFormat('uri');
-        return $property;
+        // TODO: Implement buildConstraint() method.
     }
 }
