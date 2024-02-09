@@ -2,13 +2,10 @@ parameters:
   graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
   graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
   graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
-  graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
-  graviton.rest.request.class: Symfony\Component\HttpFoundation\Request
   graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
   graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
   graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
   graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
-  graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
   graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
   graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
   graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
@@ -116,7 +113,6 @@ services:
         abstract: true
         public: true
         arguments:
-          - "@graviton.rest.response"
           - "@graviton.rest.restutils"
           - "@graviton.rest.router"
           - "@graviton.schema.utils"
@@ -132,7 +128,6 @@ services:
     graviton.rest.model:
         abstract: true
         class: "%graviton.rest.model.documentmodel.class%"
-        parent: "graviton.schema.model.schemamodel"
         calls:
           - method: setQueryService
             arguments: ['@graviton.rest.service.query']
@@ -156,10 +151,6 @@ services:
           - "@graviton.document.service.solrquery"
           - "%graviton.rest.calculate_total_record_count%"
           - "%graviton.rest.total_count_enable_header_name%"
-
-    #Response object wrapper with scope request (get a new one for each request) -->
-    graviton.rest.response:
-        class: "%graviton.rest.response.class%"
 
     #Json Request listener -->
     graviton.rest.listener.writelocklistener:
@@ -186,22 +177,13 @@ services:
             priority: 9999
             method: onKernelException
 
-    #Json Request listener -->
-    graviton.rest.listener.jsonrequestlistener:
-        class: Graviton\RestBundle\Listener\JsonRequestListener
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onKernelRequest
-
     #Allowed RQL operator listener -->
     graviton.rest.listener.rqlallowedoperatorrequestlistener:
         class: "%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%"
         tags:
           -
             name: kernel.event_listener
-            event: graviton.rest.request
+            event: kernel.request
             method: onKernelRequest
 
     #restUtils service - a service providing some helpers dealing with services -->
@@ -212,6 +194,7 @@ services:
           - "@router"
           - "@graviton.rest.serializer"
           - "@logger"
+          - '@Graviton\SchemaBundle\Validation\RequestValidator'
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
           - "@graviton.cache.adapter.app"
@@ -222,16 +205,6 @@ services:
         class: Graviton\RestBundle\Event\RestEvent
         shared: false
 
-    graviton.rest.event.subscriber:
-        class: "%graviton.rest.event.subscriber.class%"
-        arguments:
-          - "@graviton.rest.response"
-          - "@graviton.rest.event"
-          - "@service_container"
-        tags:
-          -
-            name: kernel.event_subscriber
-
     #Graviton rest event listeners -->
     #Paging listener -->
     graviton.rest.listener.linkheaderresponselistener:
@@ -241,7 +214,7 @@ services:
         tags:
           -
             name: kernel.event_listener
-            event: graviton.rest.response
+            event: kernel.response
             method: onKernelResponse
 
     #X-Version response listener -->
@@ -252,7 +225,7 @@ services:
         tags:
           -
             name: kernel.event_listener
-            event: graviton.rest.response
+            event: kernel.response
             method: onKernelResponse
 
     #RQL query listener (see RqlQueryDecoratorCompilerPass) -->

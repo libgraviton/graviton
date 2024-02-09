@@ -1,6 +1,5 @@
 parameters:
   graviton.schema.listener.canonicalschemaresponse.class: Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener
-  graviton.schema.model.schemamodel.class: Graviton\SchemaBundle\Model\SchemaModel
   graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
   graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory
   graviton.schema.constraint.utils.class: Graviton\SchemaBundle\Constraint\ConstraintUtils
@@ -22,15 +21,6 @@ services:
             name: kernel.event_listener
             event: kernel.response
             method: onKernelResponse
-
-    graviton.schema.model.schemamodel:
-        abstract: true
-        class: "%graviton.schema.model.schemamodel.class%"
-        calls:
-          -
-            method: setContainer
-            arguments:
-              - "@service_container"
 
     graviton.schema.service.repositoryfactory:
         class: "%graviton.schema.service.repositoryfactory.class%"
@@ -61,6 +51,10 @@ services:
             type: Graviton\SchemaBundle\Document\SchemaEnum
             format: json
 
+    Graviton\SchemaBundle\Validation\RequestValidator:
+        #arguments:
+
+
     # constraints
     Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder: ~
@@ -71,8 +65,8 @@ services:
     Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\ExtrefConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\DatetimeConstraintBuilder:
-      arguments:
-        - "%graviton.document.dateFormatRegex%"
+        arguments:
+          - "%graviton.document.dateFormatRegex%"
 
     Graviton\SchemaBundle\Constraint\Builder\HashConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\ArrayOfObjectConstraintBuilder: ~

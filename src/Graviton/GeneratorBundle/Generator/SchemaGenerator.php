@@ -29,6 +29,11 @@ class SchemaGenerator extends AbstractGenerator
     private ConstraintBuilder $constraintBuilder;
 
     /**
+     * @var array
+     */
+    private array $versionInformation;
+
+    /**
      * set ConstraintBuilder
      *
      * @param ConstraintBuilder $constraintBuilder constraint builder
@@ -37,6 +42,11 @@ class SchemaGenerator extends AbstractGenerator
      */
     public function setConstraintBuilder(ConstraintBuilder $constraintBuilder) {
         $this->constraintBuilder = $constraintBuilder;
+    }
+
+    public function setVersionInformation(array $versionInformation)
+    {
+        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -227,7 +237,7 @@ class SchemaGenerator extends AbstractGenerator
 
         if (!$isReadOnly) {
             $paths[$routerBase.'{id}']['put'] = [
-                'summary' => 'Persists a single "'.$docName.'" element.',
+                'summary' => 'Persists a single '.$docName.' element.',
                 'operationId' => 'putOne'.$docName,
                 'responses' => $writeResponses,
                 'requestBody' => $writeBody,
@@ -236,7 +246,7 @@ class SchemaGenerator extends AbstractGenerator
                 ]
             ];
             $paths[$routerBase.'{id}']['delete'] = [
-                'summary' => 'Deletes a single "'.$docName.'" element.',
+                'summary' => 'Deletes a single '.$docName.' element.',
                 'operationId' => 'deleteOne'.$docName,
                 'responses' => $writeResponses,
                 'parameters' => [
@@ -265,7 +275,6 @@ class SchemaGenerator extends AbstractGenerator
             ->path('config/schema')
             ->name('openapi.json');
 
-        $allSchemas = [];
         $mainFile = $this->getSchema($targetFile, 'Graviton');
         $existingFiles = [];
 
@@ -316,9 +325,7 @@ class SchemaGenerator extends AbstractGenerator
         // write full schema
         $this->fs->dumpFile($targetFile, \json_encode($mainFile, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
         $output->writeln("Wrote full openapi schema to ".$targetFile);
-
     }
-
 
     /**
      * Returns either new schema or the one from file
@@ -337,7 +344,7 @@ class SchemaGenerator extends AbstractGenerator
             'openapi' => '3.0.2',
             'info' => [
                 'title' => 'Endpoint for '.$docName.' entries.',
-                'version' => 'TO_BE_DEFINED'
+                'version' => $this->versionInformation['self']
             ],
             'paths' => [],
             'components' => [

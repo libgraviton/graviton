@@ -14,6 +14,7 @@ use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -45,11 +46,6 @@ class RestController
     private $model;
 
     /**
-     * @var Response
-     */
-    private $response;
-
-    /**
      * @var SchemaUtils
      */
     private $schemaUtils;
@@ -75,7 +71,6 @@ class RestController
     protected $securityUtils;
 
     /**
-     * @param Response           $response    Response
      * @param RestUtils          $restUtils   Rest Utils
      * @param Router             $router      Router
      * @param SchemaUtils        $schemaUtils Schema utils
@@ -83,14 +78,12 @@ class RestController
      * @param SecurityUtils      $security    The securityUtils service
      */
     public function __construct(
-        Response $response,
         RestUtils $restUtils,
         Router $router,
         SchemaUtils $schemaUtils,
         JsonPatchValidator $jsonPatch,
         SecurityUtils $security
     ) {
-        $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
         $this->schemaUtils = $schemaUtils;
@@ -175,7 +168,12 @@ class RestController
      */
     public function getResponse()
     {
-        return $this->response;
+        trigger_deprecation(
+            'graviton',
+            '8.0.0',
+            'getResponse() on RestController will be removed in 9.0'
+        );
+        return new Response();
     }
 
     /**
@@ -254,7 +252,7 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $record = $this->restUtils->validateRequest($request->getContent(), $model);
+        $record = $this->restUtils->validateRequest($request, $model);
 
         // Insert the new record
         $record = $model->insertRecord($record);
@@ -430,7 +428,7 @@ class RestController
     {
         list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
 
-        $response = $this->response;
+        $response = new Response();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         // enabled methods for CorsListener
@@ -468,7 +466,7 @@ class RestController
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
 
-        $response = $this->response;
+        $response = new JsonResponse();
         $response->setStatusCode(Response::HTTP_OK);
         $response->setVary(['Origin', 'Accept-Encoding']);
         $response->setPublic();

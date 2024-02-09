@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\RestBundle\Service\QueryService;
-use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -25,7 +24,7 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class DocumentModel extends SchemaModel implements ModelInterface
+class DocumentModel implements ModelInterface
 {
     /**
      * @var string
@@ -58,6 +57,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $queryService;
 
     /**
+     * @var string
+     */
+    private string $schemaPath;
+
+    /**
      * @var array
      */
     protected $notModifiableOriginRecords;
@@ -71,13 +75,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * constructor
      *
-     * @param string          $jsonSchemaPath    schema path
+     * @param string          $schemaPath        schema path
      * @param string          $documentClassName class name
      * @param DocumentManager $documentManager   dm
      */
-    public function __construct(string $jsonSchemaPath, string $documentClassName, DocumentManager $documentManager)
+    public function __construct(string $schemaPath, string $documentClassName, DocumentManager $documentManager)
     {
-        parent::__construct($jsonSchemaPath);
+        $this->schemaPath = $schemaPath;
         $this->documentClassName = $documentClassName;
         $this->documentManager = $documentManager;
     }
@@ -162,6 +166,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function getRepository()
     {
         return $this->documentManager->getRepository($this->documentClassName);
+    }
+
+    /**
+     * get schema path
+     *
+     * @return string schema path
+     */
+    public function getSchemaPath(): string
+    {
+        return $this->schemaPath;
     }
 
     /**

@@ -6,7 +6,6 @@
 namespace Graviton\RestBundle\Tests\Listener;
 
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
-use Graviton\RestBundle\Event\RestEvent;
 use Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\RqlParser\Node\LimitNode;
@@ -14,6 +13,7 @@ use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 use Graviton\RqlParser\Node\SortNode;
 use Graviton\RqlParser\Query;
 use Graviton\RqlParser\QueryBuilder;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -32,11 +32,14 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
         $request = new Request();
         $request->attributes->set('rqlQuery', null);
 
-        $event = new RestEvent();
-        $event->setRequest($request);
+        $eventMock = $this->getMockBuilder(RequestEvent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $eventMock->expects(self::any())->method('getRequest')->willReturn($request);
 
         $listener = new RqlAllowedOperatorRequestListener();
-        $this->assertNull($listener->onKernelRequest($event));
+        $this->assertNull($listener->onKernelRequest($eventMock));
     }
 
     /**
@@ -53,11 +56,14 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
         $request->attributes->set('rqlQuery', $query);
         $request->attributes->set('_route', 'model.all');
 
-        $event = new RestEvent();
-        $event->setRequest($request);
+        $eventMock = $this->getMockBuilder(RequestEvent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $eventMock->expects(self::any())->method('getRequest')->willReturn($request);
 
         $listener = new RqlAllowedOperatorRequestListener();
-        $this->assertNull($listener->onKernelRequest($event));
+        $this->assertNull($listener->onKernelRequest($eventMock));
     }
 
     /**
@@ -76,11 +82,14 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
         $request->attributes->set('rqlQuery', $query);
         $request->attributes->set('_route', 'model.get');
 
-        $event = new RestEvent();
-        $event->setRequest($request);
+        $eventMock = $this->getMockBuilder(RequestEvent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $eventMock->expects(self::any())->method('getRequest')->willReturn($request);
 
         $listener = new RqlAllowedOperatorRequestListener();
-        $listener->onKernelRequest($event);
+        $listener->onKernelRequest($eventMock);
     }
 
     /**

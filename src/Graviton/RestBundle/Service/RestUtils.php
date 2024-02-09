@@ -15,8 +15,11 @@ use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\SchemaBundle\Validation\RequestValidator;
+use Http\Discovery\Psr17Factory;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,6 +56,11 @@ final class RestUtils implements RestUtilsInterface
     private $logger;
 
     /**
+     * @var RequestValidator
+     */
+    private RequestValidator $requestValidator;
+
+    /**
      * @var SchemaUtils
      */
     private $schemaUtils;
@@ -71,6 +79,7 @@ final class RestUtils implements RestUtilsInterface
      * @param Router                 $router          router
      * @param Serializer             $serializer      serializer
      * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
+     * @param RequestValidator       $requestValidator request validator
      * @param SchemaUtils            $schemaUtils     schema utils
      * @param Validator              $schemaValidator schema validator
      * @param CacheItemPoolInterface $cacheProvider   Cache service
@@ -79,6 +88,7 @@ final class RestUtils implements RestUtilsInterface
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
+        RequestValidator $requestValidator,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
         CacheItemPoolInterface $cacheProvider
@@ -86,6 +96,7 @@ final class RestUtils implements RestUtilsInterface
         $this->serializer = $serializer;
         $this->router = $router;
         $this->logger = $logger;
+        $this->requestValidator = $requestValidator;
         $this->schemaUtils = $schemaUtils;
         $this->schemaValidator = $schemaValidator;
         $this->cacheProvider = $cacheProvider;
@@ -184,11 +195,19 @@ final class RestUtils implements RestUtilsInterface
      * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
      * @throws \Exception
      */
-    public function validateContent($content, DocumentModel $model)
+    public function validateRequest(Request $request, DocumentModel $model)
     {
-        if (is_string($content)) {
-            $content = json_decode($content);
-        }
+        $psr17Factory = new Psr17Factory();
+        $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
+
+
+        $psrRequest = $psrHttpFactory->createRequest($request);
+
+        $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)
+            ->fromJsonFile($model->getSchemaPath())
+            ->getServerRequestValidator();
+
+        $validator->validate($psrRequest);
 
         return $this->schemaValidator->validate(
             $content,
@@ -428,7 +447,7 @@ final class RestUtils implements RestUtilsInterface
      * @return ValidationExceptionError|Object
      * @throws \Exception
      */
-    public function validateRequest($content, DocumentModel $model)
+    public function validateRequest2($content, DocumentModel $model)
     {
         $errors = $this->validateContent($content, $model);
         if (!empty($errors)) {

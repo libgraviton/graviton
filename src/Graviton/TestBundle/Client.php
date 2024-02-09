@@ -86,6 +86,8 @@ class Client
 
         if ($jsonEncode) {
             $content = json_encode($content);
+            // ensure header!
+            $server['HTTP_CONTENT_TYPE'] = 'application/json';
         }
 
         return $this->client->request(

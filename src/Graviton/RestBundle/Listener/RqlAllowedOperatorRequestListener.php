@@ -6,8 +6,8 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
-use Graviton\RestBundle\Event\RestEvent;
 use Graviton\RqlParser\AbstractNode;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
  * RQL allowed operators listener
@@ -21,10 +21,11 @@ class RqlAllowedOperatorRequestListener
     /**
      * Process RQL query if it is allowed for current route
      *
-     * @param RestEvent $event Event
+     * @param RequestEvent $event Event
+     *
      * @return void
      */
-    public function onKernelRequest(RestEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $rqlQuery = $event->getRequest()->attributes->get('rqlQuery');
         if ($rqlQuery === null) {

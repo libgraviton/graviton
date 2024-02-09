@@ -853,7 +853,7 @@ class ResourceGenerator extends AbstractGenerator
                     [
                         'type' => 'string',
                         'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
-                            '/Resources/config/schema/' . $parameters['document'] . '.json\')'
+                            '/Resources/config/schema/openapi.json\')'
                     ],
                     [
                         'type' => 'string',
@@ -876,7 +876,7 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'type' => 'string',
                     'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
-                        '/Resources/config/schema/'.$parameters['document'].'Embedded.json\')'
+                        '/Resources/config/schema/openapi.json\')'
                 ],
                 [
                     'type' => 'string',
