@@ -160,55 +160,13 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                 $this->getBaseDefAsArray($definition),
                 [
                     'name'                 => $field->getName(),
-                    'groups'               => $definition->getGroups(),
                     'type'                 => $field->getType(),
                     'exposedName'          => $definition->getExposeAs(),
                     'doctrineType'         => $field->getTypeDoctrine(),
                     'serializerType'       => $field->getTypeSerializer(),
                     'relType'              => null,
                     'isClassType'          => false,
-                    'xDynamicKey'          => null,
                     'searchable'           => 0,
-                    'recordOriginException' => false,
-                    'hidden'               => false,
-                    'onVariation'          => null,
-                    'valuePattern'         => null
-                ]
-            ),
-            $field->getDefAsArray()
-        );
-    }
-
-    /**
-     * Test JsonDefinitionField::getXDynamicKey()
-     *
-     * @return void
-     */
-    public function testGetXDynamicKey()
-    {
-        $key = (new Schema\XDynamicKey())
-            ->setDocumentId(__CLASS__)
-            ->setRepositoryMethod(__LINE__)
-            ->setRefField(__FILE__);
-
-        $definition = (new Schema\Field())
-            ->setXDynamicKey($key);
-
-        $field = new JsonDefinitionField('name', $definition);
-
-        $this->assertEquals(
-            array_replace(
-                $this->getBaseDefAsArray($definition),
-                [
-                    'name'                  => $field->getName(),
-                    'type'                  => $field->getType(),
-                    'exposedName'           => $field->getName(),
-                    'doctrineType'          => $field->getTypeDoctrine(),
-                    'serializerType'        => $field->getTypeSerializer(),
-                    'relType'               => null,
-                    'isClassType'           => false,
-                    'xDynamicKey'           => $key,
-                    'searchable'            => 0,
                     'recordOriginException' => false,
                     'hidden'               => false,
                     'onVariation'          => null,

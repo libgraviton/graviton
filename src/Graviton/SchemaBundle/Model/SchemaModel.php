@@ -263,30 +263,6 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
-     * tell us if a model what to be exposed using a key as field
-     *
-     * @param string $field field that we check for dynamic-key spec
-     *
-     * @return boolean
-     */
-    public function hasDynamicKey($field)
-    {
-        return $this->getSchemaField($field, 'x-dynamic-key', false) !== false;
-    }
-
-    /**
-     * Get field used for setting stringy key value
-     *
-     * @param string $field field that we get dynamic-key spec from
-     *
-     * @return object
-     */
-    public function getDynamicKeySpec($field)
-    {
-        return $this->getSchemaField($field, 'x-dynamic-key');
-    }
-
-    /**
      * Gets the defined document class in shortform from schema
      *
      * @return string|false either the document class or false it not given
@@ -313,18 +289,6 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
-     * Get defined onVariation on this field (if any)
-     *
-     * @param string $field field that we get constraints spec from
-     *
-     * @return object
-     */
-    public function getOnVariaton($field)
-    {
-        return $this->getSchemaField($field, 'x-onvariation', null);
-    }
-
-    /**
      * Get defined pattern on this field (if any)
      *
      * @param string $field field that we get constraints spec from
@@ -336,33 +300,6 @@ class SchemaModel implements ContainerAwareInterface
         return $this->getSchemaField($field, 'pattern', null);
     }
 
-    /**
-     * get variations
-     *
-     * @return array variations
-     */
-    public function getVariations()
-    {
-        if (isset($this->schema->{'x-variations'})) {
-            return $this->schema->{'x-variations'};
-        }
-        return [];
-    }
-
-    /**
-     * Tells us if in this model, the ID can be given on a POST request or not (in the payload).
-     * This basically depends on if the "id" property is given in the JSON definition or not.
-     *
-     * @return bool true if yes, false otherwise
-     */
-    public function isIdInPostAllowed()
-    {
-        $isAllowed = true;
-        if (isset($this->schema->{'x-id-in-post-allowed'})) {
-            $isAllowed = $this->schema->{'x-id-in-post-allowed'};
-        }
-        return $isAllowed;
-    }
 
     /**
      * get schema field value

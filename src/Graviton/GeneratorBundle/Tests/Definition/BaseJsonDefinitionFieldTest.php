@@ -28,7 +28,6 @@ abstract class BaseJsonDefinitionFieldTest extends \PHPUnit\Framework\TestCase
             ->setDescription('description')
             ->setType('type')
             ->setLength(10)
-            ->setGroups(['hans', 'fred'])
             ->setReadOnly(true)
             ->setTranslatable(true)
             ->setRequired(true)
@@ -72,13 +71,11 @@ abstract class BaseJsonDefinitionFieldTest extends \PHPUnit\Framework\TestCase
         return [
             'length'            => $field->getLength(),
             'title'             => $field->getTitle(),
-            'groups'            => $field->getGroups(),
             'description'       => $field->getDescription(),
             'readOnly'          => $field->getReadOnly(),
             'required'          => $field->getRequired(),
             'translatable'      => $field->getTranslatable(),
             'collection'        => $field->getCollection(),
-            'xDynamicKey'       => null,
             'constraints'       => array_map(
                 function (Schema\Constraint $constraint) {
                     return [

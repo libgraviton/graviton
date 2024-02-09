@@ -452,11 +452,6 @@
           "title": "For internal usage only",
           "type": "string"
         },
-        "x-dynamic-key": {
-          "title": "Dynamic Key Specification",
-          "description": "Use this if you need to expose array objects as an object using parts of the object as key. Gets transported into internal graviton schemas as a whole if specified.",
-          "$ref": "#/definitions/xDynamicKey"
-        },
         "searchable": {
           "title": "Can the defined field be searched by search RQL term, weight based query indexing",
           "type": "integer",
@@ -465,13 +460,6 @@
         "hidden": {
           "title": "If true, this field will not be serialized",
           "type": "boolean"
-        },
-        "restrictions": {
-          "title": "A list of restriction handlers (which are registered through RestrictionManager) that are applied to this field",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       },
       "required": [
@@ -517,31 +505,6 @@
         "value"
       ],
       "additionalProperties": false
-    },
-    "xDynamicKey": {
-      "type": "object",
-      "properties": {
-        "document-id": {
-          "title": "Document ID",
-          "description": "Document type of document that shall has it's id used as object key.",
-          "type": "string"
-        },
-        "repository-method": {
-          "title": "Repository Method",
-          "description": "Method that is to be called on the document repository corresponding to the given document-id.",
-          "type": "string"
-        },
-        "ref-field": {
-          "title": "Ref Field",
-          "description": "Which field in a document to find out what it's key should be when it needs to be exposed as object (ie. using additionalProperties) on it's parent. if it's nested just seperate the fields by a period. E.g. lvl1.lvl2.lvl3. Graviton currently uses the id from the results of this call as key",
-          "type": "string"
-        }
-      },
-      "required": [
-        "document-id",
-        "repository-method",
-        "ref-field"
-      ]
     },
     "solr": {
       "type": "object",

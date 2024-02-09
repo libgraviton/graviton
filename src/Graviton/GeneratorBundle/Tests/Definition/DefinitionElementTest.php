@@ -81,7 +81,6 @@ class DefinitionElementTest extends GravitonTestCase
                 'serializerType'    => 'Graviton\DocumentBundle\Entity\Translatable',
                 'isClassType'       => false,
                 'relType'           => null,
-
                 'description'       => 'A lengthy and detailed description.',
                 'length'            => 200,
                 'readOnly'          => false,
@@ -103,7 +102,6 @@ class DefinitionElementTest extends GravitonTestCase
         $def = array(
             'name' => 'testField',
             'type' => 'translatable',
-            'groups' => null,
             'length' => 200,
             'title' => 'A testing title',
             'description' => 'A lengthy and detailed description.',
@@ -117,11 +115,9 @@ class DefinitionElementTest extends GravitonTestCase
             'isClassType' => false,
             'constraints' => [],
             'collection' => [],
-            'xDynamicKey' => null,
             'searchable' => 1,
             'recordOriginException' => false,
             'hidden' => false,
-            'onVariation' => null,
             'valuePattern' => null
         );
 
