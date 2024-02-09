@@ -5,10 +5,9 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\OpenApi;
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * bundle containing various code generators
@@ -24,14 +23,28 @@ use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 class SchemaGenerator extends AbstractGenerator
 {
 
+    /**
+     * @var ConstraintBuilder
+     */
     private ConstraintBuilder $constraintBuilder;
 
+    /**
+     * set ConstraintBuilder
+     *
+     * @param ConstraintBuilder $constraintBuilder constraint builder
+     *
+     * @return void
+     */
     public function setConstraintBuilder(ConstraintBuilder $constraintBuilder) {
         $this->constraintBuilder = $constraintBuilder;
     }
 
     /**
-     * @param JsonDefinition $json optional JsonDefinition object
+     * generate a schema
+     *
+     * @param array $parameters   param
+     * @param bool $isSubResource if sub
+     * @param string $targetFile  target
      *
      * @return void
      */
@@ -94,6 +107,14 @@ class SchemaGenerator extends AbstractGenerator
         $this->fs->dumpFile($targetFile, \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
     }
 
+    /**
+     * add the paths.
+     *
+     * @param array $schema     schema
+     * @param array $parameters params
+     *
+     * @return array schema
+     */
     private function writePaths(array $schema, array $parameters) : array {
         // main route!
         $routerBase = $parameters['json']->getRouterBase();
@@ -229,12 +250,84 @@ class SchemaGenerator extends AbstractGenerator
         return $schema;
     }
 
-    private function getResponses(bool $forWriting = true) : array {
-        $responses = [];
+    public function consolidateAllSchemas(?string $baseDir, OutputInterface $output, string $targetFile) : void {
+        // our own bundles!
+        $directories = [__DIR__.'/../../'];
+        if (!empty($baseDir)) {
+            $directories[] = $baseDir;
+        }
 
-        return $responses;
+        $output->writeln('Starting to consolidate openapi schemas in '.json_encode($directories));
+
+        $files = Finder::create()
+            ->files()
+            ->in($directories)
+            ->path('config/schema')
+            ->name('openapi.json');
+
+        $allSchemas = [];
+        $mainFile = $this->getSchema($targetFile, 'Graviton');
+        $existingFiles = [];
+
+        foreach ($files as $file) {
+            $content = $file->getContents();
+
+            $schema = json_decode($content, true);
+            if (!is_array($schema)) {
+                continue;
+            }
+
+            if (!empty($schema['paths'])) {
+                $mainFile['paths'] += $schema['paths'];
+            }
+
+            if (!empty($schema['components']['schemas'])) {
+                $mainFile['components']['schemas'] += $schema['components']['schemas'];
+            }
+
+            $existingFiles[] = $file;
+        }
+
+        // 2nd pass -> fix all missing references
+        $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
+        foreach ($existingFiles as $file) {
+            $content = $file->getContents();
+
+            // find needed entities
+            preg_match_all($pattern, $content, $matches);
+
+            if (empty($matches[1])) {
+                continue;
+            }
+
+            $schema = json_decode($content, true);
+
+            // collect all!
+            foreach ($matches[1] as $refName) {
+                if (!empty($mainFile['components']['schemas'][$refName])) {
+                    $schema['components']['schemas'][$refName] = $mainFile['components']['schemas'][$refName];
+                }
+            }
+
+            $this->fs->dumpFile($file->getPathname(), \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+            $output->writeln('Rewrote file '.$file->getPathname());
+        }
+
+        // write full schema
+        $this->fs->dumpFile($targetFile, \json_encode($mainFile, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+        $output->writeln("Wrote full openapi schema to ".$targetFile);
+
     }
 
+
+    /**
+     * Returns either new schema or the one from file
+     *
+     * @param string $filename filename
+     * @param string $docName  docname
+     *
+     * @return array schema
+     */
     private function getSchema(string $filename, string $docName) : array {
         if ($this->fs->exists($filename)) {
             return \json_decode(file_get_contents($filename), true);
@@ -243,7 +336,7 @@ class SchemaGenerator extends AbstractGenerator
         $base = [
             'openapi' => '3.0.2',
             'info' => [
-                'title' => 'Endpoint for "'.$docName.' entries."',
+                'title' => 'Endpoint for '.$docName.' entries.',
                 'version' => 'TO_BE_DEFINED'
             ],
             'paths' => [],
@@ -254,5 +347,4 @@ class SchemaGenerator extends AbstractGenerator
 
         return $base;
     }
-
 }

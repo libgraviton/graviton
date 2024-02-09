@@ -12,6 +12,7 @@ use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -109,6 +110,11 @@ class GenerateDynamicBundleCommand extends Command
     private $generateSerializerConfig = true;
 
     /**
+     * @var SchemaGenerator
+     */
+    private SchemaGenerator $schemaGenerator;
+
+    /**
      * @param LoaderInterface              $definitionLoader      JSON definition loader
      * @param BundleGenerator              $bundleGenerator       bundle generator
      * @param ResourceGenerator            $resourceGenerator     resource generator
@@ -121,7 +127,7 @@ class GenerateDynamicBundleCommand extends Command
      * @param string|null                  $ensureIndexes         comma separated list of indexes to ensure
      */
     public function __construct(
-        LoaderInterface     $definitionLoader,
+        LoaderInterface $definitionLoader,
         BundleGenerator $bundleGenerator,
         ResourceGenerator $resourceGenerator,
         DynamicBundleBundleGenerator $bundleBundleGenerator,
@@ -130,7 +136,8 @@ class GenerateDynamicBundleCommand extends Command
         $serviceWhitelist = null,
         $name = null,
         $syntheticFields = null,
-        $ensureIndexes = null
+        $ensureIndexes = null,
+        SchemaGenerator $schemaGenerator
     ) {
         parent::__construct($name);
 
@@ -149,6 +156,8 @@ class GenerateDynamicBundleCommand extends Command
         if (!empty($serviceWhitelist)) {
             $this->serviceWhitelist = $serviceWhitelist;
         }
+
+        $this->schemaGenerator = $schemaGenerator;
     }
 
     /**
@@ -337,6 +346,8 @@ class GenerateDynamicBundleCommand extends Command
 
         // generate bundlebundle
         $this->generateBundleBundleClass();
+
+        $this->schemaGenerator->consolidateAllSchemas($input->getOption('srcDir'), $output, '/home/dn/schema.json');
 
         return 0;
     }

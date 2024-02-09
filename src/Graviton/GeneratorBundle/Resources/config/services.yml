@@ -159,6 +159,7 @@ services:
           - null
           - "%graviton.generator.synthetic_fields%"
           - "%graviton.generator.ensure_indexes%"
+          - '@Graviton\GeneratorBundle\Generator\SchemaGenerator'
         tags:
           -
             name: console.command

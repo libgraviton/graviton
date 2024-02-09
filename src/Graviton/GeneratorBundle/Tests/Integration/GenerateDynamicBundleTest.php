@@ -50,7 +50,6 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $fieldMapper = new ResourceGenerator\FieldMapper();
         $fieldMapper->addMapper(new ResourceGenerator\FieldTypeMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldNameMapper());
-        $fieldMapper->addMapper(new ResourceGenerator\FieldJsonMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldTitleMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldHiddenRestrictionMapper());
 
