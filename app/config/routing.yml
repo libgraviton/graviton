@@ -6,10 +6,6 @@ graviton_core_routing:
     resource: "@GravitonCoreBundle/Resources/config/routing.yml"
     prefix: /
 
-graviton_swagger_routing:
-    resource: "@GravitonSwaggerBundle/Resources/config/routing.yml"
-    prefix: /
-
 graviton_security_routing:
     resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /
