@@ -26,10 +26,6 @@ class FieldHiddenRestrictionMapper implements FieldMapperInterface
             $field['hidden'] = false;
         }
 
-        if (!array_key_exists('restrictions', $field)) {
-            $field['restrictions'] = [];
-        }
-
         return $field;
     }
 }
