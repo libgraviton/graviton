@@ -154,11 +154,7 @@ class RestController
 
         $this->addRequestAttributes($request);
 
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent($document);
-
-        return $response;
+        return new JsonResponse($document, Response::HTTP_OK, [], true);
     }
 
     /**
@@ -214,25 +210,20 @@ class RestController
      */
     public function allAction(Request $request)
     {
-        $this->logger->info('REST: allAction');
-
         $model = $this->getModel();
 
         $this->logger->info('REST: allAction -> got model, starting findAll() on QueryService');
         $data = $model->findAll($request);
-
         $this->logger->info('REST: allAction -> got data, starting to serialize()');
-        $content = $this->restUtils->serialize($data);
-
-        $this->logger->info('REST: allAction -> sending response');
 
         $this->addRequestAttributes($request);
 
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent($content);
-
-        return $response;
+        return new JsonResponse(
+            $this->restUtils->serialize($data),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
@@ -247,10 +238,7 @@ class RestController
         $this->logger->info('REST: postAction');
 
         // Get the response object from container
-        $response = $this->getResponse();
         $model = $this->getModel();
-
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
         $record = $this->restUtils->validateRequest($request, $model);
 
@@ -259,18 +247,15 @@ class RestController
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
-
-        // Set status code
-        $response->setStatusCode(Response::HTTP_CREATED);
-
-        $response->headers->set(
-            'Location',
-            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
-        );
-
         $this->addRequestAttributes($request);
 
-        return $response;
+        return new Response(
+            null,
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
+            ]
+        );
     }
 
     /**
@@ -297,11 +282,9 @@ class RestController
     {
         $this->logger->info('REST: putAction');
 
-        $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-        $record = $this->restUtils->validateRequest($request->getContent(), $model);
+        $record = $this->restUtils->validateRequest($request, $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -322,14 +305,9 @@ class RestController
         }
 
         $this->addRequestAttributes($request);
-
-        // Set status code
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
-
-        // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        return $response;
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -346,13 +324,11 @@ class RestController
     {
         $this->logger->info('REST: patchAction');
 
-        $response = $this->getResponse();
         $model = $this->getModel();
 
         // Validate received data. On failure release the lock.
         try {
             // Check JSON Patch request
-            $this->restUtils->checkJsonRequest($request, $response, $model);
             $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
             // Find record && apply $ref converter
@@ -385,14 +361,13 @@ class RestController
 
         $this->addRequestAttributes($request);
 
-        // Set status response code
-        $response->setStatusCode(Response::HTTP_OK);
-        $response->headers->set(
-            'Content-Location',
-            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
+        return new Response(
+            null,
+            Response::HTTP_OK,
+            [
+                'Content-Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
+            ]
         );
-
-        return $response;
     }
 
     /**
@@ -407,13 +382,10 @@ class RestController
     {
         $this->logger->info('REST: deleteAction');
 
-        $response = $this->getResponse();
         $this->model->deleteRecord($id);
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
-
         $this->addRequestAttributes($request);
 
-        return $response;
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -427,9 +399,6 @@ class RestController
     public function optionsAction(Request $request)
     {
         list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
-
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
@@ -445,7 +414,7 @@ class RestController
 
         $this->addRequestAttributes($request);
 
-        return $response;
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
 
@@ -515,13 +484,9 @@ class RestController
      */
     private function addRequestAttributes(Request $request)
     {
-        // try to set mongo collection name as varnishTag
-        $repository = $this->getModel()->getRepository();
-        if ($repository != null) {
-            $classNameParts = explode('\\', $repository->getDocumentName());
-            if (is_array($classNameParts)) {
-                $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
-            }
+        $classNameParts = explode('\\', $this->getModel()->getEntityClass());
+        if (is_array($classNameParts)) {
+            $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
         }
     }
 }

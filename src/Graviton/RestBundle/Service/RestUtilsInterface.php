@@ -76,16 +76,4 @@ interface RestUtilsInterface
      * @return array array with matching routes
      */
     public function getRoutesByBasename($baseName);
-
-    /**
-     * validate raw json input
-     *
-     * @param Request       $request  request
-     * @param Response      $response response
-     * @param DocumentModel $model    model
-     * @param string        $content  Alternative request content.
-     *
-     * @return void
-     */
-    public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '');
 }

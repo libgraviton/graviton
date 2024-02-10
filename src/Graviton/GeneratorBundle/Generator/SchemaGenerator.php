@@ -10,11 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
- * bundle containing various code generators
- *
- * This code is more or less loosley based on SensioBundleGenerator. It could
- * use some refactoring to duplicate less for that, but this is how i finally
- * got a working version.
+ * generates openapi schema files for each endpoint and one that sums all up.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
@@ -71,6 +67,10 @@ class SchemaGenerator extends AbstractGenerator
         $reservedFieldNames = $parameters['reservedFieldnames'];
         $requiredFields = [];
 
+        if ($parameters['document'] == 'App') {
+            $hans = 3;
+        }
+
         // create fields!
         foreach ($parameters['fields'] as $field) {
             $fieldDefinition = [];
@@ -101,11 +101,20 @@ class SchemaGenerator extends AbstractGenerator
 
             $fieldDefinition = $this->constraintBuilder->buildSchema($fieldDefinition, $field);
 
+            // if field is a reference, collapse it to a pure $ref!
+            if (isset($fieldDefinition['type']) && str_starts_with($fieldDefinition['type'], '#/')) {
+                $fieldDefinition = ['$ref' => $fieldDefinition['type']];
+            }
+
             $thisSchema['properties'][$fieldName] = $fieldDefinition;
         }
 
-        natsort($requiredFields);
-        $thisSchema['required'] = $requiredFields;
+        if (!empty($requiredFields)) {
+            natsort($requiredFields);
+            $thisSchema['required'] = $requiredFields;
+        }
+
+
 
         $schema['components']['schemas'][$parameters['document']] = $thisSchema;
 
@@ -169,7 +178,7 @@ class SchemaGenerator extends AbstractGenerator
         // "ALL" action
         $paths[$routerBase] = [
             'get' => [
-                'summary' => 'Returns "'.$docName.'" entries.',
+                'summary' => 'Returns '.$docName.' entries.',
                 'operationId' => 'getAll'.$docName,
                 'responses' => [
                     200 => [
@@ -191,7 +200,7 @@ class SchemaGenerator extends AbstractGenerator
 
         if (!$isReadOnly) {
             $paths[$routerBase]['post'] = [
-                'summary' => 'Writes a single "'.$docName.'" entry.',
+                'summary' => 'Writes a single '.$docName.' entry.',
                 'operationId' => 'post'.$docName,
                 'requestBody' => $writeBody,
                 'responses' => $writeResponses
@@ -211,7 +220,7 @@ class SchemaGenerator extends AbstractGenerator
         // "ONE" action
         $paths[$routerBase.'{id}'] = [
             'get' => [
-                'summary' => 'Returns a single "'.$docName.'" element.',
+                'summary' => 'Returns a single '.$docName.' entry.',
                 'operationId' => 'getOne'.$docName,
                 'responses' => [
                     200 => [
@@ -277,8 +286,14 @@ class SchemaGenerator extends AbstractGenerator
 
         $mainFile = $this->getSchema($targetFile, 'Graviton');
         $existingFiles = [];
+        $entities = []; // used to track entities and where they're from!
 
         foreach ($files as $file) {
+            // already seen the same file?
+            if (isset($existingFiles[$file->getRealPath()])) {
+                continue;
+            }
+
             $content = $file->getContents();
 
             $schema = json_decode($content, true);
@@ -291,10 +306,24 @@ class SchemaGenerator extends AbstractGenerator
             }
 
             if (!empty($schema['components']['schemas'])) {
-                $mainFile['components']['schemas'] += $schema['components']['schemas'];
+                foreach ($schema['components']['schemas'] as $entityName => $entitySchema) {
+                    if (isset($entities[$entityName])) {
+                        throw new \LogicException(
+                            sprintf(
+                                'The entity %s was already defined in file %s and would be redefined in file %s',
+                                $entityName,
+                                $entities[$entityName],
+                                $file->getRealPath()
+                            )
+                        );
+                    } else {
+                        $entities[$entityName] = $file->getRealPath();
+                        $mainFile['components']['schemas'][$entityName] = $entitySchema;
+                    }
+                }
             }
 
-            $existingFiles[] = $file;
+            $existingFiles[$file->getRealPath()] = $file;
         }
 
         // 2nd pass -> fix all missing references
@@ -305,6 +334,10 @@ class SchemaGenerator extends AbstractGenerator
             // find needed entities
             preg_match_all($pattern, $content, $matches);
 
+            if (str_contains($file->getPathname(), 'AppBundle')) {
+                $hans = 3;
+            }
+
             if (empty($matches[1])) {
                 continue;
             }
@@ -312,7 +345,7 @@ class SchemaGenerator extends AbstractGenerator
             $schema = json_decode($content, true);
 
             // collect all!
-            foreach ($matches[1] as $refName) {
+            foreach (array_unique($matches[1]) as $refName) {
                 if (!empty($mainFile['components']['schemas'][$refName])) {
                     $schema['components']['schemas'][$refName] = $mainFile['components']['schemas'][$refName];
                 }

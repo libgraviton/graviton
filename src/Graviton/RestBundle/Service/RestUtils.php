@@ -17,6 +17,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SchemaBundle\Validation\RequestValidator;
 use Http\Discovery\Psr17Factory;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -189,80 +190,26 @@ final class RestUtils implements RestUtilsInterface
      * Validates content with the given schema, returning an array of errors.
      * If all is good, you will receive an empty array.
      *
-     * @param object        $content \stdClass of the request content
+     * @param Request       $request request
      * @param DocumentModel $model   the model to check the schema for
      *
-     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
+     * @return object the deserialized entity
      * @throws \Exception
      */
-    public function validateRequest(Request $request, DocumentModel $model)
+    public function validateRequest(Request $request, DocumentModel $model) : object
     {
         $psr17Factory = new Psr17Factory();
         $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
 
-
         $psrRequest = $psrHttpFactory->createRequest($request);
 
-        $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)
+        $validator = (new ValidatorBuilder())
             ->fromJsonFile($model->getSchemaPath())
             ->getServerRequestValidator();
 
         $validator->validate($psrRequest);
 
-        return $this->schemaValidator->validate(
-            $content,
-            $this->schemaUtils->getModelSchema(null, $model, true, true, true, $content)
-        );
-    }
-
-    /**
-     * validate raw json input
-     *
-     * @param Request       $request  request
-     * @param Response      $response response
-     * @param DocumentModel $model    model
-     * @param string        $content  Alternative request content.
-     *
-     * @return void
-     */
-    public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '')
-    {
-        if (empty($content)) {
-            $content = $request->getContent();
-        }
-
-        if (is_resource($content)) {
-            throw new BadRequestHttpException('unexpected resource in validation');
-        }
-
-        // is request body empty
-        if ($content === '') {
-            throw new NoInputException();
-        }
-
-        $input = json_decode($content, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new MalformedInputException(jsonError: json_last_error_msg());
-        }
-        if (!is_array($input)) {
-            throw new MalformedInputException('JSON request body must be an object');
-        }
-
-        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
-            // we need to check for id mismatches....
-            if ($request->attributes->get('id') != $input['id']) {
-                throw new MalformedInputException('Record ID in your payload must be the same');
-            }
-        }
-
-        if ($request->getMethod() == 'POST' &&
-            array_key_exists('id', $input) &&
-            !$model->isIdInPostAllowed()
-        ) {
-            throw new MalformedInputException(
-                '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
-            );
-        }
+        return $this->deserialize($request->getContent(false), $model->getEntityClass());
     }
 
     /**
@@ -435,24 +382,5 @@ final class RestUtils implements RestUtilsInterface
         }
 
         return $record;
-    }
-
-    /**
-     * Validates the current request on schema violations. If there are errors,
-     * the exception is thrown. If not, the deserialized record is returned.
-     *
-     * @param object|string $content \stdClass of the request content
-     * @param DocumentModel $model   the model to check the schema for
-     *
-     * @return ValidationExceptionError|Object
-     * @throws \Exception
-     */
-    public function validateRequest2($content, DocumentModel $model)
-    {
-        $errors = $this->validateContent($content, $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-        return $this->deserialize($content, $model->getEntityClass());
     }
 }

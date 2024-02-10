@@ -38,8 +38,7 @@
             "title": "en",
             "nullable": true
           }
-        },
-        "required": []
+        }
       }
     }
   }
