@@ -7,9 +7,12 @@ namespace Graviton\RestBundle\Service;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\DocumentBundle\Service\SolrQuery;
+use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use Graviton\RqlParser\AbstractNode;
+use Graviton\RqlParserBundle\Component\RequestParser;
 use MongoDB\Driver\ReadPreference;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -34,6 +37,11 @@ class QueryService
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var RequestParser
+     */
+    private RequestParser $rqlRequestParser;
 
     /**
      * @var VisitorInterface
@@ -77,6 +85,7 @@ class QueryService
 
     /**
      * @param LoggerInterface          $logger                         logger
+     * @param RequestParser            $requestParser                  request parser
      * @param VisitorInterface         $visitor                        visitor
      * @param integer                  $paginationDefaultLimit         default pagination limit
      * @param EventDispatcherInterface $eventDispatcher                event dispatcher
@@ -86,6 +95,7 @@ class QueryService
      */
     public function __construct(
         LoggerInterface $logger,
+        RequestParser $requestParser,
         VisitorInterface $visitor,
         int $paginationDefaultLimit,
         EventDispatcherInterface $eventDispatcher,
@@ -94,6 +104,7 @@ class QueryService
         ?string $enableMongoDbCounterHeaderName
     ) {
         $this->logger = $logger;
+        $this->rqlRequestParser = $requestParser;
         $this->visitor = $visitor;
         $this->paginationDefaultLimit = $paginationDefaultLimit;
         $this->eventDispatcher = $eventDispatcher;
@@ -135,7 +146,10 @@ class QueryService
         $this->repository = $repository;
         $this->queryBuilder = $repository->createQueryBuilder();
 
-        $this->applyRqlQuery();
+        // if id is *not* empty, then a single document is requested!
+        $singleDocumentRequest = !empty($this->getDocumentId());
+
+        $this->applyRqlQuery($singleDocumentRequest);
 
         if ($this->isUseSecondary) {
             $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
@@ -170,7 +184,7 @@ class QueryService
             $request->attributes->set('recordCount', count($records));
 
             $returnValue = $records;
-        } elseif (is_null($this->getDocumentId())) {
+        } elseif (!$singleDocumentRequest) {
             /**
              * this is or the "all" action -> multiple documents returned
              */
@@ -306,11 +320,13 @@ class QueryService
     /**
      * apply all stuff from the rql query (if any) to the local querybuilder
      *
+     * @param bool $singleDocumentRequest if single document is requested
+     *
      * @return void
      */
-    private function applyRqlQuery()
+    private function applyRqlQuery(bool $singleDocumentRequest)
     {
-        $rqlQuery = $this->getRqlQuery();
+        $rqlQuery = $this->getRqlQuery($singleDocumentRequest);
 
         // Setting RQL Query
         if ($rqlQuery) {
@@ -352,12 +368,32 @@ class QueryService
      * returns the correct rql query for the request, including optional specified restrictions
      * in the service definition (via restrictionManager)
      *
-     * @return Query the query
+     * @param bool $singleDocumentRequest if single document is requested
+     *
+     * @return Query|null the query
      */
-    private function getRqlQuery()
+    private function getRqlQuery(bool $singleDocumentRequest) : ?Query
     {
-        /** @var Query $rqlQuery */
-        return $this->request->attributes->get('rqlQuery', false);
+        $res = $this->rqlRequestParser->parse($this->request);
+
+        if (!$res->isHasRql()) {
+            return null;
+        }
+
+        $query = $res->getRqlQuery();
+
+        if ($singleDocumentRequest) {
+            // complain that some rql operators are not supported on single GET (only getAll)
+            foreach (['getQuery', 'getSort', 'getLimit'] as $method) {
+                /** @var AbstractNode $node */
+                $node = $query->$method();
+                if ($node != null) {
+                    throw new RqlOperatorNotAllowedException($node->getNodeName());;
+                }
+            }
+        }
+
+        return $query;
     }
 
     /**

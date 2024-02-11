@@ -33,6 +33,10 @@ framework:
 
 ######### ORIGINAL UNTEN
 
+# disable rql parser listener
+graviton_rql_parser:
+    activate_listener: false
+
 graviton_common:
     mongo_document_manager_service_id: doctrine_mongodb.odm.default_document_manager
     cache:

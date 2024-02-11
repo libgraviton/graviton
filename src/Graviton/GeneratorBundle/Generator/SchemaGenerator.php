@@ -269,7 +269,22 @@ class SchemaGenerator extends AbstractGenerator
         return $schema;
     }
 
+    /**
+     * searches for all single schemas, merges them together and 'fixes' each individual schemas by
+     * incorporating all referenced entities into the schema.
+     *
+     * @param string|null     $baseDir    basedir
+     * @param OutputInterface $output     output
+     * @param string          $targetFile target file
+     *
+     * @return void
+     */
     public function consolidateAllSchemas(?string $baseDir, OutputInterface $output, string $targetFile) : void {
+        // delete first!
+        if ($this->fs->exists($targetFile)) {
+            $this->fs->remove($targetFile);
+        }
+
         // our own bundles!
         $directories = [__DIR__.'/../../'];
         if (!empty($baseDir)) {
@@ -282,7 +297,7 @@ class SchemaGenerator extends AbstractGenerator
             ->files()
             ->in($directories)
             ->path('config/schema')
-            ->name('openapi.json');
+            ->name('openapi.json.tmp'); // ending in .tmp!
 
         $mainFile = $this->getSchema($targetFile, 'Graviton');
         $existingFiles = [];
@@ -334,10 +349,6 @@ class SchemaGenerator extends AbstractGenerator
             // find needed entities
             preg_match_all($pattern, $content, $matches);
 
-            if (str_contains($file->getPathname(), 'AppBundle')) {
-                $hans = 3;
-            }
-
             if (empty($matches[1])) {
                 continue;
             }
@@ -351,8 +362,12 @@ class SchemaGenerator extends AbstractGenerator
                 }
             }
 
-            $this->fs->dumpFile($file->getPathname(), \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
-            $output->writeln('Rewrote file '.$file->getPathname());
+            $fullFile = $file->getRealPath();
+            // remove .tmp ending
+            $schemaFile = str_replace('.tmp', '', $fullFile);
+
+            $this->fs->dumpFile($schemaFile, \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+            $output->writeln('Wrote file '.$schemaFile);
         }
 
         // write full schema
@@ -368,7 +383,8 @@ class SchemaGenerator extends AbstractGenerator
      *
      * @return array schema
      */
-    private function getSchema(string $filename, string $docName) : array {
+    private function getSchema(string $filename, string $docName) : array
+    {
         if ($this->fs->exists($filename)) {
             return \json_decode(file_get_contents($filename), true);
         }

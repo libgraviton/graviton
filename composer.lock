@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ed3891393966df46e9db7db5dddee06",
+    "content-hash": "e4031a3d709f67548d3cb483b66a7831",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1781,16 +1781,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v3.1.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "09ea7eca412eeb726eaf2d5354e44df6e0f944fd"
+                "reference": "4ec790bb53e658dd3f20f512b1785e4505d2b327"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/09ea7eca412eeb726eaf2d5354e44df6e0f944fd",
-                "reference": "09ea7eca412eeb726eaf2d5354e44df6e0f944fd",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/4ec790bb53e658dd3f20f512b1785e4505d2b327",
+                "reference": "4ec790bb53e658dd3f20f512b1785e4505d2b327",
                 "shasum": ""
             },
             "require": {
@@ -1800,10 +1800,11 @@
             "require-dev": {
                 "doctrine/mongodb-odm": "@stable",
                 "libgraviton/codesniffer": "~2",
-                "phpunit/phpunit": "^7.1.3",
+                "phpunit/phpunit": "^9.0",
                 "squizlabs/php_codesniffer": "~3",
-                "symfony/framework-bundle": "~4|~5"
+                "symfony/framework-bundle": "~6"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1823,9 +1824,9 @@
             "description": "Port of the php-rql-parser into the world of Symfony",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonRqlParserBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/v3.1.0"
+                "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/develop"
             },
-            "time": "2024-01-19T15:06:17+00:00"
+            "time": "2024-02-11T09:53:26+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -9804,6 +9805,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "graviton/rql-parser-bundle": 20,
         "graviton/mongodb-fixtures-bundle": 20
     },
     "prefer-stable": true,

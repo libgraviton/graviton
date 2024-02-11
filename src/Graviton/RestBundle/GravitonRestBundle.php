@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
-use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass;
 
 /**
  * GravitonRestBundle
@@ -48,7 +47,6 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         parent::build($container);
 
         $container->addCompilerPass(new RestServicesCompilerPass);
-        $container->addCompilerPass(new RqlQueryRoutesCompilerPass());
         $container->addCompilerPass(new RestrictionListenerCompilerPass());
     }
 }

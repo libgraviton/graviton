@@ -249,12 +249,13 @@ class RestController
         $request->attributes->set('id', $record->getId());
         $this->addRequestAttributes($request);
 
-        return new Response(
-            null,
+        return new JsonResponse(
+            '',
             Response::HTTP_CREATED,
             [
                 'Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
-            ]
+            ],
+            true
         );
     }
 
@@ -307,7 +308,7 @@ class RestController
         $this->addRequestAttributes($request);
         $request->attributes->set('id', $record->getId());
 
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
     }
 
     /**
@@ -349,24 +350,34 @@ class RestController
 
         // if document hasn't changed, pass HTTP_NOT_MODIFIED and exit
         if ($jsonDocument == $patchedDocument) {
-            $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
-            return $response;
+            return new JsonResponse('', Response::HTTP_NOT_MODIFIED, [], true);
         }
 
+        $request = new Request(
+            $request->query->all(),
+            $request->request->all(),
+            $request->attributes->all(),
+            $request->cookies->all(),
+            $request->files->all(),
+            $request->server->all(),
+            $patchedDocument
+        );
+
         // Validate result object
-        $record = $this->restUtils->validateRequest($patchedDocument, $model);
+        $record = $this->restUtils->validateRequest($request, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
 
         $this->addRequestAttributes($request);
 
-        return new Response(
-            null,
+        return new JsonResponse(
+            '',
             Response::HTTP_OK,
             [
                 'Content-Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
-            ]
+            ],
+            true
         );
     }
 
@@ -385,7 +396,7 @@ class RestController
         $this->model->deleteRecord($id);
         $this->addRequestAttributes($request);
 
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
     }
 
     /**
@@ -414,7 +425,7 @@ class RestController
 
         $this->addRequestAttributes($request);
 
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
     }
 
 

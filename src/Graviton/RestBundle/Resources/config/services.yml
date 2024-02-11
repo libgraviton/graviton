@@ -3,14 +3,11 @@ parameters:
   graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
   graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
   graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
-  graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
-  graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
   graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
   graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
   graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
   graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
   graviton.rest.services: []
-  graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
   graviton.rest.not_modifiable.origin.records:
     - "core"
 
@@ -145,6 +142,7 @@ services:
         class: Graviton\RestBundle\Service\QueryService
         arguments:
           - "@logger"
+          - '@graviton.rql.requestparser'
           - "@graviton.rql.visitor.mongodb"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
@@ -176,15 +174,6 @@ services:
             event: kernel.exception
             priority: 9999
             method: onKernelException
-
-    #Allowed RQL operator listener -->
-    graviton.rest.listener.rqlallowedoperatorrequestlistener:
-        class: "%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%"
-        tags:
-          -
-            name: kernel.event_listener
-            event: kernel.request
-            method: onKernelRequest
 
     #restUtils service - a service providing some helpers dealing with services -->
     graviton.rest.restutils:
@@ -227,15 +216,6 @@ services:
             name: kernel.event_listener
             event: kernel.response
             method: onKernelResponse
-
-    #RQL query listener (see RqlQueryDecoratorCompilerPass) -->
-    graviton.rest.listener.rqlqueryrequestlistener:
-        class: "%graviton.rest.listener.rqlqueryrequestlistener.class%"
-        decorates: graviton.rql.listener.request
-        decoration_inner_name: graviton.rest.listener.rqlqueryrequestlistener.inner
-        arguments:
-          - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
-          - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
 
     # listener that restricts the data given to the user by manipulating the querybuilder before executing
     graviton.rest.listener.restriction:

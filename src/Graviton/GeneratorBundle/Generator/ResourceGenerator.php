@@ -291,10 +291,15 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
         }
 
+        $schemaFile = $bundleDir . '/Resources/config/schema/openapi.json';
+        if ($this->fs->exists($schemaFile)) {
+            $this->fs->remove($schemaFile);
+        }
+
         $this->schemaGenerator->generateSchema(
             $parameters,
             $isSubResource,
-                $bundleDir . '/Resources/config/schema/openapi.json'
+            $schemaFile.'.tmp'
             );
 
         if ($this->generateModel) {
