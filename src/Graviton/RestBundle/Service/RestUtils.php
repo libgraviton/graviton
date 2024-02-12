@@ -10,7 +10,6 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SchemaBundle\Validation\RequestValidator;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Discovery\Psr17Factory;
@@ -19,7 +18,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 
 /**
@@ -30,18 +28,13 @@ use JMS\Serializer\Serializer;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-final class RestUtils implements RestUtilsInterface
+class RestUtils
 {
 
     /**
      * @var Serializer
      */
     private $serializer;
-
-    /**
-     * @var Router
-     */
-    private $router;
 
     /**
      * @var LoggerInterface
@@ -54,11 +47,6 @@ final class RestUtils implements RestUtilsInterface
     private RequestValidator $requestValidator;
 
     /**
-     * @var SchemaUtils
-     */
-    private $schemaUtils;
-
-    /**
      * @var Validator
      */
     private $schemaValidator;
@@ -69,62 +57,24 @@ final class RestUtils implements RestUtilsInterface
     private $cacheProvider;
 
     /**
-     * @param Router                 $router          router
      * @param Serializer             $serializer      serializer
      * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
      * @param RequestValidator       $requestValidator request validator
-     * @param SchemaUtils            $schemaUtils     schema utils
      * @param Validator              $schemaValidator schema validator
      * @param CacheItemPoolInterface $cacheProvider   Cache service
      */
     public function __construct(
-        Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
         RequestValidator $requestValidator,
-        SchemaUtils $schemaUtils,
         Validator $schemaValidator,
         CacheItemPoolInterface $cacheProvider
     ) {
         $this->serializer = $serializer;
-        $this->router = $router;
         $this->logger = $logger;
         $this->requestValidator = $requestValidator;
-        $this->schemaUtils = $schemaUtils;
         $this->schemaValidator = $schemaValidator;
         $this->cacheProvider = $cacheProvider;
-    }
-
-    /**
-     * Builds a map of baseroutes (controllers) to its relevant route to the actions.
-     * ignores schema stuff.
-     *
-     * @return array grouped array of basenames and actions..
-     */
-    public function getServiceRoutingMap()
-    {
-        $ret = [];
-        $optionRoutes = $this->getOptionRoutes();
-
-        foreach ($optionRoutes as $routeName => $optionRoute) {
-            // get base name from options action
-            $routeParts = explode('.', $routeName);
-            if (count($routeParts) < 3) {
-                continue;
-            }
-            array_pop($routeParts); // get rid of last part
-            $baseName = implode('.', $routeParts);
-
-            // get routes from same controller
-            foreach ($this->getRoutesByBasename($baseName) as $routeName => $route) {
-                // don't put schema stuff
-                if (!str_contains('schema', strtolower($routeName))) {
-                    $ret[$baseName][$routeName] = $route;
-                }
-            }
-        }
-
-        return $ret;
     }
 
     /**
@@ -206,6 +156,14 @@ final class RestUtils implements RestUtilsInterface
         $validator->validate($psrRequest);
     }
 
+    /**
+     * returns the deserialized entity from the request
+     *
+     * @param Request       $request request
+     * @param DocumentModel $model   model
+     *
+     * @return object entity
+     */
     public function getEntityFromRequest(Request $request, DocumentModel $model) : object
     {
         return $this->deserialize($request->getContent(), $model->getEntityClass());
@@ -236,93 +194,6 @@ final class RestUtils implements RestUtilsInterface
     public function getSerializer()
     {
         return $this->serializer;
-    }
-
-    /**
-     * It has been deemed that we search for OPTION routes in order to detect our
-     * service routes and then derive the rest from them.
-     *
-     * @return array An array with option routes
-     */
-    public function getOptionRoutes()
-    {
-        $cacheItem = $this->cacheProvider->getItem('cached_restutils_route_options');
-
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
-        $ret = array_filter(
-            $this->router->getRouteCollection()->all(),
-            function ($route) {
-                if (!in_array('OPTIONS', $route->getMethods())) {
-                    return false;
-                }
-                // ignore all schema routes
-                if (str_starts_with($route->getPath(), '/schema')) {
-                    return false;
-                }
-                if ($route->getPath() == '/' || $route->getPath() == '/core/version') {
-                    return false;
-                }
-
-                return is_null($route->getRequirement('id'));
-            }
-        );
-
-        $cacheItem->set($ret);
-        $this->cacheProvider->save($cacheItem);
-
-        return $ret;
-    }
-
-    /**
-     * Based on $baseName, this function returns all routes that match this basename..
-     * So if you pass graviton.cont.action; it will return all route names that start with the same.
-     * In our routing naming schema, this means all the routes from the same controller.
-     *
-     * @param string $baseName basename
-     *
-     * @return array array with matching routes
-     */
-    public function getRoutesByBasename($baseName)
-    {
-        $cacheId = 'cached_restutils_route_'.$baseName;
-        $cacheItem = $this->cacheProvider->getItem($cacheId);
-
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
-        $ret = [];
-        $collections = $this->router->getRouteCollection()->all();
-        foreach ($collections as $routeName => $route) {
-            if (preg_match('/^' . $baseName . '/', $routeName)) {
-                $ret[$routeName] = $route;
-            }
-        }
-
-        $cacheItem->set($ret);
-        $this->cacheProvider->save($cacheItem);
-
-        return $ret;
-    }
-
-    /**
-     * @param Request $request request
-     * @return string
-     */
-    public function getRouteName(Request $request)
-    {
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
-        return $routeName;
     }
 
     /**

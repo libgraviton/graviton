@@ -5,11 +5,14 @@
 
 namespace Graviton\RestBundle\Subscriber;
 
+use Graviton\LinkHeaderParser\LinkHeader;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 
 /**
  * @category GravitonRestBundle
@@ -20,6 +23,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class RestSubscriber implements EventSubscriberInterface
 {
+
+    private Router $router;
+
+    public function __construct(Router $router)
+    {
+        $this->router = $router;
+    }
 
     #[\Override] public static function getSubscribedEvents()
     {
@@ -48,17 +58,33 @@ class RestSubscriber implements EventSubscriberInterface
 
     public function onResponse(ResponseEvent $event): void
     {
+        $request = $event->getRequest();
+        $response = $event->getResponse();
+
         // ensure json charset
-        $contentType = $event->getResponse()->headers->get('content-type');
+        $contentType = $response->headers->get('content-type');
         if ($contentType == 'application/json') {
-            $event->getResponse()->headers->set(
+            $response->headers->set(
                 'content-type',
                 'application/json; charset=UTF-8'
             );
         }
 
+        // record count header
+        if ($request->attributes->has('recordCount')) {
+            $response->headers->set(
+                'X-Record-Count',
+                (string) $request->attributes->get('recordCount')
+            );
+        }
 
-        // ...
+        // search source header?
+        if ($request->attributes->has('X-Search-Source')) {
+            $response->headers->set(
+                'X-Search-Source',
+                (string) $request->attributes->get('X-Search-Source')
+            );
+        }
     }
 
     public function onException(ExceptionEvent $event): void
@@ -66,4 +92,5 @@ class RestSubscriber implements EventSubscriberInterface
         $hans = 3;
         // ...
     }
+
 }

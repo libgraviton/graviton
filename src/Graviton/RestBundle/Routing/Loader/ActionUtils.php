@@ -179,25 +179,7 @@ class ActionUtils
         if ($useIdPattern) {
             $parameters['id'] = self::ID_PATTERN;
         }
-        return self::getRoute($service, 'OPTIONS', 'optionsAction', $serviceConfig, $parameters);
-    }
-
-    /**
-     * Get route for HEAD requests
-     *
-     * @param string  $service       service id
-     * @param array   $serviceConfig service configuration
-     * @param array   $parameters    service params
-     * @param boolean $useIdPattern  generate route with id param
-     *
-     * @return Route
-     */
-    public static function getRouteHead($service, $serviceConfig, array $parameters = [], $useIdPattern = false)
-    {
-        if ($useIdPattern) {
-            $parameters['id'] = self::ID_PATTERN;
-        }
-        return self::getRoute($service, 'HEAD', 'optionsAction', $serviceConfig, $parameters);
+        return self::getRoute($service, ['OPTIONS', 'HEAD'], 'optionsAction', $serviceConfig, $parameters);
     }
 
     /**
@@ -205,18 +187,23 @@ class ActionUtils
      *
      * @param string  $service       service id
      * @param array   $serviceConfig service configuration
-     * @param string  $type          service type (item or collection)
+     * @param string  $format        format
      * @param boolean $option        render a options route
      *
      * @return Route
      */
-    public static function getCanonicalSchemaRoute($service, $serviceConfig, $type = 'item', $option = false)
+    public static function getCanonicalSchemaRoute(string $service, array $serviceConfig, string $format, bool $option)
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
-        $pattern = '/schema' . $pattern . $type;
+        if (!str_ends_with($pattern, '/')) {
+            $pattern .= '/';
+        }
+
+        $pattern = '/schema' . $pattern . 'openapi.' . $format;
 
         $action = 'schemaAction';
         $method = 'GET';
+
         if ($option !== false) {
             $action = 'optionsAction';
             $method = 'OPTIONS';
@@ -226,6 +213,10 @@ class ActionUtils
             '_controller' => $service . '::' . $action,
             '_format' => '~',
         );
+
+        if (!empty($serviceConfig[0]) && is_array($serviceConfig[0])) {
+            $defaults = array_merge($serviceConfig[0], $defaults);
+        }
 
         $route = new Route($pattern, $defaults, []);
         $route->setMethods($method);

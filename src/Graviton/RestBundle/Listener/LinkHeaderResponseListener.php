@@ -9,13 +9,13 @@ use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RqlParser\Node\LimitNode;
 use Graviton\RqlParser\Query;
-use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Route;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -60,25 +60,30 @@ class LinkHeaderResponseListener
 
         // extract various info from route
         $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
 
         $this->linkHeader = LinkHeader::fromString($response->headers->get('link'));
 
-        // add common headers
-        $this->addCommonHeaders($request, $response);
-
         // add self Link header
-        $selfUrl = $this->addSelfLinkHeader($routeName, $routeType, $request);
-        // dispatch this!
+        $selfUrl = $this->addSelfLinkHeader($request, $response);
 
-        // add paging Link element when applicable
-        if ($routeType == 'all') {
-            $this->generatePagingLinksHeaders($routeName, $request, $response);
+        if (!empty($selfUrl)) {
+            $this->linkHeader->add(
+                new LinkHeaderItem(
+                    $selfUrl,
+                    ['rel' => 'self']
+                )
+            );
+
+            // dispatch the "selfaware" event
+            $event->getRequest()->attributes->set('selfLink', $selfUrl);
+            $dispatcher->dispatch($event, 'graviton.rest.response.selfaware');
         }
 
+        // add paging Link element when applicable
+        $this->generatePagingLinksHeaders($request, $response);
+
         // add schema link header element
-        $this->generateSchemaLinkHeader($routeName, $request, $response);
+        $this->generateSchemaLinkHeader($request, $response);
 
         // finally set link header
         $response->headers->set(
@@ -87,116 +92,87 @@ class LinkHeaderResponseListener
         );
 
         $event->setResponse($response);
-
-        // dispatch the "selfaware" event
-        $event->getRequest()->attributes->set('selfLink', $selfUrl);
-        $dispatcher->dispatch($event, 'graviton.rest.response.selfaware');
-    }
-
-    /**
-     * add common headers
-     *
-     * @param Request  $request  request
-     * @param Response $response response
-     *
-     * @return void
-     */
-    private function addCommonHeaders(Request $request, Response $response)
-    {
-        // replace content-type if a schema was requested
-        if ($request->attributes->get('schemaRequest')) {
-            $response->headers->set('Content-Type', 'application/schema+json');
-        }
-
-        if ($request->attributes->has('recordCount')) {
-            $response->headers->set(
-                'X-Record-Count',
-                (string) $request->attributes->get('recordCount')
-            );
-        }
-
-        // search source header?
-        if ($request->attributes->has('X-Search-Source')) {
-            $response->headers->set(
-                'X-Search-Source',
-                (string) $request->attributes->get('X-Search-Source')
-            );
-        }
     }
 
     /**
      * Add "self" Link header item
      *
-     * @param string  $routeName route name
-     * @param string  $routeType route type
-     * @param Request $request   request
+     * @param Request  $request request
+     * @param Response  $response response
      *
-     * @return string the "self" link url
+     * @return string the "self" link url or null
      */
-    private function addSelfLinkHeader($routeName, $routeType, Request $request)
+    private function addSelfLinkHeader(Request $request, Response $response) : ?string
     {
-        $routeParams = $request->get('_route_params');
-        if (!is_array($routeParams)) {
-            $routeParams = [];
+        // was an entity created?
+        if ($request->getMethod() == 'POST' && !empty($request->attributes->get('id'))) {
+            // yes!
+            $routeParts = explode('.', $request->get('_route'));
+            $putRouteName = $routeParts[0].'.put';
+
+            try {
+                $fullUrl = $this->router->generate(
+                    $putRouteName,
+                    ['id' => $request->attributes->get('id')],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                $relativeUrl = $this->router->generate(
+                    $putRouteName,
+                    ['id' => $request->attributes->get('id')],
+                    UrlGeneratorInterface::ABSOLUTE_PATH
+                );
+
+                $response->headers->set('location', $relativeUrl);
+
+                return $fullUrl;
+            } catch (\Throwable $t) {
+                // ignored
+            }
         }
 
-        if (($routeType == 'post' || $routeType == 'postNoSlash') || $routeType != 'all') {
-            // handle post request by rewriting self link to newly created resource
-            $routeParams['id'] = $request->get('id');
-        }
+        // normal url creation
+        $selfLinkUrl = $this->router->generate(
+            $request->get('_route'),
+            $request->get('_route_params'),
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
-        // rewrite post routes to get
-        if ($routeType == 'post' || $routeType == 'postNoSlash' && !empty($routeParams['id'])) {
-            $parts = explode('.', $routeName);
-            array_pop($parts);
-            $parts[] = 'get';
-            $routeName = implode('.', $parts);
-        }
-
-        if (is_null($routeName)) {
-            return;
-        }
-
-        $selfLinkUrl = $this->router->generate($routeName, $routeParams, UrlGeneratorInterface::ABSOLUTE_URL);
         $queryString = $this->getQueryString($request);
 
         if (!empty($queryString)) {
             $selfLinkUrl .= '?' . $queryString;
         }
 
-        $this->linkHeader->add(
-            new LinkHeaderItem(
-                $selfLinkUrl,
-                ['rel' => 'self']
-            )
-        );
-
         return $selfLinkUrl;
     }
-
 
     /**
      * generates the schema rel in the Link header
      *
-     * @param string   $routeName route name
      * @param Request  $request   request
      * @param Response $response  response
      *
      * @return void
      */
-    private function generateSchemaLinkHeader($routeName, Request $request, Response $response)
+    private function generateSchemaLinkHeader(Request $request, Response $response)
     {
-        if ($request->get('_route') != 'graviton.core.static.main.all') {
+        $routeName = $request->attributes->get('_route');
+
+        // is there a schema route?
+        $routeNameParts = explode(".", $routeName);
+        $schemaRouteName = $routeNameParts[0].'.schemaJsonGet';
+
+        if ($this->router->getRouteCollection()->get($schemaRouteName) instanceof Route) {
             try {
-                $schemaRoute = SchemaUtils::getSchemaRouteName($routeName);
                 $this->linkHeader->add(
                     new LinkHeaderItem(
-                        $this->router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                        $this->router->generate($schemaRouteName, [], UrlGeneratorInterface::ABSOLUTE_URL),
                         ['rel' => 'schema']
                     )
                 );
             } catch (\Exception $e) {
-                // nothing to do..
+                // nothing to do.
             }
         }
     }
@@ -204,37 +180,20 @@ class LinkHeaderResponseListener
     /**
      * generates the paging Link header items
      *
-     * @param string   $routeName route name
      * @param Request  $request   request
      * @param Response $response  response
      *
      * @return void
      */
-    private function generatePagingLinksHeaders($routeName, Request $request, Response $response)
+    private function generatePagingLinksHeaders(Request $request, Response $response)
     {
-        $this->generateLinks(
-            $routeName,
-            $request
-        );
-
         if ($request->attributes->has('totalCount')) {
             $response->headers->set(
                 'X-Total-Count',
                 (string) $request->attributes->get('totalCount')
             );
         }
-    }
 
-    /**
-     * generate headers for all paging links
-     *
-     * @param string  $route   name of route
-     * @param Request $request request to get rawRql from
-     *
-     * @return void
-     */
-    private function generateLinks($route, Request $request): void
-    {
         // perPage is always needed -> don't do anything if not here..
         $perPage = $request->attributes->get('perPage');
 
@@ -242,21 +201,23 @@ class LinkHeaderResponseListener
             return;
         }
 
+        $routeName = $request->attributes->get('_route');
+
         $page = $request->attributes->get('page');
         $numPages = $request->attributes->get('numPages');
         $hasNextPage = $request->attributes->get('hasNextPage', false);
 
         if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first', $request);
+            $this->generateLink($routeName, 1, $perPage, 'first', $request);
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev', $request);
+            $this->generateLink($routeName, $page - 1, $perPage, 'prev', $request);
         }
         if ($hasNextPage === true || ($numPages != null && $page < $numPages)) {
-            $this->generateLink($route, $page + 1, $perPage, 'next', $request);
+            $this->generateLink($routeName, $page + 1, $perPage, 'next', $request);
         }
         if ($numPages != null && $page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last', $request);
+            $this->generateLink($routeName, $numPages, $perPage, 'last', $request);
         }
     }
 
@@ -302,7 +263,7 @@ class LinkHeaderResponseListener
          */
         $query = $request->attributes->get('rqlQuery', new Query());
 
-        if ($limit < 1 && $limit < 1) {
+        if ($limit < 1) {
             return $query->toRql();
         }
 

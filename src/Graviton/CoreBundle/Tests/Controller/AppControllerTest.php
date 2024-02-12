@@ -975,7 +975,7 @@ class AppControllerTest extends RestTestCase
     public function testGetAppSchemaInformationCanonical()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/schema/core/app/item');
+        $client->request('GET', '/schema/core/app/openapi.yaml');
 
         $this->assertIsSchemaResponse($client->getResponse());
         $this->assertIsAppSchema($client->getResults());

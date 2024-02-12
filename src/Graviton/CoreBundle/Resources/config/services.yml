@@ -23,8 +23,6 @@ services:
         - "@router"
         - "@graviton.rest.restutils"
         - "@event_dispatcher"
-        - "%graviton.core.links%"
-        - "%graviton.core.main.path.whitelist%"
 
     graviton.core.model.version:
         class: "%graviton.core.model.version.class%"
@@ -84,15 +82,6 @@ services:
             name: "kernel.event_listener"
             event: "kernel.exception"
             method: "onKernelException"
-
-    graviton.core.routing.loader:
-      class: "Graviton\\CoreBundle\\Routing\\RouteLoader"
-      arguments:
-        - "@service_container"
-        - "%graviton.routing.loader.services%"
-      tags:
-        -
-          name: "routing.loader"
 
     graviton.core.repository.dummy:
       class: Doctrine\ODM\MongoDB\Repository\DocumentRepository

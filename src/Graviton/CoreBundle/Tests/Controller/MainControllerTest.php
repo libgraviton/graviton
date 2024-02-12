@@ -127,7 +127,7 @@ class MainControllerTest extends RestTestCase
                 )
             );
 
-        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
+        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtils');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
 

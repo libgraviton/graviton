@@ -1,6 +1,4 @@
 parameters:
-  graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
-  graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
   graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
   graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
   graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
@@ -91,21 +89,13 @@ services:
           event: kernel.exception
           method: onKernelException
 
-    #Routing -->
-    #Routing collection -->
-    graviton.rest.routing.collection:
-        class: "%graviton.rest.routing.collection.class%"
-
     #Routing loader -->
-    graviton.rest.routing.loader:
-        class: "%graviton.rest.routing.loader.class%"
-        public: true
+    Graviton\RestBundle\Routing\Loader\RestRoutingLoader:
         arguments:
-          - "@graviton.rest.routing.collection"
           - "%graviton.rest.services%"
         tags:
           -
-            name: "graviton.routing.loader"
+            name: "routing.loader"
 
     #Service for validating JSON Patches -->
     graviton.rest.service.jsonpatchvalidator:
@@ -118,7 +108,6 @@ services:
         arguments:
           - "@graviton.rest.restutils"
           - "@graviton.rest.router"
-          - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
         calls:
@@ -186,13 +175,17 @@ services:
         class: Graviton\RestBundle\Service\RestUtils
         public: true
         arguments:
-          - "@router"
           - "@graviton.rest.serializer"
           - "@logger"
           - '@Graviton\SchemaBundle\Validation\RequestValidator'
-          - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
           - "@graviton.cache.adapter.app"
+
+    Graviton\RestBundle\Subscriber\RestSubscriber:
+      arguments:
+        - '@router'
+      tags:
+        - name: kernel.event_subscriber
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
@@ -201,7 +194,7 @@ services:
         shared: false
 
     #Graviton rest event listeners -->
-    #Paging listener -->
+    #Paging listener >
     graviton.rest.listener.linkheaderresponselistener:
         class: "%graviton.rest.listener.linkheaderresponselistener.class%"
         arguments:

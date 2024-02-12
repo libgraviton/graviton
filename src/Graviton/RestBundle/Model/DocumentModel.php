@@ -143,7 +143,7 @@ class DocumentModel
      *
      * @return DocumentRepository
      */
-    public function getRepository()
+    public function getRepository(): DocumentRepository
     {
         return $this->documentManager->getRepository($this->documentClassName);
     }
@@ -272,7 +272,7 @@ class DocumentModel
         $entity = $this->dispatchPrePersistEvent($entity);
 
         if (!is_null($documentId)) {
-            $collection = $this->documentManager->getDocumentCollection($entity::class);
+            $collection = $this->documentManager->getDocumentCollection($this->getEntityClass());
             $existing = $collection->findOne(
                 ['_id' => $documentId],
                 ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
@@ -423,10 +423,17 @@ class DocumentModel
     /**
      * get classname of entity
      *
+     * @param bool $shortName if shortname or not
+     *
      * @return string|null
      */
-    public function getEntityClass()
+    public function getEntityClass(bool $shortName = false)
     {
+        if ($shortName) {
+            $parts = explode('\\', $this->documentClassName);
+            return array_pop($parts);
+        }
+
         return $this->documentClassName;
     }
 

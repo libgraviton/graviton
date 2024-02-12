@@ -10,7 +10,6 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\RestUtils;
-use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -44,11 +44,6 @@ class RestController
     private DocumentModel $model;
 
     /**
-     * @var SchemaUtils
-     */
-    private $schemaUtils;
-
-    /**
      * @var RestUtils
      */
     protected RestUtils $restUtils;
@@ -69,23 +64,20 @@ class RestController
     protected SecurityUtils $securityUtils;
 
     /**
-     * @param RestUtils $restUtils Rest Utils
-     * @param Router $router Router
-     * @param SchemaUtils $schemaUtils Schema utils
+     * @param RestUtils          $restUtils Rest Utils
+     * @param Router             $router Router
      * @param JsonPatchValidator $jsonPatch Service for validation json patch
-     * @param SecurityUtils $security The securityUtils service
+     * @param SecurityUtils      $security The securityUtils service
      */
     public function __construct(
         RestUtils          $restUtils,
         Router             $router,
-        SchemaUtils        $schemaUtils,
         JsonPatchValidator $jsonPatch,
         SecurityUtils      $security
     )
     {
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->schemaUtils = $schemaUtils;
         $this->jsonPatchValidator = $jsonPatch;
         $this->securityUtils = $security;
     }
@@ -255,9 +247,7 @@ class RestController
         return new JsonResponse(
             '',
             Response::HTTP_CREATED,
-            [
-                'Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
-            ],
+            [],
             true
         );
     }
@@ -387,7 +377,7 @@ class RestController
             '',
             Response::HTTP_OK,
             [
-                'Content-Location' => $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
+                'Content-Location' => $this->getRouter()->generate($request->get('_route'), ['id' => $record->getId()])
             ],
             true
         );
@@ -428,35 +418,30 @@ class RestController
      * Return schema GET results.
      *
      * @param Request $request Current http request
-     * @param string $id ID of record
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     * @return Response $response Result of the action
      * @throws SerializationException
      */
-    public function schemaAction(Request $request, $id = null)
+    public function schemaAction(Request $request)
     {
-        $this->logger->info('REST: schemaAction');
-
-        $request->attributes->set('schemaRequest', true);
-
-        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-
-        $response = new JsonResponse();
-        $response->setStatusCode(Response::HTTP_OK);
-        $response->setVary(['Origin', 'Accept-Encoding']);
-        $response->setPublic();
-
-        if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schema = $this->schemaUtils->getCollectionSchema($modelName, $this->getModel());
-        } else {
-            $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
+        $format = 'json';
+        if (str_ends_with($request->getPathInfo(), '.yaml')) {
+            $format = 'yaml';
         }
 
-        $response->setContent($this->restUtils->serialize($schema));
+        $schemaFile = $this->getModel()->getSchemaPath();
 
-        $this->addRequestAttributes($request);
+        if (!file_exists($schemaFile)) {
+            throw new \LogicException('The schemaFile does not exist!');
+        }
 
-        return $response;
+        if ($format == 'json') {
+            return new JsonResponse(file_get_contents($schemaFile), 200, [], true);
+        }
+
+        $schema = json_decode(file_get_contents($schemaFile), true);
+
+        return new Response(Yaml::dump($schema, 30, 2), 200, ['content-type' => 'application/yaml']);
     }
 
     /**
@@ -478,9 +463,6 @@ class RestController
      */
     private function addRequestAttributes(Request $request)
     {
-        $classNameParts = explode('\\', $this->getModel()->getEntityClass());
-        if (is_array($classNameParts)) {
-            $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
-        }
+        $request->attributes->set('varnishTags', $this->getModel()->getEntityClass(true));
     }
 }

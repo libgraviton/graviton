@@ -119,10 +119,6 @@ services:
             arguments:
               - '@Graviton\SchemaBundle\Constraint\Builder\ArrayOfObjectConstraintBuilder'
 
-    Graviton\RestBundle\Subscriber\RestSubscriber:
-      tags:
-        - name: kernel.event_subscriber
-
     graviton.schema.constraint.utils:
         class: "%graviton.schema.constraint.utils.class%"
         arguments:

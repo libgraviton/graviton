@@ -5,7 +5,8 @@
 
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Graviton\CoreBundle\Routing\RouteLoaderAbstract;
+use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -15,15 +16,11 @@ use Symfony\Component\Routing\RouteCollection;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class BasicLoader extends RouteLoaderAbstract
+class RestRoutingLoader extends Loader
 {
-    /**
-     * @var boolean
-     */
-    private $loaded = false;
 
     /**
-     * @var \Symfony\Component\Routing\RouteCollection
+     * @var RouteCollection
      */
     private $routes;
 
@@ -35,12 +32,11 @@ class BasicLoader extends RouteLoaderAbstract
     /**
      * Constructor.
      *
-     * @param \Symfony\Component\Routing\RouteCollection $routes   route collection
-     * @param array                                      $services configs for all services tagged as graviton.rest
+     * @param array $services configs for all services tagged as graviton.rest
      */
-    public function __construct($routes, $services)
+    public function __construct($services)
     {
-        $this->routes = $routes;
+        $this->routes = new RouteCollection();
         $this->services = $services;
     }
 
@@ -54,10 +50,6 @@ class BasicLoader extends RouteLoaderAbstract
      */
     public function load($resource, $type = null)
     {
-        if (true === $this->loaded) {
-            throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
-        }
-
         // sort by path length (so longer ones are first in case of overlap)
         uasort(
             $this->services,
@@ -80,19 +72,15 @@ class BasicLoader extends RouteLoaderAbstract
             $this->loadService($service, $serviceConfig);
         }
 
-        $this->loaded = true;
+        // add our label!
+        array_map(
+            function (Route $route) {
+                $route->addDefaults(['graviton-rest' => true]);
+            },
+            $this->routes->all()
+        );
 
         return $this->routes;
-    }
-
-    /**
-     * returns the name of the resource to load
-     *
-     * @return string resource name
-     */
-    public function getResourceName()
-    {
-        return 'rest';
     }
 
     /**
@@ -105,12 +93,21 @@ class BasicLoader extends RouteLoaderAbstract
      */
     private function loadService($service, $serviceConfig)
     {
-        list($app, $bundle, , $entity) = explode('.', $service);
-        $resource = implode('.', array($app, $bundle, 'rest', $entity));
+        if (!is_array($serviceConfig[0])) {
+            return;
+        }
 
-        $this->loadReadOnlyRoutes($service, $resource, $serviceConfig);
-        if (!($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0]))) {
-            $this->loadWriteRoutes($service, $resource, $serviceConfig);
+        if (!isset($serviceConfig[0]['collection']) || !isset($serviceConfig[0]['router-base'])) {
+            // stuff missing?
+            return;
+        }
+
+        $entityName = $serviceConfig[0]['collection'];
+        $readOnly = array_key_exists('read-only', $serviceConfig[0]) && $serviceConfig[0]['read-only'] == true;
+
+        $this->loadReadOnlyRoutes($service, $entityName, $serviceConfig);
+        if (!$readOnly) {
+            $this->loadWriteRoutes($service, $entityName, $serviceConfig);
         }
     }
 
@@ -118,74 +115,68 @@ class BasicLoader extends RouteLoaderAbstract
      * generate ro routes
      *
      * @param string $service       service name
-     * @param string $resource      resource name
+     * @param string $entityName    resource name
      * @param array  $serviceConfig service configuration
      *
      * @return void
      */
-    public function loadReadOnlyRoutes($service, $resource, $serviceConfig)
+    private function loadReadOnlyRoutes(string $service, string $entityName, array $serviceConfig)
     {
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig);
-        $this->routes->add($resource . '.options', $actionOptions);
+        $this->routes->add($entityName . '.options', $actionOptions);
 
         $actionOptionsNoSlash = ActionUtils::getRouteOptions($service, $serviceConfig);
         $actionOptionsNoSlash->setPath(substr($actionOptionsNoSlash->getPath(), 0, -1));
-        $this->routes->add($resource . '.optionsNoSlash', $actionOptionsNoSlash);
-
-        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig);
-        $this->routes->add($resource . '.head', $actionHead);
-
-        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, [], true);
-        $this->routes->add($resource . '.idHead', $actionHead);
+        $this->routes->add($entityName . '.optionsNoSlash', $actionOptionsNoSlash);
 
         $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
-        $this->routes->add($resource . '.get', $actionGet);
+        $this->routes->add($entityName . '.get', $actionGet);
 
         $actionAll = ActionUtils::getRouteAll($service, $serviceConfig);
-        $this->routes->add($resource . '.all', $actionAll);
+        $this->routes->add($entityName . '.all', $actionAll);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection');
-        $this->routes->add($resource . '.canonicalSchema', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'json', false);
+        $this->routes->add($entityName . '.schemaJsonGet', $actionOptions);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection', true);
-        $this->routes->add($resource . '.canonicalSchemaOptions', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'json', true);
+        $this->routes->add($entityName . '.schemaJsonOptions', $actionOptions);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig);
-        $this->routes->add($resource . '.canonicalIdSchema', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'yaml', false);
+        $this->routes->add($entityName . '.schemaYamlGet', $actionOptions);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'item', true);
-        $this->routes->add($resource . '.canonicalIdSchemaOptions', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'yaml', true);
+        $this->routes->add($entityName . '.schemaYamlOptions', $actionOptions);
 
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, [], true);
-        $this->routes->add($resource . '.idOptions', $actionOptions);
+        $this->routes->add($entityName . '.idOptions', $actionOptions);
     }
 
     /**
      * generate write routes
      *
      * @param string $service       service name
-     * @param string $resource      resource name
+     * @param string $entityName    resource name
      * @param array  $serviceConfig service configuration
      *
      * @return void
      */
-    public function loadWriteRoutes($service, $resource, $serviceConfig)
+    private function loadWriteRoutes(string $service, string $entityName, array $serviceConfig)
     {
         $actionPost = ActionUtils::getRoutePost($service, $serviceConfig);
-        $this->routes->add($resource . '.post', $actionPost);
+        $this->routes->add($entityName . '.post', $actionPost);
 
         $actionPut = ActionUtils::getRoutePut($service, $serviceConfig);
-        $this->routes->add($resource . '.put', $actionPut);
+        $this->routes->add($entityName . '.put', $actionPut);
 
         $actionPostNoSlash = ActionUtils::getRoutePost($service, $serviceConfig);
         $actionPostNoSlash->setPath(substr($actionPostNoSlash->getPath(), 0, -1));
-        $this->routes->add($resource . '.postNoSlash', $actionPostNoSlash);
+        $this->routes->add($entityName . '.postNoSlash', $actionPostNoSlash);
 
         $actionPatch = ActionUtils::getRoutePatch($service, $serviceConfig);
-        $this->routes->add($resource . '.patch', $actionPatch);
+        $this->routes->add($entityName . '.patch', $actionPatch);
 
         $actionDelete = ActionUtils::getRouteDelete($service, $serviceConfig);
-        $this->routes->add($resource . '.delete', $actionDelete);
+        $this->routes->add($entityName . '.delete', $actionDelete);
     }
 
     /**
@@ -198,6 +189,6 @@ class BasicLoader extends RouteLoaderAbstract
      */
     public function supports($resource, $type = null)
     {
-        return 'graviton.rest.routing.loader' === $type;
+        return 'graviton.rest.route_loader' === $type;
     }
 }
