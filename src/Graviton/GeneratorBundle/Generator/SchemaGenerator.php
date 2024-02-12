@@ -59,14 +59,28 @@ class SchemaGenerator extends AbstractGenerator
     {
         $schema = $this->getSchema($targetFile, $parameters['document']);
 
+        $json = $parameters['json'];
+
         // add document!
         $thisSchema = [
             'type' => 'object',
             'properties' => []
         ];
+        if (!empty($json->getDescription())) {
+            $thisSchema['description'] = $json->getDescription();
+        }
 
         $reservedFieldNames = $parameters['reservedFieldnames'];
+        $reservedFieldNames[] = 'id';
         $requiredFields = [];
+
+        // always insert id
+        $thisSchema['properties']['id'] = [
+            'type' => 'string',
+            'title' => 'ID',
+            'description' => 'Unique identifier',
+            'nullable' => true
+        ];
 
         // create fields!
         foreach ($parameters['fields'] as $field) {
@@ -405,7 +419,7 @@ class SchemaGenerator extends AbstractGenerator
         }
 
         $base = [
-            'openapi' => '3.0.2',
+            'openapi' => '3.1.0',
             'info' => [
                 'title' => 'Endpoint for '.$docName.' entries.',
                 'version' => $this->versionInformation['self']

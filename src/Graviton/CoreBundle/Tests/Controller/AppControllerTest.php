@@ -26,9 +26,7 @@ class AppControllerTest extends RestTestCase
      */
     const CONTENT_TYPE = 'application/json; charset=UTF-8';
 
-    const SCHEMA_URL_ITEM = 'http://localhost/schema/core/app/item';
-
-    const SCHEMA_URL_COLLECTION = 'http://localhost/schema/core/app/collection';
+    const SCHEMA_URL = 'http://localhost/schema/core/app/openapi.json';
 
     /**
      * @var array fixtures
@@ -64,7 +62,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
@@ -440,20 +438,8 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
         $client = static::createRestClient();
-        $client->request('OPTIONS', '/schema/core/app/collection?invalidrqlquery');
+        $client->request('OPTIONS', '/schema/core/app/openapi.json?invalidrqlquery');
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
-
-        $client = static::createRestClient();
-        $client->request('OPTIONS', '/schema/core/app/item?invalidrqlquery');
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
-
-        $client = static::createRestClient();
-        $client->request('GET', '/schema/core/app/collection?invalidrqlquery');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-        $client = static::createRestClient();
-        $client->request('GET', '/schema/core/app/item?invalidrqlquery');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $client = static::createRestClient();
         $client->post('/core/app/?invalidrqlquery', $appData);
@@ -519,7 +505,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertEquals([], $results);
     }
@@ -537,7 +523,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertEquals('admin', $results->id);
         $this->assertEquals('Administration', $results->name->en);
@@ -582,7 +568,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('new Test App', $results->name->en);
         $this->assertTrue($results->showInMenu);
         $this->assertContains(
@@ -735,7 +721,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('Tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
         $this->assertContains(
@@ -785,7 +771,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('Test App Patched', $results->name->en);
     }
 
@@ -975,38 +961,12 @@ class AppControllerTest extends RestTestCase
     public function testGetAppSchemaInformationCanonical()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/schema/core/app/openapi.yaml');
+        $client->request('GET', '/schema/core/app/openapi.json');
 
-        $this->assertIsSchemaResponse($client->getResponse());
+        $this->assertResponseContentType('application/json; charset=UTF-8', $client->getResponse());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
         $this->assertIsAppSchema($client->getResults());
-    }
-
-    /**
-     * test getting collection schema
-     *
-     * @return void
-     */
-    public function testGetAppCollectionSchemaInformation()
-    {
-        $client = static::createRestClient();
-
-        $client->request('GET', '/schema/core/app/collection');
-
-        $response = $client->getResponse();
-        $results = $client->getResults();
-
-        $this->assertResponseContentType('application/schema+json', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertEquals('Array of app objects', $results->title);
-        $this->assertEquals('array', $results->type);
-        $this->assertIsAppSchema($results->items);
-        $this->assertEquals('en', $results->items->properties->name->required[0]);
-
-        $this->assertStringContainsString(
-            '<http://localhost/schema/core/app/collection>; rel="self"',
-            $response->headers->get('Link')
-        );
     }
 
     /**
@@ -1124,41 +1084,31 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * check if response looks like schema
-     *
-     * @param object $response response
-     *
-     * @return void
-     */
-    private function assertIsSchemaResponse($response)
-    {
-        $this->assertResponseContentType('application/schema+json', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    /**
      * check if a schema is of the app type
      *
-     * @param \stdClass $schema schema from service to validate
+     * @param \stdClass $openapi openapi schema from server
      *
      * @return void
      */
-    private function assertIsAppSchema(\stdClass $schema)
+    private function assertIsAppSchema(\stdClass $openapi)
     {
-        $this->assertEquals('App', $schema->title);
+        $schema = $openapi->components->schemas->App;
+
         $this->assertEquals('A graviton based app.', $schema->description);
         $this->assertEquals('object', $schema->type);
 
         $this->assertEquals('string', $schema->properties->id->type);
         $this->assertEquals('ID', $schema->properties->id->title);
         $this->assertEquals('Unique identifier', $schema->properties->id->description);
-        $this->assertContains('id', $schema->required);
 
-        $this->assertEquals('object', $schema->properties->name->type);
-        $this->assertEquals('translatable', $schema->properties->name->format);
-        $this->assertEquals('Name', $schema->properties->name->title);
-        $this->assertEquals('Display name for an app.', $schema->properties->name->description);
-        $this->assertEquals('string', $schema->properties->name->properties->en->type);
+        $this->assertEquals('#/components/schemas/GravitonTranslatable', $schema->properties->name->{'$ref'});
+
+        $translatableSchema = $openapi->components->schemas->GravitonTranslatable;
+        $this->assertEquals('string', $translatableSchema->properties->en->type);
+        $this->assertEquals('string', $translatableSchema->properties->fr->type);
+        $this->assertEquals('string', $translatableSchema->properties->de->type);
+        $this->assertEquals('string', $translatableSchema->properties->it->type);
+
         $this->assertContains('name', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);
@@ -1166,6 +1116,13 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(
             'Define if an app should be exposed on the top level menu.',
             $schema->properties->showInMenu->description
+        );
+
+        $this->assertEquals('integer', $schema->properties->order->type);
+        $this->assertEquals('Order', $schema->properties->order->title);
+        $this->assertEquals(
+            'Order sorting field',
+            $schema->properties->order->description
         );
     }
 }

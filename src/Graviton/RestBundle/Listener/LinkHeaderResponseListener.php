@@ -58,9 +58,6 @@ class LinkHeaderResponseListener
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        // extract various info from route
-        $routeName = $request->get('_route');
-
         $this->linkHeader = LinkHeader::fromString($response->headers->get('link'));
 
         // add self Link header
@@ -74,16 +71,16 @@ class LinkHeaderResponseListener
                 )
             );
 
+            // add paging Link element when applicable
+            $this->generatePagingLinksHeaders($request, $response);
+
+            // add schema link header element
+            $this->generateSchemaLinkHeader($request, $response);
+
             // dispatch the "selfaware" event
             $event->getRequest()->attributes->set('selfLink', $selfUrl);
             $dispatcher->dispatch($event, 'graviton.rest.response.selfaware');
         }
-
-        // add paging Link element when applicable
-        $this->generatePagingLinksHeaders($request, $response);
-
-        // add schema link header element
-        $this->generateSchemaLinkHeader($request, $response);
 
         // finally set link header
         $response->headers->set(
@@ -104,10 +101,14 @@ class LinkHeaderResponseListener
      */
     private function addSelfLinkHeader(Request $request, Response $response) : ?string
     {
+        if (empty($request->attributes->get('_route'))) {
+            return null;
+        }
+
         // was an entity created?
         if ($request->getMethod() == 'POST' && !empty($request->attributes->get('id'))) {
             // yes!
-            $routeParts = explode('.', $request->get('_route'));
+            $routeParts = explode('.', $request->attributes->get('_route'));
             $putRouteName = $routeParts[0].'.put';
 
             try {
@@ -133,8 +134,8 @@ class LinkHeaderResponseListener
 
         // normal url creation
         $selfLinkUrl = $this->router->generate(
-            $request->get('_route'),
-            $request->get('_route_params'),
+            $request->attributes->get('_route'),
+            $request->attributes->get('_route_params'),
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 

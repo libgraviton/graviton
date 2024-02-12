@@ -347,7 +347,11 @@ class GenerateDynamicBundleCommand extends Command
         // generate bundlebundle
         $this->generateBundleBundleClass();
 
-        $this->schemaGenerator->consolidateAllSchemas($input->getOption('srcDir'), $output, '/home/dn/schema.json');
+        $this->schemaGenerator->consolidateAllSchemas(
+            $input->getOption('srcDir'),
+            $output,
+            '/home/dn/schema.json'
+        );
 
         return 0;
     }
