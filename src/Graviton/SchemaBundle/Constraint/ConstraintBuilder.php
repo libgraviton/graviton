@@ -6,7 +6,6 @@
 namespace Graviton\SchemaBundle\Constraint;
 
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\SchemaBundle\Constraint\Builder\ConstraintBuilderInterface;
 use Graviton\SchemaBundle\Document\Schema;
 
@@ -60,7 +59,7 @@ class ConstraintBuilder
      *
      * @return Schema
      */
-    public function addConstraints($fieldName, Schema $property, ModelInterface $model)
+    public function addConstraints($fieldName, Schema $property, DocumentModel $model)
     {
         $constraints = $model->getConstraints($fieldName);
 

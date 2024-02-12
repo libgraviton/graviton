@@ -9,7 +9,6 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
@@ -17,7 +16,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
@@ -41,9 +39,9 @@ class RestController
     private $logger;
 
     /**
-     * @var ModelInterface
+     * @var DocumentModel
      */
-    private $model;
+    private DocumentModel $model;
 
     /**
      * @var SchemaUtils
@@ -53,22 +51,22 @@ class RestController
     /**
      * @var RestUtils
      */
-    protected $restUtils;
+    protected RestUtils $restUtils;
 
     /**
      * @var Router
      */
-    private $router;
+    private Router $router;
 
     /**
      * @var JsonPatchValidator
      */
-    private $jsonPatchValidator;
+    private JsonPatchValidator $jsonPatchValidator;
 
     /**
      * @var SecurityUtils
      */
-    protected $securityUtils;
+    protected SecurityUtils $securityUtils;
 
     /**
      * @param RestUtils $restUtils Rest Utils
@@ -177,10 +175,11 @@ class RestController
      * Return the model
      *
      * @return DocumentModel $model Model
+     *
      * @throws \Exception in case no model was defined.
      *
      */
-    public function getModel()
+    public function getModel() : DocumentModel
     {
         if (!$this->model) {
             throw new \Exception('No model is set for this controller');
@@ -192,14 +191,13 @@ class RestController
     /**
      * Set the model class
      *
-     * @param ModelInterface $model Model class
+     * @param DocumentModel $model Model class
      *
      * @return self
      */
-    public function setModel(ModelInterface $model)
+    public function setModel(DocumentModel $model) : void
     {
         $this->model = $model;
-        return $this;
     }
 
     /**

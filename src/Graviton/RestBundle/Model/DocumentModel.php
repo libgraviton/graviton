@@ -24,7 +24,7 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class DocumentModel implements ModelInterface
+class DocumentModel
 {
     /**
      * @var string
