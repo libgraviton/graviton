@@ -85,6 +85,12 @@ services:
       parent: graviton.rest.listener.abstract
       class: Graviton\RestBundle\RestListener\ValueInitializerListener
 
+    Graviton\RestBundle\Listener\ValidationExceptionListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
+
     #Routing -->
     #Routing collection -->
     graviton.rest.routing.collection:

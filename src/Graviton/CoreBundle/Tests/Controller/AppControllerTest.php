@@ -634,12 +634,12 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // send nothing really..
-        $client->post('/core/app/', "", [], [], [], false);
+        $client->post('/core/app/', "", [], [], ['CONTENT_TYPE' => 'application/json'], false);
 
         $response = $client->getResponse();
 
         $this->assertStringContainsString(
-            'No input data',
+            'JSON parsing failed',
             $response->getContent()
         );
 
@@ -657,12 +657,12 @@ class AppControllerTest extends RestTestCase
         $client->post('/core/app/', "non-object value");
 
         $response = $client->getResponse();
-        $this->assertStringContainsString('JSON request body must be an object', $response->getContent());
+        $this->assertStringContainsString('Value expected to be \u0027object\u0027', $response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
     /**
-     * test if 500 error is reported when posting an malformed input
+     * test if 400 error is reported when posting an malformed input
      *
      * @return void
      */
@@ -679,17 +679,13 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // make sure this is sent as 'raw' input (not json_encoded again)
-        $client->post('/core/app/', $input, [], [], [], false);
+        $client->post('/core/app/', $input, [], [], ['CONTENT_TYPE' => 'application/json'], false);
 
         $response = $client->getResponse();
 
-        // Check that error message contains detailed reason
-        json_decode($input);
-        $lastJsonError = json_last_error_msg();
-
         $this->assertStringContainsString(
-            $lastJsonError,
-            $client->getResults()->message
+            'JSON parsing failed',
+            $client->getResults()[0]->message
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -710,8 +706,8 @@ class AppControllerTest extends RestTestCase
         $client->post('/person/customer', $helloApp);
 
         $this->assertStringContainsString(
-            '"id" can not be given on a POST request.',
-            $client->getResults()->message
+            'OpenAPI spec contains no such operation',
+            $client->getResults()[0]->message
         );
     }
     /**
@@ -813,17 +809,17 @@ class AppControllerTest extends RestTestCase
         // 2. PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
-            array(
+            [
                 'op' => 'unknown',
                 'path' => '/title/en'
-            )
+            ]
         );
         $client->request('PATCH', '/core/app/' . $helloApp->id, [], [], [], $patchJson);
         $response = $client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString(
-            'Patch request should be an array of operations',
+            'Value expected to be \u0027array\u0027',
             $response->getContent()
         );
     }
@@ -946,8 +942,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertStringContainsString('showInMenu', $results[0]->propertyPath);
-        $this->assertEquals('String value found, but a boolean is required', $results[0]->message);
+        $this->assertStringContainsString('showInMenu', $results[1]->propertyPath);
+        $this->assertStringContainsString('Value expected to be \'boolean\'', $results[1]->message);
     }
 
     /**

@@ -295,14 +295,12 @@ class RestController
 
         $record = $this->restUtils->getEntityFromRequest($request, $model);
 
-        // handle missing 'id' field in input to a PUT operation
-        // if it is settable on the document, let's set it and move on.. if not, inform the user..
+        // ID collision between payload and ID in path or empty id!
         if ($record->getId() != $id) {
-            // try to set it..
-            if (is_callable(array($record, 'setId'))) {
+            if (empty($record->getId()) && is_callable(array($record, 'setId'))) {
                 $record->setId($id);
             } else {
-                throw new MalformedInputException('No ID was supplied in the request payload.');
+                throw new MalformedInputException('Record ID in your payload must be the same');
             }
         }
 

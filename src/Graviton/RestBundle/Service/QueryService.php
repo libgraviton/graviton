@@ -138,7 +138,7 @@ class QueryService
      * @return array|null|object either array of records or the record
      *
      */
-    public function getWithRequest(Request &$request, DocumentRepository $repository)
+    public function getWithRequest(Request $request, DocumentRepository $repository)
     {
         $returnValue = null;
 
@@ -149,7 +149,7 @@ class QueryService
         // if id is *not* empty, then a single document is requested!
         $singleDocumentRequest = !empty($this->getDocumentId());
 
-        $this->applyRqlQuery($singleDocumentRequest);
+        $this->applyRqlQuery($request, $singleDocumentRequest);
 
         if ($this->isUseSecondary) {
             $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
@@ -320,16 +320,21 @@ class QueryService
     /**
      * apply all stuff from the rql query (if any) to the local querybuilder
      *
-     * @param bool $singleDocumentRequest if single document is requested
+     * @param Request $request               request
+     * @param bool    $singleDocumentRequest if single document is requested
      *
      * @return void
      */
-    private function applyRqlQuery(bool $singleDocumentRequest)
+    private function applyRqlQuery(Request $request, bool $singleDocumentRequest)
     {
         $rqlQuery = $this->getRqlQuery($singleDocumentRequest);
 
         // Setting RQL Query
         if ($rqlQuery) {
+
+            // set on request for Link header
+            $request->attributes->set('rqlQuery', $rqlQuery);
+
             // Check if search and if this Repository have search indexes.
             if ($query = $rqlQuery->getQuery()) {
                 if ($query instanceof AndNode) {

@@ -30,26 +30,6 @@ class DocumentModel implements ModelInterface
      * @var string
      */
     protected $description;
-    /**
-     * @var string[]
-     */
-    protected $fieldTitles;
-    /**
-     * @var string[]
-     */
-    protected $fieldDescriptions;
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = [];
-    /**
-     * @var string[]
-     */
-    protected $searchableFields = [];
-    /**
-     * @var string[]
-     */
-    protected $textIndexes = [];
 
     /**
      * @var QueryService
@@ -191,6 +171,8 @@ class DocumentModel implements ModelInterface
     }
 
     /**
+     * inserts a record
+     *
      * @param object $entity entity to insert
      *
      * @return Object|null entity or null
@@ -228,7 +210,7 @@ class DocumentModel implements ModelInterface
     public function find($documentId, $forceClear = false)
     {
         if ($forceClear) {
-            $this->getRepository()->clear();
+            $this->documentManager->clear($this->getEntityClass());
         }
 
         $builder = $this->getRepository()->createQueryBuilder()
@@ -300,7 +282,7 @@ class DocumentModel implements ModelInterface
 
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
-            $this->documentManager->clear();
+            $this->documentManager->clear($this->getEntityClass());
 
             // pass old attrs to new one.
             if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
@@ -356,7 +338,7 @@ class DocumentModel implements ModelInterface
             $this->deleteById($entity->getId());
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
-            $this->documentManager->clear();
+            $this->documentManager->clear($this->getEntityClass());
             // Dispatch ModelEvent
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;

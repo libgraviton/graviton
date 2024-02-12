@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Listener;
 
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
@@ -54,6 +55,7 @@ class JsonExceptionListener
 
         // Should return a error 400 bad request
         if ($exception instanceof ValidationException
+         || $exception instanceof ValidationFailed
          || $exception instanceof SyntaxErrorException) {
             return;
         }

@@ -1,21 +1,9 @@
 parameters:
-  kernel.listener.graviton_exception_validation_exception.class: Graviton\ExceptionBundle\Listener\ValidationExceptionListener
   kernel.listener.graviton_exception_rqlsyntaxerror.class: Graviton\ExceptionBundle\Listener\RqlSyntaxErrorListener
   kernel.listener.graviton_exception_recordoriginmodified_exception.class: Graviton\ExceptionBundle\Listener\RecordOriginExceptionListener
 
 services:
   Graviton\ExceptionBundle\Listener\RestExceptionListener:
-    tags:
-      - name: kernel.event_listener
-        event: kernel.exception
-        method: onKernelException
-
-  kernel.listener.graviton_exception_validation_exception:
-    class: "%kernel.listener.graviton_exception_validation_exception.class%"
-    calls:
-      - method: setConstraintUtils
-        arguments:
-          - "@graviton.schema.constraint.utils"
     tags:
       - name: kernel.event_listener
         event: kernel.exception
