@@ -71,19 +71,20 @@ class RestController
     protected $securityUtils;
 
     /**
-     * @param RestUtils          $restUtils   Rest Utils
-     * @param Router             $router      Router
-     * @param SchemaUtils        $schemaUtils Schema utils
-     * @param JsonPatchValidator $jsonPatch   Service for validation json patch
-     * @param SecurityUtils      $security    The securityUtils service
+     * @param RestUtils $restUtils Rest Utils
+     * @param Router $router Router
+     * @param SchemaUtils $schemaUtils Schema utils
+     * @param JsonPatchValidator $jsonPatch Service for validation json patch
+     * @param SecurityUtils $security The securityUtils service
      */
     public function __construct(
-        RestUtils $restUtils,
-        Router $router,
-        SchemaUtils $schemaUtils,
+        RestUtils          $restUtils,
+        Router             $router,
+        SchemaUtils        $schemaUtils,
         JsonPatchValidator $jsonPatch,
-        SecurityUtils $security
-    ) {
+        SecurityUtils      $security
+    )
+    {
         $this->restUtils = $restUtils;
         $this->router = $router;
         $this->schemaUtils = $schemaUtils;
@@ -116,7 +117,7 @@ class RestController
     /**
      * Function for classes that inherit from this controller, to give them the opportunity to deserialize stuff
      *
-     * @param string $content       content
+     * @param string $content content
      * @param string $documentClass class
      *
      * @return object deserialized object
@@ -142,7 +143,7 @@ class RestController
      * Returns a single record
      *
      * @param Request $request Current http request
-     * @param string  $id      ID of record
+     * @param string $id ID of record
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
@@ -175,9 +176,9 @@ class RestController
     /**
      * Return the model
      *
+     * @return DocumentModel $model Model
      * @throws \Exception in case no model was defined.
      *
-     * @return DocumentModel $model Model
      */
     public function getModel()
     {
@@ -232,6 +233,7 @@ class RestController
      * @param Request $request Current http request
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
+     * @throws \Exception
      */
     public function postAction(Request $request)
     {
@@ -240,7 +242,10 @@ class RestController
         // Get the response object from container
         $model = $this->getModel();
 
-        $record = $this->restUtils->validateRequest($request, $model);
+        // will throw if not ok
+        $this->restUtils->validateRequest($request, $model);
+
+        $record = $this->restUtils->getEntityFromRequest($request, $model);
 
         // Insert the new record
         $record = $model->insertRecord($record);
@@ -272,12 +277,12 @@ class RestController
     /**
      * Update a record
      *
-     * @param Number  $id      ID of record
+     * @param Number $id ID of record
      * @param Request $request Current http request
      *
+     * @return Response $response Result of action with data (if successful)
      * @throws MalformedInputException
      *
-     * @return Response $response Result of action with data (if successful)
      */
     public function putAction($id, Request $request)
     {
@@ -285,7 +290,10 @@ class RestController
 
         $model = $this->getModel();
 
-        $record = $this->restUtils->validateRequest($request, $model);
+        // will throw if not ok
+        $this->restUtils->validateRequest($request, $model);
+
+        $record = $this->restUtils->getEntityFromRequest($request, $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -314,12 +322,12 @@ class RestController
     /**
      * Patch a record
      *
-     * @param Number  $id      ID of record
+     * @param Number $id ID of record
      * @param Request $request Current http request
      *
+     * @return Response $response Result of action with data (if successful)
      * @throws MalformedInputException
      *
-     * @return Response $response Result of action with data (if successful)
      */
     public function patchAction($id, Request $request)
     {
@@ -327,25 +335,23 @@ class RestController
 
         $model = $this->getModel();
 
-        // Validate received data. On failure release the lock.
+        // first, validate the PATCH request itself!
+        $this->restUtils->validateRequest($request, $model);
+
+        // Check JSON Patch request
+        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+        // Find record && apply $ref converter
+        $jsonDocument = $model->getSerialised($id, null);
+
         try {
-            // Check JSON Patch request
-            $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
-
-            // Find record && apply $ref converter
-            $jsonDocument = $model->getSerialised($id, null);
-
-            try {
-                // Check if valid
-                $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
-                // Apply JSON patches
-                $patch = new Patch($jsonDocument, $request->getContent());
-                $patchedDocument = $patch->apply();
-            } catch (\Exception $e) {
-                throw new InvalidJsonPatchException(prev: $e);
-            }
+            // Check if valid
+            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
+            // Apply JSON patches
+            $patch = new Patch($jsonDocument, $request->getContent());
+            $patchedDocument = $patch->apply();
         } catch (\Exception $e) {
-            throw $e;
+            throw new InvalidJsonPatchException(prev: $e);
         }
 
         // if document hasn't changed, pass HTTP_NOT_MODIFIED and exit
@@ -353,18 +359,28 @@ class RestController
             return new JsonResponse('', Response::HTTP_NOT_MODIFIED, [], true);
         }
 
-        $request = new Request(
+        // now we have the 'destination object' -> validate this again as it would be a PUT request!
+        $putRequest = new Request(
             $request->query->all(),
             $request->request->all(),
             $request->attributes->all(),
             $request->cookies->all(),
             $request->files->all(),
-            $request->server->all(),
+            array_merge(
+                $request->server->all(),
+                [
+                    'REQUEST_METHOD' => 'PUT'
+                ]
+            ),
             $patchedDocument
         );
 
+        $putRequest->headers->replace($request->headers->all());
+
         // Validate result object
-        $record = $this->restUtils->validateRequest($request, $model);
+        $this->restUtils->validateRequest($putRequest, $model);
+
+        $record = $this->restUtils->getEntityFromRequest($putRequest, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
@@ -384,7 +400,7 @@ class RestController
     /**
      * Deletes a record
      *
-     * @param Number  $id      ID of record
+     * @param Number $id ID of record
      * @param Request $request request
      *
      * @return Response $response Result of the action
@@ -404,39 +420,22 @@ class RestController
      *
      * @param Request $request Current http request
      *
-     * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     * @throws SerializationException
      */
     public function optionsAction(Request $request)
     {
-        list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
-
-        // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-        try {
-            $router = $this->getRouter();
-            // if post route is available we assume everything is readable
-            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
-        } catch (RouteNotFoundException $exception) {
-            // only allow read methods
-            $corsMethods = 'GET, OPTIONS';
-        }
-        $request->attributes->set('corsMethods', $corsMethods);
-
-        $this->addRequestAttributes($request);
-
         return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
     }
-
 
     /**
      * Return schema GET results.
      *
      * @param Request $request Current http request
-     * @param string  $id      ID of record
+     * @param string $id ID of record
      *
-     * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     * @throws SerializationException
      */
     public function schemaAction(Request $request, $id = null)
     {
@@ -457,18 +456,6 @@ class RestController
             $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
         }
 
-        // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-        try {
-            $router = $this->getRouter();
-            // if post route is available we assume everything is readable
-            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
-        } catch (RouteNotFoundException $exception) {
-            // only allow read methods
-            $corsMethods = 'GET, OPTIONS';
-        }
-
-        $request->attributes->set('corsMethods', $corsMethods);
         $response->setContent($this->restUtils->serialize($schema));
 
         $this->addRequestAttributes($request);
@@ -481,7 +468,7 @@ class RestController
      *
      * @return ?UserInterface user
      */
-    public function getSecurityUser() : ?UserInterface
+    public function getSecurityUser(): ?UserInterface
     {
         return $this->securityUtils->getSecurityUser();
     }

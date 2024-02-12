@@ -455,7 +455,6 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', '/schema/core/app/item?invalidrqlquery');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
-
         $client = static::createRestClient();
         $client->post('/core/app/?invalidrqlquery', $appData);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());

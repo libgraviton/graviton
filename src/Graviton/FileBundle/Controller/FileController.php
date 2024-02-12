@@ -69,7 +69,8 @@ class FileController extends RestController
         $request = $this->requestManager->updateFileRequest($request);
 
         if ($formData = $request->get('metadata')) {
-            $file = $this->restUtils->validateRequest($formData, $this->getModel());
+            $this->restUtils->validateRequest($formData, $this->getModel());
+            $file = $this->restUtils->getEntityFromRequest($request, $this->getModel());
         }
 
         $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
@@ -124,7 +125,8 @@ class FileController extends RestController
 
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
-            $file = $this->restUtils->validateRequest($metadata, $model);
+            $this->restUtils->validateRequest($metadata, $model);
+            $file = $this->restUtils->getEntityFromRequest($request, $model);
         }
 
         $file = $this->fileManager->handleSaveRequest($file, $request, $model);

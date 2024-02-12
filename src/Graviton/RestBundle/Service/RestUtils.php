@@ -7,28 +7,20 @@ namespace Graviton\RestBundle\Service;
 
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\NoInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SchemaBundle\Validation\RequestValidator;
+use GuzzleHttp\Psr7\HttpFactory;
 use Http\Discovery\Psr17Factory;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
-use Graviton\RestBundle\Controller\RestController;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -193,23 +185,30 @@ final class RestUtils implements RestUtilsInterface
      * @param Request       $request request
      * @param DocumentModel $model   the model to check the schema for
      *
-     * @return object the deserialized entity
      * @throws \Exception
      */
-    public function validateRequest(Request $request, DocumentModel $model) : object
+    public function validateRequest(Request $request, DocumentModel $model, ?string $overrideBody = null) : void
     {
         $psr17Factory = new Psr17Factory();
         $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
 
         $psrRequest = $psrHttpFactory->createRequest($request);
 
+        if (!empty($overrideBody)) {
+            $httpFactory = new HttpFactory();
+            $psrRequest = $psrRequest->withBody($httpFactory->createStream($overrideBody));
+        }
+
         $validator = (new ValidatorBuilder())
             ->fromJsonFile($model->getSchemaPath())
             ->getServerRequestValidator();
 
         $validator->validate($psrRequest);
+    }
 
-        return $this->deserialize($request->getContent(false), $model->getEntityClass());
+    public function getEntityFromRequest(Request $request, DocumentModel $model) : object
+    {
+        return $this->deserialize($request->getContent(), $model->getEntityClass());
     }
 
     /**
@@ -223,9 +222,6 @@ final class RestUtils implements RestUtilsInterface
     public function checkJsonPatchRequest(array $jsonPatch)
     {
         foreach ($jsonPatch as $operation) {
-            if (!is_array($operation)) {
-                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
-            }
             if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
                 throw new InvalidJsonPatchException('Change/remove of ID not allowed');
             }

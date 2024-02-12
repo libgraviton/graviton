@@ -8,6 +8,7 @@ namespace Graviton\GeneratorBundle\Generator;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * generates openapi schema files for each endpoint and one that sums all up.
@@ -66,10 +67,6 @@ class SchemaGenerator extends AbstractGenerator
 
         $reservedFieldNames = $parameters['reservedFieldnames'];
         $requiredFields = [];
-
-        if ($parameters['document'] == 'App') {
-            $hans = 3;
-        }
 
         // create fields!
         foreach ($parameters['fields'] as $field) {
@@ -254,6 +251,24 @@ class SchemaGenerator extends AbstractGenerator
                     $inputIdParam
                 ]
             ];
+
+            $paths[$routerBase.'{id}']['patch'] = [
+                'summary' => 'Applies a patch on a single '.$docName.' element.',
+                'operationId' => 'patchOne'.$docName,
+                'responses' => $writeResponses,
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/GravitonPatchBody'
+                            ]
+                        ]
+                    ]
+                ],
+                'parameters' => [
+                    $inputIdParam
+                ]
+            ];
             $paths[$routerBase.'{id}']['delete'] = [
                 'summary' => 'Deletes a single '.$docName.' element.',
                 'operationId' => 'deleteOne'.$docName,
@@ -297,7 +312,7 @@ class SchemaGenerator extends AbstractGenerator
             ->files()
             ->in($directories)
             ->path('config/schema')
-            ->name('openapi.json.tmp'); // ending in .tmp!
+            ->name(['openapi.tmp.json', 'openapi.yaml']); // ending in .tmp!
 
         $mainFile = $this->getSchema($targetFile, 'Graviton');
         $existingFiles = [];
@@ -311,7 +326,14 @@ class SchemaGenerator extends AbstractGenerator
 
             $content = $file->getContents();
 
-            $schema = json_decode($content, true);
+            $isInternal = false;
+            if (str_ends_with($file->getRealPath(), '.yaml')) {
+                $isInternal = true;
+                $schema = Yaml::parse($content);
+            } else {
+                $schema = json_decode($content, true);
+            }
+
             if (!is_array($schema)) {
                 continue;
             }
@@ -338,20 +360,14 @@ class SchemaGenerator extends AbstractGenerator
                 }
             }
 
-            $existingFiles[$file->getRealPath()] = $file;
+            $existingFiles[$file->getRealPath()] = json_encode($schema, JSON_UNESCAPED_SLASHES);
         }
 
         // 2nd pass -> fix all missing references
         $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
-        foreach ($existingFiles as $file) {
-            $content = $file->getContents();
-
+        foreach ($existingFiles as $filePath => $content) {
             // find needed entities
             preg_match_all($pattern, $content, $matches);
-
-            if (empty($matches[1])) {
-                continue;
-            }
 
             $schema = json_decode($content, true);
 
@@ -362,9 +378,8 @@ class SchemaGenerator extends AbstractGenerator
                 }
             }
 
-            $fullFile = $file->getRealPath();
             // remove .tmp ending
-            $schemaFile = str_replace('.tmp', '', $fullFile);
+            $schemaFile = str_replace(['.tmp', '.yaml'], ['', '.json'], $filePath);
 
             $this->fs->dumpFile($schemaFile, \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
             $output->writeln('Wrote file '.$schemaFile);

@@ -1785,12 +1785,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "4ec790bb53e658dd3f20f512b1785e4505d2b327"
+                "reference": "ec869df55677141c37b36ca748883643f0d30658"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/4ec790bb53e658dd3f20f512b1785e4505d2b327",
-                "reference": "4ec790bb53e658dd3f20f512b1785e4505d2b327",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/ec869df55677141c37b36ca748883643f0d30658",
+                "reference": "ec869df55677141c37b36ca748883643f0d30658",
                 "shasum": ""
             },
             "require": {
@@ -1826,7 +1826,7 @@
                 "issues": "https://github.com/libgraviton/GravitonRqlParserBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonRqlParserBundle/tree/develop"
             },
-            "time": "2024-02-11T09:53:26+00:00"
+            "time": "2024-02-12T08:27:34+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
