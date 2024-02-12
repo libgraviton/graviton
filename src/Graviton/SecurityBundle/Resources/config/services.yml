@@ -18,13 +18,13 @@ services:
     class: Graviton\SecurityBundle\Controller\WhoAmIController
     parent: graviton.rest.controller
     tags:
-      - graviton.rest
+        - { name: graviton.rest, collection: 'Whoami', 'router-base': '/person/whoami' }
+        - { name: controller.service_arguments }
     calls:
       -
         method: setQueryField
         arguments:
           - "%graviton.security.authentication.provider.model.query_field%"
-
 
   #
   #  Service Security Utils

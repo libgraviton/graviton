@@ -8,6 +8,7 @@ namespace Graviton\SecurityBundle\Controller;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use MongoDB\BSON\Regex;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -77,18 +78,27 @@ class WhoAmIController extends RestController
     }
 
     /**
-     * Returns schema
+     * should return the current model schema
      *
-     * @return Response $response Response with result or error
+     * @param Request $request request
+     *
+     * @return array the schema encoded
      */
-    public function whoAmiSchemaAction()
+    public function getModelSchema(Request $request) : array
     {
-        /** @var Response $response */
-        $response = $this->getResponse();
-        $response->headers->set('Content-Type', 'application/json');
+        $schema = parent::getModelSchema($request);
+        $schema['info']['title'] = 'Whoami endpoint, returning the current identity.';
 
-        $response->setContent(json_encode($this->getModel()->getSchema()));
+        $realPath = array_shift($schema['paths']);
 
-        return $response;
+        foreach ($realPath as $method => $body) {
+            if ($method != 'get') {
+                unset($realPath[$method]);
+            }
+        }
+
+        $schema['paths'] = ['/person/whoami' => $realPath];
+
+        return $schema;
     }
 }

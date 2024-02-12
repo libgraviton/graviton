@@ -415,6 +415,24 @@ class RestController
     }
 
     /**
+     * should return the current model schema
+     *
+     * @param Request $request request
+     *
+     * @return array the schema encoded
+     */
+    public function getModelSchema(Request $request) : array
+    {
+        $schemaFile = $this->getModel()->getSchemaPath();
+
+        if (!file_exists($schemaFile)) {
+            throw new \LogicException('The schemaFile does not exist!');
+        }
+
+        return \json_decode(file_get_contents($schemaFile), true);
+    }
+
+    /**
      * Return schema GET results.
      *
      * @param Request $request Current http request
@@ -424,24 +442,22 @@ class RestController
      */
     public function schemaAction(Request $request)
     {
+        $modelSchema = $this->getModelSchema($request);
+
         $format = 'json';
         if (str_ends_with($request->getPathInfo(), '.yaml')) {
             $format = 'yaml';
         }
 
-        $schemaFile = $this->getModel()->getSchemaPath();
-
-        if (!file_exists($schemaFile)) {
-            throw new \LogicException('The schemaFile does not exist!');
-        }
-
         if ($format == 'json') {
-            return new JsonResponse(file_get_contents($schemaFile), 200, [], true);
+            return new JsonResponse($modelSchema, 200, []);
         }
 
-        $schema = json_decode(file_get_contents($schemaFile), true);
-
-        return new Response(Yaml::dump($schema, 30, 2), 200, ['content-type' => 'application/yaml']);
+        return new Response(
+            Yaml::dump($modelSchema, 30, 2),
+            200,
+            ['content-type' => 'application/yaml']
+        );
     }
 
     /**

@@ -113,9 +113,9 @@ class WhoAmIControllerTest extends RestTestCase
     public function testVersionsSchemaAction()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/schema/person/whoami');
+        $client->request('GET', '/schema/person/whoami/openapi.json');
 
         // just check it's a normal graviton schema..
-        $this->assertIsString($client->getResults()->title);
+        $this->assertIsString($client->getResults()->openapi);
     }
 }
