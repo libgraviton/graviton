@@ -177,8 +177,6 @@ services:
         arguments:
           - "@graviton.rest.serializer"
           - "@logger"
-          - '@Graviton\SchemaBundle\Validation\RequestValidator'
-          - "@graviton.jsonschema.validator"
           - "@graviton.cache.adapter.app"
 
     Graviton\RestBundle\Subscriber\RestSubscriber:
@@ -186,12 +184,6 @@ services:
         - '@router'
       tags:
         - name: kernel.event_subscriber
-
-    #Graviton rest event stuff -->
-    #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
-    graviton.rest.event:
-        class: Graviton\RestBundle\Event\RestEvent
-        shared: false
 
     #Graviton rest event listeners -->
     #Paging listener >

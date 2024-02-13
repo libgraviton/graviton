@@ -1,7 +1,5 @@
 parameters:
-  graviton.schema.listener.canonicalschemaresponse.class: Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener
   graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
-  graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory
   graviton.schema.constraint.utils.class: Graviton\SchemaBundle\Constraint\ConstraintUtils
   graviton.schema.constraint.incrementaldate.class: Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint
   graviton.schema.constraint.readonlyfield.class: Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint
@@ -12,20 +10,6 @@ parameters:
   graviton.schema.serializer.handler.enum.class: Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler
 
 services:
-    graviton.schema.listener.canonicalschemaresponse:
-        class: "%graviton.schema.listener.canonicalschemaresponse.class%"
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: kernel.response
-            method: onKernelResponse
-
-    graviton.schema.service.repositoryfactory:
-        class: "%graviton.schema.service.repositoryfactory.class%"
-        arguments:
-          - "@doctrine_mongodb"
 
     graviton.schema.serializer.handler.additionalproperties:
         class: "%graviton.schema.serializer.handler.additionalproperties.class%"
@@ -50,10 +34,6 @@ services:
             name: jms_serializer.handler
             type: Graviton\SchemaBundle\Document\SchemaEnum
             format: json
-
-    Graviton\SchemaBundle\Validation\RequestValidator:
-        #arguments:
-
 
     # constraints
     Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder: ~
@@ -131,22 +111,6 @@ services:
             event: graviton.json_schema.constraint.schema
             method: onSchemaValidation
             priority: 999
-
-    graviton.schema.utils:
-        class: "%graviton.schema.service.schemautils.class%"
-        arguments:
-          - "@graviton.schema.service.repositoryfactory"
-          - "@jms_serializer.metadata_factory"
-          - "@router"
-          - "@jms_serializer"
-          - "%graviton.document.type.extref.mapping%"
-          - "%graviton.document.eventmap%"
-          - "%graviton.document.visible_field.names%"
-          - "%graviton.rest.schema_variation.enable%"
-          - '@Graviton\SchemaBundle\Constraint\ConstraintBuilder'
-          - '@graviton.cache.adapter.app'
-          - '@graviton.core.service.jmespath'
-          - '@graviton.18n.utils'
 
     graviton.schema.constraint.incrementaldate:
         class: "%graviton.schema.constraint.incrementaldate.class%"

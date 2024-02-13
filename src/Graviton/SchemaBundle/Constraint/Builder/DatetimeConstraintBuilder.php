@@ -41,7 +41,13 @@ class DatetimeConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
-        if ($fieldDefinition['schemaType'] == 'datetime') {
+        if ($fieldDefinition['schemaType'] == 'datetime[]') {
+            $schemaField['type'] = 'array';
+            $schemaField['items'] = [
+                'type' => 'string',
+                'pattern' => $this->dateTimeRegex
+            ];
+        } else if ($fieldDefinition['schemaType'] == 'datetime') {
             $schemaField['type'] = 'string';
             $schemaField['pattern'] = $this->dateTimeRegex;
         }

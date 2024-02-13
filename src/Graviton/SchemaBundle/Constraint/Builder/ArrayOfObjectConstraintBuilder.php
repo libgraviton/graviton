@@ -34,6 +34,12 @@ class ArrayOfObjectConstraintBuilder implements ConstraintBuilderInterface
             $isArray = true;
         }
 
+        // already done?
+        if (isset($schemaField['type']) && $schemaField['type'] == 'array') {
+            // already done!
+            return $schemaField;
+        }
+
         if (str_starts_with($type, 'class:')) {
             $className = explode('\\', $type);
             $shortClassName = array_pop($className);

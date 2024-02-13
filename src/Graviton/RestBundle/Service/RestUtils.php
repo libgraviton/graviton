@@ -42,16 +42,6 @@ class RestUtils
     private $logger;
 
     /**
-     * @var RequestValidator
-     */
-    private RequestValidator $requestValidator;
-
-    /**
-     * @var Validator
-     */
-    private $schemaValidator;
-
-    /**
      * @var CacheItemPoolInterface
      */
     private $cacheProvider;
@@ -59,21 +49,15 @@ class RestUtils
     /**
      * @param Serializer             $serializer      serializer
      * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
-     * @param RequestValidator       $requestValidator request validator
-     * @param Validator              $schemaValidator schema validator
      * @param CacheItemPoolInterface $cacheProvider   Cache service
      */
     public function __construct(
         Serializer $serializer,
         LoggerInterface $logger,
-        RequestValidator $requestValidator,
-        Validator $schemaValidator,
         CacheItemPoolInterface $cacheProvider
     ) {
         $this->serializer = $serializer;
         $this->logger = $logger;
-        $this->requestValidator = $requestValidator;
-        $this->schemaValidator = $schemaValidator;
         $this->cacheProvider = $cacheProvider;
     }
 
