@@ -16,6 +16,7 @@ use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
@@ -223,16 +224,36 @@ class RestController
         $this->logger->info('REST: allAction -> got model, starting findAll() on QueryService');
         $data = $model->findAll($request);
 
-        $this->logger->info('REST: allAction -> got data, starting to serialize()');
-        $content = $this->restUtils->serialize($data);
-
-        $this->logger->info('REST: allAction -> sending response');
-
         $this->addRequestAttributes($request);
 
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent($content);
+        $response = new StreamedResponse();
+        $response->headers->set('X-Accel-Buffering', 'no');
+        $response->setCallback(
+            function () use ($data): void {
+                $isFirst = true;
+
+                $this->logger->info('REST: allAction -> got data, starting to serialize() inside callback');
+
+                echo "[";
+
+                foreach ($data as $record) {
+                    // all except first record need a "," to separate
+                    if (!$isFirst) {
+                        echo ",";
+                    } else {
+                        $isFirst = false;
+                    }
+
+                    echo $this->restUtils->serializeContent($record);
+                    flush();
+                }
+
+                echo "]";
+                flush();
+
+                $this->logger->info('REST: allAction -> finished serializing content.');
+            }
+        );
 
         return $response;
     }
