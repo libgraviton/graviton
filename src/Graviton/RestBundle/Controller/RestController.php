@@ -227,7 +227,8 @@ class RestController
         $this->addRequestAttributes($request);
 
         $response = new StreamedResponse();
-        $response->headers->set('X-Accel-Buffering', 'no');
+        $response->headers->set('x-accel-buffering', 'no');
+        $response->headers->set('content-type', 'application/json; charset=UTF-8');
         $response->setCallback(
             function () use ($data): void {
                 $isFirst = true;
