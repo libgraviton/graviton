@@ -164,12 +164,12 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'exposedName'          => $definition->getExposeAs(),
                     'doctrineType'         => $field->getTypeDoctrine(),
                     'serializerType'       => $field->getTypeSerializer(),
+                    'schemaType'           => $field->getTypeSchema(),
                     'relType'              => null,
                     'isClassType'          => false,
                     'searchable'           => 0,
                     'recordOriginException' => false,
                     'hidden'               => false,
-                    'onVariation'          => null,
                     'valuePattern'         => null
                 ]
             ),

@@ -25,20 +25,6 @@ class FieldTypeMapper implements FieldMapperInterface
      */
     public function map($field, $context = null)
     {
-        /*
-        $field['serializerType'] = $field['type'];
-        if (substr($field['type'], -2) == '[]') {
-            $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
-        }
-
-        if ($field['type'] === 'array') {
-            $field['serializerType'] = 'array<string>';
-        }
-
-        if ($field['type'] === 'object') {
-            $field['serializerType'] = 'array';
-        }*/
-
         if ($context instanceof JsonDefinition &&
             $context->getField($field['fieldName']) instanceof DefinitionElementInterface
         ) {
@@ -49,7 +35,7 @@ class FieldTypeMapper implements FieldMapperInterface
                 $fieldInformation['schemaType'] = $fieldInformation['type'];
             }
 
-            // in this context, the default type is the doctrine type..
+            // in this context, the default type is the doctrine type.
             if (isset($fieldInformation['doctrineType'])) {
                 $fieldInformation['type'] = $fieldInformation['doctrineType'];
             }

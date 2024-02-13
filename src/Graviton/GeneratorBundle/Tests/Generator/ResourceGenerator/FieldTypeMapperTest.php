@@ -37,19 +37,19 @@ class FieldTypeMapperTest extends \PHPUnit\Framework\TestCase
         return [
             'simple string' => [
                 ['type' => 'string'],
-                ['type' => 'string', 'serializerType' => 'string'],
+                ['type' => 'string'],
             ],
             'basic array' => [
                 ['type' => 'array'],
-                ['type' => 'array', 'serializerType' => 'array<string>'],
+                ['type' => 'array'],
             ],
             'basic class' => [
                 ['type' => 'StdClass[]'],
-                ['type' => 'StdClass[]', 'serializerType' => 'array<StdClass>']
+                ['type' => 'StdClass[]']
             ],
             'generic object' => [
                 ['type' => 'object'],
-                ['type' => 'object', 'serializerType' => 'array']
+                ['type' => 'object']
             ]
         ];
     }

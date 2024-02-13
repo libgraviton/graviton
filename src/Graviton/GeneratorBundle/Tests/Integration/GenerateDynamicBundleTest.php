@@ -10,7 +10,9 @@ use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use Graviton\GeneratorBundle\Tests\Utils;
+use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -56,10 +58,17 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $bundleGenerator = new BundleGenerator();
         $bundleGenerator->setExposeSyntheticMap(null);
 
+        $constraintBuilder = new ConstraintBuilder();
+
+        $schemaGenerator = new SchemaGenerator();
+        $schemaGenerator->setVersionInformation(['self' => 'testing']);
+        $schemaGenerator->setConstraintBuilder($constraintBuilder);
+
         $resourceGenerator = new ResourceGenerator(
             new Filesystem(),
             $fieldMapper,
-            new ResourceGenerator\ParameterBuilder()
+            new ResourceGenerator\ParameterBuilder(),
+            $schemaGenerator
         );
         $resourceGenerator->setExposeSyntheticMap(null);
 
@@ -71,7 +80,13 @@ class GenerateDynamicBundleTest extends GravitonTestCase
             $bundleGenerator,
             $resourceGenerator,
             $dynamicBundleGenerator,
-            Utils::getSerializerInstance()
+            Utils::getSerializerInstance(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            schemaGenerator: $schemaGenerator
         );
 
         $application = new Application();

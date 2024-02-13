@@ -90,17 +90,16 @@ class JsonDefinitionRelTest extends BaseJsonDefinitionFieldTest
                 $this->getBaseDefAsArray($definition),
                 [
                     'name'                  => $field->getName(),
-                    'groups'                => $definition->getGroups(),
                     'type'                  => $field->getType(),
                     'exposedName'           => $definition->getExposeAs(),
                     'doctrineType'          => $field->getTypeDoctrine(),
                     'serializerType'        => $field->getTypeSerializer(),
+                    'schemaType'            => $field->getTypeSchema(),
                     'relType'               => $relation->getType(),
                     'isClassType'           => true,
                     'searchable'            => 0,
                     'recordOriginException' => false,
                     'hidden'                => false,
-                    'onVariation'           => null,
                     'valuePattern'          => null
                 ]
             ),

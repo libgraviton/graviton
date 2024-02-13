@@ -37,6 +37,7 @@ class JsonDefinitionArrayTest extends TestCase
                 'getType',
                 'getTypeDoctrine',
                 'getTypeSerializer',
+                'getTypeSchema',
                 'getDefAsArray',
                 ]
             )
@@ -166,6 +167,7 @@ class JsonDefinitionArrayTest extends TestCase
                     'type'           => $fielType.'[]',
                     'doctrineType'   => $doctrineType.'[]',
                     'serializerType' => 'array<'.$serializerType.'>',
+                    'schemaType'     => '[]'
                 ]
             ),
             $field->getDefAsArray()
