@@ -245,8 +245,12 @@ class RestController
                         $isFirst = false;
                     }
 
-                    echo $this->restUtils->serializeContent($record);
-                    flush();
+                    try {
+                        echo $this->restUtils->serializeContent($record);
+                        flush();
+                    } catch (\Exception $e) {
+                        // skipping row! error was logged to STDOUT of service
+                    }
                 }
 
                 echo "]";
