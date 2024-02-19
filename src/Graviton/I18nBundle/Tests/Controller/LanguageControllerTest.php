@@ -19,7 +19,7 @@ class LanguageControllerTest extends RestTestCase
     /**
      * @const schema url
      */
-    const SCHEMA_URL = 'http://localhost/schema/i18n/language/';
+    const SCHEMA_URL = 'http://localhost/schema/i18n/language/openapi.json';
 
     /**
      * load fixtures
@@ -49,7 +49,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'collection', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         // we assume that initially all systems will only know of the english lang
         $this->assertcount(1, $results);
@@ -107,7 +107,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'collection', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertcount(3, $results);
 
@@ -144,7 +144,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('de', $results->id);
         $this->assertEquals('de, en', $response->headers->get('Content-Language'));
 
@@ -182,7 +182,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));
 
@@ -207,7 +207,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Español', $results->name->es);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));
@@ -230,7 +230,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Espanyol', $results->name->es);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));

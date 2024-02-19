@@ -9,7 +9,6 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
 use Graviton\FileBundle\Manager\RequestManager;
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,7 +68,7 @@ class FileController extends RestController
         $request = $this->requestManager->updateFileRequest($request);
 
         if ($formData = $request->get('metadata')) {
-            $this->restUtils->validateRequest($formData, $this->getModel());
+            $this->restUtils->validateRequest($request, $this->getModel());
             $file = $this->restUtils->getEntityFromRequest($request, $this->getModel());
         }
 
@@ -80,7 +79,7 @@ class FileController extends RestController
         $response->setStatusCode(Response::HTTP_CREATED);
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate('gravitondyn.file.rest.file.get', array('id' => $file->getId()))
+            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
         );
         return $response;
     }
@@ -125,7 +124,7 @@ class FileController extends RestController
 
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
-            $this->restUtils->validateRequest($metadata, $model);
+            $this->restUtils->validateRequest($request, $model);
             $file = $this->restUtils->getEntityFromRequest($request, $model);
         }
 
@@ -136,7 +135,7 @@ class FileController extends RestController
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate('gravitondyn.file.rest.file.get', array('id' => $file->getId()))
+            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
         );
 
         return $response;

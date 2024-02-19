@@ -70,7 +70,7 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel('http://localhost/schema/file/collection', $response);
+        $this->assertResponseSchemaRel('http://localhost/schema/file/openapi.json', $response);
 
         $this->assertEquals([], $results);
     }

@@ -19,12 +19,10 @@ use Symfony\Component\HttpFoundation\Response;
 class ModuleControllerTest extends RestTestCase
 {
     /**
-     * @const complete content type string expected on a resouce
+     * @const complete content type string expected on a resource
      */
 
-    const SCHEMA_URL_ITEM = 'http://localhost/schema/core/module/item';
-
-    const SCHEMA_URL_COLLECTION = 'http://localhost/schema/core/module/collection';
+    const SCHEMA_URL = 'http://localhost/schema/core/module/openapi.json';
 
     /**
      * setup client and load fixtures, generate search indexes separately
@@ -208,7 +206,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertEquals([], $results);
     }
@@ -225,7 +223,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('investment', $results[0]->key);
         $this->assertEquals(1, count($results));
 
@@ -237,7 +235,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals($moduleId, $results->id);
         $this->assertEquals('investment', $results->key);
         $this->assertEquals('/module/investment', $results->path);
@@ -551,7 +549,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertEquals('http://localhost/core/app/testapp', $results->app->{'$ref'});
         $this->assertEquals(50, $results->order);
@@ -603,7 +601,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
         $this->assertEquals('investment', $results[0]->key);
         $this->assertEquals(1, count($results));
 
@@ -629,7 +627,7 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL, $response);
 
         $this->assertEquals($moduleId, $results->id);
         $this->assertEquals('http://localhost/core/app/test', $results->app->{'$ref'});
