@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5ca085408b351fae4a331bc0687aeb8",
+    "content-hash": "2363a35287500e54f523b53292a97149",
     "packages": [
         {
             "name": "async-aws/core",
@@ -7398,12 +7398,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-fixtures-bundle.git",
-                "reference": "b2c6e024b61fdd12f3ee709cbf990bb219f296c7"
+                "reference": "bb4f7459dee0a74524a3e7f4591d5b0dec424092"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/b2c6e024b61fdd12f3ee709cbf990bb219f296c7",
-                "reference": "b2c6e024b61fdd12f3ee709cbf990bb219f296c7",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/bb4f7459dee0a74524a3e7f4591d5b0dec424092",
+                "reference": "bb4f7459dee0a74524a3e7f4591d5b0dec424092",
                 "shasum": ""
             },
             "require": {
@@ -7426,7 +7426,7 @@
                 "issues": "https://github.com/libgraviton/mongodb-fixtures-bundle/issues",
                 "source": "https://github.com/libgraviton/mongodb-fixtures-bundle/tree/develop"
             },
-            "time": "2024-01-18T10:29:24+00:00"
+            "time": "2024-02-20T09:26:08+00:00"
         },
         {
             "name": "graviton/test-services-bundle",
@@ -7434,12 +7434,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "d312ea32ad848c1b1d9f7f616b8d55d86d798d12"
+                "reference": "3ebef5614e7794fbb2bde12bfc807852f37a9f66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/d312ea32ad848c1b1d9f7f616b8d55d86d798d12",
-                "reference": "d312ea32ad848c1b1d9f7f616b8d55d86d798d12",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/3ebef5614e7794fbb2bde12bfc807852f37a9f66",
+                "reference": "3ebef5614e7794fbb2bde12bfc807852f37a9f66",
                 "shasum": ""
             },
             "require-dev": {
@@ -7468,7 +7468,7 @@
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
             },
-            "time": "2024-02-20T07:52:11+00:00"
+            "time": "2024-02-20T15:22:35+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
