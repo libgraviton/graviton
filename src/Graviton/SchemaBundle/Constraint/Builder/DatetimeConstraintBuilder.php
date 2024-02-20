@@ -45,10 +45,12 @@ class DatetimeConstraintBuilder implements ConstraintBuilderInterface
             $schemaField['type'] = 'array';
             $schemaField['items'] = [
                 'type' => 'string',
+                'format' => 'date-time',
                 'pattern' => $this->dateTimeRegex
             ];
         } elseif ($fieldDefinition['schemaType'] == 'datetime') {
             $schemaField['type'] = 'string';
+            $schemaField['format'] = 'date-time';
             $schemaField['pattern'] = $this->dateTimeRegex;
         }
 

@@ -30,7 +30,14 @@ class LoadAppData implements FixtureInterface
     {
         $tabletApp = new App();
         $tabletApp->setId('tablet');
-        $tabletApp->setName(Translatable::createFromOriginalString('Tablet'));
+        $tabletApp->setName(
+            Translatable::createFromTranslations(
+                [
+                    'en' => 'Tablet',
+                    'de' => 'Tablet'
+                ]
+            )
+        );
         $tabletApp->setShowInMenu(true);
         $tabletApp->setOrder(1);
 

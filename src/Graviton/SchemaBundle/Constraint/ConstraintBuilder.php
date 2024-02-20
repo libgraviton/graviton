@@ -43,7 +43,21 @@ class ConstraintBuilder
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (!empty($fieldDefinition['constraints'])) {
+            $constraints = [];
+            foreach ($fieldDefinition['constraints'] as $constraint) {
+                $name = $constraint['name'];
+                $options = [];
+                foreach ($constraint['options'] as $option) {
+                    $options[$option['name']] = $option['value'];
+                }
+                $constraints[$name] = $options;
+            }
+            $fieldDefinition['constraints'] = $constraints;
+        }
+
         foreach ($this->builders as $builder) {
+            // consolidate constraints a bit
             $schemaField = $builder->buildSchema($schemaField, $fieldDefinition);
         }
 

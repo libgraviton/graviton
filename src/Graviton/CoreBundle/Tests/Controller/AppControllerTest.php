@@ -1097,7 +1097,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('ID', $schema->properties->id->title);
         $this->assertEquals('Unique identifier', $schema->properties->id->description);
 
-        $this->assertEquals('#/components/schemas/GravitonTranslatable', $schema->properties->name->{'$ref'});
+        $this->assertEquals('#/components/schemas/GravitonTranslatable', $schema->properties->name->schema->{'$ref'});
 
         $translatableSchema = $openapi->components->schemas->GravitonTranslatable;
         $this->assertEquals('string', $translatableSchema->properties->en->type);

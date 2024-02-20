@@ -25,6 +25,10 @@ class EmailConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (isset($fieldDefinition['constraints']['Email'])) {
+            $schemaField['format'] = 'email';
+        }
+
         return $schemaField;
     }
 
@@ -38,7 +42,7 @@ class EmailConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Email');
+
     }
 
     /**
@@ -53,7 +57,6 @@ class EmailConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        $property->setFormat('email');
-        return $property;
+
     }
 }

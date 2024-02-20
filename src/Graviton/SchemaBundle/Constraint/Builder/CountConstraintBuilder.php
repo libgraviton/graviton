@@ -26,6 +26,20 @@ class CountConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (isset($fieldDefinition['constraints']['Count'])) {
+            $options = $fieldDefinition['constraints']['Count'];
+            if (isset($schemaField['nullable'])) {
+                $schemaField['nullable'] = false;
+            }
+
+            if (isset($options['min'])) {
+                $schemaField['minItems'] = intval($options['min']);
+            }
+            if (isset($options['max'])) {
+                $schemaField['maxItems'] = intval($options['max']);
+            }
+        }
+
         return $schemaField;
     }
 
@@ -39,7 +53,7 @@ class CountConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Count');
+
     }
 
     /**

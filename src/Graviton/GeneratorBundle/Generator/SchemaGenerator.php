@@ -148,11 +148,11 @@ class SchemaGenerator extends AbstractGenerator
 
         if (!empty($requiredFields)) {
             natsort($requiredFields);
-            $thisSchema['required'] = $requiredFields;
+            $thisSchema['required'] = array_values($requiredFields);
         }
 
         // synthetic fields
-        if (!empty($parameters['syntheticFields'])) {
+        if (!$isSubResource && !empty($parameters['syntheticFields'])) {
             foreach ($parameters['syntheticFields'] as $fieldData) {
                 $type = $fieldData['type'];
 
@@ -206,6 +206,10 @@ class SchemaGenerator extends AbstractGenerator
 
         // this is the resource name!
         $docName = $parameters['document'];
+
+        if ($docName == 'NewEmbedHashTest') {
+            $hans = 3;
+        }
 
         $writeResponses = [
             201 => [

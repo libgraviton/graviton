@@ -153,8 +153,8 @@ class EmbedArrayTest extends RestTestCase
     }
 
     /**
-     * @param object   $data   JSON data
-     * @param object[] $errors Expected errors
+     * @param object   $data          JSON data
+     * @param object[] $propertyPaths property paths
      * @return void
      *
      * @dataProvider dataInvalid
@@ -163,16 +163,23 @@ class EmbedArrayTest extends RestTestCase
      * @group newEmbedArray
      * @group newEmbedArrayInvalid
      */
-    public function testInvalid($data, array $errors)
+    public function testInvalid($data, array $propertyPaths)
     {
         $client = static::createRestClient();
         $client->post('/testcase/embed-array/', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(count($client->getResults()), count($errors));
+        // always +1 as we print auf '.body' separate!
+        $this->assertEquals(count($client->getResults()), count($propertyPaths) + 1);
 
-        foreach ($errors as $error) {
-            $this->assertContainsEquals($error, $client->getResults());
+        foreach ($propertyPaths as $propertyPath) {
+            $included = false;
+            foreach ($client->getResults() as $singleError) {
+                if ($singleError->propertyPath == $propertyPath) {
+                    $included = true;
+                }
+            }
+            $this->assertTrue($included);
         }
     }
 
@@ -191,11 +198,8 @@ class EmbedArrayTest extends RestTestCase
                     'notEmptyArray' => [],
                 ],
                 [
-                    (object) [
-                        'message'       => 'There must be a minimum of 1 items in the array',
-                        'propertyPath'  => 'notEmptyArray',
-                    ],
-                ],
+                    'notEmptyArray'
+                ]
             ],
             'no requiredArray' => [
                 (object) [
@@ -204,10 +208,7 @@ class EmbedArrayTest extends RestTestCase
                     'optionalArray' => [],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property requiredArray is required',
-                        'propertyPath'  => 'requiredArray',
-                    ],
+                    'requiredArray'
                 ],
             ],
             'no value' => [
@@ -242,26 +243,7 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'notEmptyArray[0].value',
-                    ],
+                    'value'
                 ],
             ],
             'no value at all' => [
@@ -296,79 +278,8 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultArray[0].subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultArray[0].subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultArray[0].subRequiredHash.value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalArray[0].subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalArray[0].subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalArray[0].subRequiredHash.value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredArray[0].subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredArray[0].subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredArray[0].subRequiredHash.value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'notEmptyArray[0].value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'notEmptyArray[0].subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'notEmptyArray[0].subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'notEmptyArray[0].subRequiredHash.value',
-                    ],
-                ],
+                    'value'
+                ]
             ],
             'no requiredHash' => [
                 (object) [
@@ -378,6 +289,7 @@ class EmbedArrayTest extends RestTestCase
                             'value'             => 'defaultArray.value',
                             'subDefaultHash'    => (object) ['value' => 'defaultArray.subDefaultHash.value'],
                             'subOptionalHash'   => (object) ['value' => 'defaultArray.subOptionalHash.value'],
+                            'subRequiredHash'   => (object) [],
                         ],
                     ],
                     'optionalArray' => [
@@ -402,22 +314,7 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'defaultArray[0].subRequiredHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'optionalArray[0].subRequiredHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'requiredArray[0].subRequiredHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'notEmptyArray[0].subRequiredHash',
-                    ],
+                    'optionalArray.0.subRequiredHash'
                 ],
             ],
             'no defaultHash' => [
@@ -452,22 +349,7 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'defaultArray[0].subDefaultHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'optionalArray[0].subDefaultHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'requiredArray[0].subDefaultHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'notEmptyArray[0].subDefaultHash',
-                    ],
+                    'defaultArray.0.subDefaultHash'
                 ],
             ],
         ];

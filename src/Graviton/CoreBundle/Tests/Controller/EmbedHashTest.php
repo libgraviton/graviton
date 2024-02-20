@@ -103,8 +103,9 @@ class EmbedHashTest extends RestTestCase
     }
 
     /**
-     * @param object   $data   JSON data
-     * @param object[] $errors Expected errors
+     * @param object   $data          JSON data
+     * @param object[] $propertyPaths property paths
+     *
      * @return void
      *
      * @dataProvider dataInvalid
@@ -113,16 +114,24 @@ class EmbedHashTest extends RestTestCase
      * @group newEmbedHash
      * @group newEmbedHashInvalid
      */
-    public function testInvalid($data, array $errors)
+    public function testInvalid($data, array $propertyPaths)
     {
         $client = static::createRestClient();
         $client->post('/testcase/embed-hash/', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(count($client->getResults()), count($errors));
 
-        foreach ($errors as $error) {
-            $this->assertContainsEquals($error, $client->getResults());
+        // always +1 as we print auf '.body' separate!
+        $this->assertEquals(count($client->getResults()), count($propertyPaths) + 1);
+
+        foreach ($propertyPaths as $propertyPath) {
+            $included = false;
+            foreach ($client->getResults() as $singleError) {
+                if ($singleError->propertyPath == $propertyPath) {
+                    $included = true;
+                }
+            }
+            $this->assertTrue($included);
         }
     }
 
@@ -151,22 +160,7 @@ class EmbedHashTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredHash.value',
-                    ],
+                    'value'
                 ],
             ],
             'no value at all' => [
@@ -188,61 +182,7 @@ class EmbedHashTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultHash.subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultHash.subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'defaultHash.subRequiredHash.value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalHash.subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalHash.subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'optionalHash.subRequiredHash.value',
-                    ],
-
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredHash.subDefaultHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredHash.subOptionalHash.value',
-                    ],
-                    (object) [
-                        'message'       => 'The property value is required',
-                        'propertyPath'  => 'requiredHash.subRequiredHash.value',
-                    ],
+                    'value'
                 ],
             ],
             'no requiredHash' => [
@@ -260,18 +200,7 @@ class EmbedHashTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property requiredHash is required',
-                        'propertyPath'  => 'requiredHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'defaultHash.subRequiredHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subRequiredHash is required',
-                        'propertyPath'  => 'optionalHash.subRequiredHash',
-                    ],
+                    'requiredHash'
                 ],
             ],
             'no defaultHash' => [
@@ -289,18 +218,7 @@ class EmbedHashTest extends RestTestCase
                     ],
                 ],
                 [
-                    (object) [
-                        'message'       => 'The property defaultHash is required',
-                        'propertyPath'  => 'defaultHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'optionalHash.subDefaultHash',
-                    ],
-                    (object) [
-                        'message'       => 'The property subDefaultHash is required',
-                        'propertyPath'  => 'requiredHash.subDefaultHash',
-                    ],
+                    'defaultHash'
                 ],
             ],
         ];

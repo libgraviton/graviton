@@ -28,6 +28,22 @@ class ChoiceConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (isset($fieldDefinition['constraints']['Choice'])) {
+            $options = $fieldDefinition['constraints']['Choice'];
+
+            $enums = array_map('trim', explode('|', $options['choices']));
+
+            if ($fieldDefinition['schemaType'] == 'integer') {
+                $enums = array_map('intval', $enums);
+            }
+
+            if ($fieldDefinition['schemaType'] == 'number') {
+                $enums = array_map('floatval', $enums);
+            }
+
+            $schemaField['enum'] = $enums;
+        }
+
         return $schemaField;
     }
 
@@ -41,7 +57,7 @@ class ChoiceConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Choice');
+
     }
 
     /**
@@ -56,24 +72,6 @@ class ChoiceConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        $enumValue = array_reduce(
-            $options,
-            function ($carry, $option) {
-                if ($option->name == 'choices') {
-                    return explode('|', $option->value);
-                }
-            }
-        );
 
-        // is this a numeric field? convert values
-        if (in_array('integer', $property->getType()->getTypes())) {
-            $enumValue = array_map('intval', $enumValue);
-        }
-
-        if (is_array($enumValue)) {
-            $property->setEnum($enumValue);
-        }
-
-        return $property;
     }
 }

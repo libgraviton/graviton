@@ -489,6 +489,11 @@ class GenerateDynamicBundleCommand extends Command
         $generator->setSyntheticFields($this->syntheticFields);
         $generator->setEnsureIndexes($this->ensureIndexes);
 
+        $schemaFile = $bundleDir . '/Resources/config/schema/openapi.tmp.json';
+        if ($this->fs->exists($schemaFile)) {
+            $this->fs->remove($schemaFile);
+        }
+
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
             $generator->generate(
@@ -496,6 +501,7 @@ class GenerateDynamicBundleCommand extends Command
                 $bundleNamespace,
                 $bundleName,
                 $subRecource->getId(),
+                $schemaFile,
                 true
             );
         }
@@ -515,6 +521,7 @@ class GenerateDynamicBundleCommand extends Command
                 $bundleNamespace,
                 $bundleName,
                 $jsonDef->getId(),
+                $schemaFile,
                 false
             );
         }

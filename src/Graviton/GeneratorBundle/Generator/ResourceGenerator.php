@@ -240,6 +240,7 @@ class ResourceGenerator extends AbstractGenerator
      * @param string $bundleNamespace bundle namespace
      * @param string $bundleName      bundle name
      * @param string $document        document name
+     * @param string $schemaFile      schema file
      * @param bool   $isSubResource   if subresource or not
      *
      * @return void
@@ -249,6 +250,7 @@ class ResourceGenerator extends AbstractGenerator
         $bundleNamespace,
         $bundleName,
         $document,
+        string $schemaFile,
         bool $isSubResource
     ) {
         $this->readServicesAndParams($bundleDir);
@@ -313,11 +315,6 @@ class ResourceGenerator extends AbstractGenerator
 
         if ($this->generateSerializerConfig) {
             $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
-        }
-
-        $schemaFile = $bundleDir . '/Resources/config/schema/openapi.tmp.json';
-        if ($this->fs->exists($schemaFile)) {
-            $this->fs->remove($schemaFile);
         }
 
         $this->schemaGenerator->generateSchema(
