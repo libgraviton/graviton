@@ -7,13 +7,10 @@ namespace Graviton\DocumentBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\RqlParser\Node\Query\ArrayOperator\InNode;
 use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 
@@ -25,7 +22,7 @@ use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 class ExtReferenceSearchListenerTest extends TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface
+     * @var ExtReferenceConverter
      */
     private $converter;
 
@@ -36,7 +33,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function setUp() : void
     {
-        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverter')
             ->disableOriginalConstructor()
             ->getMock();
     }

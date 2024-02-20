@@ -18,27 +18,21 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceConverter implements ExtReferenceConverterInterface
+class ExtReferenceConverter
 {
     /**
      * @var RouterInterface
      */
     private $router;
-    /**
-     * @var array
-     */
-    private $mapping;
 
     /**
      * Constructor
      *
      * @param RouterInterface $router  Router
-     * @param array           $mapping colleciton_name => service_id mapping
      */
-    public function __construct(RouterInterface $router, array $mapping)
+    public function __construct(RouterInterface $router)
     {
         $this->router = $router;
-        $this->mapping = $mapping;
     }
 
     /**
@@ -86,17 +80,8 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
      */
     public function getUrl(ExtReference $extReference)
     {
-        if (!isset($this->mapping[$extReference->getRef()])) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Could not create URL from extref "%s"',
-                    json_encode($extReference)
-                )
-            );
-        }
-
         return $this->router->generate(
-            $this->mapping[$extReference->getRef()].'.get',
+            $extReference->getRef().'.get',
             ['id' => $extReference->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );

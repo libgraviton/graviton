@@ -6,7 +6,7 @@
 namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventFormat;
 use Graviton\RestBundle\Routing\Loader\ActionUtils;
 use JMS\Serializer\Context;
@@ -24,7 +24,7 @@ use JMS\Serializer\Visitor\SerializationVisitorInterface;
 class ExtReferenceHandler
 {
     /**
-     * @var ExtReferenceConverterInterface
+     * @var ExtReferenceConverter
      */
     private $converter;
 
@@ -36,9 +36,9 @@ class ExtReferenceHandler
     /**
      * Constructor
      *
-     * @param ExtReferenceConverterInterface $converter Converter
+     * @param ExtReferenceConverter $converter Converter
      */
-    public function __construct(ExtReferenceConverterInterface $converter)
+    public function __construct(ExtReferenceConverter $converter)
     {
         $this->converter = $converter;
     }

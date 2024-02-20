@@ -35,39 +35,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
-     * Test item schema
-     *
-     * @return void
-     */
-    public function testItemSchema()
-    {
-        $client = static::createRestClient();
-        $client->request('GET', '/schema/testcase/primitivearray/item');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-        $schema = $client->getResults();
-        $this->assertEquals('object', $schema->type);
-        $this->assertItemSchema($schema);
-    }
-
-    /**
-     * Test collection schema
-     *
-     * @return void
-     */
-    public function testCollectionSchema()
-    {
-        $client = static::createRestClient();
-        $client->request('GET', '/schema/testcase/primitivearray/collection');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-        $schema = $client->getResults();
-        $this->assertEquals('array', $schema->type);
-        $this->assertEquals('object', $schema->items->type);
-        $this->assertItemSchema($schema->items);
-    }
-
-    /**
      * Test GET one method
      *
      * @return void

@@ -11,7 +11,7 @@ use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitor;
 use Graviton\DocumentBundle\Serializer\Visitor\JsonDeserializationVisitorFactory;
 use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitor;
 use Graviton\DocumentBundle\Serializer\Visitor\JsonSerializationVisitorFactory;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 class ExtReferenceHandlerTest extends TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface|MockObject
+     * @var ExtReferenceConverter|MockObject
      */
     private $converter;
     /**
@@ -46,7 +46,7 @@ class ExtReferenceHandlerTest extends TestCase
      */
     public function setUp() : void
     {
-        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverter')
             ->disableOriginalConstructor()
             ->setMethods(['getExtReference', 'getUrl'])
             ->getMock();

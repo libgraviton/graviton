@@ -11,7 +11,7 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
@@ -25,7 +25,7 @@ use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
 class ExtReferenceSearchListener
 {
     /**
-     * @var ExtReferenceConverterInterface
+     * @var ExtReferenceConverter
      */
     private $converter;
 
@@ -37,10 +37,10 @@ class ExtReferenceSearchListener
     /**
      * construct
      *
-     * @param ExtReferenceConverterInterface $converter Extref converter
-     * @param array                          $fields    map of fields to process
+     * @param ExtReferenceConverter $converter Extref converter
+     * @param array                 $fields    map of fields to process
      */
-    public function __construct(ExtReferenceConverterInterface $converter, array $fields)
+    public function __construct(ExtReferenceConverter $converter, array $fields)
     {
         $this->converter = $converter;
         $this->fields = $fields;

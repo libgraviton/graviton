@@ -26,11 +26,7 @@ class HashConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
-        if ($fieldDefinition['schemaType'] == 'hash') {
-            // free form object!
-            $schemaField['type'] = 'object';
-            $schemaField['additionalProperties'] = true;
-        }
+
 
         return $schemaField;
     }

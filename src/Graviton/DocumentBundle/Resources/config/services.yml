@@ -22,7 +22,6 @@ services:
     public: true
     arguments:
       - "@router"
-      - "%graviton.document.type.extref.mapping%"
 
   graviton.document.service.dateconverter:
     class: "%graviton.document.service.dateconverter.class%"

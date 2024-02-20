@@ -82,12 +82,7 @@ class ExtReferenceConverterTest extends TestCase
             );
 
         $converter = new ExtReferenceConverter(
-            $this->router,
-            [
-                'App' => 'graviton.core.rest.app',
-                'Language' => 'graviton.i18n.rest.language',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase',
-            ]
+            $this->router
         );
         $this->assertEquals($extReference, $converter->getExtReference($url));
     }
@@ -134,12 +129,7 @@ class ExtReferenceConverterTest extends TestCase
             ->will($this->returnValue($url));
 
         $converter = new ExtReferenceConverter(
-            $this->router,
-            [
-                'App' => 'graviton.core.rest.app',
-                'Language' => 'graviton.i18n.rest.language',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase',
-            ]
+            $this->router
         );
         $this->assertEquals($url, $converter->getUrl($extReference));
     }
@@ -152,13 +142,13 @@ class ExtReferenceConverterTest extends TestCase
         return [
             [
                 ExtReference::create('App', 'test'),
-                'graviton.core.rest.app.get',
+                'App.get',
                 'http://localhost/core/app/test',
             ],
             [
-                ExtReference::create('Language', 'en'),
-                'graviton.i18n.rest.language.get',
-                'http://localhost/i18n/language/en',
+                ExtReference::create('Module', 'en'),
+                'Module.get',
+                'http://localhost/core/module/en',
             ],
         ];
     }

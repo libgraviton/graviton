@@ -26,8 +26,15 @@ class ArrayOfObjectConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
-        if ($fieldDefinition['fieldName'] == 'notEmptyArray') {
+        if (str_ends_with($schemaField['type'], 'ExtRef')) {
             $hans = 2;
+        }
+
+        if (str_starts_with($fieldDefinition['schemaType'], 'hash')) {
+            // free form object!
+            //$schemaField['type'] = 'object';
+            $hans = 3;
+            //$schemaField['additionalProperties'] = true;
         }
 
         $isArray = false;
@@ -54,15 +61,21 @@ class ArrayOfObjectConstraintBuilder implements ConstraintBuilderInterface
             $schemaField['type'] = 'array';
             if (str_starts_with($type, '#')) { # ref!
                 $schemaField['items'] = ['$ref' => $type];
+            } else if ($type == 'hash') {
+                $schemaField['items'] = [
+                    'type' => 'object',
+                    'additionalProperties' => true
+                ];
             } else {
                 $schemaField['items'] = ['type' => $type];
             }
         } else {
             if (str_starts_with($type, '#')) { # ref!
-                //
-                //$schemaField['additionalProperties'] = ['$ref' => $type];
                 $schemaField['type'] = 'object';
                 $schemaField['schema'] = ['$ref' => $type];
+            } else if ($type == 'hash') {
+                $schemaField['type'] = 'object';
+                $schemaField['additionalProperties'] = true;
             } else {
                 // ELSE case we DO NOT DO ANYTHING -> leave it to others!
             }

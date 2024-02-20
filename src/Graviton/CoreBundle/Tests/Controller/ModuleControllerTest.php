@@ -745,7 +745,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/schema/core/module/collection');
+        $client->request('GET', '/schema/core/module/openapi.json');
         $results = $client->getResults();
 
         $this->assertEquals('object', $results->items->properties->app->type);
