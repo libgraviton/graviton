@@ -464,7 +464,7 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals($value, $client->getResults()->value);
 
         if (!is_null($tenant)) {
-            $this->repository->clear();
+            $this->repository->getDocumentManager()->clear();
             $entity = $this->repository->find(basename($url));
             $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
             $this->assertEquals($tenant, $entity->getClientId());
@@ -474,7 +474,7 @@ class RestrictionListenerTest extends RestTestCase
             $this->assertEquals($lastModifiedBy, $client->getResults()->lastModifiedBy);
             $this->assertNotNull($client->getResults()->lastModifiedBy);
 
-            $this->repository->clear();
+            $this->repository->getDocumentManager()->clear();
             $entity = $this->repository->find(basename($url));
             $this->assertInstanceOf(TestCaseMultiTenant::class, $entity);
             $this->assertEquals($lastModifiedBy, $entity->getLastModifiedBy());

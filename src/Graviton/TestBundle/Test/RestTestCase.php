@@ -23,19 +23,6 @@ class RestTestCase extends GravitonTestCase
 {
 
     /**
-     * resets languages
-     *
-     * @after
-     *
-     * @return void
-     */
-    public static function languageReset()
-    {
-        // clear language cache after each test
-        static::createRestClient()->getContainer()->get('graviton.i18n.translator')->removeCachedLanguages();
-    }
-
-    /**
      * test for content type based on classname based mapping
      *
      * @param string   $contentType Expected Content-Type

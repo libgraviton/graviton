@@ -986,7 +986,8 @@ class ResourceGenerator extends AbstractGenerator
             [],
             null,
             null,
-            $className
+            $className,
+            true
         );
     }
 }

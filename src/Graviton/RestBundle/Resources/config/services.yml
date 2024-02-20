@@ -235,6 +235,8 @@ services:
 
   # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
-      class: Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData
+      public: true
+      calls:
+        - [ setRestUtils, [ '@Graviton\RestBundle\Service\RestUtils' ] ]
       tags:
         - { name: 'doctrine.fixture.orm' }

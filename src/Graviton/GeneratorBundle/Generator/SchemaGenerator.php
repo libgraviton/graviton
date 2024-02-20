@@ -151,7 +151,24 @@ class SchemaGenerator extends AbstractGenerator
             $thisSchema['required'] = $requiredFields;
         }
 
+        // synthetic fields
+        if (!empty($parameters['syntheticFields'])) {
+            foreach ($parameters['syntheticFields'] as $fieldData) {
+                $type = $fieldData['type'];
 
+                // shortcut for int
+                if ($type == 'int') {
+                    $type = 'integer';
+                } else {
+                    $type = 'string';
+                }
+
+                $thisSchema['properties'][$fieldData['name']] = [
+                    'type' => $type,
+                    'title' => $fieldData['name']
+                ];
+            }
+        }
 
         $schema['components']['schemas'][$parameters['document']] = $thisSchema;
 

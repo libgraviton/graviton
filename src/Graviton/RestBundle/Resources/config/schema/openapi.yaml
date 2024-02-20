@@ -36,7 +36,6 @@ components:
                 additionalProperties: true
               - type: boolean
               - type: array
-              - type: integer
               - type: number
           from:
             type: string

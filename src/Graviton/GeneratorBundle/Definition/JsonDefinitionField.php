@@ -115,10 +115,6 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getDefAsArray()
     {
-        if (empty($this->getTypeSchema())) {
-            $hans = 3;
-        }
-
         return [
             'length'                => $this->definition->getLength(),
             'title'                 => $this->definition->getTitle(),
@@ -171,17 +167,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         $type = $this->getType();
 
-        if ($this->getName() == 'someObject') {
-            $ss = "";
-        }
-
-        if ($type == 'hash') {
-            $ss = 2;
-        }
-
-        $isArray = false;
         if (str_ends_with($type, '[]')) {
-            $isArray = true;
             $type = substr($type, 0, -2);
         }
 
@@ -192,13 +178,8 @@ class JsonDefinitionField implements DefinitionElementInterface
             if (str_contains($type, '\\Document\\')) {
                 $type = 'class:'.$type;
             } else {
-                // not mapped!
-                $hans = true;
-
                 $type = 'string';
             }
-
-
         }
 
         return $type;
