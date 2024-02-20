@@ -38,7 +38,14 @@ class LoadAppData implements FixtureInterface
 
         $adminApp = new App();
         $adminApp->setId('admin');
-        $adminApp->setName(Translatable::createFromOriginalString('Administration'));
+        $adminApp->setName(
+            Translatable::createFromTranslations(
+                [
+                    'en' => 'Administration',
+                    'de' => 'Die Administration'
+                ]
+            )
+        );
         $adminApp->setShowInMenu(true);
         $adminApp->setOrder(2);
 

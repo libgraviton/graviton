@@ -9,16 +9,13 @@ services:
         event: "kernel.response"
         method: "onkernelresponse"
 
-  Graviton\I18nBundle\Listener\I18nRqlParsingListener:
-    arguments:
-      - '@Graviton\I18nBundle\Service\I18nUtils'
-      - "%graviton.document.type.translatable.fields%"
-    tags:
-      - name: "kernel.event_listener"
-        event: "rql.visit.node"
-        method: "onvisitnode"
-
   Graviton\I18nBundle\Service\I18nUtils:
     arguments:
       - "%graviton.translator.default.language%"
       - "%graviton.translator.languages%"
+
+  Graviton\I18nBundle\Serializer\Handler\TranslatableHandler:
+    tags:
+      - name: "jms_serializer.handler"
+        type: "Graviton\\DocumentBundle\\Entity\\Translatable"
+        format: "json"

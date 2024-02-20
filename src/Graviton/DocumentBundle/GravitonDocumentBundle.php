@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RqlFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompilerPass;
 
 /**
@@ -78,11 +77,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         );
         $container->addCompilerPass(
             new RqlFieldsCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
-            new TranslatableFieldsCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             5
         );
