@@ -12,6 +12,7 @@ use Graviton\GeneratorBundle\Definition\Schema\SymfonyService;
 use Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
+use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
@@ -33,6 +34,11 @@ class ResourceGenerator extends AbstractGenerator
      * @private Filesystem
      */
     private $filesystem;
+
+    /**
+     * @var I18nUtils
+     */
+    private I18nUtils $i18nUtils;
 
     /**
      * our json file definition
@@ -105,17 +111,20 @@ class ResourceGenerator extends AbstractGenerator
      * Instantiates generator object
      *
      * @param Filesystem       $filesystem       fs abstraction layer
+     * @param I18nUtils        $i18nUtils        i18n utils
      * @param FieldMapper      $mapper           field type mapper
      * @param ParameterBuilder $parameterBuilder parameter builder
      */
     public function __construct(
         Filesystem $filesystem,
+        I18nUtils $i18nUtils,
         FieldMapper $mapper,
         ParameterBuilder $parameterBuilder,
         SchemaGenerator $schemaGenerator
     ) {
         parent::__construct();
         $this->filesystem = $filesystem;
+        $this->i18nUtils = $i18nUtils;
         $this->mapper = $mapper;
         $this->parameterBuilder = $parameterBuilder;
         $this->schemaGenerator = $schemaGenerator;
@@ -207,6 +216,21 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         $this->ensureIndexes = $ensureIndexes;
+    }
+
+    public function generateEntities(string $namespace, string $bundleDir)
+    {
+        $fullClassName = $bundleDir.'/Entity/GravitonTranslatable.php';
+
+        $this->renderFile(
+            'entity/Translatable.php.twig',
+            $fullClassName,
+            [
+                'namespace' => $namespace,'/Entity',
+                'defaultLanguage' => $this->i18nUtils->getDefaultLanguage(),
+                'languages' =>  $this->i18nUtils->getLanguages()
+            ]
+        );
     }
 
     /**

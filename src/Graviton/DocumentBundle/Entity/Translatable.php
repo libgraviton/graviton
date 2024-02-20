@@ -15,12 +15,12 @@ namespace Graviton\DocumentBundle\Entity;
 class Translatable implements \JsonSerializable
 {
 
+    private const CLASS_NAME = 'GravitonDyn\EntityBundle\Entity\GravitonTranslatable';
+
     /**
      * @var array translated array
      */
     private $translations = [];
-
-    private static $defaultLanguage;
 
     /**
      * creates a translatable from a simple string
@@ -57,22 +57,12 @@ class Translatable implements \JsonSerializable
      */
     public static function getDefaultLanguage()
     {
-        if (!is_null(self::$defaultLanguage)) {
-            return self::$defaultLanguage;
+        if (class_exists(self::CLASS_NAME)) {
+            return \GravitonDyn\EntityBundle\Entity\GravitonTranslatable::DEFAULT_LANGUAGE;
         }
 
-        if (!file_exists(self::$defaultLanguageFile)) {
-            throw new \LogicException('Default language file '.self::$defaultLanguageFile.' does not exist');
-        }
-
-        self::$defaultLanguage = file_get_contents(self::$defaultLanguageFile);
-
-        if (empty(self::$defaultLanguage)) {
-            unlink(self::$defaultLanguageFile);
-            throw new \LogicException('Default language file is empty!');
-        }
-
-        return self::$defaultLanguage;
+        // fallback!
+        return 'en';
     }
 
     /**
@@ -117,7 +107,7 @@ class Translatable implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() : mixed
+    public function jsonSerialize(): mixed
     {
         if (!$this->hasTranslations()) {
             return null;

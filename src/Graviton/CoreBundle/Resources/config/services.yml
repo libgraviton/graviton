@@ -102,16 +102,16 @@ services:
 
     # fixtures
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData
+      public: true
       tags:
           - { name: 'doctrine.fixture.orm' }
 
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit
+      public: true
       tags:
         - { name: 'doctrine.fixture.orm' }
 
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu
+      public: true
       tags:
         - { name: 'doctrine.fixture.orm' }

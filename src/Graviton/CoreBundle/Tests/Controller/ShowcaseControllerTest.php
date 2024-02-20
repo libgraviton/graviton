@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +37,6 @@ class ShowcaseControllerTest extends RestTestCase
     {
         $this->loadFixturesLocal(
             [
-                LoadLanguageData::class,
                 LoadShowCaseData::class
             ]
         );

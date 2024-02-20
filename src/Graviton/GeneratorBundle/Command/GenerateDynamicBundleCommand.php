@@ -13,6 +13,7 @@ use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Generator\SchemaGenerator;
+use Graviton\I18nBundle\Service\I18nUtils;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -260,6 +261,11 @@ class GenerateDynamicBundleCommand extends Command
         $this->bundleBundleClassname = $bundleName;
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/' . $this->bundleBundleClassname . '.php';
 
+        $entityBundleNamespace = sprintf(self::BUNDLE_NAME_MASK, 'Entity');
+        $entityBundleDir = $input->getOption('srcDir').$entityBundleNamespace;
+
+        $this->resourceGenerator->generateEntities($entityBundleNamespace, $entityBundleDir);
+
         $filesToWorkOn = $this->definitionLoader->load($input->getOption('json'));
 
         if (count($filesToWorkOn) < 1) {
@@ -377,7 +383,7 @@ class GenerateDynamicBundleCommand extends Command
         $bundleFinder = $this->getBundleFinder($baseDir);
 
         foreach ($bundleFinder as $bundleDir) {
-            $genHash = '';
+
             $hashFileFinder = new Finder();
             $hashFileIterator = $hashFileFinder
                 ->files()
@@ -389,11 +395,14 @@ class GenerateDynamicBundleCommand extends Command
             $hashFileIterator->rewind();
 
             $hashFile = $hashFileIterator->current();
+            $genHash = '';
             if ($hashFile instanceof SplFileInfo) {
                 $genHash = $hashFile->getContents();
             }
 
-            $existingBundles[$bundleDir->getPathname()] = $genHash;
+            if (!empty($genHash)) {
+                $existingBundles[$bundleDir->getPathname()] = $genHash;
+            }
         }
 
         return $existingBundles;

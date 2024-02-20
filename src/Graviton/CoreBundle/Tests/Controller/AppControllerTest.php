@@ -32,11 +32,7 @@ class AppControllerTest extends RestTestCase
      * @var array fixtures
      */
     protected $standardFixtures = [
-        'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
-        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
+        'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData'
     ];
 
     /**

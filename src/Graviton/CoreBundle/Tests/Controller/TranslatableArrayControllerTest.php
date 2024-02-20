@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData;
-use Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData;
 use Graviton\TestBundle\Client;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseTranslatableArrayBundle\Document\TestCaseTranslatableArray;
@@ -33,8 +31,6 @@ class TranslatableArrayControllerTest extends RestTestCase
 
         $this->loadFixturesLocal(
             [
-                LoadLanguageData::class,
-                LoadMultiLanguageData::class,
                 LoadTestCaseTranslatableArrayData::class,
             ]
         );

@@ -32,10 +32,9 @@ class ModuleControllerTest extends RestTestCase
     public function setUp() : void
     {
         $this->loadFixturesLocal(
-            array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+            [
                 'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData'
-            )
+            ]
         );
 
         SearchNode::getInstance()->resetSearchTerms();
