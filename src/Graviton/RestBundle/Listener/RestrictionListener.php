@@ -175,25 +175,6 @@ class RestrictionListener
 
         $event->setEntity($entity);
 
-        return $this->setChangeTrackingData($event);
-    }
-
-    /**
-     * add change tracking to event
-     *
-     * @param EntityPrePersistEvent $event event
-     *
-     * @return EntityPrePersistEvent event
-     */
-    private function setChangeTrackingData(EntityPrePersistEvent $event)
-    {
-        if ($this->securityUtils->isSecurityUser() &&
-            ($event->getEntity() instanceof \ArrayAccess)
-        ) {
-            $event->getEntity()['_lastModifiedBy'] = $this->securityUtils->getSecurityUsername();
-            $event->getEntity()['_lastModifiedAt'] = new \DateTime();
-        }
-
         return $event;
     }
 

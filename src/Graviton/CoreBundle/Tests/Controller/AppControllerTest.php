@@ -581,7 +581,7 @@ class AppControllerTest extends RestTestCase
         $patchJson = json_encode(
             [
                 [
-                    'op' => 'replace',
+                    'op' => 'add',
                     'path' => '/name/de',
                     'value' => 'Mein neuer Name'
                 ]

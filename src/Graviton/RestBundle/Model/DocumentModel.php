@@ -181,13 +181,7 @@ class DocumentModel
     {
         $entity = $this->dispatchPrePersistEvent($entity);
 
-        // ensure meta fields!
-        if (is_callable([$entity, 'set_CreatedBy'])) {
-            $entity->set_CreatedBy($this->securityUtils->getSecurityUsername());
-        }
-        if (is_callable([$entity, 'set_CreatedAt'])) {
-            $entity->set_CreatedAt(new \DateTime());
-        }
+        $this->setChangeTrackingData($entity);
 
         $this->documentManager->persist($entity);
         $this->documentManager->flush();
@@ -196,6 +190,44 @@ class DocumentModel
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
 
         return $entity;
+    }
+
+    /**
+     * add change tracking to entity
+     *
+     * @param \stdClass $entity entity
+     *
+     * @return void
+     */
+    private function setChangeTrackingData($entity, $existing = null)
+    {
+        if (!is_null($existing)) {
+            // pass old attrs to new one.
+            if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
+                $entity->set_CreatedBy($existing['_createdBy']);
+            }
+            if (is_callable([$entity, 'set_CreatedAt']) && !empty($existing['_createdAt'])) {
+                $entity->set_CreatedAt($existing['_createdAt']);
+            }
+        }
+
+        // ensure created stuff
+        if (is_callable([$entity, 'get_CreatedBy']) && empty($entity->get_CreatedBy())) {
+            if (is_callable([$entity, 'set_CreatedBy'])) {
+                $entity->set_CreatedBy($this->securityUtils->getSecurityUsername());
+            }
+            if (is_callable([$entity, 'set_CreatedAt'])) {
+                $entity->set_CreatedAt(new \DateTime());
+            }
+        }
+
+        // always set modified
+        if (is_callable([$entity, 'setLastModifiedBy'])) {
+            $entity->setLastModifiedBy($this->securityUtils->getSecurityUsername());
+        }
+        if (is_callable([$entity, 'setLastModifiedAt'])) {
+            $entity->setLastModifiedAt(new \DateTime());
+        }
     }
 
     /**
@@ -284,20 +316,9 @@ class DocumentModel
             $this->documentManager->detach($entity);
             $this->documentManager->clear($this->getEntityClass());
 
-            // pass old attrs to new one.
-            if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
-                $entity->set_CreatedBy($existing['_createdBy']);
-            }
-            if (is_callable([$entity, 'set_CreatedAt']) && !empty($existing['_createdAt'])) {
-                $entity->set_CreatedAt($existing['_createdAt']);
-            }
-        }
-
-        if (is_callable([$entity, 'setLastModifiedBy'])) {
-            $entity->setLastModifiedBy($this->securityUtils->getSecurityUsername());
-        }
-        if (is_callable([$entity, 'setLastModifiedAt'])) {
-            $entity->setLastModifiedAt(new \DateTime());
+            $this->setChangeTrackingData($entity, $existing);
+        } else {
+            $this->setChangeTrackingData($entity);
         }
 
         $entity = $this->documentManager->merge($entity);
