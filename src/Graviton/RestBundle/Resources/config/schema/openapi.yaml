@@ -7,29 +7,6 @@ components:
         $ref:
           type: string
           description: An url to point to.
-    GravitonTranslatable:
-      type: object
-      properties:
-        de:
-          type: string
-          description: German text
-          title: de
-          nullable: true
-        fr:
-          type: string
-          description: French text
-          title: fr
-          nullable: true
-        it:
-          type: string
-          description: Italian text
-          title: it
-          nullable: true
-        en:
-          type: string
-          description: English text
-          title: en
-          nullable: true
     GravitonPatchBody:
       type: array
       items:

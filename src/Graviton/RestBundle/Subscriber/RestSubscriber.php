@@ -92,5 +92,4 @@ class RestSubscriber implements EventSubscriberInterface
         $hans = 3;
         // ...
     }
-
 }

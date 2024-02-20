@@ -300,7 +300,7 @@ class ResourceGenerator extends AbstractGenerator
             $parameters,
             $isSubResource,
             $schemaFile
-            );
+        );
 
         if ($this->generateModel) {
             $this->generateModel($parameters, $bundleDir, $document, $isSubResource);
@@ -976,7 +976,12 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $className,
             null,
-            [],
+            [
+                [
+                    'method' => 'setRestUtils',
+                    'arguments' => ['@Graviton\RestBundle\Service\RestUtils']
+                ]
+            ],
             'doctrine.fixture.orm',
             [],
             null,

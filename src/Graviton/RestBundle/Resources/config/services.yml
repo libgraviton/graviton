@@ -106,7 +106,7 @@ services:
         abstract: true
         public: true
         arguments:
-          - "@graviton.rest.restutils"
+          - '@Graviton\RestBundle\Service\RestUtils'
           - "@graviton.rest.router"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
@@ -128,7 +128,7 @@ services:
           - method: setNotModifiableOriginRecords
             arguments: ['%graviton.rest.not_modifiable.origin.records%']
           - method: setRestUtils
-            arguments: ['@graviton.rest.restutils']
+            arguments: ['@Graviton\RestBundle\Service\RestUtils']
           - method: setSecurityUtils
             arguments: ['@graviton.security.service.utils']
 
@@ -171,9 +171,7 @@ services:
             method: onKernelException
 
     #restUtils service - a service providing some helpers dealing with services -->
-    graviton.rest.restutils:
-        class: Graviton\RestBundle\Service\RestUtils
-        public: true
+    Graviton\RestBundle\Service\RestUtils:
         arguments:
           - "@graviton.rest.serializer"
           - "@logger"

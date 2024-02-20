@@ -1,127 +1,24 @@
-parameters:
-  graviton.i18n.controller.language.class: Graviton\I18nBundle\Controller\LanguageController
-  graviton.i18n.model.language.class: Graviton\I18nBundle\Model\Language
-  graviton.i18n.repository.language.class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
-  graviton.i18n.listener.contentlanguageresponse.class: Graviton\I18nBundle\Listener\ContentLanguageResponseListener
-  graviton.i18n.listener.i18nrqlparsinglistener.class: Graviton\I18nBundle\Listener\I18nRqlParsingListener
-  graviton.i18n.listener.i18nlanguagecachinginvalidationlistener.class: Graviton\I18nBundle\Listener\I18nLanguageCachingInvalidationListener
-  graviton.i18n.utils.class: Graviton\I18nBundle\Service\I18nUtils
-  graviton.i18n.translator.class: Graviton\I18nBundle\Translator\Translator
-  graviton.i18n.serializer.handler.translatable.class: Graviton\I18nBundle\Serializer\Handler\TranslatableHandler
 
 services:
-  graviton.i18n.repository.language:
-    class: "%graviton.i18n.repository.language.class%"
-    factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
-    public: false
-    arguments:
-      - Graviton\I18nBundle\Document\Language
 
-  graviton.i18n.model.language:
-    class: "%graviton.i18n.model.language.class%"
-    parent: "graviton.rest.model"
-    public: false
+  Graviton\I18nBundle\Listener\ContentLanguageResponseListener:
     arguments:
-      - "%kernel.project_dir%/src/Graviton/I18nBundle/Resources/config/schema/Language.json"
-      - Graviton\I18nBundle\Document\Language
-      - '@doctrine_mongodb.odm.default_document_manager'
-
-  graviton.i18n.controller.language:
-    class: "%graviton.i18n.controller.language.class%"
-    parent: "graviton.rest.controller"
-    public: false
-    calls:
-      - method: "setModel"
-        arguments:
-          - "@graviton.i18n.model.language"
-    tags:
-      - name: "graviton.rest"
-        collection: Language
-        router-base: /i18n/language/
-      - name: controller.service_arguments
-
-  graviton.i18n.listener.contentlanguageresponse:
-    class: "%graviton.i18n.listener.contentlanguageresponse.class%"
-    arguments:
-      - "@graviton.18n.utils"
+      - '@Graviton\I18nBundle\Service\I18nUtils'
     tags:
       - name: "kernel.event_listener"
         event: "kernel.response"
         method: "onkernelresponse"
 
-  graviton.i18n.translator:
-    class: "%graviton.i18n.translator.class%"
-    public: true
+  Graviton\I18nBundle\Listener\I18nRqlParsingListener:
     arguments:
-      - "@doctrine_mongodb.odm.default_document_manager"
-      - "%graviton.translator.default.locale%"
-      - "@graviton.cache.adapter.app"
-      - "%graviton.translator.cache_name_depth%"
-
-  graviton.i18n.listener.i18nlanguagecachinginvalidationlistener:
-    class: "%graviton.i18n.listener.i18nlanguagecachinginvalidationlistener.class%"
-    arguments:
-      - "@graviton.i18n.translator"
-    tags:
-      - name: kernel.event_listener
-        event: document.model.event.insert
-        method: invalidate
-      - name: kernel.event_listener
-        event: document.model.event.update
-        method: invalidate
-      - name: kernel.event_listener
-        event: document.model.event.delete
-        method: invalidate
-
-  graviton.i18n.listener.i18nrqlparsinglistener:
-    class: "%graviton.i18n.listener.i18nrqlparsinglistener.class%"
-    arguments:
-      - "@graviton.18n.utils"
+      - '@Graviton\I18nBundle\Service\I18nUtils'
       - "%graviton.document.type.translatable.fields%"
     tags:
       - name: "kernel.event_listener"
         event: "rql.visit.node"
         method: "onvisitnode"
 
-  # this here specifies the 'original' language --"
-  graviton.18n.utils:
-    class: "%graviton.i18n.utils.class%"
+  Graviton\I18nBundle\Service\I18nUtils:
     arguments:
-      - "@doctrine_mongodb.odm.default_document_manager"
-      - "@graviton.i18n.translator"
-
-  graviton.i18n.serializer.handler.translatable:
-    class: "%graviton.i18n.serializer.handler.translatable.class%"
-    public: true
-    arguments:
-      - "@graviton.18n.utils"
-    tags:
-      - name: "jms_serializer.handler"
-        type: "Graviton\\DocumentBundle\\Entity\\Translatable"
-        format: "json"
-
-  # fixtures
-  Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData:
-    class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData
-    tags:
-      - { name: 'doctrine.fixture.orm' }
-
-  Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData:
-    class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData
-    tags:
-      - { name: 'doctrine.fixture.orm' }
-
-  Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData:
-    class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData
-    tags:
-      - { name: 'doctrine.fixture.orm' }
-
-  Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationData:
-    class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationData
-    tags:
-      - { name: 'doctrine.fixture.orm' }
-
-  Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData:
-    class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData
-    tags:
-      - { name: 'doctrine.fixture.orm' }
+      - "%graviton.translator.default.language%"
+      - "%graviton.translator.languages%"

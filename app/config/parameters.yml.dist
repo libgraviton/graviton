@@ -96,8 +96,8 @@ parameters:
     graviton.core.httpclient.debugMaxLength: 5000
     graviton.core.httpclient.verifyPeer: false
 
-    graviton.translator.default.locale: en
-    graviton.translator.cache_name_depth: 3
+    graviton.translator.default.language: de
+    graviton.translator.languages: en,de,fr,it
 
     # optional url to a solr instance for improved search
     graviton.solr.url: null

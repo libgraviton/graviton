@@ -331,7 +331,6 @@ class QueryService
 
         // Setting RQL Query
         if ($rqlQuery) {
-
             // set on request for Link header
             $request->attributes->set('rqlQuery', $rqlQuery);
 
@@ -393,7 +392,8 @@ class QueryService
                 /** @var AbstractNode $node */
                 $node = $query->$method();
                 if ($node != null) {
-                    throw new RqlOperatorNotAllowedException($node->getNodeName());;
+                    throw new RqlOperatorNotAllowedException($node->getNodeName());
+                    ;
                 }
             }
         }

@@ -140,10 +140,12 @@ services:
           - method: setConstraintBuilder
             arguments:
               - '@Graviton\SchemaBundle\Constraint\ConstraintBuilder'
+          - method: setI18nUtils
+            arguments:
+              - '@Graviton\I18nBundle\Service\I18nUtils'
           - method: setVersionInformation
             arguments:
               - '%graviton.core.version.data%'
-
 
     graviton_generator.generator.dynamicbundlebundle:
         parent: graviton_generator.generator.abstract

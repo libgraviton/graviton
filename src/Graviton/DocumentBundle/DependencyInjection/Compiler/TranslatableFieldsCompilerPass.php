@@ -41,12 +41,6 @@ class TranslatableFieldsCompilerPass implements CompilerPassInterface
             $map[$document->getClass()] = $this->getTranslatableFields($document);
         }
         $container->setParameter('graviton.document.type.translatable.fields', $map);
-
-        // write default language to a file so we can statically read it out
-        file_put_contents(
-            __DIR__.'/../../Entity/Translatable.defaultLanguage',
-            $container->getParameter('graviton.translator.default.locale')
-        );
     }
 
     /**

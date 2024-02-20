@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4031a3d709f67548d3cb483b66a7831",
+    "content-hash": "c5ca085408b351fae4a331bc0687aeb8",
     "packages": [
         {
             "name": "async-aws/core",
@@ -7430,22 +7430,23 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.16.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "4e03d193142af6c3db5498bf049865ea1dda562d"
+                "reference": "d312ea32ad848c1b1d9f7f616b8d55d86d798d12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/4e03d193142af6c3db5498bf049865ea1dda562d",
-                "reference": "4e03d193142af6c3db5498bf049865ea1dda562d",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/d312ea32ad848c1b1d9f7f616b8d55d86d798d12",
+                "reference": "d312ea32ad848c1b1d9f7f616b8d55d86d798d12",
                 "shasum": ""
             },
             "require-dev": {
                 "graviton/analytics-base": "*",
                 "graviton/analytics-mongoshell-converter": "*"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -7465,9 +7466,9 @@
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v2.16.0"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
             },
-            "time": "2023-11-09T10:17:18+00:00"
+            "time": "2024-02-20T07:52:11+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -8086,16 +8087,16 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "fad452781b3d774e3337b0c0b245dd8e5a4455fc"
+                "reference": "bc3dc91a5e9b14aa06d1d9e90647c5c5a2cc5353"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/fad452781b3d774e3337b0c0b245dd8e5a4455fc",
-                "reference": "fad452781b3d774e3337b0c0b245dd8e5a4455fc",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/bc3dc91a5e9b14aa06d1d9e90647c5c5a2cc5353",
+                "reference": "bc3dc91a5e9b14aa06d1d9e90647c5c5a2cc5353",
                 "shasum": ""
             },
             "require": {
@@ -8138,9 +8139,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.8.0"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.8.1"
             },
-            "time": "2024-01-11T11:49:22+00:00"
+            "time": "2024-01-18T19:15:27+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -9806,6 +9807,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "graviton/rql-parser-bundle": 20,
+        "graviton/test-services-bundle": 20,
         "graviton/mongodb-fixtures-bundle": 20
     },
     "prefer-stable": true,

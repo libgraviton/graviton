@@ -12,6 +12,7 @@ use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use Graviton\GeneratorBundle\Tests\Utils;
+use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Component\Console\Application;
@@ -60,9 +61,12 @@ class GenerateDynamicBundleTest extends GravitonTestCase
 
         $constraintBuilder = new ConstraintBuilder();
 
+        $i18nUtils = new I18nUtils('de', 'en,de,fr,it');
+
         $schemaGenerator = new SchemaGenerator();
         $schemaGenerator->setVersionInformation(['self' => 'testing']);
         $schemaGenerator->setConstraintBuilder($constraintBuilder);
+        $schemaGenerator->setI18nUtils($i18nUtils);
 
         $resourceGenerator = new ResourceGenerator(
             new Filesystem(),

@@ -94,8 +94,8 @@ class LinkHeaderResponseListener
     /**
      * Add "self" Link header item
      *
-     * @param Request  $request request
-     * @param Response  $response response
+     * @param Request  $request  request
+     * @param Response $response response
      *
      * @return string the "self" link url or null
      */
@@ -151,8 +151,8 @@ class LinkHeaderResponseListener
     /**
      * generates the schema rel in the Link header
      *
-     * @param Request  $request   request
-     * @param Response $response  response
+     * @param Request  $request  request
+     * @param Response $response response
      *
      * @return void
      */
@@ -181,8 +181,8 @@ class LinkHeaderResponseListener
     /**
      * generates the paging Link header items
      *
-     * @param Request  $request   request
-     * @param Response $response  response
+     * @param Request  $request  request
+     * @param Response $response response
      *
      * @return void
      */

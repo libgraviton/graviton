@@ -22,8 +22,6 @@ class Translatable implements \JsonSerializable
 
     private static $defaultLanguage;
 
-    private static $defaultLanguageFile = __DIR__.'/Translatable.defaultLanguage';
-
     /**
      * creates a translatable from a simple string
      *

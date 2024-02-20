@@ -21,7 +21,7 @@ services:
       public: true
       arguments:
         - "@router"
-        - "@graviton.rest.restutils"
+        - '@Graviton\RestBundle\Service\RestUtils'
         - "@event_dispatcher"
 
     graviton.core.model.version:

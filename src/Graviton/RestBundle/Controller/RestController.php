@@ -67,17 +67,16 @@ class RestController
 
     /**
      * @param RestUtils          $restUtils Rest Utils
-     * @param Router             $router Router
+     * @param Router             $router    Router
      * @param JsonPatchValidator $jsonPatch Service for validation json patch
-     * @param SecurityUtils      $security The securityUtils service
+     * @param SecurityUtils      $security  The securityUtils service
      */
     public function __construct(
         RestUtils          $restUtils,
         Router             $router,
         JsonPatchValidator $jsonPatch,
         SecurityUtils      $security
-    )
-    {
+    ) {
         $this->restUtils = $restUtils;
         $this->router = $router;
         $this->jsonPatchValidator = $jsonPatch;
@@ -109,7 +108,7 @@ class RestController
     /**
      * Function for classes that inherit from this controller, to give them the opportunity to deserialize stuff
      *
-     * @param string $content content
+     * @param string $content       content
      * @param string $documentClass class
      *
      * @return object deserialized object
@@ -135,7 +134,7 @@ class RestController
      * Returns a single record
      *
      * @param Request $request Current http request
-     * @param string $id ID of record
+     * @param string  $id      ID of record
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
@@ -295,7 +294,7 @@ class RestController
     /**
      * Update a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
      * @return Response $response Result of action with data (if successful)
@@ -338,7 +337,7 @@ class RestController
     /**
      * Patch a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
      * @return Response $response Result of action with data (if successful)
@@ -416,7 +415,7 @@ class RestController
     /**
      * Deletes a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
      * @param Request $request request
      *
      * @return Response $response Result of the action

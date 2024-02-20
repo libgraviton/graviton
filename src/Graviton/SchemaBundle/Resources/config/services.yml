@@ -103,7 +103,7 @@ services:
         class: "%graviton.schema.constraint.utils.class%"
         arguments:
           - "@doctrine_mongodb.odm.default_document_manager"
-          - "@graviton.rest.restutils"
+          - '@Graviton\RestBundle\Service\RestUtils'
           - "@request_stack"
         tags:
           -

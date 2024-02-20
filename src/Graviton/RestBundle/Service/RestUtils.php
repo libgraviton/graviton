@@ -47,9 +47,9 @@ class RestUtils
     private $cacheProvider;
 
     /**
-     * @param Serializer             $serializer      serializer
-     * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
-     * @param CacheItemPoolInterface $cacheProvider   Cache service
+     * @param Serializer             $serializer    serializer
+     * @param LoggerInterface        $logger        PSR logger (e.g. Monolog)
+     * @param CacheItemPoolInterface $cacheProvider Cache service
      */
     public function __construct(
         Serializer $serializer,

@@ -63,7 +63,9 @@ class MainController
         $mainPage = [];
 
         $baseUri = $this->router->generate(
-            $request->attributes->get('_route'), [], UrlGeneratorInterface::ABSOLUTE_URL
+            $request->attributes->get('_route'),
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         $mainPage['services'] = array_merge(
@@ -106,7 +108,6 @@ class MainController
 
         $services = [];
         foreach ($routes as $routerBase => $subRoutes) {
-
             $match = $this->router->match($routerBase);
             $baseRoute = $match['_route'];
 

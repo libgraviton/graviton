@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
@@ -26,6 +27,11 @@ class SchemaGenerator extends AbstractGenerator
     private ConstraintBuilder $constraintBuilder;
 
     /**
+     * @var I18nUtils
+     */
+    private I18nUtils $i18nUtils;
+
+    /**
      * @var array
      */
     private array $versionInformation;
@@ -37,10 +43,30 @@ class SchemaGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setConstraintBuilder(ConstraintBuilder $constraintBuilder) {
+    public function setConstraintBuilder(ConstraintBuilder $constraintBuilder)
+    {
         $this->constraintBuilder = $constraintBuilder;
     }
 
+    /**
+     * set I18nUtils
+     *
+     * @param I18nUtils $i18nUtils
+     *
+     * @return void
+     */
+    public function setI18nUtils(I18nUtils $i18nUtils)
+    {
+        $this->i18nUtils = $i18nUtils;
+    }
+
+    /**
+     * set version information
+     *
+     * @param array $versionInformation info
+     *
+     * @return void
+     */
     public function setVersionInformation(array $versionInformation)
     {
         $this->versionInformation = $versionInformation;
@@ -49,9 +75,9 @@ class SchemaGenerator extends AbstractGenerator
     /**
      * generate a schema
      *
-     * @param array $parameters   param
-     * @param bool $isSubResource if sub
-     * @param string $targetFile  target
+     * @param array  $parameters    param
+     * @param bool   $isSubResource if sub
+     * @param string $targetFile    target
      *
      * @return void
      */
@@ -145,7 +171,8 @@ class SchemaGenerator extends AbstractGenerator
      *
      * @return array schema
      */
-    private function writePaths(array $schema, array $parameters) : array {
+    private function writePaths(array $schema, array $parameters) : array
+    {
         // main route!
         $routerBase = $parameters['json']->getRouterBase();
         $isReadOnly = $parameters['json']->isReadOnlyService();
@@ -295,6 +322,25 @@ class SchemaGenerator extends AbstractGenerator
 
         $schema['paths'] = $paths;
 
+        // global object -> translatable
+        $translatable = [
+            'type' => 'object'
+        ];
+
+        $defLanguage = $this->i18nUtils->getDefaultLanguage();
+        foreach ($this->i18nUtils->getLanguages() as $language) {
+            $translatable['properties'][$language] = [
+                'type' => 'string',
+                'title' => $language,
+                'description' => $language.' text',
+                'nullable' => ($language != $defLanguage)
+            ];
+        }
+
+        $translatable['required'] = [$defLanguage];
+
+        $schema['components']['schemas']['GravitonTranslatable'] = $translatable;
+
         return $schema;
     }
 
@@ -308,7 +354,8 @@ class SchemaGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function consolidateAllSchemas(?string $baseDir, OutputInterface $output, string $targetFile) : void {
+    public function consolidateAllSchemas(?string $baseDir, OutputInterface $output, string $targetFile) : void
+    {
         // delete first!
         if ($this->fs->exists($targetFile)) {
             $this->fs->remove($targetFile);
@@ -332,6 +379,11 @@ class SchemaGenerator extends AbstractGenerator
         $existingFiles = [];
         $entities = []; // used to track entities and where they're from!
 
+        // these entities can be redeclared!
+        $redeclareWhiteList = [
+            'GravitonTranslatable'
+        ];
+
         foreach ($files as $file) {
             // already seen the same file?
             if (isset($existingFiles[$file->getRealPath()])) {
@@ -340,9 +392,7 @@ class SchemaGenerator extends AbstractGenerator
 
             $content = $file->getContents();
 
-            $isInternal = false;
             if (str_ends_with($file->getRealPath(), '.yaml')) {
-                $isInternal = true;
                 $schema = Yaml::parse($content);
             } else {
                 $schema = json_decode($content, true);
@@ -358,7 +408,7 @@ class SchemaGenerator extends AbstractGenerator
 
             if (!empty($schema['components']['schemas'])) {
                 foreach ($schema['components']['schemas'] as $entityName => $entitySchema) {
-                    if (isset($entities[$entityName])) {
+                    if (isset($entities[$entityName]) && !in_array($entityName, $redeclareWhiteList)) {
                         throw new \LogicException(
                             sprintf(
                                 'The entity %s was already defined in file %s and would be redefined in file %s',

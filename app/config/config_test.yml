@@ -8,6 +8,8 @@ parameters:
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
 
+    graviton.translator.default.language: en
+
     # headers in this list will be forwarded in the rabbitmq queue message (their names and values as map)
     graviton.rabbitmq.queueevent.transient_headers:
         - graviton_user
