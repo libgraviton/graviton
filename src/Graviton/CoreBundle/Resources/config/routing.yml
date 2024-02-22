@@ -3,6 +3,14 @@ graviton.core.static.main.all:
     methods: [GET]
     defaults: { _controller: graviton.core.controller.main::indexAction }
 
+graviton.core.static.schema:
+    path: /openapi.{format}
+    methods: [GET]
+    requirements:
+        format: '^(json|yaml)$'
+    defaults:
+        _controller: graviton.core.controller.main::schemaAction
+
 graviton.core.static.main.options:
     path: /
     methods: [OPTIONS]
@@ -32,4 +40,3 @@ graviton.core.static.favicon.get:
     path: /favicon.ico
     methods: [GET]
     defaults: { _controller: graviton.core.controller.favicon::iconAction }
-

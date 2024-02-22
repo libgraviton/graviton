@@ -261,11 +261,6 @@ class GenerateDynamicBundleCommand extends Command
         $this->bundleBundleClassname = $bundleName;
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/' . $this->bundleBundleClassname . '.php';
 
-        $entityBundleNamespace = sprintf(self::BUNDLE_NAME_MASK, 'Entity');
-        $entityBundleDir = $input->getOption('srcDir').$entityBundleNamespace;
-
-        $this->resourceGenerator->generateEntities($entityBundleNamespace, $entityBundleDir);
-
         $filesToWorkOn = $this->definitionLoader->load($input->getOption('json'));
 
         if (count($filesToWorkOn) < 1) {
@@ -353,10 +348,21 @@ class GenerateDynamicBundleCommand extends Command
         // generate bundlebundle
         $this->generateBundleBundleClass();
 
+        $mainSchemaFile = $input->getOption('srcDir').self::BUNDLE_NAMESPACE.'/openapi.json';
+
         $this->schemaGenerator->consolidateAllSchemas(
             $input->getOption('srcDir'),
             $output,
-            '/home/dn/schema.json'
+            $mainSchemaFile
+        );
+
+        $entityBundleNamespace = sprintf(self::BUNDLE_NAME_MASK, 'Entity');
+        $entityBundleDir = $input->getOption('srcDir').$entityBundleNamespace;
+
+        $this->resourceGenerator->generateEntities(
+            $entityBundleNamespace,
+            $entityBundleDir,
+            $mainSchemaFile
         );
 
         return 0;

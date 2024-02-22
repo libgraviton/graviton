@@ -7,6 +7,7 @@ namespace Graviton\CoreBundle\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\RestBundle\Service\RestUtils;
+use Graviton\SchemaBundle\Trait\SchemaTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class MainController
 {
+
+    use SchemaTrait;
+
     /**
      * @var Router
      */
@@ -195,5 +199,24 @@ class MainController
     public function optionsAction(Request $request)
     {
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Returns the main schema
+     *
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of the action
+     */
+    public function schemaAction(Request $request)
+    {
+        if (!class_exists('\GravitonDyn\EntityBundle\Entity\GravitonSchema')) {
+            throw new \RuntimeException('Unable to locate global schema.');
+        }
+
+        return $this->getResponseFromSchemaFile(
+            \GravitonDyn\EntityBundle\Entity\GravitonSchema::MAIN_SCHEMA_FILE,
+            $request->get('format')
+        );
     }
 }

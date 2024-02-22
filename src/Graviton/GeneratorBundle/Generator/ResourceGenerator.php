@@ -218,17 +218,37 @@ class ResourceGenerator extends AbstractGenerator
         $this->ensureIndexes = $ensureIndexes;
     }
 
-    public function generateEntities(string $namespace, string $bundleDir)
+    /**
+     * Generate some entity classes we can use
+     *
+     * @param string $namespace      namespace
+     * @param string $bundleDir      bundleDir
+     * @param string $mainSchemaFile main schema file
+     *
+     * @return void
+     */
+    public function generateEntities(string $namespace, string $bundleDir, string $mainSchemaFile)
     {
+        // translatable stuff
         $fullClassName = $bundleDir.'/Entity/GravitonTranslatable.php';
 
         $this->renderFile(
             'entity/Translatable.php.twig',
             $fullClassName,
             [
-                'namespace' => $namespace,'/Entity',
                 'defaultLanguage' => $this->i18nUtils->getDefaultLanguage(),
                 'languages' =>  $this->i18nUtils->getLanguages()
+            ]
+        );
+
+        // schema stuff
+        $schemaClassName = $bundleDir.'/Entity/GravitonSchema.php';
+
+        $this->renderFile(
+            'entity/Schema.php.twig',
+            $schemaClassName,
+            [
+                'schemaFile' => $mainSchemaFile
             ]
         );
     }

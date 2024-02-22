@@ -10,6 +10,7 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\RestUtils;
+use Graviton\SchemaBundle\Trait\SchemaTrait;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,6 +35,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class RestController
 {
+
+    use SchemaTrait;
 
     /**
      * @var LoggerInterface
@@ -471,21 +474,9 @@ class RestController
      */
     public function schemaAction(Request $request)
     {
-        $modelSchema = $this->getModelSchema($request);
-
-        $format = 'json';
-        if (str_ends_with($request->getPathInfo(), '.yaml')) {
-            $format = 'yaml';
-        }
-
-        if ($format == 'json') {
-            return new JsonResponse($modelSchema, 200, []);
-        }
-
-        return new Response(
-            Yaml::dump($modelSchema, 30, 2),
-            200,
-            ['content-type' => 'application/yaml']
+        return $this->getResponseFromSchema(
+            $this->getModelSchema($request),
+            str_ends_with($request->getPathInfo(), '.json') ? 'json' : 'yaml'
         );
     }
 
