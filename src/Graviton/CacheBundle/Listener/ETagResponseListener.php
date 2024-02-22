@@ -5,6 +5,7 @@
 
 namespace Graviton\CacheBundle\Listener;
 
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
@@ -26,6 +27,10 @@ class ETagResponseListener
     public function onKernelResponse(ResponseEvent $event)
     {
         $response = $event->getResponse();
+
+        if ($response instanceof StreamedResponse || empty($response->getContent())) {
+            return;
+        }
 
         /**
          * the "W/" prefix is necessary to qualify it as a "weak" Etag.
