@@ -7434,12 +7434,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "7fe1a2364e0542ba227c1acb42a5dd6b7e113eb2"
+                "reference": "484cb7e7cd7bbf80cf14038ef8275a549628fc97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/7fe1a2364e0542ba227c1acb42a5dd6b7e113eb2",
-                "reference": "7fe1a2364e0542ba227c1acb42a5dd6b7e113eb2",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/484cb7e7cd7bbf80cf14038ef8275a549628fc97",
+                "reference": "484cb7e7cd7bbf80cf14038ef8275a549628fc97",
                 "shasum": ""
             },
             "require-dev": {
@@ -7468,7 +7468,7 @@
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
             },
-            "time": "2024-02-22T13:18:33+00:00"
+            "time": "2024-02-22T15:24:34+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
