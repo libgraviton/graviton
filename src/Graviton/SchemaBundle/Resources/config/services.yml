@@ -43,6 +43,7 @@ services:
     Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\EmptyConstraintBuilder: ~
+    Graviton\SchemaBundle\Constraint\Builder\NotNullConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\ExtrefConstraintBuilder: ~
     Graviton\SchemaBundle\Constraint\Builder\DatetimeConstraintBuilder:
         arguments:
@@ -90,6 +91,10 @@ services:
             method: addConstraintBuilder
             arguments:
               - '@Graviton\SchemaBundle\Constraint\Builder\DatetimeConstraintBuilder'
+          -
+            method: addConstraintBuilder
+            arguments:
+              - '@Graviton\SchemaBundle\Constraint\Builder\NotNullConstraintBuilder'
           -
             method: addConstraintBuilder
             arguments:

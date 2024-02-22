@@ -61,7 +61,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DATETIME => 'datetime',
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'hash',
-        self::TYPE_EXTREF => '#/components/schemas/GravitonExtRef',
+        self::TYPE_EXTREF => 'extref',
         self::TYPE_TRANSLATABLE => '#/components/schemas/GravitonTranslatable'
     ];
 

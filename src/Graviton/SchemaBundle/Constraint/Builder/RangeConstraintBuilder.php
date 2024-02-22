@@ -17,6 +17,15 @@ class RangeConstraintBuilder implements ConstraintBuilderInterface
 {
 
     /**
+     * @var array
+     */
+    private array $types = [
+        'Range',
+        'GreaterThanOrEqual',
+        'LessThanOrEqual'
+    ];
+
+    /**
      * gives the constraintbuilder the opportunity to alter the json schema for that field.
      *
      * @param array $schemaField     the basic field that will be in the schema
@@ -26,17 +35,32 @@ class RangeConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (isset($fieldDefinition['constraints']['Range'])) {
+            $options = $fieldDefinition['constraints']['Range'];
+            if (isset($options['min'])) {
+                $schemaField['minimum'] = floatval($options['min']);
+            }
+            if (isset($options['max'])) {
+                $schemaField['maximum'] = floatval($options['max']);
+            }
+        }
+
+        if (isset($fieldDefinition['constraints']['GreaterThanOrEqual'])) {
+            $options = $fieldDefinition['constraints']['GreaterThanOrEqual'];
+            if (isset($options['value'])) {
+                $schemaField['minimum'] = floatval($options['value']);
+            }
+        }
+
+        if (isset($fieldDefinition['constraints']['LessThanOrEqual'])) {
+            $options = $fieldDefinition['constraints']['LessThanOrEqual'];
+            if (isset($options['value'])) {
+                $schemaField['maximum'] = floatval($options['value']);
+            }
+        }
+
         return $schemaField;
     }
-
-    /**
-     * @var array
-     */
-    private $types = [
-        'Range',
-        'GreaterThanOrEqual',
-        'LessThanOrEqual'
-    ];
 
     /**
      * @var string

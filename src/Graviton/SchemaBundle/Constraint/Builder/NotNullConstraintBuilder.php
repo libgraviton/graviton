@@ -1,6 +1,6 @@
 <?php
 /**
- * DecimalConstraintBuilder class file
+ * NotNullConstraintBuilder class file
  */
 
 namespace Graviton\SchemaBundle\Constraint\Builder;
@@ -13,15 +13,8 @@ use Graviton\SchemaBundle\Document\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DecimalConstraintBuilder implements ConstraintBuilderInterface
+class NotNullConstraintBuilder implements ConstraintBuilderInterface
 {
-
-    /**
-     * the pattern to use
-     *
-     * @var string
-     */
-    private string $pattern = '^[+\-]?\d+(\.\d+)?$';
 
     /**
      * gives the constraintbuilder the opportunity to alter the json schema for that field.
@@ -33,13 +26,13 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
-        if (isset($fieldDefinition['constraints']['Decimal'])) {
-            $schemaField['pattern'] = $this->pattern;
+        if (isset($fieldDefinition['constraints']['NotNull'])) {
+            $schemaField['nullable'] = false;
+            $schemaField['minLength'] = 1;
         }
 
         return $schemaField;
     }
-
 
     /**
      * if this builder supports a given constraint
@@ -51,7 +44,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Decimal' || substr($type, -9) == '\\Decimal' /* temporary to support some locked bundles */);
+        return ($type === 'Empty');
     }
 
     /**
@@ -66,10 +59,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        if (in_array('string', $property->getType()->getTypes())) {
-            $property->setRegexPattern($this->pattern);
-        }
-
+        $property->setMaxLength(0);
         return $property;
     }
 }

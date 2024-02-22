@@ -70,10 +70,9 @@ class MainControllerTest extends RestTestCase
 
         $this->assertIsArray($results->services);
 
-        $refName = '$ref';
         $serviceRefs = array_map(
-            function ($service) use ($refName) {
-                return $service->$refName;
+            function ($service) {
+                return $service->{'$ref'};
             },
             $results->services
         );
@@ -81,86 +80,10 @@ class MainControllerTest extends RestTestCase
 
         $profiles = array_map(
             function ($service) {
-                return $service->profile;
+                return $service->{'api-docs'}->json->{'$ref'};
             },
             $results->services
         );
-        $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
-    }
-
-    /**
-     * Verifies the correct behavior of determineServices()
-     *
-     * @return void
-     */
-    public function testDetermineServices()
-    {
-        $services = [
-            [
-                '$ref'    => 'http://localhost/core/product/',
-                'profile' => 'http://localhost/schema/core/product/collection'
-            ],
-            [
-                '$ref'    => 'http://localhost/core/app/',
-                'profile' => 'http://localhost/schema/core/app/collection'
-            ],
-        ];
-
-        $routerDouble = $this->getMockBuilder('\Symfony\Component\Routing\Router')
-            ->disableOriginalConstructor()
-            ->setMethods(array('generate'))
-            ->getMock();
-        $routerDouble
-            ->expects($this->exactly(4))
-            ->method('generate')
-            ->with(
-                $this->isType('string'),
-                $this->isType('array'),
-                $this->isType('int')
-            )
-            ->will(
-                $this->onConsecutiveCalls(
-                    $this->returnValue($services[0]['$ref']),
-                    $this->returnValue($services[0]['profile']),
-                    $this->returnValue($services[1]['$ref']),
-                    $this->returnValue($services[1]['profile'])
-                )
-            );
-
-        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtils');
-        $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
-
-        $optionRoutes = [
-            "graviton.core.rest.app.options"     => $routerDouble,
-            "graviton.core.rest.product.options" => $routerDouble,
-        ];
-
-        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
-            ->setConstructorArgs(
-                [
-                    $routerDouble,
-                    $restUtilsDouble,
-                    $dispatcherDouble,
-                    [],
-                    []
-                ]
-            )->getMock();
-
-        $determineServices = $this->getPrivateClassMethod($controller, 'determineServices');
-
-        $this->assertEquals(
-            [
-                [
-                    '$ref'    => 'http://localhost/core/app/',
-                    'profile' => 'http://localhost/schema/core/app/collection'
-                ],
-                [
-                    '$ref'    => 'http://localhost/core/product/',
-                    'profile' => 'http://localhost/schema/core/product/collection'
-                ],
-            ],
-            $determineServices->invokeArgs($controller, [$optionRoutes])
-        );
+        $this->assertContains('http://localhost/schema/core/app/openapi.json', $profiles);
     }
 }

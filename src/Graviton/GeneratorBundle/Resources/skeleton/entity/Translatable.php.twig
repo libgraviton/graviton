@@ -15,7 +15,7 @@ namespace GravitonDyn\EntityBundle\Entity;
 class GravitonTranslatable
 {
 
-    public const DEFAULT_LANGUAGE = '{{ defaultLanguage }}';
-    public const LANGUAGES = {{ languages|json_encode() }};
+    public const string DEFAULT_LANGUAGE = '{{ defaultLanguage }}';
+    public const array LANGUAGES = {{ languages|json_encode() }};
 
 }

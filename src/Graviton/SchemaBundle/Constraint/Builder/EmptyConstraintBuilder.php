@@ -26,6 +26,10 @@ class EmptyConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
+        if (isset($fieldDefinition['constraints']['Empty'])) {
+            $schemaField['maxLength'] = 0;
+        }
+
         return $schemaField;
     }
 

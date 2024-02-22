@@ -97,21 +97,26 @@ class SchemaGenerator extends AbstractGenerator
         }
 
         $reservedFieldNames = $parameters['reservedFieldnames'];
-        $reservedFieldNames[] = 'id';
         $requiredFields = [];
 
-        // always insert id
-        $thisSchema['properties']['id'] = [
-            'type' => 'string',
-            'title' => 'ID',
-            'description' => 'Unique identifier',
-            'nullable' => true
-        ];
+        // always insert id when not subresource!
+        if (!$isSubResource) {
+            $thisSchema['properties']['id'] = [
+                'type' => 'string',
+                'title' => 'ID',
+                'description' => 'Unique identifier'
+            ];
+            $reservedFieldNames[] = 'id';
+        }
 
         // create fields!
         foreach ($parameters['fields'] as $field) {
             $fieldDefinition = [];
             $fieldName = $field['exposedName'];
+
+            if ($fieldName == '$ref') {
+                $hans = 3;
+            }
 
             if (in_array($fieldName, $reservedFieldNames)) {
                 // skip!
@@ -127,8 +132,6 @@ class SchemaGenerator extends AbstractGenerator
 
             if ($isRequired) {
                 $requiredFields[] = $fieldName;
-            } else {
-                $fieldDefinition['nullable'] = true;
             }
 
             // pattern!
@@ -353,8 +356,7 @@ class SchemaGenerator extends AbstractGenerator
             $translatable['properties'][$language] = [
                 'type' => 'string',
                 'title' => $language,
-                'description' => $language.' text',
-                'nullable' => ($language != $defLanguage)
+                'description' => $language.' text'
             ];
         }
 

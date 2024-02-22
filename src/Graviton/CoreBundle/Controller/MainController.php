@@ -176,13 +176,15 @@ class MainController
         if (!empty($routes)) {
             $baseRoute = $this->router->match("/");
             $baseUrl = $this->router->generate($baseRoute['_route'], [], UrlGeneratorInterface::ABSOLUTE_URL);
+
             foreach ($routes as $route) {
-                $thisUrl = $baseUrl.$route['$ref'];
-                $additionalRoutes[] = [
-                    '$ref' => $thisUrl,
-                    'profile' => $baseUrl.$route['profile']
-                ];
-                $sortArr[$thisUrl] = $thisUrl;
+                $route['$ref'] = $baseUrl.$route['$ref'];
+                $route['api-docs']['json']['$ref'] = $baseUrl.$route['api-docs']['json']['$ref'];
+                $route['api-docs']['yaml']['$ref'] = $baseUrl.$route['api-docs']['yaml']['$ref'];
+
+                $sortArr[$route['$ref']] = $route['$ref'];
+
+                $additionalRoutes[] = $route;
             }
         }
 

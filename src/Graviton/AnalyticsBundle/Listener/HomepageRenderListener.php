@@ -43,7 +43,11 @@ class HomepageRenderListener
     {
         $services = $this->serviceManager->getServices();
         foreach ($services as $service) {
-            $event->addRoute($service['$ref'], $service['profile']);
+            $event->addRoute(
+                $service['$ref'],
+                $service['api-docs']['json']['$ref'],
+                $service['api-docs']['yaml']['$ref']
+            );
         }
     }
 }

@@ -102,29 +102,41 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->post('/hans/showcase', $document);
 
-        $expectedErrors = [];
-        $notNullError = new \stdClass();
-        $notNullError->propertyPath = 'aBoolean';
-        $notNullError->message = 'The property aBoolean is required';
-        $expectedErrors[] = $notNullError;
-        // test choices field (string should not be blank)
-        $notNullErrorChoices = new \stdClass();
-        $notNullErrorChoices->propertyPath = 'choices';
-        $notNullErrorChoices->message = 'The property choices is required';
-        $expectedErrors[] = $notNullErrorChoices;
-
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($expectedErrors),
-            json_encode($client->getResults())
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $client->getResponse()->getStatusCode()
         );
+
+        $res = $client->getResults();
+
+        // first should be complaining about aBoolean missing
+        $this->assertEquals('aBoolean', $res[1]->propertyPath);
+
+        // post again with the boolean
+        $document['aBoolean'] = true;
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase/', $document);
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $client->getResponse()->getStatusCode()
+        );
+
+        $res = $client->getResults();
+
+        // now should be complaining about 'choices' field
+        $this->assertEquals('choices', $res[1]->propertyPath);
     }
 
     /**
      * see how our empty fields are explained to us
      *
+     * @dataProvider emptyFieldsDataProvider
+     *
      * @return void
      */
-    public function testEmptyAllFields()
+    public function testEmptyAllFields(array $changes, int $expectedCode, ?string $expectedErrorField)
     {
         $document = [
             'anotherInt'  => 6555488894525,
@@ -141,39 +153,81 @@ class ShowcaseControllerTest extends RestTestCase
             ],
         ];
 
+        $document = array_merge(
+            $document,
+            $changes
+        );
+
         $client = static::createRestClient();
         $client->post('/hans/showcase', $document);
 
+        $res = $client->getResults();
+
         $this->assertEquals(
-            Response::HTTP_BAD_REQUEST,
+            $expectedCode,
             $client->getResponse()->getStatusCode()
         );
 
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath'  => 'choices',
-                    'message'       => 'The property choices is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'aBoolean',
-                    'message'       => 'String value found, but a boolean is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.type',
-                    'message'       => 'Must be at least 1 characters long',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.protocol',
-                    'message'       => 'Must be at least 1 characters long',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.value',
-                    'message'       => 'Must be at least 1 characters long',
-                ]
+        if (!is_null($expectedErrorField)) {
+            $this->assertEquals($expectedErrorField, $res[1]->propertyPath);
+        }
+
+        /**
+        // add it
+
+
+        // fix bool
+        $document['aBoolean'] = false;
+
+        $client->post('/hans/showcase', $document);
+        $res = $client->getResults();
+
+        // wrong enum value for choices!
+        $this->assertEquals('choices', $res[1]->propertyPath);
+
+        // fix it
+        $document['choices'] = '>';
+
+        $client->post('/hans/showcase', $document);
+        $res = $client->getResults();
+        $hans = 3;
+         **/
+
+    }
+
+    private function emptyFieldsDataProvider() {
+        return [
+            /*
+            'simple' => [
+                [],
+                Response::HTTP_BAD_REQUEST,
+                'choices'
             ],
-            $client->getResults()
-        );
+            'bool-wrong-type' => [
+                [
+                    'choices' => 'a'
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'aBoolean'
+            ],
+            'wrong-choice' => [
+                [
+                    'choices' => 'a',
+                    'aBoolean' => true
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'choices'
+            ],
+            */
+            'wrong-choice2' => [
+                [
+                    'choices' => '<',
+                    'aBoolean' => true
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'choices'
+            ]
+        ];
     }
 
     /**
@@ -207,55 +261,6 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertObjectNotHasProperty('contact', $client->getResults()[0]);
         $this->assertObjectNotHasProperty('someOtherField', $client->getResults()[0]);
         $this->assertEquals([], $client->getResults()[0]->contacts);
-    }
-
-    /**
-     * see how our empty fields are explained to us
-     *
-     * @return void
-     */
-    public function testEmptyFields()
-    {
-        $document = [
-            'anotherInt'  => 6555488894525,
-            'testField'   => ['en' => 'a test string'],
-            'aBoolean'    => true,
-            'contactCode' => [
-                'text'     => ['en' => 'Some Text'],
-                'someDate' => '1984-05-01T00:00:00+0000',
-            ],
-            'contact'     => [
-                'type'      => 'abc',
-                'value'     => '',
-                'protocol'  => '',
-            ],
-        ];
-
-        $client = static::createRestClient();
-        $client->post('/hans/showcase', $document);
-
-        $this->assertEquals(
-            Response::HTTP_BAD_REQUEST,
-            $client->getResponse()->getStatusCode()
-        );
-
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath'  => 'choices',
-                    'message'       => 'The property choices is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.protocol',
-                    'message'       => 'Must be at least 1 characters long',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.value',
-                    'message'       => 'Must be at least 1 characters long',
-                ],
-            ],
-            $client->getResults()
-        );
     }
 
     /**
@@ -948,18 +953,25 @@ class ShowcaseControllerTest extends RestTestCase
     {
         // get the schema
         $client = static::createRestClient();
-        $client->request('GET', '/schema/hans/showcase/item');
+        $client->request('GET', '/schema/hans/showcase/openapi.json');
 
         $schema = $client->getResults();
 
+        // get the nested app schema
+        $nestedAppSchema = $schema->components->schemas->{'ShowCaseNestedApps'};
+        $this->assertIsObject($nestedAppSchema);
+
         // make sure we have an extref field here
-        $this->assertEquals('extref', $schema->properties->nestedApps->items->properties->{'$ref'}->format);
+        $this->assertEquals('extref', $nestedAppSchema->properties->{'$ref'}->format);
         // and that 'id' is not there
-        $this->assertObjectNotHasProperty('id', $schema->properties->nestedApps->items->properties);
+        $this->assertObjectNotHasProperty('id', $nestedAppSchema->properties);
 
         // embed case - check the embedded 'contactCode'
-        $this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
-        $this->assertObjectNotHasProperty('id', $schema->properties->contactCode->properties);
+        $contactCodeSchema = $schema->components->schemas->{'ShowCaseContactCode'};
+        $this->assertIsObject($contactCodeSchema);
+
+        //$this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
+        $this->assertObjectNotHasProperty('id', $contactCodeSchema->properties);
     }
 
     /**

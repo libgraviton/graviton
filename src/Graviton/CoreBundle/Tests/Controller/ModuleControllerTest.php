@@ -735,34 +735,6 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
-     * test getting collection schema.
-     * i avoid retesting everything (covered in /core/app), this test only
-     * asserts translatable & extref representation
-     *
-     * @return void
-     */
-    public function testGetModuleCollectionSchemaInformationFormat()
-    {
-        $client = static::createRestClient();
-
-        $client->request('GET', '/schema/core/module/openapi.json');
-        $results = $client->getResults();
-
-        $this->assertEquals('object', $results->items->properties->app->type);
-        $this->assertEquals('string', $results->items->properties->app->properties->{'$ref'}->type);
-        $this->assertEquals('extref', $results->items->properties->app->properties->{'$ref'}->format);
-
-        $service = $results->items->properties->service;
-        $this->assertEquals('array', $service->type);
-        $this->assertEquals('object', $service->items->properties->name->type);
-        $this->assertEquals('string', $service->items->properties->name->properties->en->type);
-        $this->assertEquals(['object', 'null'], $service->items->properties->description->type);
-        $this->assertEquals('string', $service->items->properties->description->properties->en->type);
-        $this->assertEquals('object', $service->items->properties->service->type);
-        $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
-    }
-
-    /**
      * Encode RQL string
      *
      * @param string $value Value

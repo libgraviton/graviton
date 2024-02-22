@@ -27,6 +27,7 @@ class ExtrefConstraintBuilder implements ConstraintBuilderInterface
     public function buildSchema(array $schemaField, array $fieldDefinition) : array
     {
         if ($fieldDefinition['type'] == 'extref') {
+            $schemaField['type'] = 'string';
             $schemaField['format'] = 'extref';
             if (isset($fieldDefinition['collection'])) {
                 $schemaField['x-collection'] = $fieldDefinition['collection'];

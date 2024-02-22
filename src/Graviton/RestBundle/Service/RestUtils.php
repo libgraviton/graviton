@@ -133,6 +133,15 @@ class RestUtils
             $psrRequest = $psrRequest->withBody($httpFactory->createStream($overrideBody));
         }
 
+        // slash missing at the end of POST requests
+        if ($psrRequest->getMethod() == 'POST' && !str_ends_with($psrRequest->getUri()->getPath(), '/')) {
+            $newUri = $psrRequest->getUri()->withPath(
+                $psrRequest->getUri()->getPath() . '/'
+            );
+
+            $psrRequest = $psrRequest->withUri($newUri);
+        }
+
         $validator = (new ValidatorBuilder())
             ->fromJsonFile($model->getSchemaPath())
             ->getServerRequestValidator();

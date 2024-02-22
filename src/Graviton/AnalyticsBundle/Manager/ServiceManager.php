@@ -12,8 +12,6 @@ use Graviton\DocumentBundle\Service\DateConverter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
-use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Router;
@@ -39,19 +37,13 @@ class ServiceManager
     /** @var Router */
     protected $router;
 
-    /** @var string */
-    protected $directory;
-
-    /** @var Filesystem */
-    protected $fs;
-
     /** @var JsonMapper */
     private $jsonMapper;
 
     /**
      * @var array
      */
-    private $analyticsServices = [];
+    private array $analyticsServices = [];
 
     /**
      * ServiceConverter constructor.
@@ -73,7 +65,6 @@ class ServiceManager
         $this->analyticsManager = $analyticsManager;
         $this->dateConverter = $dateConverter;
         $this->router = $router;
-        $this->fs = new Filesystem();
         $this->analyticsServices = $analyticsServices;
         $this->jsonMapper = new JsonMapper();
     }
@@ -83,7 +74,7 @@ class ServiceManager
      *
      * @return array
      */
-    public function getServices()
+    public function getServices() : array
     {
         $services = [];
         foreach ($this->analyticsServices as $name => $service) {
@@ -99,13 +90,28 @@ class ServiceManager
                     ],
                     true
                 ),
-                'profile' => $this->router->generate(
-                    'graviton_analytics_service_schema',
-                    [
-                        'service' => $service['route']
+                'api-docs' => [
+                    'json' => [
+                        '$ref' => $this->router->generate(
+                            'graviton_analytics_service_schema',
+                            [
+                                'service' => $service['route'],
+                                'format' => 'json'
+                            ],
+                            true
+                        )
                     ],
-                    true
-                )
+                    'yaml' => [
+                        '$ref' => $this->router->generate(
+                            'graviton_analytics_service_schema',
+                            [
+                                'service' => $service['route'],
+                                'format' => 'yaml'
+                            ],
+                            true
+                        )
+                    ],
+                ]
             ];
         }
 
