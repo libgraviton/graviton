@@ -114,7 +114,7 @@ class SchemaGenerator extends AbstractGenerator
             $fieldDefinition = [];
             $fieldName = $field['exposedName'];
 
-            if ($fieldName == '$ref') {
+            if ($fieldName == 'contact') {
                 $hans = 3;
             }
 
@@ -141,10 +141,17 @@ class SchemaGenerator extends AbstractGenerator
 
             $fieldDefinition = $this->constraintBuilder->buildSchema($fieldDefinition, $field);
 
+            // if full ref, pass as-is
+            if (!empty($fieldDefinition['$ref'])) {
+                $thisSchema['properties'][$fieldName] = ['$ref' => $fieldDefinition['$ref']];
+                continue;
+            }
+
             // if field is a reference, collapse it to a pure $ref!
+            /*
             if (isset($fieldDefinition['type']) && str_starts_with($fieldDefinition['type'], '#/')) {
                 $fieldDefinition = ['$ref' => $fieldDefinition['type']];
-            }
+            }*/
 
             $thisSchema['properties'][$fieldName] = $fieldDefinition;
         }
@@ -172,6 +179,8 @@ class SchemaGenerator extends AbstractGenerator
                 ];
             }
         }
+
+        $thisSchema['additionalProperties'] = false;
 
         $schema['components']['schemas'][$parameters['document']] = $thisSchema;
 
@@ -451,18 +460,12 @@ class SchemaGenerator extends AbstractGenerator
         }
 
         // 2nd pass -> fix all missing references
-        $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
         foreach ($existingFiles as $filePath => $content) {
-            // find needed entities
-            preg_match_all($pattern, $content, $matches);
-
             $schema = json_decode($content, true);
 
             // collect all!
-            foreach (array_unique($matches[1]) as $refName) {
-                if (!empty($mainFile['components']['schemas'][$refName])) {
-                    $schema['components']['schemas'][$refName] = $mainFile['components']['schemas'][$refName];
-                }
+            foreach ($this->getAllReferencedSchemas($content, $mainFile) as $refName => $refSchema) {
+                $schema['components']['schemas'][$refName] = $refSchema;
             }
 
             // remove .tmp ending
@@ -475,6 +478,28 @@ class SchemaGenerator extends AbstractGenerator
         // write full schema
         $this->fs->dumpFile($targetFile, \json_encode($mainFile, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
         $output->writeln("Wrote full openapi schema to ".$targetFile);
+    }
+
+    private function getAllReferencedSchemas(string $content, array $mainFile) : array
+    {
+        $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
+        preg_match_all($pattern, $content, $matches);
+
+        $ret = [];
+        foreach (array_unique($matches[1]) as $refName) {
+            if (!empty($mainFile['components']['schemas'][$refName])) {
+                $thisSchema = $mainFile['components']['schemas'][$refName];
+                $ret[$refName] = $thisSchema;
+
+                // recurse!
+                $ret = array_merge(
+                    $ret,
+                    $this->getAllReferencedSchemas(\json_encode($thisSchema, JSON_UNESCAPED_SLASHES), $mainFile)
+                );
+            }
+        }
+
+        return $ret;
     }
 
     /**

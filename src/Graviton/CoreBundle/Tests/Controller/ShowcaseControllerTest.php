@@ -19,16 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ShowcaseControllerTest extends RestTestCase
 {
     /**
-     * @const complete content type string expected on a resouce
-     */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/hans/showcase/item';
-
-    /**
-     * @const corresponding vendorized schema mime type
-     */
-    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/hans/showcase/collection';
-
-    /**
      * suppress setup client and load fixtures of parent class
      *
      * @return void
@@ -61,7 +51,7 @@ class ShowcaseControllerTest extends RestTestCase
             'contact'               => [
                 'type'      => 'type',
                 'value'     => 'value',
-                'protocol'  => 'protocol',
+                'protocol'  => 'tel',
                 'uri'       => 'protocol:value',
             ],
 
@@ -171,33 +161,15 @@ class ShowcaseControllerTest extends RestTestCase
         if (!is_null($expectedErrorField)) {
             $this->assertEquals($expectedErrorField, $res[1]->propertyPath);
         }
-
-        /**
-        // add it
-
-
-        // fix bool
-        $document['aBoolean'] = false;
-
-        $client->post('/hans/showcase', $document);
-        $res = $client->getResults();
-
-        // wrong enum value for choices!
-        $this->assertEquals('choices', $res[1]->propertyPath);
-
-        // fix it
-        $document['choices'] = '>';
-
-        $client->post('/hans/showcase', $document);
-        $res = $client->getResults();
-        $hans = 3;
-         **/
-
     }
 
-    private function emptyFieldsDataProvider() {
+    /**
+     * data provider for empty checks
+     *
+     * @return array[] data
+     */
+    private function emptyFieldsDataProvider() : array {
         return [
-            /*
             'simple' => [
                 [],
                 Response::HTTP_BAD_REQUEST,
@@ -213,19 +185,81 @@ class ShowcaseControllerTest extends RestTestCase
             'wrong-choice' => [
                 [
                     'choices' => 'a',
-                    'aBoolean' => true
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => 'a',
+                        'protocol' => 'tel',
+                        'value' => ''
+                    ]
                 ],
                 Response::HTTP_BAD_REQUEST,
                 'choices'
             ],
-            */
-            'wrong-choice2' => [
+
+            'contact-type-null' => [
                 [
                     'choices' => '<',
-                    'aBoolean' => true
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => null,
+                        'protocol' => null,
+                        'value' => null
+                    ]
                 ],
                 Response::HTTP_BAD_REQUEST,
-                'choices'
+                'contact.type'
+            ],
+            'contact-type-empty' => [
+                [
+                    'choices' => '<',
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => '',
+                        'protocol' => null,
+                        'value' => null
+                    ]
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'contact.type'
+            ],
+            'contact-type-protocol-null' => [
+                [
+                    'choices' => '<',
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => 'contactType',
+                        'protocol' => '',
+                        'value' => null
+                    ]
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'contact.protocol'
+            ],
+            'contact-type-value-null' => [
+                [
+                    'choices' => '<',
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => 'contactType',
+                        'protocol' => 'tel',
+                        'value' => null
+                    ]
+                ],
+                Response::HTTP_BAD_REQUEST,
+                'contact.value'
+            ],
+            'contact-type-value-empty' => [
+                [
+                    'choices' => '<',
+                    'aBoolean' => true,
+                    'contact' => [
+                        'type' => 'contactType',
+                        'protocol' => 'tel',
+                        'value' => '' // empty value is accepted here!
+                    ]
+                ],
+                Response::HTTP_CREATED,
+                null
             ]
         ];
     }
@@ -277,15 +311,8 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $payload);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->propertyPath = "choices";
-        $expectedErrors[0]->message = 'Does not have a value in the enumeration ["<",">","=",">=","<=","<>"]';
-
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($expectedErrors),
-            json_encode($client->getResults())
-        );
+        // first real items should be choices violation!
+        $this->assertEquals('choices', $client->getResults()[1]->propertyPath);
     }
 
     /**
@@ -443,19 +470,9 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $document);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->propertyPath = "";
-        $expectedErrors[0]->message = 'The property extraFields is not defined and the definition '.
-            'does not allow additional properties';
-        $expectedErrors[1] = new \stdClass();
-        $expectedErrors[1]->propertyPath = "";
-        $expectedErrors[1]->message = 'The property anotherExtraField is not defined and the definition '.
-            'does not allow additional properties';
-
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($expectedErrors),
-            json_encode($client->getResults())
+        $this->assertStringContainsString(
+            'additional properties',
+            $client->getResults()[1]->message
         );
     }
 

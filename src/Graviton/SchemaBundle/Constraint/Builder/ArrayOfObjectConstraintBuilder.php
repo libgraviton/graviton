@@ -71,8 +71,9 @@ class ArrayOfObjectConstraintBuilder implements ConstraintBuilderInterface
             }
         } else {
             if (str_starts_with($type, '#')) { # ref!
-                $schemaField['type'] = 'object';
-                $schemaField['schema'] = ['$ref' => $type];
+                $schemaField['$ref'] = $type;
+                //$schemaField['type'] = 'object';
+                //$schemaField['schema'] = ['$ref' => $type];
             } else if ($type == 'hash') {
                 $schemaField['type'] = 'object';
                 $schemaField['additionalProperties'] = true;
