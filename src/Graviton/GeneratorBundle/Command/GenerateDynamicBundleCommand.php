@@ -304,6 +304,7 @@ class GenerateDynamicBundleCommand extends Command
 
                 if ($needsGeneration) {
                     $this->generateResources(
+                        $filesToWorkOn,
                         $jsonDef,
                         $bundleName,
                         $bundleDir,
@@ -472,6 +473,7 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * generates the resources of a bundle
      *
+     * @param array          $allDefinitions  all definitions
      * @param JsonDefinition $jsonDef         definition
      * @param string         $bundleName      name
      * @param string         $bundleDir       dir
@@ -480,6 +482,7 @@ class GenerateDynamicBundleCommand extends Command
      * @return void
      */
     protected function generateResources(
+        array $allDefinitions,
         JsonDefinition $jsonDef,
         $bundleName,
         $bundleDir,
@@ -503,6 +506,7 @@ class GenerateDynamicBundleCommand extends Command
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
             $generator->generate(
+                $allDefinitions,
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
@@ -523,6 +527,7 @@ class GenerateDynamicBundleCommand extends Command
 
             $generator->setJson(new JsonDefinition($jsonDef->getDef()));
             $generator->generate(
+                $allDefinitions,
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,

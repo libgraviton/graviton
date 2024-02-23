@@ -136,7 +136,11 @@ class SchemaGenerator extends AbstractGenerator
                 $fieldDefinition['pattern'] = $field['valuePattern'];
             }
 
-            $fieldDefinition = $this->schemaBuilder->buildSchema($fieldDefinition, $field);
+            $fieldDefinition = $this->schemaBuilder->buildSchema(
+                $fieldDefinition,
+                $field,
+                $parameters['jsonDefinitions']
+            );
 
             // if full ref, pass as-is
             if (!empty($fieldDefinition['$ref'])) {

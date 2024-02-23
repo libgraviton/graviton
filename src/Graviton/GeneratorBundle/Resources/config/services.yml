@@ -194,7 +194,9 @@ services:
     Graviton\GeneratorBundle\Schema\Builder\DecimalSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder: ~
-    Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder:
+      arguments:
+        - '@router'
     Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder:
       arguments:
         - "%graviton.document.dateFormatRegex%"

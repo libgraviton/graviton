@@ -256,6 +256,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate the resource with all its bits and parts
      *
+     * @param array  $allDefinitions  all definitions
      * @param string $bundleDir       bundle dir
      * @param string $bundleNamespace bundle namespace
      * @param string $bundleName      bundle name
@@ -266,6 +267,7 @@ class ResourceGenerator extends AbstractGenerator
      * @return void
      */
     public function generate(
+        array $allDefinitions,
         $bundleDir,
         $bundleNamespace,
         $bundleName,
@@ -317,6 +319,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
+            ->setParameter('jsonDefinitions', $allDefinitions)
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('isVersioning', $this->json->isVersionedService())

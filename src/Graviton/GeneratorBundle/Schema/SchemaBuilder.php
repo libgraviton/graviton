@@ -34,10 +34,11 @@ class SchemaBuilder
      *
      * @param array $schemaField     the basic field that will be in the schema
      * @param array $fieldDefinition definition as seen by the generator
+     * @param array $allDefinitions  all json definitions
      *
      * @return array the altered $schemaField array
      */
-    public function buildSchema(array $schemaField, array $fieldDefinition) : array
+    public function buildSchema(array $schemaField, array $fieldDefinition, array $allDefinitions) : array
     {
         if (!empty($fieldDefinition['constraints'])) {
             $constraints = [];
@@ -54,7 +55,7 @@ class SchemaBuilder
 
         foreach ($this->builders as $builder) {
             // consolidate constraints a bit
-            $schemaField = $builder->buildSchema($schemaField, $fieldDefinition);
+            $schemaField = $builder->buildSchema($schemaField, $fieldDefinition, $allDefinitions);
         }
 
         return $schemaField;

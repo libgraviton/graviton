@@ -332,23 +332,36 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $payload);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $expectedErrors = [
-            (object) [
-                'propertyPath' => "nestedApps[0].\$ref",
-                'message' =>
-                    'Value "http://localhost/core/module/name" does not refer to a correct collection for this extref.'
-            ],
-            (object) [
-                'propertyPath' => "nestedApps[1].\$ref",
-                'message' =>
-                    'Does not match the regex pattern (\/core\/app\/)([a-zA-Z0-9\-_\+\040\'\.]+)$'
-            ]
+        $this->assertEquals(
+            'nestedApps.0.$ref',
+            $client->getResults()[1]->propertyPath
+        );
+
+        // fix first!
+        $payload->nestedApps = [
+            (object) ['$ref' => '/core/app/name'],
+            (object) ['$ref' => 'unknown']
         ];
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($expectedErrors),
-            json_encode($client->getResults())
+        $client->post('/hans/showcase', $payload);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        // now complains about 2nd array ref
+
+        $this->assertEquals(
+            'nestedApps.1.$ref',
+            $client->getResults()[1]->propertyPath
         );
+
+        // fix both
+        $payload->nestedApps = [
+            (object) ['$ref' => '/core/app/name'],
+            (object) ['$ref' => 'http://full-path:port/core/app/name2']
+        ];
+
+        $client->post('/hans/showcase', $payload);
+
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
     }
 
     /**

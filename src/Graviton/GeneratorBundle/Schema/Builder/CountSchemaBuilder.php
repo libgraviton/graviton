@@ -16,14 +16,15 @@ class CountSchemaBuilder implements SchemaBuilderInterface
 {
 
     /**
-     * gives the schemabuilder the opportunity to alter the json schema for that field.
+     * gives the SchemaBuilder the opportunity to alter the json schema for that field.
      *
      * @param array $schemaField     the basic field that will be in the schema
      * @param array $fieldDefinition definition as seen by the generator
+     * @param array $allDefinitions  all json definitions
      *
      * @return array the altered $schemaField array
      */
-    public function buildSchema(array $schemaField, array $fieldDefinition) : array
+    public function buildSchema(array $schemaField, array $fieldDefinition, array $allDefinitions) : array
     {
         if (isset($fieldDefinition['constraints']['Count'])) {
             $options = $fieldDefinition['constraints']['Count'];

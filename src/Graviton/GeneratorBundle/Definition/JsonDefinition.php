@@ -202,10 +202,10 @@ class JsonDefinition
         }
 
         $routerBase = $this->def->getService()->getRouterBase();
-        if (substr($routerBase, 0, 1) !== '/') {
+        if (!str_starts_with($routerBase, '/')) {
             $routerBase = '/' . $routerBase;
         }
-        if (substr($routerBase, -1) === '/') {
+        if (str_ends_with($routerBase, '/')) {
             $routerBase = substr($routerBase, 0, -1);
         }
 
