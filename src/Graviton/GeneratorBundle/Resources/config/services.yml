@@ -138,9 +138,9 @@ services:
 
     Graviton\GeneratorBundle\Generator\SchemaGenerator:
         calls:
-          - method: setConstraintBuilder
+          - method: setSchemaBuilder
             arguments:
-              - '@Graviton\SchemaBundle\Constraint\ConstraintBuilder'
+              - '@Graviton\GeneratorBundle\Schema\SchemaBuilder'
           - method: setI18nUtils
             arguments:
               - '@Graviton\I18nBundle\Service\I18nUtils'
@@ -182,3 +182,67 @@ services:
       tags:
         -
           name: console.command
+
+    # schema stuff
+
+    # schema builder
+    Graviton\GeneratorBundle\Schema\Builder\ChoiceSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\EmailSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\RangeSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\CountSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\DecimalSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder:
+      arguments:
+        - "%graviton.document.dateFormatRegex%"
+    Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder: ~
+
+    Graviton\GeneratorBundle\Schema\SchemaBuilder:
+      calls:
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ChoiceSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\EmailSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\RangeSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\CountSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\DecimalSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder'

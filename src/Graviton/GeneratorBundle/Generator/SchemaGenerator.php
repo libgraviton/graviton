@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,9 +23,9 @@ class SchemaGenerator extends AbstractGenerator
 {
 
     /**
-     * @var ConstraintBuilder
+     * @var SchemaBuilder
      */
-    private ConstraintBuilder $constraintBuilder;
+    private SchemaBuilder $schemaBuilder;
 
     /**
      * @var I18nUtils
@@ -37,15 +38,15 @@ class SchemaGenerator extends AbstractGenerator
     private array $versionInformation;
 
     /**
-     * set ConstraintBuilder
+     * set SchemaBuilder
      *
-     * @param ConstraintBuilder $constraintBuilder constraint builder
+     * @param SchemaBuilder $schemaBuilder schema builder
      *
      * @return void
      */
-    public function setConstraintBuilder(ConstraintBuilder $constraintBuilder)
+    public function setSchemaBuilder(SchemaBuilder $schemaBuilder)
     {
-        $this->constraintBuilder = $constraintBuilder;
+        $this->schemaBuilder = $schemaBuilder;
     }
 
     /**
@@ -114,10 +115,6 @@ class SchemaGenerator extends AbstractGenerator
             $fieldDefinition = [];
             $fieldName = $field['exposedName'];
 
-            if ($fieldName == 'contact') {
-                $hans = 3;
-            }
-
             if (in_array($fieldName, $reservedFieldNames)) {
                 // skip!
                 continue;
@@ -139,19 +136,13 @@ class SchemaGenerator extends AbstractGenerator
                 $fieldDefinition['pattern'] = $field['valuePattern'];
             }
 
-            $fieldDefinition = $this->constraintBuilder->buildSchema($fieldDefinition, $field);
+            $fieldDefinition = $this->schemaBuilder->buildSchema($fieldDefinition, $field);
 
             // if full ref, pass as-is
             if (!empty($fieldDefinition['$ref'])) {
                 $thisSchema['properties'][$fieldName] = ['$ref' => $fieldDefinition['$ref']];
                 continue;
             }
-
-            // if field is a reference, collapse it to a pure $ref!
-            /*
-            if (isset($fieldDefinition['type']) && str_starts_with($fieldDefinition['type'], '#/')) {
-                $fieldDefinition = ['$ref' => $fieldDefinition['type']];
-            }*/
 
             $thisSchema['properties'][$fieldName] = $fieldDefinition;
         }

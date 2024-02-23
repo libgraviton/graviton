@@ -5,8 +5,8 @@
 
 namespace Graviton\SchemaBundle\Tests\ConstraintBuilder\Builder;
 
+use Graviton\GeneratorBundle\Schema\SchemaBuilderInterface;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\Constraint\Builder\ConstraintBuilderInterface;
 use Graviton\SchemaBundle\Document\Schema;
 
 /**
@@ -14,7 +14,7 @@ use Graviton\SchemaBundle\Document\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DummyBuilderA implements ConstraintBuilderInterface
+class DummyBuilderA implements SchemaBuilderInterface
 {
 
     /**

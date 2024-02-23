@@ -6,7 +6,6 @@
 namespace Graviton\SchemaBundle\Constraint;
 
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\Constraint\Builder\ConstraintBuilderInterface;
 use Graviton\SchemaBundle\Document\Schema;
 
 /**
@@ -16,54 +15,6 @@ use Graviton\SchemaBundle\Document\Schema;
  */
 class ConstraintBuilder
 {
-    /**
-     * @var ConstraintBuilderInterface[]
-     */
-    private $builders = [];
-
-    /**
-     * Add constraint builder
-     *
-     * @param ConstraintBuilderInterface $builder Constraint builder
-     *
-     * @return void
-     */
-    public function addConstraintBuilder(ConstraintBuilderInterface $builder)
-    {
-        $this->builders[] = $builder;
-    }
-
-    /**
-     * gives the constraintbuilder the opportunity to alter the json schema for that field.
-     *
-     * @param array $schemaField     the basic field that will be in the schema
-     * @param array $fieldDefinition definition as seen by the generator
-     *
-     * @return array the altered $schemaField array
-     */
-    public function buildSchema(array $schemaField, array $fieldDefinition) : array
-    {
-        if (!empty($fieldDefinition['constraints'])) {
-            $constraints = [];
-            foreach ($fieldDefinition['constraints'] as $constraint) {
-                $name = $constraint['name'];
-                $options = [];
-                foreach ($constraint['options'] as $option) {
-                    $options[$option['name']] = $option['value'];
-                }
-                $constraints[$name] = $options;
-            }
-            $fieldDefinition['constraints'] = $constraints;
-        }
-
-        foreach ($this->builders as $builder) {
-            // consolidate constraints a bit
-            $schemaField = $builder->buildSchema($schemaField, $fieldDefinition);
-        }
-
-        return $schemaField;
-    }
-
     /**
      * Go through the constraints and call the builders to do their job
      *

@@ -1,19 +1,18 @@
 <?php
 /**
- * UrlConstraintBuilder class file
+ * DatetimeSchemaBuilder
  */
 
-namespace Graviton\SchemaBundle\Constraint\Builder;
+namespace Graviton\GeneratorBundle\Schema\Builder;
 
-use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\Document\Schema;
+use Graviton\GeneratorBundle\Schema\SchemaBuilderInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DatetimeConstraintBuilder implements ConstraintBuilderInterface
+class DatetimeSchemaBuilder implements SchemaBuilderInterface
 {
 
     /**
@@ -32,7 +31,7 @@ class DatetimeConstraintBuilder implements ConstraintBuilderInterface
     }
 
     /**
-     * gives the constraintbuilder the opportunity to alter the json schema for that field.
+     * gives the schemabuilder the opportunity to alter the json schema for that field.
      *
      * @param array $schemaField     the basic field that will be in the schema
      * @param array $fieldDefinition definition as seen by the generator
@@ -55,15 +54,5 @@ class DatetimeConstraintBuilder implements ConstraintBuilderInterface
         }
 
         return $schemaField;
-    }
-
-    #[\Override] public function supportsConstraint($type, array $options = [])
-    {
-        return false;
-    }
-
-    #[\Override] public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
-    {
-        // TODO: Implement buildConstraint() method.
     }
 }

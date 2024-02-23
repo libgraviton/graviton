@@ -1,23 +1,22 @@
 <?php
 /**
- * UrlConstraintBuilder class file
+ * ExtrefSchemaBuilder
  */
 
-namespace Graviton\SchemaBundle\Constraint\Builder;
+namespace Graviton\GeneratorBundle\Schema\Builder;
 
-use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\Document\Schema;
+use Graviton\GeneratorBundle\Schema\SchemaBuilderInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtrefConstraintBuilder implements ConstraintBuilderInterface
+class ExtrefSchemaBuilder implements SchemaBuilderInterface
 {
 
     /**
-     * gives the constraintbuilder the opportunity to alter the json schema for that field.
+     * gives the schemabuilder the opportunity to alter the json schema for that field.
      *
      * @param array $schemaField     the basic field that will be in the schema
      * @param array $fieldDefinition definition as seen by the generator
@@ -35,15 +34,5 @@ class ExtrefConstraintBuilder implements ConstraintBuilderInterface
         }
 
         return $schemaField;
-    }
-
-    #[\Override] public function supportsConstraint($type, array $options = [])
-    {
-        // TODO: Implement supportsConstraint() method.
-    }
-
-    #[\Override] public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
-    {
-        // TODO: Implement buildConstraint() method.
     }
 }
