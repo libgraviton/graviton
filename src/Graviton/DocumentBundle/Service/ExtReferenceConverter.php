@@ -28,7 +28,7 @@ class ExtReferenceConverter
     /**
      * Constructor
      *
-     * @param RouterInterface $router  Router
+     * @param RouterInterface $router Router
      */
     public function __construct(RouterInterface $router)
     {

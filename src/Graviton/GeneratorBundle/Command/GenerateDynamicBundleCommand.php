@@ -390,7 +390,6 @@ class GenerateDynamicBundleCommand extends Command
         $bundleFinder = $this->getBundleFinder($baseDir);
 
         foreach ($bundleFinder as $bundleDir) {
-
             $hashFileFinder = new Finder();
             $hashFileIterator = $hashFileFinder
                 ->files()

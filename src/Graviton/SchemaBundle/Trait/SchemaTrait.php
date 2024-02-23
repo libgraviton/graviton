@@ -32,8 +32,6 @@ trait SchemaTrait
             \json_decode(file_get_contents($filepath), true),
             $format
         );
-
-
     }
 
     /**

@@ -50,7 +50,7 @@ class ArrayOfObjectSchemaBuilder implements SchemaBuilderInterface
             $schemaField['type'] = 'array';
             if (str_starts_with($type, '#')) { # ref!
                 $schemaField['items'] = ['$ref' => $type];
-            } else if ($type == 'hash') {
+            } elseif ($type == 'hash') {
                 $schemaField['items'] = [
                     'type' => 'object',
                     'additionalProperties' => true
@@ -61,7 +61,7 @@ class ArrayOfObjectSchemaBuilder implements SchemaBuilderInterface
         } else {
             if (str_starts_with($type, '#')) { # ref!
                 $schemaField['$ref'] = $type;
-            } else if ($type == 'hash') {
+            } elseif ($type == 'hash') {
                 $schemaField['type'] = 'object';
                 $schemaField['additionalProperties'] = true;
             } else {
