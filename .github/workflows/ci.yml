@@ -68,8 +68,6 @@ jobs:
           composer configure
           bash prepare-for-tests.sh
           cat app/config/parameters.yml
-          
-          composer check
         env:
           MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports['27017'] }}/db
 
@@ -83,6 +81,10 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           COVERALLS_FLAG_NAME: '${{ matrix.php-versions }}'
+
+      - name: Run syntax checker
+        run: |
+          composer check
 
       - uses: ashley-taylor/junit-report-annotations-action@1.4
         if: always()
