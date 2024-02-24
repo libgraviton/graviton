@@ -35,45 +35,23 @@ class RecordOriginException extends RuntimeDefinitionBuilderAbstract
         SplFileInfo $schemaFile
     ) : void {
 
-        $schema = Reader::readFromJsonFile($schemaFile->getPathname());
+        $baseSchema = $this->getSchemaBaseObject($definition, $schemaFile);
+        $fields = $this->getAllFields($baseSchema);
 
-        $baseObject = $schema->components->schemas[$definition->getId()];
+        $recordOriginExceptionFields = [];
+        $readOnlyFields = [];
 
-        $fields = $this->iterateFields($baseObject);
+        foreach ($fields as $path => $field) {
+            if (isset($field->{'x-recordOriginException'}) && $field->{'x-recordOriginException'} === true) {
+                $recordOriginExceptionFields[] = $path;
+            }
 
-
-        $prefix = '';
-
-        $name = $definition->getId();
-
-        $schema->components->schemas[$definition->getId()];
-
-
-        $hans = 2;
-
-    }
-
-    public function iterateFields(Schema $schema, array $knownFields = [], string $prefix = '') : array
-    {
-        $fields = [];
-
-        if (!empty($prefix)) {
-            $prefix .= '.';
-        }
-
-        foreach ($schema->properties as $fieldName => $property) {
-            if ($property->type == 'object') {
-                $fields += $this->iterateFields($property, [], $prefix.$fieldName);
-                $hans = '';
-            } else if ($property->type == 'array') {
-                foreach ($property->items as $item) {
-                    $fields += $this->iterateFields($item, [], $prefix.$fieldName.'.0');
-                }
-            } else {
-                $fields[$prefix.$fieldName] = $property;
+            if (isset($field->{'x-readOnly'}) && $field->{'x-readOnly'} === true) {
+                $readOnlyFields[] = $path;
             }
         }
 
-        return $fields;
+        $runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
+        $runtimeDefinition->setReadOnlyFields($readOnlyFields);
     }
 }

@@ -417,9 +417,6 @@ class GenerateDynamicBundleCommand extends Command
             $output->writeln(
                 sprintf('<info>Wrote runtime definition to %s</info>', $destination)
             );
-
-            $hans = 3;
-
         }
 
         return 0;

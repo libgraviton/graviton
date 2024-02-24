@@ -13,16 +13,57 @@ namespace Graviton\RestBundle\Model;
 class RuntimeDefinition
 {
 
-    private bool $isRecordOriginException = false;
+    /**
+     * @var string[]
+     */
+    private array $recordOriginExceptionFields = [];
 
-    public function isRecordOriginException(): bool
+    /**
+     * @var string[]
+     */
+    private array $readOnlyFields = [];
+
+    /**
+     * get fields
+     *
+     * @return string[] fields
+     */
+    public function getRecordOriginExceptionFields(): array
     {
-        return $this->isRecordOriginException;
+        return $this->recordOriginExceptionFields;
     }
 
-    public function setIsRecordOriginException(bool $isRecordOriginException): void
+    /**
+     * set fields
+     *
+     * @param array $recordOriginExceptionFields fields
+     *
+     * @return void fields
+     */
+    public function setRecordOriginExceptionFields(array $recordOriginExceptionFields): void
     {
-        $this->isRecordOriginException = $isRecordOriginException;
+        $this->recordOriginExceptionFields = $recordOriginExceptionFields;
     }
 
+    /**
+     * get fields
+     *
+     * @return array fields
+     */
+    public function getReadOnlyFields(): array
+    {
+        return $this->readOnlyFields;
+    }
+
+    /**
+     * set fields
+     *
+     * @param array $readOnlyFields fields
+     *
+     * @return void
+     */
+    public function setReadOnlyFields(array $readOnlyFields): void
+    {
+        $this->readOnlyFields = $readOnlyFields;
+    }
 }

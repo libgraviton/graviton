@@ -394,7 +394,9 @@ class SchemaGenerator extends AbstractGenerator
             $directories[] = $baseDir;
         }
 
-        $output->writeln('Starting to consolidate openapi schemas in '.json_encode($directories));
+        $output->writeln(
+            sprintf('<info>Starting to consolidate openapi schemas in %s</info>', json_encode($directories))
+        );
 
         $files = Finder::create()
             ->files()
@@ -467,12 +469,18 @@ class SchemaGenerator extends AbstractGenerator
             $schemaFile = str_replace(['.tmp', '.yaml'], ['', '.json'], $filePath);
 
             $this->fs->dumpFile($schemaFile, \json_encode($schema, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
-            $output->writeln('Wrote file '.$schemaFile);
+
+            $output->writeln(
+                sprintf('<info>Wrote file %s</info>', $schemaFile)
+            );
         }
 
         // write full schema
         $this->fs->dumpFile($targetFile, \json_encode($mainFile, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
-        $output->writeln("Wrote full openapi schema to ".$targetFile);
+
+        $output->writeln(
+            sprintf('<info>Wrote full openapi schema to %s</info>', $targetFile)
+        );
     }
 
     private function getAllReferencedSchemas(string $content, array $mainFile) : array
