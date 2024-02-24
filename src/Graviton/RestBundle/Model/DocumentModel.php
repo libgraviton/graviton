@@ -40,6 +40,10 @@ class DocumentModel
      * @var string
      */
     private string $schemaPath;
+    /**
+     * @var string
+     */
+    private string $runtimeDefFile;
 
     /**
      * @var array
@@ -56,14 +60,26 @@ class DocumentModel
      * constructor
      *
      * @param string          $schemaPath        schema path
+     * @param string          $runtimeDefFile    path to runtime def file
      * @param string          $documentClassName class name
      * @param DocumentManager $documentManager   dm
      */
-    public function __construct(string $schemaPath, string $documentClassName, DocumentManager $documentManager)
+    public function __construct(string $schemaPath, string $runtimeDefFile, string $documentClassName, DocumentManager $documentManager)
     {
         $this->schemaPath = $schemaPath;
+        $this->runtimeDefFile = $runtimeDefFile;
         $this->documentClassName = $documentClassName;
         $this->documentManager = $documentManager;
+    }
+
+    /**
+     * returns the runtime definition
+     *
+     * @return RuntimeDefinition runtime def
+     */
+    public function getRuntimeDefinition() : RuntimeDefinition
+    {
+        return unserialize(file_get_contents($this->runtimeDefFile));
     }
 
     /**

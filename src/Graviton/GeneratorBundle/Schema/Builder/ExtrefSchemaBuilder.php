@@ -44,9 +44,13 @@ class ExtrefSchemaBuilder implements SchemaBuilderInterface
 
             if (is_array($fieldDefinition['collection'])) {
                 $schemaField['pattern'] = $this->getRegex($fieldDefinition['collection'], $allDefinitions);
+                $schemaField['x-collection'] = $fieldDefinition['collection'];
             } else {
                 $schemaField['pattern'] = $this->getRegex(['*'], $allDefinitions);
+                $schemaField['x-collection'] = ['*'];
             }
+
+
         }
 
         return $schemaField;

@@ -167,6 +167,7 @@ services:
           - "%graviton.generator.synthetic_fields%"
           - "%graviton.generator.ensure_indexes%"
           - '@Graviton\GeneratorBundle\Generator\SchemaGenerator'
+          - '@Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder'
         tags:
           -
             name: console.command
@@ -188,6 +189,7 @@ services:
     # schema builder
     Graviton\GeneratorBundle\Schema\Builder\ChoiceSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\EmailSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\FlagsSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\RangeSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\CountSchemaBuilder: ~
@@ -216,6 +218,10 @@ services:
           method: addSchemaBuilder
           arguments:
             - '@Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\FlagsSchemaBuilder'
         -
           method: addSchemaBuilder
           arguments:
@@ -248,3 +254,13 @@ services:
           method: addSchemaBuilder
           arguments:
             - '@Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder'
+
+    # runtime definition builder
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\RecordOriginException: ~
+
+    Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
+      calls:
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\RecordOriginException'

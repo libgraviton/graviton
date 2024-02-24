@@ -13,7 +13,9 @@ use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Generator\SchemaGenerator;
+use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
 use Graviton\I18nBundle\Service\I18nUtils;
+use Graviton\RestBundle\Model\RuntimeDefinition;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -116,16 +118,23 @@ class GenerateDynamicBundleCommand extends Command
     private SchemaGenerator $schemaGenerator;
 
     /**
-     * @param LoaderInterface              $definitionLoader      JSON definition loader
-     * @param BundleGenerator              $bundleGenerator       bundle generator
-     * @param ResourceGenerator            $resourceGenerator     resource generator
-     * @param DynamicBundleBundleGenerator $bundleBundleGenerator bundlebundle generator
-     * @param SerializerInterface          $serializer            Serializer
-     * @param string|null                  $bundleAdditions       Additional bundles list in JSON format
-     * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
-     * @param string|null                  $name                  name
-     * @param string|null                  $syntheticFields       comma separated list of synthetic fields to create
-     * @param string|null                  $ensureIndexes         comma separated list of indexes to ensure
+     * @var RuntimeDefinitionBuilder
+     */
+    private RuntimeDefinitionBuilder $runtimeDefinitionBuilder;
+
+    /**
+     * @param LoaderInterface              $definitionLoader         JSON definition loader
+     * @param BundleGenerator              $bundleGenerator          bundle generator
+     * @param ResourceGenerator            $resourceGenerator        resource generator
+     * @param DynamicBundleBundleGenerator $bundleBundleGenerator    bundlebundle generator
+     * @param SerializerInterface          $serializer               Serializer
+     * @param string|null                  $bundleAdditions          Additional bundles list in JSON format
+     * @param string|null                  $serviceWhitelist         Service whitelist in JSON format
+     * @param string|null                  $name                     name
+     * @param string|null                  $syntheticFields          comma separated list of synthetic fields to create
+     * @param string|null                  $ensureIndexes            comma separated list of indexes to ensure
+     * @param SchemaGenerator              $schemaGenerator          schema generator
+     * @param RuntimeDefinitionBuilder     $runtimeDefinitionBuilder runtime def builder
      */
     public function __construct(
         LoaderInterface $definitionLoader,
@@ -138,7 +147,8 @@ class GenerateDynamicBundleCommand extends Command
         $name = null,
         $syntheticFields = null,
         $ensureIndexes = null,
-        SchemaGenerator $schemaGenerator
+        SchemaGenerator $schemaGenerator,
+        RuntimeDefinitionBuilder $runtimeDefinitionBuilder
     ) {
         parent::__construct($name);
 
@@ -159,6 +169,7 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         $this->schemaGenerator = $schemaGenerator;
+        $this->runtimeDefinitionBuilder = $runtimeDefinitionBuilder;
     }
 
     /**
@@ -269,6 +280,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
+        $definedBundles = [];
 
         /**
          * GENERATE THE BUNDLE(S)
@@ -301,6 +313,8 @@ class GenerateDynamicBundleCommand extends Command
                     $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
+
+                $definedBundles[$bundleDir] = $jsonDef;
 
                 if ($needsGeneration) {
                     $this->generateResources(
@@ -349,6 +363,7 @@ class GenerateDynamicBundleCommand extends Command
         // generate bundlebundle
         $this->generateBundleBundleClass();
 
+        // generate the main openapi schema file
         $mainSchemaFile = $input->getOption('srcDir').self::BUNDLE_NAMESPACE.'/openapi.json';
 
         $this->schemaGenerator->consolidateAllSchemas(
@@ -357,6 +372,7 @@ class GenerateDynamicBundleCommand extends Command
             $mainSchemaFile
         );
 
+        // write the small Entity helper classes
         $entityBundleNamespace = sprintf(self::BUNDLE_NAME_MASK, 'Entity');
         $entityBundleDir = $input->getOption('srcDir').$entityBundleNamespace;
 
@@ -365,6 +381,46 @@ class GenerateDynamicBundleCommand extends Command
             $entityBundleDir,
             $mainSchemaFile
         );
+
+        // write RuntimeDefinition files for each endpoint
+        foreach ($definedBundles as $directory => $jsonDefinition) {
+            // locate openapi.json
+            $finder = Finder::create()
+                ->files()
+                ->in($directory)
+                ->path('config/schema')
+                ->name(['openapi.json']);
+
+            $files = iterator_to_array($finder);
+
+            if (empty($files)) {
+                continue;
+            }
+
+            /**
+             * @var $schemaFile SplFileInfo
+             */
+            $schemaFile = array_pop($files);
+
+            $runtimeDef = $this->runtimeDefinitionBuilder->build(
+                $jsonDefinition,
+                $directory,
+                $schemaFile
+            );
+
+            $destination = $directory.'/Resources/config/graviton.rd';
+            $this->fs->dumpFile(
+                $destination,
+                serialize($runtimeDef)
+            );
+
+            $output->writeln(
+                sprintf('<info>Wrote runtime definition to %s</info>', $destination)
+            );
+
+            $hans = 3;
+
+        }
 
         return 0;
     }

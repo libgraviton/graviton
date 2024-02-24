@@ -906,6 +906,11 @@ class ResourceGenerator extends AbstractGenerator
                     ],
                     [
                         'type' => 'string',
+                        'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
+                            '/Resources/config/graviton.rd\')'
+                    ],
+                    [
+                        'type' => 'string',
                         'value' => $documentClassName
                     ],
                     [
