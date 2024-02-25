@@ -6,7 +6,6 @@
 namespace Graviton\RestBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\RestUtils;
@@ -17,12 +16,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Rs\Json\Patch;
 use Graviton\RestBundle\Service\JsonPatchValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -301,7 +298,6 @@ class RestController
      * @param Request $request Current http request
      *
      * @return Response $response Result of action with data (if successful)
-     * @throws MalformedInputException
      *
      */
     public function putAction($id, Request $request)
@@ -314,15 +310,6 @@ class RestController
         $this->restUtils->validateRequest($request, $model);
 
         $record = $this->restUtils->getEntityFromRequest($request, $model);
-
-        // ID collision between payload and ID in path or empty id!
-        if ($record->getId() != $id) {
-            if (empty($record->getId()) && is_callable(array($record, 'setId'))) {
-                $record->setId($id);
-            } else {
-                throw new MalformedInputException('Record ID in your payload must be the same');
-            }
-        }
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
@@ -344,7 +331,6 @@ class RestController
      * @param Request $request Current http request
      *
      * @return Response $response Result of action with data (if successful)
-     * @throws MalformedInputException
      *
      */
     public function patchAction($id, Request $request)

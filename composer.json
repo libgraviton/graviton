@@ -48,6 +48,8 @@
         "doctrine/inflector": "~2",
 
         "php-jsonpatch/php-jsonpatch": "~4.0",
+        "php-jsonpointer/php-jsonpointer": "~4.0",
+        "swaggest/json-diff": "~3",
         "cebe/php-openapi": "~1",
         "league/openapi-psr7-validator": "~0",
         "riverline/multipart-parser": "~2",

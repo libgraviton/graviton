@@ -174,6 +174,7 @@ services:
     Graviton\RestBundle\Service\RestUtils:
         arguments:
           - "@graviton.rest.serializer"
+          - '@Graviton\RestBundle\Service\BodyChecker'
           - "@logger"
           - "@graviton.cache.adapter.app"
 
@@ -233,7 +234,15 @@ services:
           method: onRqlSearch
           priority: -100
 
-  # fixtures
+    # all body checkers
+    Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck: ~
+
+    Graviton\RestBundle\Service\BodyChecker:
+      calls:
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck' ]
+
+    # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
       public: true
       calls:

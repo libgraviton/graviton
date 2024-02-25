@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Service;
 
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
@@ -16,6 +17,7 @@ use Http\Discovery\Psr17Factory;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
+use Rs\Json\Pointer;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\Serializer\Serializer;
@@ -34,17 +36,22 @@ class RestUtils
     /**
      * @var Serializer
      */
-    private $serializer;
+    private Serializer $serializer;
+
+    /**
+     * @var BodyChecker
+     */
+    private BodyChecker $bodyChecker;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var CacheItemPoolInterface
      */
-    private $cacheProvider;
+    private CacheItemPoolInterface $cacheProvider;
 
     /**
      * @param Serializer             $serializer    serializer
@@ -53,10 +60,12 @@ class RestUtils
      */
     public function __construct(
         Serializer $serializer,
+        BodyChecker $bodyChecker,
         LoggerInterface $logger,
         CacheItemPoolInterface $cacheProvider
     ) {
         $this->serializer = $serializer;
+        $this->bodyChecker = $bodyChecker;
         $this->logger = $logger;
         $this->cacheProvider = $cacheProvider;
     }
@@ -97,11 +106,11 @@ class RestUtils
      * @param string $documentClass Document class
      * @param string $format        Which format to deserialize from
      *
-     * @throws \Exception
-     *
      * @return object|array|integer|double|string|boolean
+     *@throws \Exception
+     *
      */
-    public function deserializeContent($content, $documentClass, $format = 'json')
+    public function deserializeContent($content, string $documentClass, string $format = 'json')
     {
         $record = $this->getSerializer()->deserialize(
             $content,
@@ -121,17 +130,15 @@ class RestUtils
      *
      * @throws \Exception
      */
-    public function validateRequest(Request $request, DocumentModel $model, ?string $overrideBody = null) : void
+    public function validateRequest(Request $request, DocumentModel $model) : void
     {
+        // first, body checks!
+        $this->validateBodyChecks($request, $model);
+
         $psr17Factory = new Psr17Factory();
         $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
 
         $psrRequest = $psrHttpFactory->createRequest($request);
-
-        if (!empty($overrideBody)) {
-            $httpFactory = new HttpFactory();
-            $psrRequest = $psrRequest->withBody($httpFactory->createStream($overrideBody));
-        }
 
         // slash missing at the end of POST requests
         if ($psrRequest->getMethod() == 'POST' && !str_ends_with($psrRequest->getUri()->getPath(), '/')) {
@@ -147,6 +154,44 @@ class RestUtils
             ->getServerRequestValidator();
 
         $validator->validate($psrRequest);
+    }
+
+    private function validateBodyChecks(Request $request, DocumentModel $model) : void
+    {
+        $id = $this->getTargetIdFromRequest($request);
+        $this->bodyChecker->checkRequest(
+            $request,
+            $model,
+            $id
+        );
+    }
+
+    /**
+     * determines which record id the request targets, if any - or it there is a mismatch
+     *
+     * @param Request $request request
+     *
+     * @return string|null id or null
+     */
+    public function getTargetIdFromRequest(Request $request) : ?string
+    {
+        $id = $request->attributes->get('id', null);
+
+        // in body?
+        $bodyId = null;
+        try {
+            $body = new Pointer((string) $request->getContent(false));
+            $bodyId = $body->get('/id');
+        } catch (\Throwable $t) {
+            // it's ok..
+        }
+
+        if (!empty($id) && !empty($bodyId) && $id != $bodyId) {
+            // collision!
+            throw new MalformedInputException('Record ID in your payload must be the same');
+        }
+
+        return !empty($id) ? $id : $bodyId;
     }
 
     /**
