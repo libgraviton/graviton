@@ -125,15 +125,18 @@ class RestUtils
      * Validates content with the given schema, returning an array of errors.
      * If all is good, you will receive an empty array.
      *
-     * @param Request       $request request
-     * @param DocumentModel $model   the model to check the schema for
+     * @param Request       $request        request
+     * @param DocumentModel $model          the model to check the schema for
+     * @param bool          $skipBodyChecks should we skip body checks?
      *
      * @throws \Exception
      */
-    public function validateRequest(Request $request, DocumentModel $model) : void
+    public function validateRequest(Request $request, DocumentModel $model, bool $skipBodyChecks = false) : void
     {
         // first, body checks!
-        $this->validateBodyChecks($request, $model);
+        if (!$skipBodyChecks) {
+            $this->validateBodyChecks($request, $model);
+        }
 
         $psr17Factory = new Psr17Factory();
         $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);

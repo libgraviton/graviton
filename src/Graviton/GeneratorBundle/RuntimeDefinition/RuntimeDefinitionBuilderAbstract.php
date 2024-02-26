@@ -63,6 +63,18 @@ abstract class RuntimeDefinitionBuilderAbstract
             $prefix .= '.';
         }
 
+        if (empty($schema->properties) && $schema->additionalProperties === true) {
+            // strip trailing / if there
+            if (str_ends_with($prefix, '.')) {
+                $prefix = substr($prefix, 0, -1);
+            }
+
+            return [
+                $prefix => $schema,
+                $prefix.'.*' => $schema
+            ];
+        }
+
         foreach ($schema->properties as $fieldName => $property) {
             if ($property->type == 'object') {
                 $fields += $this->getAllFields($property, $prefix.$fieldName);

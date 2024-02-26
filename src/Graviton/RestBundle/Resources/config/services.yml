@@ -235,7 +235,10 @@ services:
           priority: -100
 
     # all body checkers
-    Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck:
+      arguments:
+        - recordOrigin
+        - "%graviton.rest.not_modifiable.origin.records%"
 
     Graviton\RestBundle\Service\BodyChecker:
       calls:

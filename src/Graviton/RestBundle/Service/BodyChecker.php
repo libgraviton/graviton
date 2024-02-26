@@ -7,7 +7,9 @@ namespace Graviton\RestBundle\Service;
 
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\RestBundle\Service\BodyChecks\BodyCheckerInterface;
+use Graviton\RestBundle\Service\BodyChecks\BodyCheckData;
+use Graviton\RestBundle\Service\BodyChecks\BodyCheckerAbstract;
+use Rs\Json\Pointer;
 use Swaggest\JsonDiff\JsonDiff;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -20,7 +22,7 @@ class BodyChecker
 {
 
     /**
-     * @var BodyCheckerInterface[]
+     * @var BodyCheckerAbstract[]
      */
     private array $bodyChecks = [];
 
@@ -29,7 +31,7 @@ class BodyChecker
 
     }
 
-    public function addBodyCheck(BodyCheckerInterface $bodyChecker)
+    public function addBodyCheck(BodyCheckerAbstract $bodyChecker)
     {
         $this->bodyChecks[] = $bodyChecker;
     }
@@ -38,6 +40,7 @@ class BodyChecker
     {
         $existingPayload = null;
         $existingDiff = null;
+        $existingPointer = null;
         if (!empty($existingId)) {
             try {
                 $existingPayload = $model->getSerialised($existingId);
@@ -46,13 +49,23 @@ class BodyChecker
                     json_decode((string)$request->getContent()),
                     JsonDiff::REARRANGE_ARRAYS
                 );
+                $existingPointer = new Pointer($existingPayload);
             } catch (\Throwable $t) {
                 throw new MalformedInputException('Unable to determine diff between input and current.', $t);
             }
         }
 
+        $data = new BodyCheckData(
+            $request,
+            $model,
+            $existingId,
+            $existingPayload,
+            $existingPointer,
+            $existingDiff
+        );
+
         foreach ($this->bodyChecks as $check) {
-            $check->check($request, $model, $existingId, $existingPayload, $existingDiff);
+            $check->check($data);
         }
     }
 }

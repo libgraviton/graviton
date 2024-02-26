@@ -110,6 +110,15 @@ class SchemaGenerator extends AbstractGenerator
             $reservedFieldNames[] = 'id';
         }
 
+        // add record origin if applicable
+        if (isset($parameters['isrecordOriginFlagSet']) && $parameters['isrecordOriginFlagSet'] == true) {
+            $thisSchema['properties']['recordOrigin'] = [
+                'type' => 'string',
+                'title' => 'Record Origin',
+                'description' => 'Where this record originated from'
+            ];
+        }
+
         // create fields!
         foreach ($parameters['fields'] as $field) {
             $fieldDefinition = [];

@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
+use Graviton\RestBundle\Service\BodyChecks\BodyCheckViolation;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +32,22 @@ class ValidationExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
+        // body check violation?
+        if ($event->getThrowable() instanceof BodyCheckViolation) {
+            $event->setResponse(
+                new JsonResponse(
+                    [
+                        [
+                            'propertyPath' => $event->getThrowable()->propertyPath,
+                            'message' => $event->getThrowable()->getMessage()
+                        ]
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                )
+            );
+            return;
+        }
+
         if (($exception = $event->getThrowable()) instanceof ValidationFailed) {
             $event->setResponse(
                 new JsonResponse(

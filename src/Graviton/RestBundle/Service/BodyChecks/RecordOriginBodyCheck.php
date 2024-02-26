@@ -5,23 +5,84 @@
 
 namespace Graviton\RestBundle\Service\BodyChecks;
 
-use Graviton\RestBundle\Model\DocumentModel;
-use Swaggest\JsonDiff\JsonDiff;
-use Symfony\Component\HttpFoundation\Request;
+use Rs\Json\Pointer;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class RecordOriginBodyCheck implements BodyCheckerInterface
+readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
 {
 
-    public function check(Request $request, DocumentModel $model, ?string $existingId, ?string $existingSerialized, ?JsonDiff $jsonDiff)
+    public function __construct(private string $recordOriginField, private array $recordOriginBlacklist)
     {
-
-
-        $hans = 3;
     }
 
+    public function check(BodyCheckData $data): void
+    {
+        // if no existing, we don't do anything!
+        if (empty($data->existingId)) {
+            // it is not allowed to create records with the blacklist origins!
+            $payloadPointer = new Pointer((string) $data->request->getContent());
+            $origin = $payloadPointer->get('/recordOrigin');
+
+            $list = array_map('strtolower', $this->recordOriginBlacklist);
+
+            if (!empty($origin) && in_array(strtolower(trim($origin)), $list)) {
+                throw new BodyCheckViolation(
+                    sprintf(
+                        'It is not allowed to create records with recordOrigin values "%s"',
+                        implode(', ', $this->recordOriginBlacklist)
+                    ),
+                    'recordOrigin'
+                );
+            }
+
+            return;
+        }
+
+        $pointer = $data->jsonExisting;
+        try {
+            $existingRecordOrigin = $pointer->get('/'.$this->recordOriginField);
+
+            // empty -> finish
+            if (empty($existingRecordOrigin)) {
+                return;
+            }
+
+            if (!in_array($existingRecordOrigin, $this->recordOriginBlacklist)) {
+                return;
+            }
+        } catch (\Throwable $t) {
+            // nothing -> finish
+            return;
+        }
+
+        // ok, need to do checking!
+        $runtimeDef = $data->model->getRuntimeDefinition();
+
+        // no exception fields but we have modifications! deny!
+        if (empty($runtimeDef->getRecordOriginExceptionFields()) && $data->jsonDiff->getModifiedCnt() > 0) {
+            throw new BodyCheckViolation(
+                'Service does not allow for any data modification',
+                'recordOrigin'
+            );
+        }
+
+        // check modified fields
+        $modifiedFields = $data->getAllModifiedFields();
+        $allowedFields = $data->pathListToPatchFormat($runtimeDef->getRecordOriginExceptionFields());
+
+        if (!$data->isListIncludedInSublist($allowedFields, $modifiedFields)) {
+            throw new BodyCheckViolation(
+                sprintf(
+                    'Only the fields "%s" are allowed to be modified in this service if recordOrigin are in "%s"',
+                    implode(', ', $allowedFields),
+                    implode(', ', $this->recordOriginBlacklist)
+                ),
+                'recordOrigin'
+            );
+        }
+    }
 }
