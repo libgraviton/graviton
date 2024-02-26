@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
 use GravitonDyn\TestCaseVersioningEntityBundle\DataFixtures\MongoDB\LoadTestCaseVersioningEntityData;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\TestBundle\Test\RestTestCase;

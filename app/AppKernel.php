@@ -18,7 +18,6 @@ use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
 use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use League\FlysystemBundle\FlysystemBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -96,7 +95,6 @@ class AppKernel extends Kernel
                 new GravitonCoreBundle(),
                 new GravitonExceptionBundle(),
                 new GravitonDocumentBundle(),
-                new GravitonSchemaBundle(),
                 new GravitonRestBundle(),
                 new GravitonI18nBundle(),
                 new GravitonGeneratorBundle(),

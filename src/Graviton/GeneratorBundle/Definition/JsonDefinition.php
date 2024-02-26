@@ -4,7 +4,7 @@ namespace Graviton\GeneratorBundle\Definition;
 use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\Service;
 use Graviton\GeneratorBundle\Definition\Schema\Solr;
-use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
+use Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck;
 
 /**
  * This class represents the json file that defines the structure
@@ -288,7 +288,7 @@ class JsonDefinition
             $definition = new Schema\Field();
             $constraint = new Constraint();
             $constraint->setName('versioning');
-            $definition->setName(VersionServiceConstraint::FIELD_NAME)->setTitle('Version')->setType('int')
+            $definition->setName(VersionedServiceBodyCheck::FIELD_NAME)->setTitle('Version')->setType('int')
                        ->setConstraints([$constraint])
                        ->setDescription('Document version. You need to send current version if you want to update.');
             $fields['version'] = $this->processSimpleField('version',  $definition);
