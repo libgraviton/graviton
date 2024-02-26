@@ -3,7 +3,7 @@
  * test for RecordOriginConstraint
  */
 
-namespace Graviton\SchemaBundle\Tests\Controller;
+namespace Graviton\RestBundle\Tests\Controller;
 
 use Graviton\SchemaBundle\Constraint\RecordOriginConstraint;
 use Graviton\TestBundle\Test\RestTestCase;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RecordOriginConstraintTest extends RestTestCase
+class RecordOriginBodyCheckerTest extends RestTestCase
 {
 
     /**

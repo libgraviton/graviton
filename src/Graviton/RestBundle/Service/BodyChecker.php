@@ -41,7 +41,8 @@ class BodyChecker
         $existingPayload = null;
         $existingDiff = null;
         $existingPointer = null;
-        if (!empty($existingId)) {
+
+        if (!empty($existingId) && $model->recordExists($existingId)) {
             try {
                 $existingPayload = $model->getSerialised($existingId);
                 $existingDiff = new JsonDiff(

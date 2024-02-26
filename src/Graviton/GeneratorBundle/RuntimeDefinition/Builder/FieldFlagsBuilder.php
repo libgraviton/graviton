@@ -5,8 +5,6 @@
 
 namespace Graviton\GeneratorBundle\RuntimeDefinition\Builder;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\Schema;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilderAbstract;
 use Graviton\RestBundle\Model\RuntimeDefinition;
@@ -17,7 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RecordOriginException extends RuntimeDefinitionBuilderAbstract
+class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
 {
 
     /**
@@ -40,6 +38,7 @@ class RecordOriginException extends RuntimeDefinitionBuilderAbstract
 
         $recordOriginExceptionFields = [];
         $readOnlyFields = [];
+        $incrementalDateFields = [];
 
         foreach ($fields as $path => $field) {
             if (isset($field->{'x-recordOriginException'}) && $field->{'x-recordOriginException'} === true) {
@@ -49,9 +48,14 @@ class RecordOriginException extends RuntimeDefinitionBuilderAbstract
             if (isset($field->{'x-readOnly'}) && $field->{'x-readOnly'} === true) {
                 $readOnlyFields[] = $path;
             }
+
+            if (isset($field->{'x-incrementalDate'}) && $field->{'x-incrementalDate'} === true) {
+                $incrementalDateFields[] = $path;
+            }
         }
 
         $runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
         $runtimeDefinition->setReadOnlyFields($readOnlyFields);
+        $runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
     }
 }

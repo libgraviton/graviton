@@ -256,11 +256,11 @@ services:
             - '@Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder'
 
     # runtime definition builder
-    Graviton\GeneratorBundle\RuntimeDefinition\Builder\RecordOriginException: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder: ~
 
     Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
       calls:
         -
           method: addBuilder
           arguments:
-            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\RecordOriginException'
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder'

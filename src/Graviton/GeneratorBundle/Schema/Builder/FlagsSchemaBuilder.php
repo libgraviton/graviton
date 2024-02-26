@@ -32,7 +32,9 @@ class FlagsSchemaBuilder implements SchemaBuilderInterface
         if (isset($fieldDefinition['readOnly']) && $fieldDefinition['readOnly'] === true) {
             $schemaField['x-readOnly'] = true;
         }
-
+        if (isset($fieldDefinition['constraints']['incrementalDate'])) {
+            $schemaField['x-incrementalDate'] = true;
+        }
         return $schemaField;
     }
 }

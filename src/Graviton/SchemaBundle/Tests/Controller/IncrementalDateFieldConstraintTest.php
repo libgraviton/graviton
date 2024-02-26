@@ -6,6 +6,9 @@
 namespace Graviton\SchemaBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\SecurityUserBundle\DataFixtures\MongoDB\LoadSecurityUserData;
+use GravitonDyn\TestCaseIncrementalDateConstraintBundle\DataFixtures\MongoDB\LoadTestCaseIncrementalDateConstraintData;
+use GravitonDyn\TestCaseRestrictedFieldsBundle\DataFixtures\MongoDB\LoadTestCaseRestrictedFieldsData;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,6 +18,20 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class IncrementalDateFieldConstraintTest extends RestTestCase
 {
+
+    /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp() : void
+    {
+        $this->loadFixturesLocal(
+            [
+                LoadTestCaseIncrementalDateConstraintData::class
+            ]
+        );
+    }
 
     /**
      * test the validation of the incrementalDate constraint
@@ -55,7 +72,7 @@ class IncrementalDateFieldConstraintTest extends RestTestCase
             $this->assertEquals(
                 $client->getResults()[0],
                 (object) [
-                    'propertyPath' => 'mightyDate',
+                    'propertyPath' => '/mightyDate',
                     'message' => 'The date must be greater than the saved date 1984-05-02T07:00:01+0000'
                 ]
             );
@@ -76,7 +93,7 @@ class IncrementalDateFieldConstraintTest extends RestTestCase
                 $this->assertEquals(
                     $client->getResults()[0],
                     (object) [
-                        'propertyPath' => 'mightyDate',
+                        'propertyPath' => '/mightyDate',
                         'message' => 'The date must be greater than the saved date 1984-05-02T07:00:01+0000'
                     ]
                 );

@@ -21,22 +21,25 @@ readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
 
     public function check(BodyCheckData $data): void
     {
-        // if no existing, we don't do anything!
-        if (empty($data->existingId)) {
+        if (empty($data->jsonExisting)) {
             // it is not allowed to create records with the blacklist origins!
             $payloadPointer = new Pointer((string) $data->request->getContent());
-            $origin = $payloadPointer->get('/recordOrigin');
+            try {
+                $origin = $payloadPointer->get('/recordOrigin');
 
-            $list = array_map('strtolower', $this->recordOriginBlacklist);
+                $list = array_map('strtolower', $this->recordOriginBlacklist);
 
-            if (!empty($origin) && in_array(strtolower(trim($origin)), $list)) {
-                throw new BodyCheckViolation(
-                    sprintf(
-                        'It is not allowed to create records with recordOrigin values "%s"',
-                        implode(', ', $this->recordOriginBlacklist)
-                    ),
-                    'recordOrigin'
-                );
+                if (!empty($origin) && in_array(strtolower(trim($origin)), $list)) {
+                    throw new BodyCheckViolation(
+                        sprintf(
+                            'It is not allowed to create records with recordOrigin values "%s"',
+                            implode(', ', $this->recordOriginBlacklist)
+                        ),
+                        'recordOrigin'
+                    );
+                }
+            } catch (\Throwable $t) {
+                // does not exist; return also
             }
 
             return;

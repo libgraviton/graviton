@@ -24,6 +24,11 @@ class RuntimeDefinition
     private array $readOnlyFields = [];
 
     /**
+     * @var string[]
+     */
+    private array $incrementalDateFields = [];
+
+    /**
      * get fields
      *
      * @return string[] fields
@@ -65,5 +70,21 @@ class RuntimeDefinition
     public function setReadOnlyFields(array $readOnlyFields): void
     {
         $this->readOnlyFields = $readOnlyFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIncrementalDateFields(): array
+    {
+        return $this->incrementalDateFields;
+    }
+
+    /**
+     * @param array $incrementalDateFields
+     */
+    public function setIncrementalDateFields(array $incrementalDateFields): void
+    {
+        $this->incrementalDateFields = $incrementalDateFields;
     }
 }
