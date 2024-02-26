@@ -3,12 +3,10 @@
  * test for IncrementalDateFieldConstraint
  */
 
-namespace Graviton\SchemaBundle\Tests\Controller;
+namespace Graviton\RestBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
-use GravitonDyn\SecurityUserBundle\DataFixtures\MongoDB\LoadSecurityUserData;
 use GravitonDyn\TestCaseIncrementalDateConstraintBundle\DataFixtures\MongoDB\LoadTestCaseIncrementalDateConstraintData;
-use GravitonDyn\TestCaseRestrictedFieldsBundle\DataFixtures\MongoDB\LoadTestCaseRestrictedFieldsData;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class IncrementalDateFieldConstraintTest extends RestTestCase
+class IncrementalDateFieldBodyCheckerTest extends RestTestCase
 {
 
     /**

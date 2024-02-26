@@ -7,13 +7,13 @@ namespace Graviton\CoreBundle\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\RestBundle\Service\RestUtils;
-use Graviton\SchemaBundle\Trait\SchemaTrait;
+use Graviton\RestBundle\Trait\SchemaTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 
 /**
  * MainController

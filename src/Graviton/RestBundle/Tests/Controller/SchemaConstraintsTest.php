@@ -3,7 +3,7 @@
  * integration tests for our supported constraints
  */
 
-namespace Graviton\SchemaBundle\Tests\Controller;
+namespace Graviton\RestBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,8 +46,8 @@ class SchemaConstraintsTest extends RestTestCase
         $client->post('/testcase/schema-constraints/', $object);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $results = $client->getResults();
-        $this->assertEquals($field, $results[0]->propertyPath);
-        $this->assertEquals($errorMessage, $results[0]->message);
+        $this->assertEquals($field, $results[1]->propertyPath);
+        $this->assertStringContainsString($errorMessage, $results[1]->message);
     }
 
     /**
@@ -65,7 +65,7 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'emptyField',
                 'acceptedValue' => '',
                 'rejectedValue' => 'h',
-                'errorMessage' => 'Must be at most 0 characters long'
+                'errorMessage' => 'Length of \'h\' must be shorter or equal to 0'
             ],
 
             // Choice
@@ -74,13 +74,13 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'choiceString',
                 'acceptedValue' => 'a lo mejor',
                 'rejectedValue' => 'no puedo',
-                'errorMessage' => 'Does not have a value in the enumeration ["si","no","a lo mejor","mas"]'
+                'errorMessage' => 'Value must be present in the enum'
             ],
             'choice-integer' => [
                 'field' => 'choiceInteger',
                 'acceptedValue' => 0,
                 'rejectedValue' => 5,
-                'errorMessage' => 'Does not have a value in the enumeration [0,1,2]'
+                'errorMessage' => 'Value must be present in the enum'
             ],
 
             // Email
@@ -89,7 +89,7 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'email',
                 'acceptedValue' => 'hans.hofer@swisscom.com',
                 'rejectedValue' => 'invalidemail@sss.',
-                'errorMessage' => 'Invalid email'
+                'errorMessage' => 'does not match format email'
             ],
 
             // Url
@@ -98,7 +98,7 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'url',
                 'acceptedValue' => 'https://github.com/libgraviton/graviton',
                 'rejectedValue' => 'jjj--no-url',
-                'errorMessage' => 'Invalid URL format'
+                'errorMessage' => 'does not match format uri of type string'
             ],
 
             // Range
@@ -107,37 +107,37 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'rangeInteger',
                 'acceptedValue' => 5,
                 'rejectedValue' => 4,
-                'errorMessage' => 'Must have a minimum value of 5'
+                'errorMessage' => 'Value 4 must be greater or equal to 5'
             ],
             'range-integer-upper-bound' => [
                 'field' => 'rangeInteger',
                 'acceptedValue' => 9,
                 'rejectedValue' => 10,
-                'errorMessage' => 'Must have a maximum value of 9'
+                'errorMessage' => 'Value 10 must be less or equal to 9'
             ],
             'range-double-lower-bound' => [
                 'field' => 'rangeDouble',
                 'acceptedValue' => 0.0,
                 'rejectedValue' => -0.0001,
-                'errorMessage' => 'Must have a minimum value of 0'
+                'errorMessage' => 'Value 0 must be greater or equal to 0'
             ],
             'range-double-upper-bound' => [
                 'field' => 'rangeDouble',
                 'acceptedValue' => 1.0,
                 'rejectedValue' => 1.0000001,
-                'errorMessage' => 'Must have a maximum value of 1'
+                'errorMessage' => 'Value 1 must be less or equal to 1'
             ],
             'range-integer-only-min' => [
                 'field' => 'rangeIntegerOnlyMin',
                 'acceptedValue' => 5,
                 'rejectedValue' => 4,
-                'errorMessage' => 'Must have a minimum value of 5'
+                'errorMessage' => 'Value 4 must be greater or equal to 5'
             ],
             'range-integer-only-max' => [
                 'field' => 'rangeIntegerOnlyMax',
                 'acceptedValue' => 5,
                 'rejectedValue' => 6,
-                'errorMessage' => 'Must have a maximum value of 5'
+                'errorMessage' => 'Value 6 must be less or equal to 5'
             ],
 
             // GreatherThanOrEqual
@@ -146,13 +146,13 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'greaterThanOrEqualInt',
                 'acceptedValue' => 0,
                 'rejectedValue' => -1,
-                'errorMessage' => 'Must have a minimum value of 0'
+                'errorMessage' => 'Value -1 must be greater or equal to 0'
             ],
             'greaterthan-double' => [
                 'field' => 'greaterThanOrEqualDouble',
                 'acceptedValue' => 0.1,
                 'rejectedValue' => 0,
-                'errorMessage' => 'Must have a minimum value of 0.1'
+                'errorMessage' => 'Value 0 must be greater or equal to 0'
             ],
 
             // LessThanOrEqual
@@ -161,13 +161,13 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'lessThanOrEqualInt',
                 'acceptedValue' => 0,
                 'rejectedValue' => 1,
-                'errorMessage' => 'Must have a maximum value of 0'
+                'errorMessage' => 'Value 1 must be less or equal to 0'
             ],
             'lessthan-double' => [
                 'field' => 'lessThanOrEqualDouble',
                 'acceptedValue' => 0.1,
                 'rejectedValue' => 0.1000001,
-                'errorMessage' => 'Must have a maximum value of 0.1'
+                'errorMessage' => 'Value 0 must be less or equal to 0'
             ],
 
             // Decimal (a decimal formatted string field)
@@ -176,37 +176,37 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000.5555',
                 'rejectedValue' => '1,0', // wrong separator
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
             'decimal-string-notation' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000',
                 'rejectedValue' => '1.', // nothing after separator
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
             'decimal-string-muchprecision' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000.3333333333333333',
                 'rejectedValue' => 'O', // other string
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
             'decimal-string-minus' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '-3.3333333333333',
                 'rejectedValue' => ';1.0', // wrong prefix
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
             'decimal-string-plus' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '+3.3333333333333',
                 'rejectedValue' => ';1.0', // wrong prefix
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
             'decimal-string-string' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '0',
                 'rejectedValue' => 'somestring', // string
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+                'errorMessage' => 'Data does not match pattern'
             ],
 
             // Count (number of array elements)
@@ -215,13 +215,13 @@ class SchemaConstraintsTest extends RestTestCase
                 'field' => 'arrayCount',
                 'acceptedValue' => ['a'],
                 'rejectedValue' => [],
-                'errorMessage' => 'There must be a minimum of 1 items in the array'
+                'errorMessage' => 'Size of an array must be greater or equal to 1'
             ],
             'count-array-upper' => [
                 'field' => 'arrayCount',
                 'acceptedValue' => ['a', 'b', 'c'],
                 'rejectedValue' => ['a', 'b', 'c', 'd'],
-                'errorMessage' => 'There must be a maximum of 3 items in the array'
+                'errorMessage' => 'Size of an array must be less or equal to 3'
             ]
 
 

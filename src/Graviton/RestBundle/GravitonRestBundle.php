@@ -49,4 +49,20 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new RestServicesCompilerPass);
         $container->addCompilerPass(new RestrictionListenerCompilerPass());
     }
+
+    public function boot()
+    {
+        // add schema format validator
+        // stricter uri format
+
+        $uriValidator = function ($value): bool {
+            return (filter_var($value, FILTER_VALIDATE_URL, FILTER_NULL_ON_FAILURE) !== null);
+        };
+
+        \League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer::registerFormat(
+            'string',
+            'uri',
+            $uriValidator
+        );
+    }
 }

@@ -153,6 +153,7 @@ class RestUtils
         }
 
         $validator = (new ValidatorBuilder())
+            ->setCache($this->cacheProvider)
             ->fromJsonFile($model->getSchemaPath())
             ->getServerRequestValidator();
 

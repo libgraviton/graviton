@@ -2,7 +2,7 @@
 /**
  * trait for simple schema controller stuff
  */
-namespace Graviton\SchemaBundle\Trait;
+namespace Graviton\RestBundle\Trait;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
