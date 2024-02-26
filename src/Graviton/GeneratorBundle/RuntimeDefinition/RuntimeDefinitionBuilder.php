@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\RuntimeDefinition;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\RuntimeDefinition\Builder\RuntimeBuilderData;
 use Graviton\RestBundle\Model\RuntimeDefinition;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -44,17 +45,17 @@ class RuntimeDefinitionBuilder
      */
     public function build(JsonDefinition $definition, string $directory, SplFileInfo $schemaFile) : RuntimeDefinition
     {
-        $runtime = new RuntimeDefinition();
+        $data = new RuntimeBuilderData(
+            new RuntimeDefinition(),
+            $definition,
+            $directory,
+            $schemaFile
+        );
 
         foreach ($this->builders as $builder) {
-            $builder->build(
-                $runtime,
-                $definition,
-                $directory,
-                $schemaFile
-            );
+            $builder->build($data);
         }
 
-        return $runtime;
+        return $data->runtimeDefinition;
     }
 }

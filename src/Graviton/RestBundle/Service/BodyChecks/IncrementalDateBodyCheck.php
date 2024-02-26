@@ -32,7 +32,7 @@ readonly class IncrementalDateBodyCheck extends BodyCheckerAbstract
             return;
         }
 
-        $payload = new Pointer((string) $data->request->getContent());
+        $payload = new Pointer((string) $data->request->getBody());
 
         foreach ($incDateFields as $fieldPath) {
             $this->compareTwoFields(
@@ -41,7 +41,6 @@ readonly class IncrementalDateBodyCheck extends BodyCheckerAbstract
                 $data->jsonExisting
             );
         }
-
     }
 
     private function compareTwoFields(string $fieldPath, Pointer $payload, Pointer $existing)

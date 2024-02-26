@@ -10,6 +10,7 @@ use Graviton\FileBundle\Manager\FileManager;
 use Graviton\FileBundle\Manager\RequestManager;
 use Graviton\RestBundle\Controller\RestController;
 use GravitonDyn\FileBundle\Document\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -67,20 +68,21 @@ class FileController extends RestController
         $file = new File();
         $request = $this->requestManager->updateFileRequest($request);
 
+        $response = new Response('', Response::HTTP_CREATED);
+
         if ($formData = $request->get('metadata')) {
-            $this->restUtils->validateRequest($request, $this->getModel());
-            $file = $this->restUtils->getEntityFromRequest($request, $this->getModel());
+            $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
+            $file = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
         }
 
         $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
 
         // Set status code and content
-        $response = $this->getResponse();
-        $response->setStatusCode(Response::HTTP_CREATED);
         $response->headers->set(
             'Location',
             $this->getRouter()->generate('File.get', array('id' => $file->getId()))
         );
+
         return $response;
     }
 
@@ -122,17 +124,17 @@ class FileController extends RestController
         /** @var FileModel $model */
         $model = $this->getModel();
 
+        $response = new Response('', Response::HTTP_NO_CONTENT);
+
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
-            $this->restUtils->validateRequest($request, $model);
-            $file = $this->restUtils->getEntityFromRequest($request, $model);
+            $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
+            $file = $this->restUtils->getEntityFromRequest($psrRequest, $model);
         }
 
         $file = $this->fileManager->handleSaveRequest($file, $request, $model);
 
         // Set status code and content
-        $response = $this->getResponse();
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
         $response->headers->set(
             'Location',
             $this->getRouter()->generate('File.get', array('id' => $file->getId()))

@@ -240,13 +240,19 @@ services:
         - recordOrigin
         - "%graviton.rest.not_modifiable.origin.records%"
     Graviton\RestBundle\Service\BodyChecks\IncrementalDateBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\ReadOnlyFieldsBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck: ~
 
     Graviton\RestBundle\Service\BodyChecker:
       calls:
         - method: addBodyCheck
           arguments: [ '@Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck' ]
         - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\ReadOnlyFieldsBodyCheck' ]
+        - method: addBodyCheck
           arguments: [ '@Graviton\RestBundle\Service\BodyChecks\IncrementalDateBodyCheck' ]
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck' ]
 
     # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:

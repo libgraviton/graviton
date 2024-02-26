@@ -70,19 +70,6 @@ services:
       - name: jms_serializer.deserialization_visitor
         format: json
 
-  graviton.document.listener.documentversion:
-    class: "%graviton.document.listener.documentversionlistener.class%"
-    arguments:
-      - "@doctrine_mongodb.odm.default_document_manager"
-      - "@graviton.schema.constraint.versionservice"
-    tags:
-      - name: kernel.event_listener
-        event: document.model.event.insert
-        method: modelInsert
-      - name: kernel.event_listener
-        event: document.model.event.update
-        method: modelUpdate
-
   graviton.document.listener.extreferencesearchlistener:
     class: "%graviton.document.listener.extreferencesearchlistener.class%"
     arguments:

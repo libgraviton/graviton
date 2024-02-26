@@ -257,6 +257,7 @@ services:
 
     # runtime definition builder
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder: ~
 
     Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
       calls:
@@ -264,3 +265,7 @@ services:
           method: addBuilder
           arguments:
             - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder'

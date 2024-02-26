@@ -327,44 +327,4 @@ class RecordOriginBodyCheckerTest extends RestTestCase
 
         ];
     }
-
-    /**
-     * test the validation of the convertDatetimeToUTC
-     *
-     * @return void
-     */
-    public function testPrivateConvertUTC()
-    {
-        $data = [
-            "fielddata" => "2016-05-09T22:00:00+0100",
-            "fieldobj"  => [
-                    "subfield" => "2016-10-09T10:00:00+0100"
-                ]
-            ];
-        $schema = [
-            "properties" => [
-                "fielddata" => ["format" => "date-time"],
-                "fieldobj"  => [
-                    "properties" => [
-                        "subfield" => [
-                            "format" => "date-time"
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-        $schema = json_decode(json_encode($schema));
-        $data = json_decode(json_encode($data));
-
-        $zone = new \DateTimeZone('UTC');
-
-        /** @var RecordOriginConstraint $class */
-        $class = $this->getContainer()->get('graviton.schema.constraint.recordorigin');
-        $method = $this->getPrivateClassMethod(get_class($class), 'convertDatetimeToUTC');
-
-        $result = $method->invokeArgs($class, [$data, $schema, $zone]);
-
-        $this->assertEquals('2016-05-09T21:00:00+0000', $result->fielddata);
-        $this->assertEquals('2016-10-09T09:00:00+0000', $result->fieldobj->subfield);
-    }
 }

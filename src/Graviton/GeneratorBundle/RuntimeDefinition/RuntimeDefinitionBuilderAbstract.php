@@ -8,6 +8,7 @@ namespace Graviton\GeneratorBundle\RuntimeDefinition;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Schema;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\RuntimeDefinition\Builder\RuntimeBuilderData;
 use Graviton\RestBundle\Model\RuntimeDefinition;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -21,17 +22,9 @@ abstract class RuntimeDefinitionBuilderAbstract
     /**
      * work on RuntimeDefinition
      *
-     * @param RuntimeDefinition $runtimeDefinition runtime def
-     * @param JsonDefinition    $definition        definition
-     * @param string            $directory         directory
-     * @param SplFileInfo       $schemaFile        file info
+     * @param RuntimeBuilderData $data data
      */
-    abstract public function build(
-        RuntimeDefinition $runtimeDefinition,
-        JsonDefinition $definition,
-        string $directory,
-        SplFileInfo $schemaFile
-    ) : void;
+    abstract public function build(RuntimeBuilderData $data) : void;
 
     /**
      * Gets the base Schema file of a definition

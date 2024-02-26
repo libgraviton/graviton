@@ -6,9 +6,9 @@
 namespace Graviton\RestBundle\Service\BodyChecks;
 
 use Graviton\RestBundle\Model\DocumentModel;
+use Psr\Http\Message\ServerRequestInterface;
 use Rs\Json\Pointer;
 use Swaggest\JsonDiff\JsonDiff;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -18,14 +18,36 @@ use Symfony\Component\HttpFoundation\Request;
 readonly class BodyCheckData
 {
 
+    /**
+     * constructor.
+     *
+     * @param ServerRequestInterface $request
+     * @param DocumentModel $model
+     * @param string|null $existingId
+     * @param string|null $existingSerialized
+     * @param Pointer|null $jsonExisting
+     * @param JsonDiff|null $jsonDiff
+     */
      public function __construct(
-         public Request $request,
+         public ServerRequestInterface $request,
          public DocumentModel $model,
          public ?string $existingId,
          public ?string $existingSerialized,
          public ?Pointer $jsonExisting,
-         public ?JsonDiff $jsonDiff
+         public ?JsonDiff $jsonDiff,
+         public \SplStack $userPayloadModifier = new \SplStack(),
+         public \SplStack $responseModifier = new \SplStack()
      ) {}
+
+    public function addPayloadModifier(callable $modifier)
+    {
+        $this->userPayloadModifier->push($modifier);
+    }
+
+    public function addResponseModifier(callable $modifier)
+    {
+        $this->responseModifier->push($modifier);
+    }
 
     /**
      * returns all modified field paths
@@ -101,5 +123,4 @@ readonly class BodyCheckData
 
         return empty($subList);
     }
-
 }

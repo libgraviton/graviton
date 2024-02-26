@@ -29,6 +29,11 @@ class RuntimeDefinition
     private array $incrementalDateFields = [];
 
     /**
+     * @var bool
+     */
+    private bool $isVersioned = false;
+
+    /**
      * get fields
      *
      * @return string[] fields
@@ -86,5 +91,21 @@ class RuntimeDefinition
     public function setIncrementalDateFields(array $incrementalDateFields): void
     {
         $this->incrementalDateFields = $incrementalDateFields;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVersioned(): bool
+    {
+        return $this->isVersioned;
+    }
+
+    /**
+     * @param bool $isVersioned
+     */
+    public function setIsVersioned(bool $isVersioned): void
+    {
+        $this->isVersioned = $isVersioned;
     }
 }

@@ -16,11 +16,13 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Discovery\Psr17Factory;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Rs\Json\Pointer;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -131,12 +133,12 @@ class RestUtils
      *
      * @throws \Exception
      */
-    public function validateRequest(Request $request, DocumentModel $model, bool $skipBodyChecks = false) : void
-    {
-        // first, body checks!
-        if (!$skipBodyChecks) {
-            $this->validateBodyChecks($request, $model);
-        }
+    public function validateRequest(
+        Request $request,
+        Response $response,
+        DocumentModel $model,
+        bool $skipBodyChecks = false
+    ) : ServerRequestInterface {
 
         $psr17Factory = new Psr17Factory();
         $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
@@ -148,8 +150,12 @@ class RestUtils
             $newUri = $psrRequest->getUri()->withPath(
                 $psrRequest->getUri()->getPath() . '/'
             );
-
             $psrRequest = $psrRequest->withUri($newUri);
+        }
+
+        // first, body checks!
+        if (!$skipBodyChecks) {
+            $psrRequest = $this->validateBodyChecks($psrRequest, $response, $model);
         }
 
         $validator = (new ValidatorBuilder())
@@ -158,13 +164,25 @@ class RestUtils
             ->getServerRequestValidator();
 
         $validator->validate($psrRequest);
+
+        return $psrRequest;
     }
 
-    private function validateBodyChecks(Request $request, DocumentModel $model) : void
+    /**
+     * performs body checks. these are checks that cannot be done by the openapi validator library - they
+     * mostly rely on the current database object.
+     *
+     * @param ServerRequestInterface  $request request
+     * @param DocumentModel           $model   model
+     *
+     * @return void
+     */
+    private function validateBodyChecks(ServerRequestInterface $request, Response $response, DocumentModel $model) : ServerRequestInterface
     {
         $id = $this->getTargetIdFromRequest($request);
-        $this->bodyChecker->checkRequest(
+        return $this->bodyChecker->checkRequest(
             $request,
+            $response,
             $model,
             $id
         );
@@ -177,9 +195,9 @@ class RestUtils
      *
      * @return string|null id or null
      */
-    public function getTargetIdFromRequest(Request $request) : ?string
+    public function getTargetIdFromRequest(ServerRequestInterface $request) : ?string
     {
-        $id = $request->attributes->get('id', null);
+        $id = $request->getAttribute('id');
 
         // in body?
         $bodyId = null;
@@ -201,14 +219,14 @@ class RestUtils
     /**
      * returns the deserialized entity from the request
      *
-     * @param Request       $request request
-     * @param DocumentModel $model   model
+     * @param ServerRequestInterface $request request
+     * @param DocumentModel          $model   model
      *
      * @return object entity
      */
-    public function getEntityFromRequest(Request $request, DocumentModel $model) : object
+    public function getEntityFromRequest(ServerRequestInterface $request, DocumentModel $model) : object
     {
-        return $this->deserialize($request->getContent(), $model->getEntityClass());
+        return $this->deserialize($request->getBody(), $model->getEntityClass());
     }
 
     /**

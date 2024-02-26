@@ -9,34 +9,31 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckData;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckerAbstract;
+use Psr\Http\Message\ServerRequestInterface;
 use Rs\Json\Pointer;
 use Swaggest\JsonDiff\JsonDiff;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class BodyChecker
+readonly class BodyChecker
 {
 
-    /**
-     * @var BodyCheckerAbstract[]
-     */
-    private array $bodyChecks = [];
-
-    public function __construct()
+    public function __construct(
+        public \SplStack $bodyChecks = new \SplStack(),
+    )
     {
-
     }
 
     public function addBodyCheck(BodyCheckerAbstract $bodyChecker)
     {
-        $this->bodyChecks[] = $bodyChecker;
+        $this->bodyChecks->push($bodyChecker);
     }
 
-    public function checkRequest(Request $request, DocumentModel $model, ?string $existingId) : void
+    public function checkRequest(ServerRequestInterface $request, Response $response, DocumentModel $model, ?string $existingId) : ServerRequestInterface
     {
         $existingPayload = null;
         $existingDiff = null;
@@ -47,7 +44,7 @@ class BodyChecker
                 $existingPayload = $model->getSerialised($existingId);
                 $existingDiff = new JsonDiff(
                     json_decode($existingPayload),
-                    json_decode((string)$request->getContent()),
+                    json_decode((string)$request->getBody()),
                     JsonDiff::REARRANGE_ARRAYS
                 );
                 $existingPointer = new Pointer($existingPayload);
@@ -65,8 +62,23 @@ class BodyChecker
             $existingDiff
         );
 
-        foreach ($this->bodyChecks as $check) {
-            $check->check($data);
+        try {
+            foreach ($this->bodyChecks as $check) {
+                $check->check($data);
+            }
+        } catch (\Throwable $t) {
+            throw $t;
+        } finally {
+            // has modifiers?
+            foreach ($data->userPayloadModifier as $modifier) {
+                $request = $modifier($request);
+            }
+            foreach ($data->responseModifier as $modifier) {
+                $modifier($response);
+            }
         }
+
+        // return potentially modified request!
+        return $request;
     }
 }

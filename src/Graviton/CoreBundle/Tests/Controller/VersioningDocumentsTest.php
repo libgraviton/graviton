@@ -24,11 +24,6 @@ class VersioningDocumentsTest extends RestTestCase
      */
     public function setUp() : void
     {
-
-        if (!class_exists(LoadTestCaseVersioningEntityData::class)) {
-            $this->markTestSkipped('Test definitions are not loaded');
-        }
-
         $this->loadFixturesLocal(
             [
                 LoadTestCaseVersioningEntityData::class
@@ -78,8 +73,6 @@ class VersioningDocumentsTest extends RestTestCase
         $client->put('/testcase/versioning-entity/one', $original);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals($initialVersion, $response->headers->get(VersionServiceConstraint::HEADER_NAME));
-
 
         // Update with correct version
         // Let's change something, version should not be possible
@@ -114,7 +107,6 @@ class VersioningDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/testcase/versioning-entity/dude', $record);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(1, $client->getResponse()->headers->get(VersionServiceConstraint::HEADER_NAME));
     }
 
     /**
@@ -175,7 +167,7 @@ class VersioningDocumentsTest extends RestTestCase
         );
         $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
 
         // PATCH to fail, wrong version number
         $client = static::createRestClient();
@@ -197,7 +189,10 @@ class VersioningDocumentsTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals(1, $response->headers->get(VersionServiceConstraint::HEADER_NAME));
+
+        // FETCH VERSION AGAIN!
+        $client->request('GET', '/testcase/versioning-entity/'.($record->id));
+        $currentVersion = $client->getResults()->version;
 
         // PATCH, checking header from failed and use it to patch version.
         $patch = json_encode(
@@ -210,7 +205,7 @@ class VersioningDocumentsTest extends RestTestCase
                 [
                     'op' => 'replace',
                     'path' => '/version',
-                    'value' => (integer) $response->headers->get(VersionServiceConstraint::HEADER_NAME)
+                    'value' => (integer) $currentVersion
                 ]
             ]
         );
@@ -223,7 +218,7 @@ class VersioningDocumentsTest extends RestTestCase
         $client->request('GET', '/testcase/versioning-entity/' . ($record->id));
         $response = $client->getResponse();
         $current = json_decode($response->getContent());
-        $this->assertEquals(2, $current->version);
+        $this->assertEquals(3, $current->version);
         $this->assertEquals('should be OK', $current->data);
     }
 }

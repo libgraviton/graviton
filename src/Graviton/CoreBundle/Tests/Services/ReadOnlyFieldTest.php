@@ -54,23 +54,35 @@ class ReadOnlyFieldTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
 
-        $this->assertEquals(
-            $client->getResults(),
-            [
-                (object) [
-                    'propertyPath' => 'denied',
-                    'message' => 'The value "this is a denied field" is read only.'
-                ],
-                (object) [
-                    'propertyPath' => 'deniedArray',
-                    'message' => 'The value ["this is denied","this also"] is read only.'
-                ],
-                (object) [
-                    'propertyPath' => 'deniedObject.denied',
-                    'message' => 'The value "this is denied" is read only.'
-                ]
-            ]
-        );
+        // should complain about /denied
+        $this->assertEquals('/denied', $client->getResults()[0]->propertyPath);
+
+        // don't send denied
+        unset($data->denied);
+
+        $client->put('/testcase/readonlyfield/101', $data);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
+
+        // first array element!
+        $this->assertEquals('/deniedArray/0', $client->getResults()[0]->propertyPath);
+
+        unset($data->deniedArray[0]);
+
+        $client->put('/testcase/readonlyfield/101', $data);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
+
+        // second array element!
+        $this->assertEquals('/deniedArray/0', $client->getResults()[0]->propertyPath);
+
+        unset($data->deniedArray);
+
+        $client->put('/testcase/readonlyfield/101', $data);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
+
+        $this->assertEquals('/deniedObject/denied', $client->getResults()[0]->propertyPath);
     }
 
     /**

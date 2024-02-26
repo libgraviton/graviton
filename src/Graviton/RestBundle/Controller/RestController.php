@@ -261,10 +261,16 @@ class RestController
         // Get the response object from container
         $model = $this->getModel();
 
-        // will throw if not ok
-        $this->restUtils->validateRequest($request, $model);
+        $response = new JsonResponse(
+            '',
+            Response::HTTP_CREATED,
+            [],
+            true
+        );
 
-        $record = $this->restUtils->getEntityFromRequest($request, $model);
+        // will throw if not ok
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
+        $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
         // Insert the new record
         $record = $model->insertRecord($record);
@@ -273,12 +279,7 @@ class RestController
         $request->attributes->set('id', $record->getId());
         $this->addRequestAttributes($request);
 
-        return new JsonResponse(
-            '',
-            Response::HTTP_CREATED,
-            [],
-            true
-        );
+        return $response;
     }
 
     /**
@@ -306,10 +307,11 @@ class RestController
 
         $model = $this->getModel();
 
-        // will throw if not ok
-        $this->restUtils->validateRequest($request, $model);
+        $response = new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
 
-        $record = $this->restUtils->getEntityFromRequest($request, $model);
+        // will throw if not ok
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
+        $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
@@ -321,7 +323,7 @@ class RestController
         $this->addRequestAttributes($request);
         $request->attributes->set('id', $record->getId());
 
-        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
+        return $response;
     }
 
     /**
@@ -340,7 +342,7 @@ class RestController
         $model = $this->getModel();
 
         // first, validate the PATCH request itself! skip body checks here.
-        $this->restUtils->validateRequest($request, $model, true);
+        $this->restUtils->validateRequest($request, new Response(), $model,true);
 
         // Check JSON Patch request
         $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
@@ -381,9 +383,17 @@ class RestController
 
         $putRequest->headers->replace($request->headers->all());
 
-        // Validate result object
-        $this->restUtils->validateRequest($putRequest, $model);
+        $response = new JsonResponse(
+            '',
+            Response::HTTP_OK,
+            [
+                'Content-Location' => $this->getRouter()->generate($request->get('_route'), ['id' => $id])
+            ],
+            true
+        );
 
+        // Validate result object
+        $putRequest = $this->restUtils->validateRequest($putRequest, $response, $model);
         $record = $this->restUtils->getEntityFromRequest($putRequest, $model);
 
         // Update object
@@ -391,14 +401,7 @@ class RestController
 
         $this->addRequestAttributes($request);
 
-        return new JsonResponse(
-            '',
-            Response::HTTP_OK,
-            [
-                'Content-Location' => $this->getRouter()->generate($request->get('_route'), ['id' => $record->getId()])
-            ],
-            true
-        );
+        return $response;
     }
 
     /**

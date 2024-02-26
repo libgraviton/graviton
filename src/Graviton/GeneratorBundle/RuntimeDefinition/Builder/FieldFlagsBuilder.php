@@ -1,14 +1,11 @@
 <?php
 /**
- * RecordOriginException
+ * FieldFlagsBuilder
  */
 
 namespace Graviton\GeneratorBundle\RuntimeDefinition\Builder;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilderAbstract;
-use Graviton\RestBundle\Model\RuntimeDefinition;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -21,19 +18,13 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
     /**
      * work on RuntimeDefinition
      *
-     * @param RuntimeDefinition $runtimeDefinition runtime def
-     * @param JsonDefinition    $definition        definition
-     * @param string            $directory         directory
-     * @param SplFileInfo       $schemaFile        file info
+     * @param RuntimeBuilderData $data data
+     *
+     * @return void
      */
-    public function build(
-        RuntimeDefinition $runtimeDefinition,
-        JsonDefinition $definition,
-        string $directory,
-        SplFileInfo $schemaFile
-    ) : void {
+    public function build(RuntimeBuilderData $data) : void {
 
-        $baseSchema = $this->getSchemaBaseObject($definition, $schemaFile);
+        $baseSchema = $this->getSchemaBaseObject($data->definition, $data->schemaFile);
         $fields = $this->getAllFields($baseSchema);
 
         $recordOriginExceptionFields = [];
@@ -54,8 +45,8 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
             }
         }
 
-        $runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
-        $runtimeDefinition->setReadOnlyFields($readOnlyFields);
-        $runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
+        $data->runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
+        $data->runtimeDefinition->setReadOnlyFields($readOnlyFields);
+        $data->runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
     }
 }
