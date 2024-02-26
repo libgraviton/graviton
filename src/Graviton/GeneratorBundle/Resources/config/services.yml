@@ -147,6 +147,9 @@ services:
           - method: setVersionInformation
             arguments:
               - '%graviton.core.version.data%'
+          - method: setEventDispatcher
+            arguments:
+              - '@event_dispatcher'
 
     graviton_generator.generator.dynamicbundlebundle:
         parent: graviton_generator.generator.abstract

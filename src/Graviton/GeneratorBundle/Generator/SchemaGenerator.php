@@ -5,12 +5,13 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
 use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\I18nBundle\Service\I18nUtils;
-use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * generates openapi schema files for each endpoint and one that sums all up.
@@ -23,9 +24,16 @@ class SchemaGenerator extends AbstractGenerator
 {
 
     /**
+     * version
+     */
+    public const string OPENAPI_VERSION = '3.1.0';
+
+    /**
      * @var SchemaBuilder
      */
     private SchemaBuilder $schemaBuilder;
+
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @var I18nUtils
@@ -47,6 +55,11 @@ class SchemaGenerator extends AbstractGenerator
     public function setSchemaBuilder(SchemaBuilder $schemaBuilder)
     {
         $this->schemaBuilder = $schemaBuilder;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -484,6 +497,47 @@ class SchemaGenerator extends AbstractGenerator
             );
         }
 
+        // the global add schema event
+        if (!is_null($this->eventDispatcher)) {
+            $event = new GenerateSchemaEvent();
+            $event = $this->eventDispatcher->dispatch($event, GenerateSchemaEvent::EVENT_NAME);
+
+            foreach ($event->getAdditionalSchemas() as $addedSchema) {
+                if (!empty($addedSchema['paths'])) {
+                    foreach ($addedSchema['paths'] as $key => $path) {
+                        if (isset($mainFile['paths'][$key])) {
+                            throw new \LogicException(
+                                sprintf(
+                                    'The path %s is already defined in main schema and would be '.
+                                    'overwritten by GenerateSchemaEvent schema.',
+                                    $key
+                                )
+                            );
+                        }
+                        $mainFile['paths'][$key] = $path;
+                    }
+                }
+
+                if (!empty($addedSchema['components']['schemas'])) {
+                    foreach ($addedSchema['components']['schemas'] as $name => $obj) {
+                        if (isset($mainFile['components']['schemas'][$name])) {
+                            throw new \LogicException(
+                                sprintf(
+                                    'The model name %s is already defined in main schema and would be '.
+                                    'overwritten by GenerateSchemaEvent schema.',
+                                    $name
+                                )
+                            );
+                        }
+                        $mainFile['components']['schemas'][$name] = $obj;
+                    }
+                }
+            }
+        }
+
+        ksort($mainFile['paths'], SORT_NATURAL);
+        ksort($mainFile['components']['schemas'], SORT_NATURAL);
+
         // write full schema
         $this->fs->dumpFile($targetFile, \json_encode($mainFile, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
 
@@ -529,7 +583,7 @@ class SchemaGenerator extends AbstractGenerator
         }
 
         $base = [
-            'openapi' => '3.1.0',
+            'openapi' => self::OPENAPI_VERSION,
             'info' => [
                 'title' => 'Endpoint for '.$docName.' entries.',
                 'version' => $this->versionInformation['self']

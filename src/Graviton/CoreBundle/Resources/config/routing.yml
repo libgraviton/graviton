@@ -1,7 +1,12 @@
 graviton.core.static.main.all:
     path: /
     methods: [GET]
-    defaults: { _controller: graviton.core.controller.main::indexAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::indexAction }
+
+graviton.core.static.favicon.get:
+    path: /favicon.ico
+    methods: [GET]
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::iconAction }
 
 graviton.core.static.schema:
     path: /openapi.{format}
@@ -9,34 +14,21 @@ graviton.core.static.schema:
     requirements:
         format: '^(json|yaml)$'
     defaults:
-        _controller: graviton.core.controller.main::schemaAction
+        _controller: Graviton\CoreBundle\Controller\MainController::schemaAction
 
 graviton.core.static.main.options:
     path: /
     methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.main::optionsAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::optionsAction }
 
 graviton.core.static.version.get:
     path: /core/version
     methods: [GET]
-    defaults: { _controller: graviton.core.controller.version::versionsAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\VersionController::versionsAction }
 
 graviton.core.static.version.options:
     path: /core/version
     methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.version::optionsAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\VersionController::optionsAction }
 
-graviton.core.static.version.canonicalSchema:
-    path: /schema/core/version
-    methods: [GET]
-    defaults: { _controller: graviton.core.controller.version::versionsSchemaAction }
 
-graviton.core.static.version.canonicalSchema.options:
-    path: /schema/core/version
-    methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.version::optionsAction }
-
-graviton.core.static.favicon.get:
-    path: /favicon.ico
-    methods: [GET]
-    defaults: { _controller: graviton.core.controller.favicon::iconAction }

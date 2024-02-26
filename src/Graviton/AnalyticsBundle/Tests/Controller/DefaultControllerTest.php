@@ -50,34 +50,6 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createClient();
 
-        // Let's get information from the schema
-        $client->request('GET', '/analytics/schema/app');
-        $content = $client->getResponse()->getContent();
-        $schema = json_decode($content);
-
-        // Check schema
-        $sampleSchema = json_decode(
-            '{
-                    "title": "Application usage",
-                    "description": "Data use for application access",
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "title": "ID",
-                        "description": "Unique identifier",
-                        "type": "string"
-                      },
-                      "count": {
-                        "title": "count",
-                        "description": "Sum of result",
-                        "type": "integer"
-                      }
-                    },
-                    "x-params": []
-                  }'
-        );
-        $this->assertEquals($sampleSchema, $schema);
-
         // Let's get information from the count
         $client->request('GET', '/analytics/app');
         $content = $client->getResponse()->getContent();
@@ -128,6 +100,12 @@ class DefaultControllerTest extends RestTestCase
                 "name": "Acme Corps.",
                 "created_year": 2014,
                 "created_month": 7
+              },
+              {
+                "_id": "200",
+                "name": "Acme Corps.",
+                "created_year": 2014,
+                "created_month": 7
               }
             ]'
         );
@@ -144,6 +122,12 @@ class DefaultControllerTest extends RestTestCase
               {
                 "_id": "100",
                 "customerNumber": 1100,
+                "name": "Acme Corps.",
+                "created_year": 2014,
+                "created_month": 7
+              },
+              {
+                "_id": "200",
                 "name": "Acme Corps.",
                 "created_year": 2014,
                 "created_month": 7
@@ -196,22 +180,22 @@ class DefaultControllerTest extends RestTestCase
             [
                 1999,
                 9999,
-                4
+                5
             ],
             [
                 2014,
                 2014,
-                1
-            ],
-            [
-                2014,
-                2015,
                 2
             ],
             [
                 2014,
-                2016,
+                2015,
                 3
+            ],
+            [
+                2014,
+                2016,
+                4
             ]
         ];
     }
@@ -255,18 +239,18 @@ class DefaultControllerTest extends RestTestCase
         return [
             [
                 100,
-                3,
-                ['100', '101', '102']
+                4,
+                ['100', '101', '102', '200']
             ],
             [
                 null, // testing default value of 100 as defined in params!
-                3,
-                ['100', '101', '102']
+                4,
+                ['100', '101', '102', '200']
             ],
             [
                 200,
-                3,
-                ['100', '101', '103']
+                4,
+                ['100', '101', '103', '200']
             ]
         ];
     }
@@ -306,15 +290,15 @@ class DefaultControllerTest extends RestTestCase
         return [
             [
                 [100],
-                ['100', '101', '102']
+                ['100', '101', '102', '200']
             ],
             [
                 [200],
-                ['100', '101', '103']
+                ['100', '101', '103', '200']
             ],
             [
                 [100,200],
-                ['100', '101', '102', '103']
+                ['100', '101', '102', '103', '200']
             ]
         ];
     }
@@ -327,12 +311,16 @@ class DefaultControllerTest extends RestTestCase
     public function testParamsInSchema()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/analytics/schema/customer-date-with-param');
+        $client->request('GET', '/analytics/schema/customer-date-with-param/openapi.json');
         $results = $client->getResults();
 
-        $this->assertEquals(2, count($results->{'x-params'}));
-        $this->assertEquals(true, $results->{'x-params'}[0]->required);
-        $this->assertEquals(true, $results->{'x-params'}[1]->required);
+        $paths = (array) $results->paths;
+        $first = array_pop($paths);
+        $parameters = $first->get->parameters;
+
+        $this->assertEquals(2, count($parameters));
+        $this->assertTrue($parameters[0]->required);
+        $this->assertTrue($parameters[1]->required);
     }
 
     /**
@@ -382,6 +370,14 @@ class DefaultControllerTest extends RestTestCase
                     'createDate' => '2017-07-15T10:23:31+0000'
                 ]
             ],
+            [
+                '_id' => '200',
+                'createDate' => '2014-07-15T10:23:31+0000',
+                'age' => date('Y') - 2014,
+                'sub' => [
+                    'createDate' => '2014-07-15T10:23:31+0000'
+                ]
+            ],
         ];
 
         $this->assertEquals(
@@ -415,15 +411,16 @@ class DefaultControllerTest extends RestTestCase
         );
 
         $results = $client->getResults();
-        $this->assertEquals(6, count($results));
+        $this->assertEquals(7, count($results));
 
         // control sorting as this has to be done by our processor
         $this->assertEquals(6, $results[0]->sorter);
         $this->assertEquals(8, $results[1]->sorter);
         $this->assertEquals(11, $results[2]->sorter);
-        $this->assertEquals(12, $results[3]->sorter);
-        $this->assertEquals(14, $results[4]->sorter);
+        $this->assertEquals(11, $results[3]->sorter);
+        $this->assertEquals(12, $results[4]->sorter);
         $this->assertEquals(14, $results[5]->sorter);
+        $this->assertEquals(14, $results[6]->sorter);
 
         // the same with the optional search param
         $client = static::createRestClient();

@@ -23,9 +23,9 @@ readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
     {
         if (empty($data->jsonExisting)) {
             // it is not allowed to create records with the blacklist origins!
-            $payloadPointer = new Pointer((string) $data->request->getBody());
             $origin = '';
             try {
+                $payloadPointer = new Pointer((string) $data->request->getBody());
                 $origin = $payloadPointer->get('/recordOrigin');
             } catch (\Throwable $t) {
                 // does not exist; return also

@@ -32,6 +32,10 @@ services:
             - "@graviton.document.service.dateconverter"
             - "@router"
             - "%analytics.services%"
+        tags:
+            - name: kernel.event_listener
+              event: generate.global.schema
+              method: onSchemaGeneration
 
     graviton.analytics.homepage_listener:
         class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener

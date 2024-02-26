@@ -9,6 +9,8 @@ use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\DocumentBundle\Service\DateConverter;
+use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
+use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
@@ -23,27 +25,8 @@ use Symfony\Component\Routing\Router;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ServiceManager
+readonly class ServiceManager
 {
-    /** @var RequestStack */
-    protected $requestStack;
-
-    /** @var AnalyticsManager */
-    protected $analyticsManager;
-
-    /** @var DateConverter */
-    protected $dateConverter;
-
-    /** @var Router */
-    protected $router;
-
-    /** @var JsonMapper */
-    private $jsonMapper;
-
-    /**
-     * @var array
-     */
-    private array $analyticsServices = [];
 
     /**
      * ServiceConverter constructor.
@@ -55,18 +38,13 @@ class ServiceManager
      * @param array            $analyticsServices the services
      */
     public function __construct(
-        RequestStack $requestStack,
-        AnalyticsManager $analyticsManager,
-        DateConverter $dateConverter,
-        Router $router,
-        $analyticsServices
+        private RequestStack $requestStack,
+        private AnalyticsManager $analyticsManager,
+        private DateConverter $dateConverter,
+        private Router $router,
+        private array $analyticsServices,
+        private JsonMapper $jsonMapper = new JsonMapper()
     ) {
-        $this->requestStack = $requestStack;
-        $this->analyticsManager = $analyticsManager;
-        $this->dateConverter = $dateConverter;
-        $this->router = $router;
-        $this->analyticsServices = $analyticsServices;
-        $this->jsonMapper = new JsonMapper();
     }
 
     /**
@@ -126,7 +104,7 @@ class ServiceManager
      * @throws NotFoundHttpException
      * @return AnalyticModel
      */
-    private function getAnalyticModel($name)
+    public function getAnalyticModel(string $name) : AnalyticModel
     {
         if (!isset($this->analyticsServices[$name])) {
             throw new NotFoundHttpException(
@@ -138,53 +116,141 @@ class ServiceManager
     }
 
     /**
-     * Get the analytic model for current request
-     *
-     * @return AnalyticModel analytic model
-     */
-    public function getCurrentAnalyticModel()
-    {
-        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
-
-        // Locate the model definition
-        return $this->getAnalyticModel($serviceRoute);
-    }
-
-    /**
-     * Gets all collections involved in this analytics
-     *
-     * @return string[] name of collections
-     */
-    public function getMongoCollections()
-    {
-        return $this->getCurrentAnalyticModel()->getAllCollections();
-    }
-
-    /**
      * Will map and find data for defined route
      *
      * @return array
      */
-    public function getData()
+    public function getData(string $modelName)
     {
-        $model = $this->getCurrentAnalyticModel();
+        $model = $this->getAnalyticModel($modelName);
         return $this->analyticsManager->getData($model, $this->getServiceParameters($model));
     }
 
     /**
      * Locate and display service definition schema
      *
-     * @return mixed
+     * @param string $service service
+     *
+     * @return array schema
      */
-    public function getSchema()
+    public function getSchema(string $service) : array
     {
-        $serviceRoute = $this->requestStack->getCurrentRequest()
-                                           ->get('service');
-
         // Locate the schema definition
-        $model = $this->getAnalyticModel($serviceRoute);
+        $model = $this->getAnalyticModel($service);
 
-        return $model->getSchema();
+        $endpoint = sprintf('/analytics/%s', $service);
+        $docName = sprintf('Analytical%s', ucfirst(strtolower($service)));
+
+        $base = [
+            'openapi' => SchemaGenerator::OPENAPI_VERSION,
+            'info' => [
+                'title' => 'Analytical endpoint "'.$service.'".',
+            ],
+            'paths' => [],
+            'components' => [
+                'schemas' => []
+            ]
+        ];
+
+        $parameters = [];
+        foreach ($model->getParams() as $param) {
+            $paramType = $param['type'];
+            $format = null;
+            if ($paramType == 'datetime') {
+                $paramType = 'string';
+                $format = 'date-time';
+            }
+            if ($paramType == 'varchar') {
+                $paramType = 'string';
+            }
+
+            $queryParam = [
+                'in' => 'query',
+                'name' => $param['name'],
+                'schema' => [
+                    'type' => $paramType
+                ],
+                'required' => (isset($param['required']) && $param['required'] === true)
+            ];
+
+            if (isset($param['default'])) {
+                $queryParam['schema']['default'] = $param['default'];
+            }
+            if (!empty($format)) {
+                $queryParam['schema']['format'] = $format;
+            }
+
+            $parameters[] = $queryParam;
+        }
+
+        $base['paths'][$endpoint]['get'] = [
+            'summary' => 'Gets the analytical data.',
+            'operationId' => 'analyticalGet'.ucfirst(strtolower($service)),
+            'responses' => [
+                200 => [
+                    'description' => 'successful operation',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => ['$ref' => '#/components/schemas/'.$docName]
+                        ]
+                    ]
+                ],
+                400 => [
+                    'description' => 'Invalid parameter supplied.',
+                ]
+            ],
+            'parameters' => $parameters
+        ];
+
+        $mainType = $model->getType();
+
+        // the type itself!
+        $schema = $model->getSchema();
+        $document = [
+            'type' => 'object',
+            'properties' => []
+        ];
+
+        if (isset($schema['title'])) {
+            $document['title'] = $schema['title'];
+        }
+        if (isset($schema['description'])) {
+            $document['description'] = $schema['description'];
+        }
+        if (isset($schema['type'])) {
+            $document['type'] = $mainType;
+        }
+        if (is_array($schema['properties'])) {
+            if ($mainType == 'array') {
+                $document['items'] = [
+                    'type' => $schema['type'],
+                    'properties' => $schema['properties']
+                ];
+            } else {
+                $document['properties'] = $schema['properties'];
+            }
+        }
+
+        $base['components']['schemas'][$docName] = $document;
+
+        return $base;
+    }
+
+    /**
+     * we subscribed here to add our analytics route schema to the global openapi schema file!
+     *
+     * @param GenerateSchemaEvent $event event
+     *
+     * @return void
+     */
+    public function onSchemaGeneration(GenerateSchemaEvent $event)
+    {
+        // iterate all services
+        foreach ($this->analyticsServices as $name => $service) {
+            $event->addSingleSchema(
+                $this->getSchema($name)
+            );
+        }
     }
 
     /**

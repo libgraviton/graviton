@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,16 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class VersionController extends RestController
+class VersionController
 {
     /**
      * @var array
      */
-    private $versionInformation;
+    private array $versionInformation;
 
     /**
      * Build core utils
+     *
      * @param array $versionInformation version information
+     *
      * @return void
      */
     public function setVersionInformation(array $versionInformation)
@@ -33,21 +36,15 @@ class VersionController extends RestController
     /**
      * Returns all version numbers
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @return Response $response Response with result or error
      */
-    public function versionsAction()
+    public function versionsAction() : Response
     {
-        $versions = [
-            'versions' => $this->versionInformation
-        ];
-
-        $response = $this->getResponse()
-                         ->setStatusCode(Response::HTTP_OK)
-                         ->setContent(json_encode($versions));
-
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return new JsonResponse(
+            [
+                'versions' => $this->versionInformation
+            ]
+        );
     }
 
     /**

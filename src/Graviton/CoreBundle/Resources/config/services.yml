@@ -1,8 +1,3 @@
-parameters:
-  graviton.core.controller.main.class: Graviton\CoreBundle\Controller\MainController
-  graviton.core.model.version.class: Graviton\CoreBundle\Model\Version
-  graviton.core.listener.requesthost.class: Graviton\CoreBundle\Listener\RequestHostListener
-  graviton.core.listener.jsonexceptionlistener.class: Graviton\CoreBundle\Listener\JsonExceptionListener
 
 services:
 
@@ -16,25 +11,16 @@ services:
     graviton.core.http.client:
       parent: graviton.common.http.client
 
-    graviton.core.controller.main:
-      class: "%graviton.core.controller.main.class%"
-      public: true
+    Graviton\CoreBundle\Controller\MainController:
+      #public: true
+      tags: ['controller.service_arguments']
       arguments:
         - "@router"
         - '@Graviton\RestBundle\Service\RestUtils'
         - "@event_dispatcher"
 
-    graviton.core.model.version:
-        class: "%graviton.core.model.version.class%"
-        parent: "graviton.rest.model"
-        arguments:
-          - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Version.json"
-          - Graviton\I18nBundle\Document\Version
-          - '@doctrine_mongodb.odm.default_document_manager'
-
     # Request host listener -->
-    graviton.core.listener.requesthost:
-        class: "%graviton.core.listener.requesthost.class%"
+    Graviton\CoreBundle\Listener\RequestHostListener:
         arguments:
           - "@router"
           - "%graviton.router.host%"
@@ -46,23 +32,13 @@ services:
             event: "kernel.request"
             method: "onKernelRequest"
 
-    graviton.core.controller.version:
-        class: Graviton\CoreBundle\Controller\VersionController
-        public: true
-        parent: "graviton.rest.controller"
-        calls:
-          -
-            method: "setVersionInformation"
-            arguments:
-              - "%graviton.core.version.data%"
-          -
-            method: "setModel"
-            arguments:
-              - "@graviton.core.model.version"
-
-    graviton.core.controller.favicon:
-        class: Graviton\CoreBundle\Controller\FaviconController
-        public: true
+    Graviton\CoreBundle\Controller\VersionController:
+      tags: ['controller.service_arguments']
+      calls:
+        -
+          method: "setVersionInformation"
+          arguments:
+            - "%graviton.core.version.data%"
 
     graviton.core.service.jmespath:
         class: JmesPath\CompilerRuntime
@@ -70,8 +46,7 @@ services:
         arguments:
           - "%graviton.jmespath.cache_dir%"
 
-    graviton.core.listener.json_exception:
-        class: "%graviton.core.listener.jsonexceptionlistener.class%"
+    Graviton\CoreBundle\Listener\JsonExceptionListener:
         calls:
           -
             method: "setLogger"

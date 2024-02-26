@@ -191,7 +191,7 @@ class RestUtils
     /**
      * determines which record id the request targets, if any - or it there is a mismatch
      *
-     * @param Request $request request
+     * @param ServerRequestInterface $request request
      *
      * @return string|null id or null
      */
@@ -202,10 +202,10 @@ class RestUtils
         // in body?
         $bodyId = null;
         try {
-            $body = new Pointer((string) $request->getContent(false));
+            $body = new Pointer((string) $request->getBody());
             $bodyId = $body->get('/id');
         } catch (\Throwable $t) {
-            // it's ok..
+            // it's ok.
         }
 
         if (!empty($id) && !empty($bodyId) && $id != $bodyId) {

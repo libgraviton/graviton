@@ -9,6 +9,7 @@ use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\RestBundle\Trait\SchemaTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -220,5 +221,15 @@ class MainController
             \GravitonDyn\EntityBundle\Entity\GravitonSchema::MAIN_SCHEMA_FILE,
             $request->get('format')
         );
+    }
+
+    /**
+     * renders a favicon
+     *
+     * @return Response $response icon response
+     */
+    public function iconAction()
+    {
+        return new BinaryFileResponse(__DIR__.'/../Resources/assets/favicon.ico');
     }
 }

@@ -615,7 +615,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        // send nothing really..
+        // send nothing really.
         $client->post('/core/app/', "", [], [], ['CONTENT_TYPE' => 'application/json'], false);
 
         $response = $client->getResponse();
@@ -678,19 +678,17 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testPostWithId()
+    public function testPostWithMissingTrailingSlash()
     {
         $helloApp = new \stdClass();
-        $helloApp->id = 101;
-        $helloApp->name = "tubel";
+        $helloApp->id = '101';
+        $helloApp->name = ['en' => 'Tubel'];
+        $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
-        $client->post('/person/customer', $helloApp);
+        $client->post('/core/app', $helloApp);
 
-        $this->assertStringContainsString(
-            'OpenAPI spec contains no such operation',
-            $client->getResults()[0]->message
-        );
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
     }
     /**
      * test updating apps
@@ -1097,7 +1095,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('ID', $schema->properties->id->title);
         $this->assertEquals('Unique identifier', $schema->properties->id->description);
 
-        $this->assertEquals('#/components/schemas/GravitonTranslatable', $schema->properties->name->schema->{'$ref'});
+        $this->assertEquals('#/components/schemas/GravitonTranslatable', $schema->properties->name->{'$ref'});
 
         $translatableSchema = $openapi->components->schemas->GravitonTranslatable;
         $this->assertEquals('string', $translatableSchema->properties->en->type);
