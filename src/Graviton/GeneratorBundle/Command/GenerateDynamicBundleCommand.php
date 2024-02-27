@@ -553,6 +553,10 @@ class GenerateDynamicBundleCommand extends Command
             $this->fs->remove($schemaFile);
         }
 
+        if ($jsonDef->getId() == 'EmbedTestHashAsEmbedded') {
+            $hans = 3;
+        }
+
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
             $generator->generate(

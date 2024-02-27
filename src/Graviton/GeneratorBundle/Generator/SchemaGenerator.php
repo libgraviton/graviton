@@ -121,6 +121,12 @@ class SchemaGenerator extends AbstractGenerator
                 'description' => 'Unique identifier'
             ];
             $reservedFieldNames[] = 'id';
+        } else {
+
+            if (str_ends_with(strtolower($json->getId()), 'document')) {
+                $dude = 23;
+            }
+            $hans = true;
         }
 
         // add record origin if applicable

@@ -314,7 +314,7 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
                 [
-                    'optionalArray.0.subRequiredHash'
+                    'defaultArray.0.subRequiredHash.value'
                 ],
             ],
             'no defaultHash' => [

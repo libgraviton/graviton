@@ -40,12 +40,10 @@ class FieldMapper implements FieldMapperInterface
     {
         $fields = [];
         foreach ($jsonDefinition->getFields() as $field) {
-            if ($field->getName() != 'id') {
-                $fields[] = [
-                    'fieldName' => $field->getName(),
-                    'type' => $field->getTypeDoctrine()
-                ];
-            }
+            $fields[] = [
+                'fieldName' => $field->getName(),
+                'type' => $field->getTypeDoctrine()
+            ];
         }
 
         return $fields;

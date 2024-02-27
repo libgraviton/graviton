@@ -779,7 +779,7 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document, bool $isSubResource)
     {
-        $parameters['isEmbedded'] = false;
+        $parameters['isSubResource'] = $isSubResource;
 
         $this->renderFile(
             'serializer/Document.xml.twig',
@@ -788,7 +788,6 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    'realIdField' => true,
                     'isEmbedded' => true
                 ]
             )
@@ -815,7 +814,7 @@ class ResourceGenerator extends AbstractGenerator
                 array_merge(
                     $parameters,
                     [
-                        'realIdField' => false
+                        'isEmbedded' => false
                     ]
                 )
             );
@@ -828,7 +827,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Base',
-                    'realIdField' => false
+                    'isEmbedded' => false
                 ]
             )
         );
