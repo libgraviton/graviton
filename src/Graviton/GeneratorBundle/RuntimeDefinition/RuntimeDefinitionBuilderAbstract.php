@@ -9,7 +9,6 @@ use cebe\openapi\Reader;
 use cebe\openapi\spec\Schema;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\RuntimeDefinition\Builder\RuntimeBuilderData;
-use Graviton\RestBundle\Model\RuntimeDefinition;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**

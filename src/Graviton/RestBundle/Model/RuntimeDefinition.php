@@ -29,6 +29,11 @@ class RuntimeDefinition
     private array $incrementalDateFields = [];
 
     /**
+     * @var array[string, string]
+     */
+    private array $restEventNames = [];
+
+    /**
      * @var bool
      */
     private bool $isVersioned = false;
@@ -107,5 +112,21 @@ class RuntimeDefinition
     public function setIsVersioned(bool $isVersioned): void
     {
         $this->isVersioned = $isVersioned;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRestEventNames(): array
+    {
+        return $this->restEventNames;
+    }
+
+    /**
+     * @param array $restEventNames
+     */
+    public function setRestEventNames(array $restEventNames): void
+    {
+        $this->restEventNames = $restEventNames;
     }
 }

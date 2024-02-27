@@ -18,13 +18,13 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ModelEvent extends Event
 {
     /** EVENT: Insert a new Document */
-    const MODEL_EVENT_INSERT = 'document.model.event.insert';
+    const string MODEL_EVENT_INSERT = 'document.model.event.insert';
 
     /** EVENT: Update a new Document */
-    const MODEL_EVENT_UPDATE = 'document.model.event.update';
+    const string MODEL_EVENT_UPDATE = 'document.model.event.update';
 
     /** EVENT: Delete a new Document */
-    const MODEL_EVENT_DELETE = 'document.model.event.delete';
+    const string MODEL_EVENT_DELETE = 'document.model.event.delete';
 
     /**
      * @var array list with event names
