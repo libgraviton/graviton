@@ -6,7 +6,7 @@
     "readOnly": false,
     "routerBase": "/file/",
     "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
-    "parent": "graviton.file.controller.file",
+    "parent": "Graviton\\FileBundle\\Controller\\FileController",
     "fixtures": [{}],
     "listeners": []
   },

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -19,20 +18,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class RequestManager
 {
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * RequestManager constructor.
-     *
-     * @param RequestStack $requestStack To get the original request
-     */
-    public function __construct(RequestStack $requestStack)
-    {
-        $this->requestStack = $requestStack;
-    }
 
     /**
      * Simple RAW http request parser.
@@ -43,13 +28,6 @@ class RequestManager
      */
     public function updateFileRequest(Request $request)
     {
-        $original = $this->requestStack->getMainRequest();
-        $input = $original ? $original->getContent() : false;
-
-        if (!$input) {
-            return $request;
-        }
-
         $contentType = strtolower($request->headers->get('Content-Type', ''));
 
         // json? -> assume only metadata!

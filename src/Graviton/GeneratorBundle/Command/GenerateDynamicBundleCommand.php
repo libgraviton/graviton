@@ -14,8 +14,6 @@ use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
-use Graviton\I18nBundle\Service\I18nUtils;
-use Graviton\RestBundle\Model\RuntimeDefinition;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -1,12 +1,7 @@
 services:
-    graviton.file.request_manager:
-        class: "%graviton.file.request_manager.class%"
-        arguments:
-            - "@?request_stack"
+    Graviton\FileBundle\Manager\RequestManager: ~
 
-    graviton.file.file_manager:
-        class: "%graviton.file.file_manager.class%"
-        public: true
+    Graviton\FileBundle\Manager\FileManager:
         arguments:
             - "@storage.backend"
         calls:
@@ -40,21 +35,19 @@ services:
       arguments:
         - '@graviton.file.webdav.client'
 
-    graviton.file.controller.file:
-        class: "%graviton.file.controller.file.class%"
-        public: true
-        parent: "graviton.rest.controller"
-        calls:
-          -
-            method: setModel
-            arguments:
-                -  "@?gravitondyn.file.model.file"
-          -
-            method: setFileManager
-            arguments:
-                - "@graviton.file.file_manager"
-          -
-            method: setRequestManager
-            arguments:
-                - "@graviton.file.request_manager"
+    Graviton\FileBundle\Controller\FileController:
+      parent: "graviton.rest.controller"
+      calls:
+        -
+          method: setModel
+          arguments:
+              - "@?gravitondyn.file.model.file"
+        -
+          method: setFileManager
+          arguments:
+              - '@Graviton\FileBundle\Manager\FileManager'
+        -
+          method: setRequestManager
+          arguments:
+              - '@Graviton\FileBundle\Manager\RequestManager'
 

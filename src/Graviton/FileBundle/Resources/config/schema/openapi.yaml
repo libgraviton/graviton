@@ -1,0 +1,29 @@
+openapi: 3.0.2
+paths:
+  /file/:
+    post:
+      operationId: postMultipartFile
+      summary: Upload a File
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/GravitonFileMultipartBody"
+      responses:
+        201:
+          description: 'Successful operation'
+        400:
+          description: 'Bad request.'
+
+components:
+  schemas:
+    GravitonFileMultipartBody:
+      type: object
+      properties:
+        # free flow object
+        metadata:
+          type: object
+          additionalProperties: true
+        upload:
+          type: string
+          format: binary

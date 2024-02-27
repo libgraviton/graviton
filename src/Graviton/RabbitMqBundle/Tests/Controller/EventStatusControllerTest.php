@@ -78,10 +78,10 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals("status[0].status", $results[0]->propertyPath);
+        $this->assertEquals("status.0.status", $results[1]->propertyPath);
         $this->assertStringContainsString(
-            "Does not have a value in the enumeration [\"opened\",\"working\",\"ignored\",\"done\",\"failed\"]",
-            $results[0]->message
+            "Value must be present in the enum",
+            $results[1]->message
         );
     }
 
@@ -130,10 +130,10 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals("information[0].type", $results[0]->propertyPath);
+        $this->assertEquals("information.0.type", $results[1]->propertyPath);
         $this->assertStringContainsString(
-            "Does not have a value in the enumeration [\"debug\",\"info\",\"warning\",\"error\"]",
-            $results[0]->message
+            "Value must be present in the enum",
+            $results[1]->message
         );
     }
 

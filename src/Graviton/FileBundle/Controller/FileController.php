@@ -66,11 +66,11 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $file = new File();
-        $request = $this->requestManager->updateFileRequest($request);
+        $this->requestManager->updateFileRequest($request);
 
         $response = new Response('', Response::HTTP_CREATED);
 
-        if ($formData = $request->get('metadata')) {
+        if ($request->get('metadata')) {
             $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
             $file = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
         }

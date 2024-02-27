@@ -7,10 +7,13 @@ namespace Graviton\GeneratorBundle\Tests\Integration;
 
 use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
+use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Generator\SchemaGenerator;
+use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
+use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\GeneratorBundle\Tests\Utils;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
@@ -19,6 +22,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -56,20 +60,27 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $fieldMapper->addMapper(new ResourceGenerator\FieldTitleMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldHiddenRestrictionMapper());
 
+        $i18nUtils = new I18nUtils('en', 'en,de,fr');
+
         $bundleGenerator = new BundleGenerator();
         $bundleGenerator->setExposeSyntheticMap(null);
 
-        $constraintBuilder = new ConstraintBuilder();
+        $schemaBuilder = new SchemaBuilder();
 
         $i18nUtils = new I18nUtils('de', 'en,de,fr,it');
 
+        $eventDispatcher = $this->getMockForAbstractClass(EventDispatcherInterface::class);
+        $eventDispatcher->method('dispatch')->willReturn(new GenerateSchemaEvent());
+
         $schemaGenerator = new SchemaGenerator();
         $schemaGenerator->setVersionInformation(['self' => 'testing']);
-        $schemaGenerator->setConstraintBuilder($constraintBuilder);
+        $schemaGenerator->setSchemaBuilder($schemaBuilder);
         $schemaGenerator->setI18nUtils($i18nUtils);
+        $schemaGenerator->setEventDispatcher($eventDispatcher);
 
         $resourceGenerator = new ResourceGenerator(
             new Filesystem(),
+            $i18nUtils,
             $fieldMapper,
             new ResourceGenerator\ParameterBuilder(),
             $schemaGenerator
@@ -78,6 +89,8 @@ class GenerateDynamicBundleTest extends GravitonTestCase
 
         $dynamicBundleGenerator = new DynamicBundleBundleGenerator();
         $dynamicBundleGenerator->setExposeSyntheticMap(null);
+
+        $runtimeDefinitionBuilder = new RuntimeDefinitionBuilder();
 
         $command = new GenerateDynamicBundleCommand(
             $loaderDouble,
@@ -90,7 +103,8 @@ class GenerateDynamicBundleTest extends GravitonTestCase
             null,
             null,
             null,
-            schemaGenerator: $schemaGenerator
+            $schemaGenerator,
+            $runtimeDefinitionBuilder
         );
 
         $application = new Application();

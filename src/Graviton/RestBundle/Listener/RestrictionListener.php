@@ -140,7 +140,7 @@ class RestrictionListener
             $this->logger->info(
                 'RESTRICTION onPrePersist DISABLED'
             );
-            return $this->setChangeTrackingData($event);
+            return $event;
         }
 
         $entity = $event->getEntity();
