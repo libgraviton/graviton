@@ -1,18 +1,12 @@
 services:
-    Graviton\FileBundle\Manager\RequestManager: ~
 
     Graviton\FileBundle\Manager\FileManager:
         arguments:
-            - "@storage.backend"
-        calls:
-          -
-            method: setAllowedMimeTypes
-            arguments:
-              - "%graviton.file.allowed.mime_types%"
-          -
-            method: setReadFileSystemMimeType
-            arguments:
-              - "%graviton.file.read_filesystem_mimetype%"
+            - '@storage.backend'
+            - '@psr_http_factory'
+            - '@psr17_factory'
+            - "%graviton.file.allowed.mime_types%"
+            - "%graviton.file.read_filesystem_mimetype%"
 
     graviton.file.asyncs3.client:
       class: AsyncAws\S3\S3Client
@@ -46,8 +40,4 @@ services:
           method: setFileManager
           arguments:
               - '@Graviton\FileBundle\Manager\FileManager'
-        -
-          method: setRequestManager
-          arguments:
-              - '@Graviton\FileBundle\Manager\RequestManager'
 

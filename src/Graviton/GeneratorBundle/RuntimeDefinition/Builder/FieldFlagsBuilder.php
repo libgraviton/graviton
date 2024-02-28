@@ -36,7 +36,7 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
                 $recordOriginExceptionFields[] = $path;
             }
 
-            if (isset($field->{'x-readOnly'}) && $field->{'x-readOnly'} === true) {
+            if (isset($field->{'readOnly'}) && $field->{'readOnly'} === true) {
                 $readOnlyFields[] = $path;
             }
 

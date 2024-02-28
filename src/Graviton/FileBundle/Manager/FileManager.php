@@ -1,6 +1,6 @@
 <?php
 /**
- * Handles file specific actions
+ * handles file stuff
  */
 
 namespace Graviton\FileBundle\Manager;
@@ -10,7 +10,12 @@ use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File;
 use GravitonDyn\FileBundle\Document\FileMetadataBase;
 use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
+use Http\Discovery\Psr17Factory;
 use League\Flysystem\Filesystem;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Riverline\MultiPartParser\Converters\PSR7;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,56 +31,77 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileManager
+readonly class FileManager
 {
-    /**
-     * @var Filesystem
-     */
-    private $fileSystem;
-
-    /**
-     * @var array allowedMimeTypes Control files to be saved and returned
-     */
-    private $allowedMimeTypes = [];
-
-    /**
-     * @var bool whether or not we should read the files mimetype or trust the database (depending on storage)
-     */
-    private $readFileSystemMimeType = false;
-
-    /**
-     * FileManager constructor.
-     *
-     * @param Filesystem $fileSystem file system abstraction layer for s3 and more
-     */
     public function __construct(
-        Filesystem $fileSystem
+        private Filesystem $fileSystem,
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private Psr17Factory $psr17Factory,
+        private array $allowedMimeTypes = [],
+        private bool $readFileSystemMimeType = false
     ) {
-        $this->fileSystem = $fileSystem;
     }
 
     /**
-     * Configure allowed content types, empty is equal to all
+     * brings the request in a simple form to deal with it
      *
-     * @param array $mimeTypes of Allowed types, application/pdf, image/jpeg...
+     * @param ServerRequestInterface $request request
      *
-     * @return void
+     * @return ServerRequestInterface parsed request
      */
-    public function setAllowedMimeTypes(array $mimeTypes)
+    public function uniformFileRequest(ServerRequestInterface $request) : ServerRequestInterface
     {
-        $this->allowedMimeTypes = $mimeTypes;
-    }
+        $contentType = strtolower($request->getHeaderLine('content-type'));
 
-    /**
-     * set ReadFileSystemMimeType
-     *
-     * @param bool $readFileSystemMimeType readFileSystemMimeType
-     *
-     * @return void
-     */
-    public function setReadFileSystemMimeType($readFileSystemMimeType)
-    {
-        $this->readFileSystemMimeType = $readFileSystemMimeType;
+        // as-is
+        if (str_contains($contentType, 'application/json')) {
+            return $request;
+        }
+
+        if (str_contains($contentType, 'multipart')) {
+            $part = PSR7::convert($request);
+
+            // json -> is body!
+            $metadata = $part->getPartsByName('metadata');
+            if (!empty($metadata[0])) {
+                $request = $request->withBody($this->psr17Factory->createStream($metadata[0]->getBody()));
+            }
+
+            // file upload
+            $upload = $part->getPartsByName('upload');
+            if (!empty($upload[0])) {
+                $request = $request->withUploadedFiles(
+                    [
+                        'upload' => $this->psr17Factory->createUploadedFile(
+                            $this->psr17Factory->createStream($upload[0]->getBody()),
+                            clientFilename: $upload[0]->getFileName(),
+                            clientMediaType: $upload[0]->getMimeType()
+                        )
+                    ]
+                );
+            }
+        } elseif (str_contains($contentType, 'www-form-urlencoded')) {
+
+            // change body!
+            $parsedBody = $request->getParsedBody();
+            if (is_array($parsedBody) && isset($parsedBody['metadata'])) {
+                $request = $request
+                    ->withBody($this->psr17Factory->createStream($parsedBody['metadata']))
+                    ->withParsedBody(null);
+            }
+
+        } else {
+
+            $request = $request->withUploadedFiles(
+                [
+                    'upload' => $this->psr17Factory->createUploadedFile(
+                        $request->getBody()
+                    )
+                ]
+            )->withBody($this->psr17Factory->createStream('{}'));
+        }
+
+        return $request;
     }
 
     /**
@@ -83,10 +109,11 @@ class FileManager
      *
      * @param File $file File document object from DB
      *
-     * @return Response
+     * @return Response response
+     *
      * @throws InvalidArgumentException if invalid info fetched from fileSystem
      */
-    public function buildGetContentResponse(File $file)
+    public function buildGetContentResponse(File $file) : Response
     {
         /** @var FileMetadataBase $metadata */
         $metadata = $file->getMetadata();
@@ -134,28 +161,60 @@ class FileManager
      *
      * @return void
      */
-    public function saveFile($id, $filepath)
+    public function saveFile(File $file, UploadedFileInterface $uploadedFile)
     {
-        // will save using a stream
-        $fp = fopen($filepath, 'r+');
+        $fileResource = $uploadedFile->getStream()->detach();
 
-        try {
-            $this->fileSystem->writeStream($id, $fp);
-        } finally {
-            // close file
-            fclose($fp);
+        $metadata = $file->getMetadata();
+        if (is_null($metadata)) {
+            $metadata = new FileMetadataEmbedded();
         }
+
+        if (!empty($uploadedFile->getSize())) {
+            $metadata->setSize($uploadedFile->getSize());
+        }
+
+        if (!empty($uploadedFile->getClientFilename())) {
+            $metadata->setFilename($uploadedFile->getClientFilename());
+        }
+
+        if (empty($metadata->getCreatedate())) {
+            $metadata->setCreatedate(new \DateTime());
+        }
+        $metadata->setModificationdate(new \DateTime());
+
+        // hash
+        $ctx = hash_init('sha256');
+        rewind($fileResource);
+        hash_update_stream($ctx, $fileResource);
+        $hash = hash_final($ctx);
+        if (!empty($hash)) {
+            $metadata->setHash($hash);
+        }
+
+        rewind($fileResource);
+
+        // read and set mimetype
+        $mimeType = mime_content_type($fileResource);
+        if (!empty($mimeType)) {
+            $metadata->setMime($mimeType);
+        }
+
+        $file->setMetadata($metadata);
+
+        $this->fileSystem->writeStream($file->getId(), $fileResource);
     }
 
     /**
-     * @param File          $document File Document
-     * @param Request       $request  Request bag
-     * @param DocumentModel $model    File Document Model
+     * @param File                   $document File Document
+     * @param ServerRequestInterface $request  Request
+     * @param DocumentModel          $model    File Document Model
      * @return File
      */
+    /**
     public function handleSaveRequest(
         File $document,
-        Request $request,
+        ServerRequestInterface $request,
         DocumentModel $model
     ) {
         $file = $this->getUploadedFileFromRequest($request);
@@ -215,7 +274,7 @@ class FileManager
         $request->attributes->set('id', $document->getId());
 
         return $document;
-    }
+    }**/
 
     /**
      * Create the basic needs for a file

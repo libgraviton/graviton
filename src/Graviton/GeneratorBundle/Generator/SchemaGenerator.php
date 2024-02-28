@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Ckr\Util\ArrayMerger;
 use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
 use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\RestBundle\Service\I18nUtils;
@@ -121,12 +122,6 @@ class SchemaGenerator extends AbstractGenerator
                 'description' => 'Unique identifier'
             ];
             $reservedFieldNames[] = 'id';
-        } else {
-
-            if (str_ends_with(strtolower($json->getId()), 'document')) {
-                $dude = 23;
-            }
-            $hans = true;
         }
 
         // add record origin if applicable
@@ -411,6 +406,10 @@ class SchemaGenerator extends AbstractGenerator
      */
     public function consolidateAllSchemas(?string $baseDir, OutputInterface $output, string $targetFile) : void
     {
+        $arrayMergerFlags = ArrayMerger::FLAG_ALLOW_SCALAR_TO_ARRAY_CONVERSION +
+            ArrayMerger::FLAG_PREVENT_DOUBLE_VALUE_WHEN_APPENDING_NUMERIC_KEYS +
+            ArrayMerger::FLAG_OVERWRITE_NUMERIC_KEY;
+
         // delete first!
         if ($this->fs->exists($targetFile)) {
             $this->fs->remove($targetFile);
@@ -459,8 +458,13 @@ class SchemaGenerator extends AbstractGenerator
                 continue;
             }
 
+            // if paths are overlapping, we must merge them using
             if (!empty($schema['paths'])) {
-                $mainFile['paths'] += $schema['paths'];
+                $mainFile['paths'] = ArrayMerger::doMerge(
+                    $mainFile['paths'],
+                    $schema['paths'],
+                    $arrayMergerFlags
+                );
             }
 
             if (!empty($schema['components']['schemas'])) {
@@ -487,6 +491,21 @@ class SchemaGenerator extends AbstractGenerator
         // 2nd pass -> fix all missing references
         foreach ($existingFiles as $filePath => $content) {
             $schema = json_decode($content, true);
+
+            // first, append matching paths
+            if (isset($schema['paths'])) {
+                $schemaPaths = array_keys($schema['paths']);
+                foreach ($schemaPaths as $schemaPath) {
+                    if (is_array($mainFile['paths'][$schemaPath])) {
+                        $schema['paths'][$schemaPath] = ArrayMerger::doMerge(
+                            $mainFile['paths'][$schemaPath],
+                            $schema['paths'][$schemaPath],
+                            $arrayMergerFlags
+                        );
+                    }
+                }
+                $content = json_encode($schema, JSON_UNESCAPED_SLASHES);
+            }
 
             // collect all!
             foreach ($this->getAllReferencedSchemas($content, $mainFile) as $refName => $refSchema) {

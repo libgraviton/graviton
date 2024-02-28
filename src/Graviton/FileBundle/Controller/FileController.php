@@ -7,10 +7,8 @@ namespace Graviton\FileBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
-use Graviton\FileBundle\Manager\RequestManager;
 use Graviton\RestBundle\Controller\RestController;
 use GravitonDyn\FileBundle\Document\File;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,11 +25,6 @@ class FileController extends RestController
     private $fileManager;
 
     /**
-     * @var RequestManager
-     */
-    private $requestManager;
-
-    /**
      * On build time we inject the Manager
      *
      * @param FileManager $fileManager Service Manager
@@ -44,18 +37,6 @@ class FileController extends RestController
     }
 
     /**
-     * set RequestManager
-     *
-     * @param RequestManager $requestManager requestManager
-     *
-     * @return void
-     */
-    public function setRequestManager($requestManager)
-    {
-        $this->requestManager = $requestManager;
-    }
-
-    /**
      * Writes a new Entry to the database
      * Can accept either direct Post data or Form upload
      *
@@ -65,23 +46,40 @@ class FileController extends RestController
      */
     public function postAction(Request $request)
     {
-        $file = new File();
-        $this->requestManager->updateFileRequest($request);
-
         $response = new Response('', Response::HTTP_CREATED);
 
-        if ($request->get('metadata')) {
-            $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
-            $file = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
+        // validate request!
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
+
+        // uniform
+        $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
+
+        // do we have a file?
+        $record = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
+        $id = $record->getId();
+        if (empty($id)) {
+            $id = str_replace('.', '', uniqid('', true));
+            $record->setId($id);
         }
 
-        $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
+        if (isset($psrRequest->getUploadedFiles()['upload'])) {
+            // save first for mimetype!
+            $this->fileManager->saveFile(
+                $record,
+                $psrRequest->getUploadedFiles()['upload']
+            );
+        }
+
+        // Insert the new record
+        $this->getModel()->insertRecord($record);
 
         // Set status code and content
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
+            $this->getRouter()->generate('File.get', array('id' => $id))
         );
+
+        $request->attributes->set('id', $id);
 
         return $response;
     }
@@ -120,24 +118,34 @@ class FileController extends RestController
      */
     public function putAction($id, Request $request)
     {
-        $request = $this->requestManager->updateFileRequest($request);
-        /** @var FileModel $model */
-        $model = $this->getModel();
-
+        // validate first
         $response = new Response('', Response::HTTP_NO_CONTENT);
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
 
-        $file = new File();
-        if ($metadata = $request->get('metadata', false)) {
-            $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
-            $file = $this->restUtils->getEntityFromRequest($psrRequest, $model);
+        $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
+
+        $file = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
+        if (!is_null($file)) {
+            $file->setId($id);
         }
 
-        $file = $this->fileManager->handleSaveRequest($file, $request, $model);
+        // save file & set metadata
+        if (isset($psrRequest->getUploadedFiles()['upload'])) {
+            $this->fileManager->saveFile(
+                $file,
+                $psrRequest->getUploadedFiles()['upload']
+            );
+        }
+
+        $this->getModel()->upsertRecord($id, $file);
+
+        $this->addRequestAttributes($request);
+        $request->attributes->set('id', $id);
 
         // Set status code and content
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
+            $this->getRouter()->generate('File.get', array('id' => $id))
         );
 
         return $response;

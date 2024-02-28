@@ -125,8 +125,6 @@ services:
             arguments: ['@graviton.rest.service.query']
           - method: setEventDispatcher
             arguments: ['@event_dispatcher']
-          - method: setNotModifiableOriginRecords
-            arguments: ['%graviton.rest.not_modifiable.origin.records%']
           - method: setRestUtils
             arguments: ['@Graviton\RestBundle\Service\RestUtils']
           - method: setSecurityUtils
@@ -185,6 +183,7 @@ services:
           - '@Graviton\RestBundle\Service\BodyChecker'
           - "@logger"
           - "@graviton.cache.adapter.app"
+          - '@psr_http_factory'
 
     Graviton\RestBundle\Service\I18nUtils:
       arguments:
@@ -277,3 +276,18 @@ services:
         - [ setRestUtils, [ '@Graviton\RestBundle\Service\RestUtils' ] ]
       tags:
         - { name: 'doctrine.fixture.orm' }
+
+    psr17_factory:
+      alias: Http\Discovery\Psr17Factory
+
+    Http\Discovery\Psr17Factory: ~
+
+    Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory:
+      arguments:
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+
+    psr_http_factory:
+      alias: Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory

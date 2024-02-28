@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fc7882407e34a41aeb6670e0447be48",
+    "content-hash": "a1eabd76677e79504a1c1c63c232d17b",
     "packages": [
         {
             "name": "async-aws/core",
@@ -202,6 +202,49 @@
                 "source": "https://github.com/cebe/php-openapi"
             },
             "time": "2022-04-20T14:46:44+00:00"
+        },
+        {
+            "name": "ckr/arraymerger",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ckressibucher/array_merger.git",
+                "reference": "e9ac57360ca8c3002a674fdca9fd0b527dd5b651"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ckressibucher/array_merger/zipball/e9ac57360ca8c3002a674fdca9fd0b527dd5b651",
+                "reference": "e9ac57360ca8c3002a674fdca9fd0b527dd5b651",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "~7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ckr\\Util\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Claudio Kressibucher",
+                    "email": "ckressibucher@graphicworks.ch"
+                }
+            ],
+            "description": "Provides functionality to merge arrays recursively",
+            "support": {
+                "issues": "https://github.com/ckressibucher/array_merger/issues",
+                "source": "https://github.com/ckressibucher/array_merger/tree/3.0.0"
+            },
+            "time": "2022-04-23T20:26:40+00:00"
         },
         {
             "name": "clue/stream-filter",

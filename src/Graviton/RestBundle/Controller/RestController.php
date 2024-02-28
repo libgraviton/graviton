@@ -313,12 +313,7 @@ class RestController
         $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
         $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
-        // And update the record, if everything is ok
-        if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($record);
-        } else {
-            $this->getModel()->updateRecord($id, $record);
-        }
+        $this->getModel()->upsertRecord($id, $record);
 
         $this->addRequestAttributes($request);
         $request->attributes->set('id', $record->getId());
@@ -486,7 +481,7 @@ class RestController
      *
      * @return void
      */
-    private function addRequestAttributes(Request $request)
+    protected function addRequestAttributes(Request $request)
     {
         $request->attributes->set('varnishTags', $this->getModel()->getEntityClass(true));
     }

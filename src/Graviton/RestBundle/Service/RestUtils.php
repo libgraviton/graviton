@@ -9,17 +9,13 @@ use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\Validation\RequestValidator;
-use GuzzleHttp\Psr7\HttpFactory;
-use Http\Discovery\Psr17Factory;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Rs\Json\Pointer;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,28 +28,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestUtils
+readonly class RestUtils
 {
-
-    /**
-     * @var Serializer
-     */
-    private Serializer $serializer;
-
-    /**
-     * @var BodyChecker
-     */
-    private BodyChecker $bodyChecker;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private CacheItemPoolInterface $cacheProvider;
 
     /**
      * @param Serializer             $serializer    serializer
@@ -61,15 +37,12 @@ class RestUtils
      * @param CacheItemPoolInterface $cacheProvider Cache service
      */
     public function __construct(
-        Serializer $serializer,
-        BodyChecker $bodyChecker,
-        LoggerInterface $logger,
-        CacheItemPoolInterface $cacheProvider
+        private Serializer $serializer,
+        private BodyChecker $bodyChecker,
+        private LoggerInterface $logger,
+        private CacheItemPoolInterface $cacheProvider,
+        private HttpMessageFactoryInterface $httpMessageFactory
     ) {
-        $this->serializer = $serializer;
-        $this->bodyChecker = $bodyChecker;
-        $this->logger = $logger;
-        $this->cacheProvider = $cacheProvider;
     }
 
     /**
@@ -127,6 +100,46 @@ class RestUtils
      * Validates content with the given schema, returning an array of errors.
      * If all is good, you will receive an empty array.
      *
+     * @param ServerRequestInterface $request        request
+     * @param DocumentModel          $model          the model to check the schema for
+     * @param bool                   $skipBodyChecks should we skip body checks?
+     *
+     * @throws \Exception
+     */
+    public function validatePsrRequest(
+        ServerRequestInterface $request,
+        Response $response,
+        DocumentModel $model,
+        bool $skipBodyChecks = false
+    ) : ServerRequestInterface {
+
+        // slash missing at the end of POST requests
+        if ($request->getMethod() == 'POST' && !str_ends_with($request->getUri()->getPath(), '/')) {
+            $newUri = $request->getUri()->withPath(
+                $request->getUri()->getPath() . '/'
+            );
+            $request = $request->withUri($newUri);
+        }
+
+        // first, body checks!
+        if (!$skipBodyChecks) {
+            $request = $this->validateBodyChecks($request, $response, $model);
+        }
+
+        $validator = (new ValidatorBuilder())
+            ->setCache($this->cacheProvider)
+            ->fromJsonFile($model->getSchemaPath())
+            ->getServerRequestValidator();
+
+        $validator->validate($request);
+
+        return $request;
+    }
+
+    /**
+     * Validates content with the given schema, returning an array of errors.
+     * If all is good, you will receive an empty array.
+     *
      * @param Request       $request        request
      * @param DocumentModel $model          the model to check the schema for
      * @param bool          $skipBodyChecks should we skip body checks?
@@ -139,33 +152,12 @@ class RestUtils
         DocumentModel $model,
         bool $skipBodyChecks = false
     ) : ServerRequestInterface {
-
-        $psr17Factory = new Psr17Factory();
-        $psrHttpFactory = new PsrHttpFactory($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
-
-        $psrRequest = $psrHttpFactory->createRequest($request);
-
-        // slash missing at the end of POST requests
-        if ($psrRequest->getMethod() == 'POST' && !str_ends_with($psrRequest->getUri()->getPath(), '/')) {
-            $newUri = $psrRequest->getUri()->withPath(
-                $psrRequest->getUri()->getPath() . '/'
-            );
-            $psrRequest = $psrRequest->withUri($newUri);
-        }
-
-        // first, body checks!
-        if (!$skipBodyChecks) {
-            $psrRequest = $this->validateBodyChecks($psrRequest, $response, $model);
-        }
-
-        $validator = (new ValidatorBuilder())
-            ->setCache($this->cacheProvider)
-            ->fromJsonFile($model->getSchemaPath())
-            ->getServerRequestValidator();
-
-        $validator->validate($psrRequest);
-
-        return $psrRequest;
+        return $this->validatePsrRequest(
+            $this->httpMessageFactory->createRequest($request),
+            $response,
+            $model,
+            $skipBodyChecks
+        );
     }
 
     /**

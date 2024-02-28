@@ -45,10 +45,6 @@ class DocumentModel
      */
     private string $runtimeDefFile;
 
-    /**
-     * @var array
-     */
-    protected $notModifiableOriginRecords;
     protected EventDispatcherInterface $eventDispatcher;
     private RestUtils $restUtils;
     private SecurityUtils $securityUtils;
@@ -119,18 +115,6 @@ class DocumentModel
     }
 
     /**
-     * set notModifiableOriginRecords
-     *
-     * @param array $notModifiableOriginRecords arr
-     *
-     * @return void
-     */
-    public function setNotModifiableOriginRecords($notModifiableOriginRecords)
-    {
-        $this->notModifiableOriginRecords = $notModifiableOriginRecords;
-    }
-
-    /**
      * set restutils
      *
      * @param RestUtils $restUtils ru
@@ -184,6 +168,21 @@ class DocumentModel
     public function findAll(Request $request)
     {
         return $this->queryService->getWithRequest($request, $this->getRepository());
+    }
+
+    /**
+     * upserts an entity
+     *
+     * @param $record
+     * @return void
+     */
+    public function upsertRecord(string $id, $record)
+    {
+        if (!$this->recordExists($id)) {
+            $this->insertRecord($record);
+        } else {
+            $this->updateRecord($id, $record);
+        }
     }
 
     /**
@@ -367,8 +366,6 @@ class DocumentModel
         // dispatch our event
         $this->dispatchPrePersistEvent($entity);
 
-        $this->checkIfOriginRecord($entity);
-
         $return = $entity;
 
         if (is_callable([$entity, 'getId']) && $entity->getId() != null) {
@@ -473,33 +470,6 @@ class DocumentModel
 
         return $this->documentClassName;
     }
-
-    /**
-     * Checks the recordOrigin attribute of a record and will throw an exception if value is not allowed
-     *
-     * @param Object $record record
-     *
-     * @return void
-     */
-    protected function checkIfOriginRecord($record)
-    {
-        if ($record instanceof RecordOriginInterface
-            && !$record->isRecordOriginModifiable()
-        ) {
-            $values = $this->notModifiableOriginRecords;
-            $originValue = strtolower(trim($record->getRecordOrigin()));
-
-            if (in_array($originValue, $values)) {
-                throw new RecordOriginModifiedException(
-                    sprintf(
-                        "'recordOrigin' must not be one of the following keywords: %s",
-                        implode(', ', $values)
-                    )
-                );
-            }
-        }
-    }
-
 
     /**
      * Will fire a ModelEvent

@@ -30,7 +30,7 @@ class FlagsSchemaBuilder implements SchemaBuilderInterface
             $schemaField['x-recordOriginException'] = true;
         }
         if (isset($fieldDefinition['readOnly']) && $fieldDefinition['readOnly'] === true) {
-            $schemaField['x-readOnly'] = true;
+            $schemaField['readOnly'] = true;
         }
         if (isset($fieldDefinition['constraints']['incrementalDate'])) {
             $schemaField['x-incrementalDate'] = true;

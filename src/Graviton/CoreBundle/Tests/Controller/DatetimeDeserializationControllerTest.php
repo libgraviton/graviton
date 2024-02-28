@@ -52,7 +52,11 @@ class DatetimeDeserializationControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('GET', $location);
-        $this->assertEquals($data, $client->getResults());
+
+        $result = $client->getResults();
+        unset($result->id);
+
+        $this->assertEquals($data, $result);
     }
 
     /**
@@ -84,6 +88,9 @@ class DatetimeDeserializationControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', $location);
 
-        $this->assertEquals($expected, $client->getResults());
+        $result = $client->getResults();
+        unset($result->id);
+
+        $this->assertEquals($expected, $result);
     }
 }
