@@ -92,7 +92,7 @@ services:
         event: graviton.json_schema.constraint.format
         method: validateExtRef
 
-  Graviton\I18nBundle\Serializer\Handler\TranslatableHandler:
+  Graviton\DocumentBundle\Serializer\Handler\TranslatableHandler:
     tags:
       - name: "jms_serializer.handler"
         type: "Graviton\\DocumentBundle\\Entity\\Translatable"

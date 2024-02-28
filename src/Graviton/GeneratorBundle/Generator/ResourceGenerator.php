@@ -12,8 +12,8 @@ use Graviton\GeneratorBundle\Definition\Schema\SymfonyService;
 use Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
-use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Service\I18nUtils;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 

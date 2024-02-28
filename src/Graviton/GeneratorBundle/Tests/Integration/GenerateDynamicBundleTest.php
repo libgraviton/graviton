@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Tests\Integration;
 
-use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
 use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
@@ -15,7 +14,7 @@ use Graviton\GeneratorBundle\Generator\SchemaGenerator;
 use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
 use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\GeneratorBundle\Tests\Utils;
-use Graviton\I18nBundle\Service\I18nUtils;
+use Graviton\RestBundle\Service\I18nUtils;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Component\Console\Application;

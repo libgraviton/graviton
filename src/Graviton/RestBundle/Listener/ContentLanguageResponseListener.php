@@ -1,16 +1,14 @@
 <?php
 /**
- * FilterResponseListener for adding Content-Lanugage headers
+ * ContentLanguageResponseListener
  */
 
-namespace Graviton\I18nBundle\Listener;
+namespace Graviton\RestBundle\Listener;
 
-use Graviton\I18nBundle\Service\I18nUtils;
+use Graviton\RestBundle\Service\I18nUtils;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
- * FilterResponseListener for adding Content-Lanugage headers
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch

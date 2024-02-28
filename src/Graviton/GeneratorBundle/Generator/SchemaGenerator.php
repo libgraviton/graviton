@@ -7,7 +7,7 @@ namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\GeneratorBundle\Event\GenerateSchemaEvent;
 use Graviton\GeneratorBundle\Schema\SchemaBuilder;
-use Graviton\I18nBundle\Service\I18nUtils;
+use Graviton\RestBundle\Service\I18nUtils;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;

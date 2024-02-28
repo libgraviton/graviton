@@ -131,7 +131,7 @@ services:
         class: "%graviton_generator.generator.resource.class%"
         arguments:
           - "@filesystem"
-          - '@Graviton\I18nBundle\Service\I18nUtils'
+          - '@Graviton\RestBundle\Service\I18nUtils'
           - "@graviton_generator.resourcegenerator.field_mapper"
           - "@graviton_generator.resourcegenerator.parameter_builder"
           - '@Graviton\GeneratorBundle\Generator\SchemaGenerator'
@@ -143,7 +143,7 @@ services:
               - '@Graviton\GeneratorBundle\Schema\SchemaBuilder'
           - method: setI18nUtils
             arguments:
-              - '@Graviton\I18nBundle\Service\I18nUtils'
+              - '@Graviton\RestBundle\Service\I18nUtils'
           - method: setVersionInformation
             arguments:
               - '%graviton.core.version.data%'

@@ -3,7 +3,7 @@
  * service for i18n stuff
  */
 
-namespace Graviton\I18nBundle\Service;
+namespace Graviton\RestBundle\Service;
 
 /**
  * simple getters for static stuff

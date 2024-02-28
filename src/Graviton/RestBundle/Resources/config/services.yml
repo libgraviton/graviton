@@ -145,6 +145,14 @@ services:
           - "%graviton.rest.calculate_total_record_count%"
           - "%graviton.rest.total_count_enable_header_name%"
 
+    Graviton\RestBundle\Listener\ContentLanguageResponseListener:
+      arguments:
+        - '@Graviton\RestBundle\Service\I18nUtils'
+      tags:
+        - name: "kernel.event_listener"
+          event: "kernel.response"
+          method: "onkernelresponse"
+
     #Json Request listener -->
     graviton.rest.listener.writelocklistener:
         class: Graviton\RestBundle\Listener\WriteLockListener
@@ -177,6 +185,11 @@ services:
           - '@Graviton\RestBundle\Service\BodyChecker'
           - "@logger"
           - "@graviton.cache.adapter.app"
+
+    Graviton\RestBundle\Service\I18nUtils:
+      arguments:
+        - "%graviton.translator.default.language%"
+        - "%graviton.translator.languages%"
 
     Graviton\RestBundle\Subscriber\RestSubscriber:
       arguments:
