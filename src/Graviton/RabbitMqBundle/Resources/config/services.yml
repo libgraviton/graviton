@@ -58,7 +58,7 @@ services:
           - "@request_stack"
           - "@doctrine_mongodb.odm.default_document_manager"
           - "@event_dispatcher"
-          - "@graviton.document.service.extrefconverter"
+          - '@Graviton\DocumentBundle\Service\ExtReferenceConverter'
           - "@graviton.rabbitmq.document.queueevent"
           - "%graviton.document.eventmap%"
           - "%graviton.rabbitmq.document.eventworker.class%"

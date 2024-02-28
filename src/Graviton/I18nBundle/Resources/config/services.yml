@@ -14,8 +14,3 @@ services:
       - "%graviton.translator.default.language%"
       - "%graviton.translator.languages%"
 
-  Graviton\I18nBundle\Serializer\Handler\TranslatableHandler:
-    tags:
-      - name: "jms_serializer.handler"
-        type: "Graviton\\DocumentBundle\\Entity\\Translatable"
-        format: "json"
