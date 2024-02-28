@@ -3,7 +3,7 @@
  * TranslatableHandler class file
  */
 
-namespace Graviton\I18nBundle\Serializer\Handler;
+namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use Graviton\DocumentBundle\Entity\Translatable;
 use JMS\Serializer\Context;

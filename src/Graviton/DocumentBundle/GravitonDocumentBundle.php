@@ -103,7 +103,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function boot()
     {
-        $extRefConverter = $this->container->get('graviton.document.service.extrefconverter');
+        $extRefConverter = $this->container->get('Graviton\DocumentBundle\Service\ExtReferenceConverter');
         $customType = Type::getType('hash');
         $customType->setExtRefConverter($extRefConverter);
     }
