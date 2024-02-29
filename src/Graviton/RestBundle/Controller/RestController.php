@@ -250,6 +250,8 @@ class RestController
                         flush();
                     } catch (\Exception $e) {
                         // skipping row! error was logged to STDOUT of service
+                        // skip also comma once again!
+                        $isFirst = true;
                     }
                 }
 
