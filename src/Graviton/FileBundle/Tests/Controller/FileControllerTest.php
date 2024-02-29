@@ -611,7 +611,6 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
-    /**
      * test behavior when data sent was multipart/form-data
      *
      * @return void
@@ -641,14 +640,8 @@ class FileControllerTest extends RestTestCase
             false
         );
 
-        $this->updateFileContent($fileId, $newContent);
-
-        $client = $this->createRestClient([], ['CONTENT_TYPE' => 'text/plain']);
-        $client->request('GET', sprintf('/file/%s', $fileId));
-
-        $retData = $client->getResponse()->getContent();
-
-        $this->assertEquals($retData, $newContent);
+        // conflicting ID!
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
 
         // clean up
         $client = $this->createRestClient();
@@ -656,6 +649,36 @@ class FileControllerTest extends RestTestCase
             'DELETE',
             '/file/'.$fileId
         );
+    }
+
+    /**
+     * save json content as other mime type!
+     *
+     * @return void
+     */
+    public function testSaveJsonAsFile()
+    {
+        $fileId = 'simple-json-content';
+        $newContent = '{
+          "THIS IS JSON": true
+        }';
+
+        $client = static::createRestClient();
+        $client->put(
+            sprintf('/file/%s', $fileId),
+            $newContent,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+
+        // conflicting ID!
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client->request('GET', sprintf('/file/%s', $fileId), [], [], ['HTTP_ACCEPT' => 'text/plain']);
+
+        $this->assertEquals($newContent, (string) $client->getResponse()->getContent());
     }
 
     /**
