@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "async-aws/core",
-            "version": "1.20.1",
+            "version": "1.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/core.git",
-                "reference": "7e079d52ac27b8c5a2036df8daea567c9728ee11"
+                "reference": "eb23cc59515d8d529163313bbf9e02f666e515ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/core/zipball/7e079d52ac27b8c5a2036df8daea567c9728ee11",
-                "reference": "7e079d52ac27b8c5a2036df8daea567c9728ee11",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/eb23cc59515d8d529163313bbf9e02f666e515ef",
+                "reference": "eb23cc59515d8d529163313bbf9e02f666e515ef",
                 "shasum": ""
             },
             "require": {
@@ -39,7 +39,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.20-dev"
+                    "dev-master": "1.21-dev"
                 }
             },
             "autoload": {
@@ -60,7 +60,7 @@
                 "sts"
             ],
             "support": {
-                "source": "https://github.com/async-aws/core/tree/1.20.1"
+                "source": "https://github.com/async-aws/core/tree/1.21.0"
             },
             "funding": [
                 {
@@ -72,7 +72,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-13T20:52:19+00:00"
+            "time": "2024-02-27T14:44:12+00:00"
         },
         {
             "name": "async-aws/s3",
@@ -637,16 +637,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "2.1.4",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "72328a11443a0de79967104ad36ba7b30bded134"
+                "reference": "07e16cd7b80a2cffed99e36b541876af172f0257"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/72328a11443a0de79967104ad36ba7b30bded134",
-                "reference": "72328a11443a0de79967104ad36ba7b30bded134",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/07e16cd7b80a2cffed99e36b541876af172f0257",
+                "reference": "07e16cd7b80a2cffed99e36b541876af172f0257",
                 "shasum": ""
             },
             "require": {
@@ -658,7 +658,7 @@
                 "ext-json": "*",
                 "phpstan/phpstan": "^1.8",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.5",
+                "phpunit/phpunit": "^10.5",
                 "vimeo/psalm": "^5.11"
             },
             "type": "library",
@@ -703,7 +703,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/collections/issues",
-                "source": "https://github.com/doctrine/collections/tree/2.1.4"
+                "source": "https://github.com/doctrine/collections/tree/2.2.0"
             },
             "funding": [
                 {
@@ -719,7 +719,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-03T09:22:33+00:00"
+            "time": "2024-02-25T22:55:36+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -6887,16 +6887,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v6.4.3",
+            "version": "v6.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "460c6d99c1af13e13dccfbc7aae4460b0ec4173e"
+                "reference": "1f58f8d326916ee7634c65b224326465ca9ccc08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/460c6d99c1af13e13dccfbc7aae4460b0ec4173e",
-                "reference": "460c6d99c1af13e13dccfbc7aae4460b0ec4173e",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/1f58f8d326916ee7634c65b224326465ca9ccc08",
+                "reference": "1f58f8d326916ee7634c65b224326465ca9ccc08",
                 "shasum": ""
             },
             "require": {
@@ -7103,7 +7103,7 @@
             ],
             "support": {
                 "issues": "https://github.com/symfony/symfony/issues",
-                "source": "https://github.com/symfony/symfony/tree/v6.4.3"
+                "source": "https://github.com/symfony/symfony/tree/v6.4.4"
             },
             "funding": [
                 {
@@ -7119,7 +7119,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-31T07:21:41+00:00"
+            "time": "2024-02-27T06:32:25+00:00"
         },
         {
             "name": "twig/twig",
@@ -9698,16 +9698,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v6.4.3",
+            "version": "v6.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "d49b4f6dc4690cf2c194311bb498abf0cf4f7485"
+                "reference": "16ed5bdfd18e14fc7de347c8688e8ac479284222"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/d49b4f6dc4690cf2c194311bb498abf0cf4f7485",
-                "reference": "d49b4f6dc4690cf2c194311bb498abf0cf4f7485",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/16ed5bdfd18e14fc7de347c8688e8ac479284222",
+                "reference": "16ed5bdfd18e14fc7de347c8688e8ac479284222",
                 "shasum": ""
             },
             "require": {
@@ -9759,7 +9759,7 @@
             "description": "Provides utilities for PHPUnit, especially user deprecation notices management",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/phpunit-bridge/tree/v6.4.3"
+                "source": "https://github.com/symfony/phpunit-bridge/tree/v6.4.4"
             },
             "funding": [
                 {
@@ -9775,7 +9775,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-23T14:51:35+00:00"
+            "time": "2024-02-08T14:08:19+00:00"
         },
         {
             "name": "theseer/tokenizer",

@@ -15,7 +15,6 @@ use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
-use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
@@ -24,33 +23,8 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class DocumentModel
+readonly class DocumentModel
 {
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var QueryService
-     */
-    private $queryService;
-
-    /**
-     * @var string
-     */
-    private string $schemaPath;
-    /**
-     * @var string
-     */
-    private string $runtimeDefFile;
-
-    protected EventDispatcherInterface $eventDispatcher;
-    private RestUtils $restUtils;
-    private SecurityUtils $securityUtils;
-
-    protected string $documentClassName;
-    protected DocumentManager $documentManager;
 
     /**
      * constructor
@@ -60,12 +34,18 @@ class DocumentModel
      * @param string          $documentClassName class name
      * @param DocumentManager $documentManager   dm
      */
-    public function __construct(string $schemaPath, string $runtimeDefFile, string $documentClassName, DocumentManager $documentManager)
-    {
-        $this->schemaPath = $schemaPath;
-        $this->runtimeDefFile = $runtimeDefFile;
-        $this->documentClassName = $documentClassName;
-        $this->documentManager = $documentManager;
+    public function __construct(
+        // common stuff
+        private QueryService $queryService,
+        protected EventDispatcherInterface $eventDispatcher,
+        private RestUtils $restUtils,
+        private SecurityUtils $securityUtils,
+        protected DocumentManager $documentManager,
+        // model specific stuff
+        private string $schemaPath,
+        private string $runtimeDefFile,
+        private string $documentClassName
+    ) {
     }
 
     /**
@@ -76,54 +56,6 @@ class DocumentModel
     public function getRuntimeDefinition() : RuntimeDefinition
     {
         return unserialize(file_get_contents($this->runtimeDefFile));
-    }
-
-    /**
-     * set query service
-     *
-     * @param QueryService $queryService qs
-     *
-     * @return void
-     */
-    public function setQueryService(QueryService $queryService)
-    {
-        $this->queryService = $queryService;
-    }
-
-    /**
-     * set security utils
-     *
-     * @param SecurityUtils $securityUtils utils
-     *
-     * @return void
-     */
-    public function setSecurityUtils(SecurityUtils $securityUtils)
-    {
-        $this->securityUtils = $securityUtils;
-    }
-
-    /**
-     * set event dispatcher
-     *
-     * @param EventDispatcherInterface $eventDispatcher ed
-     *
-     * @return void
-     */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * set restutils
-     *
-     * @param RestUtils $restUtils ru
-     *
-     * @return void
-     */
-    public function setRestUtils(RestUtils $restUtils)
-    {
-        $this->restUtils = $restUtils;
     }
 
     /**

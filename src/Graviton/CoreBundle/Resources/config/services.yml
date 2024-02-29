@@ -58,23 +58,6 @@ services:
             event: "kernel.exception"
             method: "onKernelException"
 
-    graviton.core.repository.dummy:
-      class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
-      factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
-      arguments:
-        - 'GravitonCoreBundle:Dummy'
-
-    graviton.core.model.dummy:
-      class: Graviton\CoreBundle\Model\Dummy
-      parent: "graviton.rest.model"
-      arguments:
-        - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Dummy.json"
-        - Graviton\CoreBundle\Document\Dummy
-        - '@doctrine_mongodb.odm.default_document_manager'
-
-    graviton.core.document.dummy:
-      class: Graviton\CoreBundle\Document\Dummy
-
     # fixtures
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
       public: true

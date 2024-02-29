@@ -3,10 +3,9 @@ services:
     Graviton\FileBundle\Manager\FileManager:
         arguments:
             - '@storage.backend'
-            - '@psr_http_factory'
+            - '@Graviton\RestBundle\Service\RestUtils'
             - '@psr17_factory'
             - "%graviton.file.allowed.mime_types%"
-            - "%graviton.file.read_filesystem_mimetype%"
 
     graviton.file.asyncs3.client:
       class: AsyncAws\S3\S3Client

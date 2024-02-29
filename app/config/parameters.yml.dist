@@ -77,7 +77,6 @@ parameters:
 
     # Add full qualified type, application/pdf, image/jpeg...
     graviton.file.allowed.mime_types: []
-    graviton.file.read_filesystem_mimetype: true
 
     graviton.file.local.storage_directory: '%kernel.project_dir%/app/files'
 

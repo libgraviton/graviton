@@ -39,6 +39,11 @@ class RuntimeDefinition
     private bool $isVersioned = false;
 
     /**
+     * @var bool
+     */
+    private bool $preferredReadFromSecondary = false;
+
+    /**
      * get fields
      *
      * @return string[] fields
@@ -128,5 +133,21 @@ class RuntimeDefinition
     public function setRestEventNames(array $restEventNames): void
     {
         $this->restEventNames = $restEventNames;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreferredReadFromSecondary(): bool
+    {
+        return $this->preferredReadFromSecondary;
+    }
+
+    /**
+     * @param bool $preferredReadFromSecondary
+     */
+    public function setPreferredReadFromSecondary(bool $preferredReadFromSecondary): void
+    {
+        $this->preferredReadFromSecondary = $preferredReadFromSecondary;
     }
 }

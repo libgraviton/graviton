@@ -116,19 +116,27 @@ services:
             arguments:
               - "@logger"
 
+    Graviton\RestBundle\Model\DocumentModelFactory:
+      arguments:
+        - '@graviton.rest.service.query'
+        - '@event_dispatcher'
+        - '@Graviton\RestBundle\Service\RestUtils'
+        - '@graviton.security.service.utils'
+        - '@doctrine_mongodb.odm.default_document_manager'
+
     #Model -->
-    graviton.rest.model:
-        abstract: true
-        class: "%graviton.rest.model.documentmodel.class%"
-        calls:
-          - method: setQueryService
-            arguments: ['@graviton.rest.service.query']
-          - method: setEventDispatcher
-            arguments: ['@event_dispatcher']
-          - method: setRestUtils
-            arguments: ['@Graviton\RestBundle\Service\RestUtils']
-          - method: setSecurityUtils
-            arguments: ['@graviton.security.service.utils']
+#    graviton.rest.model:
+#        abstract: true
+#        class: "%graviton.rest.model.documentmodel.class%"
+#        calls:
+#          - method: setQueryService
+#            arguments: ['@graviton.rest.service.query']
+#          - method: setEventDispatcher
+#            arguments: ['@event_dispatcher']
+#          - method: setRestUtils
+#            arguments: ['@Graviton\RestBundle\Service\RestUtils']
+#          - method: setSecurityUtils
+#            arguments: ['@graviton.security.service.utils']
 
     # query service -->
     graviton.rest.service.query:

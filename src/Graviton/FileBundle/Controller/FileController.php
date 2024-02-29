@@ -8,7 +8,9 @@ namespace Graviton\FileBundle\Controller;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -54,32 +56,19 @@ class FileController extends RestController
         // uniform
         $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
 
-        // do we have a file?
-        $record = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
-        $id = $record->getId();
-        if (empty($id)) {
-            $id = str_replace('.', '', uniqid('', true));
-            $record->setId($id);
-        }
-
-        if (isset($psrRequest->getUploadedFiles()['upload'])) {
-            // save first for mimetype!
-            $this->fileManager->saveFile(
-                $record,
-                $psrRequest->getUploadedFiles()['upload']
-            );
-        }
+        // get File object
+        $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel());
 
         // Insert the new record
-        $this->getModel()->insertRecord($record);
+        $this->getModel()->insertRecord($file);
 
         // Set status code and content
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate('File.get', array('id' => $id))
+            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
         );
 
-        $request->attributes->set('id', $id);
+        $request->attributes->set('id', $file->getId());
 
         return $response;
     }
@@ -122,20 +111,11 @@ class FileController extends RestController
         $response = new Response('', Response::HTTP_NO_CONTENT);
         $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
 
+        // uniform it..
         $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
 
-        $file = $this->restUtils->getEntityFromRequest($psrRequest, $this->getModel());
-        if (!is_null($file)) {
-            $file->setId($id);
-        }
-
-        // save file & set metadata
-        if (isset($psrRequest->getUploadedFiles()['upload'])) {
-            $this->fileManager->saveFile(
-                $file,
-                $psrRequest->getUploadedFiles()['upload']
-            );
-        }
+        // get merged File instance of existing and PUTted..
+        $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel(), $id);
 
         $this->getModel()->upsertRecord($id, $file);
 

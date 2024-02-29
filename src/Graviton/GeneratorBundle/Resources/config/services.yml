@@ -262,6 +262,7 @@ services:
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder: ~
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder: ~
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\EventNamesBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder: ~
 
     Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
       calls:
@@ -277,3 +278,7 @@ services:
           method: addBuilder
           arguments:
             - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\EventNamesBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder'

@@ -328,7 +328,6 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
-            ->setParameter('isUseSecondaryConnection', $this->json->isUseSecondaryConnection())
             ->setParameter('syntheticFields', $this->syntheticFields)
             ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->setParameter('reservedFieldnames', $reservedFieldNames)
@@ -845,33 +844,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateModel(array $parameters, $dir, $document, $isSubResource)
     {
-
-
-        if (!$isSubResource) {
-            /*
-            $this->schemaGenerator->generateSchema(
-                array_merge($parameters, ['isEmbedded' => false]),
-                $dir . '/Resources/config/schema/' . $document . '.json'
-            );
-            */
-            /*
-            $this->renderFileAsJson(
-                'model/schema.json.twig',
-                $dir . '/Resources/config/schema/' . $document . '.json',
-                array_merge($parameters, ['isEmbedded' => false])
-            );
-            */
-        }
-
-
-        /*
-        $this->renderFileAsJson(
-            'model/schema.json.twig',
-            $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
-            array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
-        );
-        */
-
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
@@ -880,47 +852,43 @@ class ResourceGenerator extends AbstractGenerator
         // the Document class name
         $documentClassName = $parameters['base'].'Document\\'.$document;
 
-        // calls for normal
-        $calls = [];
-
-        // set secondary connection?
-        if ($parameters['isUseSecondaryConnection']) {
-            $calls[] = [
-                'method' => 'setIsUseSecondary',
-                'arguments' => [true]
-            ];
-        }
+        $bundleFilePath = function ($path) use ($parameters)
+        {
+            return sprintf(
+                "@=service('kernel').locateResource('@%s/%s')",
+                $parameters['bundle'],
+                $path
+            );
+        };
 
         // normal service
         if (!$isSubResource) {
             $this->addService(
                 $paramName,
-                'graviton.rest.model',
-                $calls,
-                arguments: [
+                null,
+                [],
+                null,
+                [
                     [
                         'type' => 'string',
-                        'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
-                            '/Resources/config/schema/openapi.json\')'
+                        'value' => $bundleFilePath('Resources/config/schema/openapi.json')
                     ],
                     [
                         'type' => 'string',
-                        'value' => '@=service(\'kernel\').locateResource(\'@' . $parameters['bundle'] .
-                            '/Resources/config/graviton.rd\')'
+                        'value' => $bundleFilePath('Resources/config/graviton.rd')
                     ],
                     [
                         'type' => 'string',
                         'value' => $documentClassName
-                    ],
-                    [
-                        'value' => '@doctrine_mongodb.odm.default_document_manager'
                     ]
                 ],
-                className: 'Graviton\RestBundle\Model\DocumentModel',
-                public: true
+                'Graviton\RestBundle\Model\DocumentModelFactory',
+                'createInstance',
+                'Graviton\RestBundle\Model\DocumentModel'
             );
         }
 
+        /*
         $this->addService(
             $paramName . 'embedded',
             'graviton.rest.model',
@@ -941,7 +909,7 @@ class ResourceGenerator extends AbstractGenerator
             ],
             className: 'Graviton\RestBundle\Model\DocumentModel',
             public: true
-        );
+        ); */
     }
 
     /**

@@ -6,7 +6,6 @@
 namespace Graviton\FileBundle\Tests\Controller;
 
 // @codingStandardsIgnoreStart
-use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData;
 use GravitonDyn\TestCaseRestListenerCondPersisterEntityBundle\DataFixtures\MongoDB\{
@@ -257,7 +256,7 @@ class FileControllerTest extends RestTestCase
         $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
     }
 
     /**
@@ -343,7 +342,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -381,7 +380,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -459,34 +458,6 @@ class FileControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('DELETE', '/file/mimefile');
-    }
-
-    /**
-     * test getting collection schema
-     *
-     * @return void
-     */
-    public function testGetFileCollectionSchemaInformation()
-    {
-        $client = static::createRestClient();
-        $client->request('GET', '/schema/file/collection');
-
-        $response = $client->getResponse();
-        $results = $client->getResults();
-
-        $this->assertResponseContentType('application/schema+json', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertEquals('Array of file objects', $results->title);
-        $this->assertEquals('array', $results->type);
-        $this->assertIsFileSchema($results->items);
-
-        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
-
-        $this->assertEquals(
-            'http://localhost/schema/file/collection',
-            $linkHeader->getRel('self')->getUri()
-        );
     }
 
     /**
@@ -607,8 +578,29 @@ class FileControllerTest extends RestTestCase
             $returnData['metadata']['additionalProperties']
         );
         $this->assertCount(2, $returnData['metadata']['additionalProperties']);
-        $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
-        $this->assertEquals('fix-Not-allowEd------2-a-here-demo-test-hash', $returnData['metadata']['hash']);
+
+        // is set by file service!
+        $this->assertEquals('test.txt', $returnData['metadata']['filename']);
+        $this->assertEquals('2113410fe33761122a00ccaf7bce6b6ac3498b1f0c9dab81ffac503f5293a04a', $returnData['metadata']['hash']);
+
+        // override metadata!
+        $returnData['metadata']['hash'] = 'MY-CUSTOM-HASH';
+        $returnData['metadata']['filename'] = 'MY-CUSTOM-FILENAME';
+
+        $client->put(
+            '/file/myPersonalFile',
+            $returnData
+        );
+
+        // get it again!
+        $client = static::createRestClient();
+        $client->request('GET', '/file/myPersonalFile', [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $resp = $client->getResponse();
+        $newData = json_decode($resp->getContent(), true);
+
+        $this->assertEquals('MY-CUSTOM-HASH', $newData['metadata']['hash']);
+        $this->assertEquals('MY-CUSTOM-FILENAME', $newData['metadata']['filename']);
 
         // clean up
         $client = $this->createRestClient();
@@ -619,79 +611,12 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
-     * test behavior when data sent was multipart/form-data
-     *
-     * @return void
-     */
-    public function testPutNewFileViaFormHashToLong()
-    {
-        copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
-        $file = sys_get_temp_dir() . '/test.txt';
-        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain');
-
-        $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
-        $correctHash = hash('sha256', $fixtureData);
-
-        // Max 64 length, should not contain the extra bitsasd
-        $toLongHashExtra = $correctHash . '-some-extra-bits ';
-
-        $jsonData = '{
-          "id": "myPersonalFile2",
-          "metadata": {
-            "hash": "'.$toLongHashExtra.'",
-            "action":[{"command":"archive"}],
-            "filename": "customFileName"
-          }
-        }';
-
-        $client = static::createRestClient();
-        $client->put(
-            '/file/myPersonalFile2',
-            null,
-            [
-                'metadata' => $jsonData,
-            ],
-            [
-                'upload' => $uploadedFile,
-            ],
-            [],
-            false
-        );
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-        $this->assertNotContains('location', $response->headers->all());
-
-        $response = $this->updateFileContent('myPersonalFile2', "This is a new text!!!");
-
-        $metaData = json_decode($jsonData, true);
-        $returnData = json_decode($response->getContent(), true);
-
-        $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
-
-        // Should NOT be equal as hash was to long and was chopped.
-        $this->assertNotEquals($metaData['metadata']['hash'], $returnData['metadata']['hash']);
-        // But it should be equal to to first part of the hash
-        $this->assertEquals($correctHash, $returnData['metadata']['hash']);
-
-        // clean up
-        $client = $this->createRestClient();
-        $client->request(
-            'DELETE',
-            '/file/myPersonalFile2'
-        );
-    }
-
-
-
-    /**
     /**
      * test behavior when data sent was multipart/form-data
      *
      * @return void
      */
-    public function testPutNewJsonFileViaForm()
+    public function testPutNewJsonFileViaFormConflictingId()
     {
         $fileId = 'simple-json-content';
         $newContent = '{
@@ -705,6 +630,16 @@ class FileControllerTest extends RestTestCase
             "testField": "filed"
           }
         }';
+
+        $client = static::createRestClient();
+        $client->put(
+            sprintf('/file/%s', $fileId),
+            $newContent,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            false
+        );
 
         $this->updateFileContent($fileId, $newContent);
 
@@ -721,148 +656,6 @@ class FileControllerTest extends RestTestCase
             'DELETE',
             '/file/'.$fileId
         );
-    }
-
-    /**
-     * check if a schema is of the file type
-     *
-     * @param \stdClass $schema schema from service to validate
-     *
-     * @return void
-     */
-    private function assertIsFileSchema(\stdClass $schema)
-    {
-        $this->assertEquals('File', $schema->title);
-        $this->assertEquals('File storage service', $schema->description);
-        $this->assertEquals('object', $schema->type);
-
-        $this->assertEquals('string', $schema->properties->id->type);
-        $this->assertEquals('ID', $schema->properties->id->title);
-        $this->assertEquals('Unique identifier', $schema->properties->id->description);
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->id);
-
-        // Metadata
-        $this->assertEquals('object', $schema->properties->metadata->type);
-        $this->assertEquals('Metadata', $schema->properties->metadata->title);
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->metadata);
-
-        // Metadata size
-        $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
-        $this->assertEquals('File size', $schema->properties->metadata->properties->size->title);
-        $this->assertEquals('Size of file.', $schema->properties->metadata->properties->size->description);
-
-        // Metadata mime
-        $this->assertContains('string', $schema->properties->metadata->properties->mime->type);
-        $this->assertEquals('MIME Type', $schema->properties->metadata->properties->mime->title);
-        $this->assertEquals('MIME-Type of file.', $schema->properties->metadata->properties->mime->description);
-
-        // Metadata createDate
-        $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->createDate->type);
-        $this->assertEquals('date-time', $schema->properties->metadata->properties->createDate->format);
-        $this->assertEquals('Creation date', $schema->properties->metadata->properties->createDate->title);
-        $this->assertEquals(
-            'Timestamp of file upload.',
-            $schema->properties->metadata->properties->createDate->description
-        );
-
-        // Metadata modificationDate
-        $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->modificationDate->type);
-        $this->assertEquals('date-time', $schema->properties->metadata->properties->modificationDate->format);
-        $this->assertEquals('Modification date', $schema->properties->metadata->properties->modificationDate->title);
-        $this->assertEquals(
-            'Timestamp of the last file change.',
-            $schema->properties->metadata->properties->modificationDate->description
-        );
-
-        // Metadata filename
-        $this->assertContains('string', $schema->properties->metadata->properties->filename->type);
-        $this->assertEquals('File name', $schema->properties->metadata->properties->filename->title);
-        $this->assertEquals(
-            'Name of the file as it should get displayed to the user.',
-            $schema->properties->metadata->properties->filename->description
-        );
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->metadata->properties->filename);
-
-        // metadata action.command array
-        $this->assertContains(
-            'string',
-            $schema->properties->metadata->properties->action->items->properties->command->type
-        );
-        $this->assertEquals(
-            'Action command array',
-            $schema->properties->metadata->properties->action->items->properties->command->title
-        );
-        $this->assertObjectNotHasProperty(
-            'readOnly',
-            $schema->properties->metadata->properties->action->items->properties->command
-        );
-
-        // metadata additionalInformation
-        $this->assertContains(
-            'string',
-            $schema->properties->metadata->properties->additionalInformation->type
-        );
-        $this->assertEquals(
-            'Additional Information',
-            $schema->properties->metadata->properties->additionalInformation->title
-        );
-        $this->assertObjectNotHasProperty(
-            'readOnly',
-            $schema->properties->metadata->properties->additionalInformation
-        );
-
-        // metadata additionalProperties
-        $additionalPropertiesSchema = $schema->properties->metadata->properties->additionalProperties;
-        $this->assertEquals('array', $additionalPropertiesSchema->type);
-        $this->assertEquals('object', $additionalPropertiesSchema->items->type);
-        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->name->type);
-        $this->assertEquals('property name', $additionalPropertiesSchema->items->properties->name->title);
-        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->value->type);
-        $this->assertEquals('property value', $additionalPropertiesSchema->items->properties->value->title);
-
-        // Links
-        $this->assertEquals('array', $schema->properties->links->type);
-        $this->assertEquals('many', $schema->properties->links->format);
-        $this->assertEquals('Links', $schema->properties->links->title);
-        $this->assertEquals('@todo replace me', $schema->properties->links->description);
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links);
-
-
-        // Links items
-        $this->assertEquals('object', $schema->properties->links->items->type);
-        $this->assertEquals('Links', $schema->properties->links->items->title);
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items);
-
-
-        // Links item type
-        $this->assertContains('string', $schema->properties->links->items->properties->type->type);
-        $this->assertEquals('Type', $schema->properties->links->items->properties->type->title);
-        $this->assertEquals('Type of the link.', $schema->properties->links->items->properties->type->description);
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items->properties->type);
-
-        // Links item $ref
-        $this->assertEquals(['string', 'null'], $schema->properties->links->items->properties->{'$ref'}->type);
-        $this->assertEquals('extref', $schema->properties->links->items->properties->{'$ref'}->format);
-        $this->assertEquals('Link', $schema->properties->links->items->properties->{'$ref'}->title);
-        $this->assertEquals(
-            'Link to any document.',
-            $schema->properties->links->items->properties->{'$ref'}->description
-        );
-        $this->assertEquals(
-            ['*'],
-            $schema->properties->links->items->properties->{'$ref'}->{'x-collection'}
-        );
-
-        $this->assertEquals(
-            [
-                'document.file.file.update',
-                'document.file.file.create',
-                'document.file.file.delete'
-            ],
-            $schema->{'x-events'}
-        );
-
-        $this->assertObjectNotHasProperty('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
 
     /**
