@@ -35,6 +35,9 @@
 
         "graviton/common-bundle": "dev-develop",
         "symfony/runtime": "^6.4.0",
+        "symfony/twig-bundle": "^6.4.0",
+        "symfony/dotenv": "^6.4.0",
+        "symfony/expression-language": "^6.4.0",
 
         "graviton/rql-parser-bundle": "dev-develop",
         "graviton/link-header-rel-parser": "~1",
@@ -73,11 +76,14 @@
         "phpunit/phpunit": "~10",
         "squizlabs/php_codesniffer": "~3",
 
+        "symfony/debug-bundle": "^6.4.0",
+        "symfony/phpunit-bridge": "^6.4.0",
+        "symfony/web-profiler-bundle": "^6.4.0",
+
         "graviton/test-services-bundle": "dev-develop",
         "graviton/mongodb-fixtures-bundle": "dev-develop",
         "libgraviton/codesniffer": "~2",
 
-        "symfony/phpunit-bridge": "^6.0",
         "dms/phpunit-arraysubset-asserts": "~0",
         "phan/phan": "^5.3",
         "masterminds/html5": "^2.8"

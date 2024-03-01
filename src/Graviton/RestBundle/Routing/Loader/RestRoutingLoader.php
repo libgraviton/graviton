@@ -48,7 +48,7 @@ class RestRoutingLoader extends Loader
      *
      * @return RouteCollection
      */
-    public function load($resource, $type = null)
+    public function load($resource, $type = null): mixed
     {
         // sort by path length (so longer ones are first in case of overlap)
         uasort(
@@ -187,7 +187,7 @@ class RestRoutingLoader extends Loader
      *
      * @return Boolean
      */
-    public function supports($resource, $type = null)
+    public function supports($resource, $type = null): bool
     {
         return 'graviton.rest.route_loader' === $type;
     }

@@ -29,7 +29,7 @@ framework:
     annotations:
         enabled: false
     validation:
-        enabled: true
+        enabled: false
         enable_attributes: false
         email_validation_mode: html5
     default_locale: "%locale%"

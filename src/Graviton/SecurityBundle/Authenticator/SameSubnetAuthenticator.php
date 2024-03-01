@@ -109,9 +109,10 @@ class SameSubnetAuthenticator extends AbstractAuthenticator implements Authentic
      * @param Request                      $request       request
      * @param AuthenticationException|null $authException exp
      *
-     * @return Response|void response
+     * @return Response response
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
+        return new Response('Not allowed', Response::HTTP_FORBIDDEN);
     }
 }

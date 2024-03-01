@@ -11,7 +11,7 @@ parameters:
   # /core/version params
   graviton.version.self_package_name: graviton/graviton
   graviton.version.desired_versions:
-    - symfony/symfony
+    - symfony/framework-bundle
   graviton.version.ext_list:
     - mongodb
 
