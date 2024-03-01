@@ -50,7 +50,9 @@ class ExtrefSchemaBuilder implements SchemaBuilderInterface
                 $schemaField['x-collection'] = ['*'];
             }
 
-
+            if (isset($fieldDefinition['required'])) {
+                $schemaField['nullable'] = ($fieldDefinition['required'] === false);
+            }
         }
 
         return $schemaField;

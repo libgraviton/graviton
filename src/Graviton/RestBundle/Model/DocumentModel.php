@@ -189,7 +189,7 @@ readonly class DocumentModel
     public function find($documentId, $forceClear = false)
     {
         if ($forceClear) {
-            $this->documentManager->clear($this->getEntityClass());
+            $this->documentManager->clear();
         }
 
         $builder = $this->getRepository()->createQueryBuilder()
@@ -261,7 +261,7 @@ readonly class DocumentModel
 
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
-            $this->documentManager->clear($this->getEntityClass());
+            $this->documentManager->clear();
 
             $this->setChangeTrackingData($entity, $existing);
         } else {
@@ -304,7 +304,7 @@ readonly class DocumentModel
             $this->deleteById($entity->getId());
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
-            $this->documentManager->clear($this->getEntityClass());
+            $this->documentManager->clear();
             // Dispatch ModelEvent
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;

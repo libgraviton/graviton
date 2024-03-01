@@ -553,7 +553,7 @@ class GenerateDynamicBundleCommand extends Command
             $this->fs->remove($schemaFile);
         }
 
-        if ($jsonDef->getId() == 'EmbedTestHashAsEmbedded') {
+        if ($jsonDef->getId() == 'TestCasePrimitiveArray') {
             $hans = 3;
         }
 

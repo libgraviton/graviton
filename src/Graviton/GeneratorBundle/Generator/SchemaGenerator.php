@@ -124,6 +124,10 @@ class SchemaGenerator extends AbstractGenerator
             $reservedFieldNames[] = 'id';
         }
 
+        if ($json->getId() == 'TestCasePrimitiveArray') {
+            $hans = "33";
+        }
+
         // add record origin if applicable
         if (isset($parameters['isrecordOriginFlagSet']) && $parameters['isrecordOriginFlagSet'] == true) {
             $thisSchema['properties']['recordOrigin'] = [
@@ -199,6 +203,17 @@ class SchemaGenerator extends AbstractGenerator
         }
 
         $thisSchema['additionalProperties'] = false;
+
+        // already set?
+        if (isset($schema['components']['schemas'][$parameters['document']])) {
+            throw new \RuntimeException(
+                sprintf(
+                    'The schema for object "%s" has already been defined, will not overwrite. Name collision for file %s.',
+                    $parameters['document'],
+                    $targetFile
+                )
+            );
+        }
 
         $schema['components']['schemas'][$parameters['document']] = $thisSchema;
 

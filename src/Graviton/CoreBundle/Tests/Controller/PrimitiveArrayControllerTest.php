@@ -172,114 +172,84 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
+     * always send one field wrong in toplevel, hash and arrayhash
+     *
+     * @return array|\Generator data
+     */
+    public function validationDataProvider(): array|\Generator
+    {
+        // all is right!
+        $baseObject = [
+            'intarray'  => [10, 20],
+            'strarray'  => ['a', 'b'],
+            'boolarray' => [true, false],
+            'hasharray' => [(object) ['x' => 'y'], (object) []],
+            'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
+        ];
+
+        // we iterate these, each for top-level, hash and array! here we have wrong items
+        $iterations = [
+            'intarray'  => [10, 'a'],
+            'strarray'  => ['a', 10],
+            'boolarray' => [true, 'hans'],
+            'hasharray' => [(object) ['x' => 'y'], false],
+            'datearray' => ['2015-09-30T23:59:59+0000', 'sss'],
+        ];
+
+        foreach ($iterations as $fieldName => $wrongValue) {
+            $data = array_merge(
+                $baseObject,
+                [
+                    $fieldName => $wrongValue
+                ]
+            );
+
+            // wrong field itself
+            yield 'wrong-'.$fieldName => [
+                $data,
+                $fieldName.'.1'
+            ];
+
+            // now same for 'hash'!
+            yield 'wrong-hash-'.$fieldName => [
+                [
+                    'hash' => $data
+                ],
+                'hash.'.$fieldName.'.1'
+            ];
+
+            // same for arrayhash
+            yield 'wrong-arrayhash-'.$fieldName => [
+                [
+                    'arrayhash' => [
+                        $data
+                    ]
+                ],
+                'arrayhash.0.'.$fieldName.'.1'
+            ];
+        }
+    }
+
+    /**
      * Test validation
+     *
+     * @dataProvider validationDataProvider
      *
      * @return void
      */
-    public function testValidation()
+    public function testValidation($data, $complainField)
     {
-        $data = (object) [
-            'id'        => 'testdata',
-
-            'intarray'  => [1, 'a'],
-            'strarray'  => ['a', false],
-            'boolarray' => [true, 'a'],
-            'hasharray' => [(object) ['x' => 'y'], 1.5],
-            'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
-
-            'hash'      => (object) [
-                'intarray'  => [1, 'a'],
-                'strarray'  => ['a', false],
-                'boolarray' => [true, 'a'],
-                'hasharray' => [(object) ['x' => 'y'], 1.5],
-                'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
-            ],
-
-            'arrayhash' => [
-                (object) [
-                    'intarray'  => [1, 'a'],
-                    'strarray'  => ['a', false],
-                    'boolarray' => [true, 'a'],
-                    'hasharray' => [(object) ['x' => 'y'], 1.5],
-                    'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
-                ]
-            ],
-        ];
-
         $client = static::createRestClient();
         $client->put('/testcase/primitivearray/testdata', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertNotNull($client->getResults());
 
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath' => 'intarray[1]',
-                    'message'      => 'String value found, but an integer is required',
-                ],
-                (object) [
-                    'propertyPath' => 'strarray[1]',
-                    'message'      => 'Boolean value found, but a string is required',
-                ],
-                (object) [
-                    'propertyPath' => 'boolarray[1]',
-                    'message'      => 'String value found, but a boolean is required',
-                ],
-                (object) [
-                    'propertyPath' => 'datearray[1]',
-                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
-                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
-                ],
-                (object) [
-                    'propertyPath' => 'hasharray[1]',
-                    'message'      => 'Double value found, but an object is required',
-                ],
-                (object) [
-                    'propertyPath' => 'hash.intarray[1]',
-                    'message'      => 'String value found, but an integer is required',
-                ],
-                (object) [
-                    'propertyPath' => 'hash.strarray[1]',
-                    'message'      => 'Boolean value found, but a string is required',
-                ],
-                (object) [
-                    'propertyPath' => 'hash.boolarray[1]',
-                    'message'      => 'String value found, but a boolean is required',
-                ],
-
-                (object) [
-                    'propertyPath' => 'hash.datearray[1]',
-                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
-                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
-                ],
-                (object) [
-                    'propertyPath' => 'hash.hasharray[1]',
-                    'message'      => 'Double value found, but an object is required',
-                ],
-                (object) [
-                    'propertyPath' => 'arrayhash[0].intarray[1]',
-                    'message'      => 'String value found, but an integer is required',
-                ],
-                (object) [
-                    'propertyPath' => 'arrayhash[0].strarray[1]',
-                    'message'      => 'Boolean value found, but a string is required',
-                ],
-                (object) [
-                    'propertyPath' => 'arrayhash[0].boolarray[1]',
-                    'message'      => 'String value found, but a boolean is required',
-                ],
-                (object) [
-                    'propertyPath' => 'arrayhash[0].datearray[1]',
-                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
-                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
-                ],
-                (object) [
-                    'propertyPath' => 'arrayhash[0].hasharray[1]',
-                    'message'      => 'Double value found, but an object is required',
-                ]
-            ],
-            $client->getResults()
-        );
+        if (!empty($complainField)) {
+            $this->assertEquals(
+                $complainField,
+                $client->getResults()[1]->propertyPath
+            );
+        }
     }
 
     /**

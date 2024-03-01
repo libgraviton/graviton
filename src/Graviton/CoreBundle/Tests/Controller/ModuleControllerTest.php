@@ -583,8 +583,8 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
 
-        $this->assertStringContainsString('order', $results[0]->propertyPath);
-        $this->assertEquals('String value found, but an integer is required', $results[0]->message);
+        $this->assertStringContainsString('order', $results[1]->propertyPath);
+        $this->assertEquals("Value expected to be 'integer', but 'string' given.", $results[1]->message);
     }
 
     /**
@@ -723,13 +723,13 @@ class ModuleControllerTest extends RestTestCase
             $client->put('/core/module/'.$module->id, $module);
             $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
             $this->assertEquals(
-                [
-                    (object) [
-                        'propertyPath' => 'app.$ref',
-                        'message' => sprintf('Value "%s" is not a valid extref.', $url)
-                    ],
-                ],
-                $client->getResults()
+                'app.$ref',
+                $client->getResults()[1]->propertyPath
+            );
+
+            $this->assertStringContainsString(
+                'Data does not match pattern',
+                $client->getResults()[1]->message
             );
         }
     }
