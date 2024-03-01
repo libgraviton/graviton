@@ -62,8 +62,11 @@ class ReadOnlyIdControllerTest extends RestTestCase
 
         // [{"propertyPath":"object.id","message":"The property id is required"}]
         $result = $client->getResults();
-        $this->assertEquals('object.id', $result[0]->propertyPath);
-        $this->assertEquals('The property id is required', $result[0]->message);
+        $this->assertEquals('object.id', $result[1]->propertyPath);
+        $this->assertStringContainsString(
+            "Required property 'id' must be present in the object",
+            $result[1]->message
+        );
     }
 
     /**
