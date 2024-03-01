@@ -70,14 +70,14 @@ abstract class RuntimeDefinitionBuilderAbstract
         foreach ($schema->properties as $fieldName => $property) {
             if ($property->type == 'object') {
                 $fields += $this->getAllFields($property, $prefix.$fieldName);
-            } else if ($property->type == 'array') {
+            } elseif ($property->type == 'array') {
                 if (is_array($property->items)) {
                     foreach ($property->items as $item) {
                         $fields += $this->getAllFields($item, $prefix.$fieldName.'.0');
                     }
-                } else if (is_string($property->items->type) && $property->items->type == 'object') {
+                } elseif (is_string($property->items->type) && $property->items->type == 'object') {
                     $fields += $this->getAllFields($property->items, $prefix.$fieldName.'.0');
-                } else if (is_string($property->items->type)) {
+                } elseif (is_string($property->items->type)) {
                     $fields[$prefix.$fieldName.'.0'] = $property;
                 }
             } else {

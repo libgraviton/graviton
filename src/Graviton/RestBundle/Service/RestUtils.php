@@ -82,7 +82,7 @@ readonly class RestUtils
      * @param string $format        Which format to deserialize from
      *
      * @return object|array|integer|double|string|boolean
-     *@throws \Exception
+     * @throws \Exception
      *
      */
     public function deserializeContent($content, string $documentClass, string $format = 'json')
@@ -165,7 +165,7 @@ readonly class RestUtils
      * mostly rely on the current database object.
      *
      * @param ServerRequestInterface $request request
-     * @param DocumentModel $model model
+     * @param DocumentModel          $model   model
      *
      * @return void
      * @throws \Throwable

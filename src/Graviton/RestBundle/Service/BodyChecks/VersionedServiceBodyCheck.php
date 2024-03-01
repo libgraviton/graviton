@@ -59,7 +59,7 @@ readonly class VersionedServiceBodyCheck extends BodyCheckerAbstract
         $setVersion = $currentVersion + 1;
 
         $incrementor = function ($version) {
-            return function(ServerRequestInterface $request) use ($version) {
+            return function (ServerRequestInterface $request) use ($version) {
                 $patchDocument = [
                     [
                         'op' => 'add',

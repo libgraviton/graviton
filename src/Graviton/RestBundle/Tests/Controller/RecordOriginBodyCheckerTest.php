@@ -87,9 +87,9 @@ class RecordOriginBodyCheckerTest extends RestTestCase
     /**
      * Test the validation of the RecordOriginConstraint
      *
-     * @param array   $fieldsToSet      Fields to be modified
-     * @param integer $expectedStatus   Header status code
-     * @param boolean $checkSavedEntry  To check db for correct result
+     * @param array   $fieldsToSet     Fields to be modified
+     * @param integer $expectedStatus  Header status code
+     * @param boolean $checkSavedEntry To check db for correct result
      *
      * @dataProvider updateDataProvider
      *

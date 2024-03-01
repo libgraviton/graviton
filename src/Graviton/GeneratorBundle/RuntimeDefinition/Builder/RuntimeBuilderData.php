@@ -30,6 +30,6 @@ readonly class RuntimeBuilderData
         public JsonDefinition $definition,
         public string $directory,
         public SplFileInfo $schemaFile
-    ) {}
-
+    ) {
+    }
 }

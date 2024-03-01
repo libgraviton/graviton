@@ -25,8 +25,7 @@ readonly class DocumentModelFactory
         private RestUtils $restUtils,
         private SecurityUtils $securityUtils,
         private DocumentManager $documentManager
-    )
-    {
+    ) {
     }
 
     public function createInstance(
@@ -45,5 +44,4 @@ readonly class DocumentModelFactory
             $documentClassName
         );
     }
-
 }

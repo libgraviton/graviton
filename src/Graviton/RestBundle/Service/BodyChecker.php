@@ -24,8 +24,7 @@ readonly class BodyChecker
 
     public function __construct(
         public \SplStack $bodyChecks = new \SplStack(),
-    )
-    {
+    ) {
     }
 
     public function addBodyCheck(BodyCheckerAbstract $bodyChecker)
@@ -44,7 +43,7 @@ readonly class BodyChecker
                 $existingPayload = $model->getSerialised($existingId);
                 $existingDiff = new JsonDiff(
                     json_decode($existingPayload),
-                    json_decode((string)$request->getBody()),
+                    json_decode((string) $request->getBody()),
                     JsonDiff::REARRANGE_ARRAYS
                 );
                 $existingPointer = new Pointer($existingPayload);

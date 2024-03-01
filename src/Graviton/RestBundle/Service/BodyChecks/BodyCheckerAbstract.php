@@ -14,5 +14,4 @@ abstract readonly class BodyCheckerAbstract
 {
 
     abstract public function check(BodyCheckData $data) : void;
-
 }

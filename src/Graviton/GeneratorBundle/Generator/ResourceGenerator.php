@@ -852,8 +852,7 @@ class ResourceGenerator extends AbstractGenerator
         // the Document class name
         $documentClassName = $parameters['base'].'Document\\'.$document;
 
-        $bundleFilePath = function ($path) use ($parameters)
-        {
+        $bundleFilePath = function ($path) use ($parameters) {
             return sprintf(
                 "@=service('kernel').locateResource('@%s/%s')",
                 $parameters['bundle'],

@@ -25,7 +25,7 @@ readonly class IdInBodyCheck extends BodyCheckerAbstract
 
         $idToSet = $data->existingId;
 
-        $setId = function(ServerRequestInterface $request) use ($idToSet) {
+        $setId = function (ServerRequestInterface $request) use ($idToSet) {
             $input = (string) $request->getBody();
             try {
                 $patchDocument = [

@@ -22,22 +22,23 @@ readonly class BodyCheckData
      * constructor.
      *
      * @param ServerRequestInterface $request
-     * @param DocumentModel $model
-     * @param string|null $existingId
-     * @param string|null $existingSerialized
-     * @param Pointer|null $jsonExisting
-     * @param JsonDiff|null $jsonDiff
+     * @param DocumentModel          $model
+     * @param string|null            $existingId
+     * @param string|null            $existingSerialized
+     * @param Pointer|null           $jsonExisting
+     * @param JsonDiff|null          $jsonDiff
      */
-     public function __construct(
-         public ServerRequestInterface $request,
-         public DocumentModel $model,
-         public ?string $existingId,
-         public ?string $existingSerialized,
-         public ?Pointer $jsonExisting,
-         public ?JsonDiff $jsonDiff,
-         public \SplStack $userPayloadModifier = new \SplStack(),
-         public \SplStack $responseModifier = new \SplStack()
-     ) {}
+    public function __construct(
+        public ServerRequestInterface $request,
+        public DocumentModel $model,
+        public ?string $existingId,
+        public ?string $existingSerialized,
+        public ?Pointer $jsonExisting,
+        public ?JsonDiff $jsonDiff,
+        public \SplStack $userPayloadModifier = new \SplStack(),
+        public \SplStack $responseModifier = new \SplStack()
+    ) {
+    }
 
     public function addPayloadModifier(callable $modifier)
     {

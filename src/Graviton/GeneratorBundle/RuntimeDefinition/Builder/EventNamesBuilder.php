@@ -22,7 +22,8 @@ class EventNamesBuilder extends RuntimeDefinitionBuilderAbstract
      *
      * @return void
      */
-    public function build(RuntimeBuilderData $data) : void {
+    public function build(RuntimeBuilderData $data) : void
+    {
         $mainName = $data->definition->getId();
         if (empty($mainName)) {
             throw new \RuntimeException(

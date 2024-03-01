@@ -77,7 +77,6 @@ readonly class FileManager
 
             $request = $request->withAttribute('metadataBody', true);
         } else {
-
             // change body!
             $parsedBody = $request->getParsedBody();
             if (is_array($parsedBody) && isset($parsedBody['metadata'])) {

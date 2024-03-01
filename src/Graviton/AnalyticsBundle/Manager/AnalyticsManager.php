@@ -187,7 +187,8 @@ readonly class AnalyticsManager
     private function resolveObject($collection, $id)
     {
         return $this->documentManager->getClient()->selectCollection(
-            $this->databaseName, $collection
+            $this->databaseName,
+            $collection
         )->findOne(['_id' => $id]);
     }
 }

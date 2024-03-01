@@ -339,7 +339,7 @@ class RestController
         $model = $this->getModel();
 
         // first, validate the PATCH request itself! skip body checks here.
-        $this->restUtils->validateRequest($request, new Response(), $model,true);
+        $this->restUtils->validateRequest($request, new Response(), $model, true);
 
         // Check JSON Patch request
         $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
