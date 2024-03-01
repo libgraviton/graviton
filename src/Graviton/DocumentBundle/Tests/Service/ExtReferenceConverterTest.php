@@ -48,7 +48,7 @@ class ExtReferenceConverterTest extends TestCase
         $this->router
             ->expects($this->any())
             ->method('getContext')
-            ->will($this->returnValue(RequestContext::fromUri('/')));
+            ->willReturn(RequestContext::fromUri('/'));
 
         $this->routeInformation['/core/app/test'] = [
             'collection' => 'App',
@@ -126,7 +126,7 @@ class ExtReferenceConverterTest extends TestCase
                 $routeId,
                 ['id' => $extReference->getId()]
             )
-            ->will($this->returnValue($url));
+            ->willReturn($url);
 
         $converter = new ExtReferenceConverter(
             $this->router

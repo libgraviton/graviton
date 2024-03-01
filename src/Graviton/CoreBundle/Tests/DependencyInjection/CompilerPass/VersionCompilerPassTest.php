@@ -7,13 +7,14 @@ namespace Graviton\CoreBundle\Tests\DependencyInjection\CompilerPass;
 
 use Graviton\CommonBundle\Component\Deployment\VersionInformation;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
+class VersionCompilerPassTest extends TestCase
 {
 
     /**
@@ -40,7 +41,7 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
         $containerDouble
             ->expects($this->exactly(2))
             ->method('setParameter')
-            ->withConsecutive(
+            ->willReturnOnConsecutiveCalls(
                 [
                     'graviton.core.version.data',
                     [

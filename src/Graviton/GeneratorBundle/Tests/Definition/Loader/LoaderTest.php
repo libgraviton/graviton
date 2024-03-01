@@ -7,17 +7,21 @@ namespace Graviton\GeneratorBundle\Tests\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;
+use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\Schema\Definition;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
+use Graviton\JsonSchemaBundle\Validator\ValidatorInterface;
+use JMS\Serializer\SerializerInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class LoaderTest extends \PHPUnit\Framework\TestCase
+class LoaderTest extends TestCase
 {
     /**
      * check if strategies are called
@@ -29,7 +33,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $json = __METHOD__;
         $definition = new Definition();
 
-        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['validateJsonDefinition'])
             ->getMock();
@@ -37,7 +41,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->method('validateJsonDefinition')
             ->with($json);
 
-        $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
+        $serializer = $this->getMockBuilder(SerializerInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['serialize', 'deserialize'])
             ->getMock();
@@ -46,16 +50,16 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->with($json, 'Graviton\GeneratorBundle\Definition\Schema\Definition', 'json')
             ->willReturn($definition);
 
-        $strategy = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface')
+        $strategy = $this->getMockBuilder(StrategyInterface::class)
             ->getMock();
         $strategy->expects($this->once())
             ->method('supports')
             ->with(null)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $strategy->expects($this->once())
             ->method('load')
             ->with(null)
-            ->will($this->returnValue([$json]));
+            ->willReturn([$json]);
 
         $sut = new Loader($validator, $serializer);
         $sut->addStrategy($strategy);
@@ -73,7 +77,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $this->expectException(InvalidJsonException::class);
         $json = __METHOD__;
 
-        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['validateJsonDefinition'])
             ->getMock();
@@ -82,14 +86,14 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->with($json)
             ->willThrowException(new InvalidJsonException());
 
-        $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
+        $serializer = $this->getMockBuilder(SerializerInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['serialize', 'deserialize'])
             ->getMock();
         $serializer->expects($this->never())
             ->method('deserialize');
 
-        $strategy = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface')
+        $strategy = $this->getMockBuilder(StrategyInterface::class)
             ->getMock();
         $strategy->expects($this->once())
             ->method('supports')
@@ -117,23 +121,23 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $errors = [new ValidationExceptionError(['message' => 'wrong', "property" => '.'])];
 
-        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder(ValidatorInterface::class)
             ->disableOriginalConstructor()
-            ->returnValue(['validateJsonDefinition'])
+            ->onlyMethods(['validateJsonDefinition'])
             ->getMock();
         $validator->expects($this->once())
             ->method('validateJsonDefinition')
             ->with($json)
             ->willReturn($errors);
 
-        $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
+        $serializer = $this->getMockBuilder(SerializerInterface::class)
             ->disableOriginalConstructor()
-            ->returnValue(['serialize', 'deserialize'])
+            ->onlyMethods(['serialize', 'deserialize'])
             ->getMock();
         $serializer->expects($this->never())
             ->method('deserialize');
 
-        $strategy = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface')
+        $strategy = $this->getMockBuilder(StrategyInterface::class)
             ->getMock();
         $strategy->expects($this->once())
             ->method('supports')
