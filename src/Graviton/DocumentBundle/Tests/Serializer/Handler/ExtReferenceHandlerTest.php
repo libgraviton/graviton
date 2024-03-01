@@ -48,7 +48,7 @@ class ExtReferenceHandlerTest extends TestCase
     {
         $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverter')
             ->disableOriginalConstructor()
-            ->setMethods(['getExtReference', 'getUrl'])
+            ->onlyMethods(['getExtReference', 'getUrl'])
             ->getMock();
         $this->serializationVisitor = (new JsonSerializationVisitorFactory())->getVisitor();
         $this->deserializationVisitor = (new JsonDeserializationVisitorFactory())->getVisitor();

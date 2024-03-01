@@ -44,7 +44,7 @@ class SolrQueryTest extends TestCase
 
         $requestStack = $this->getMockBuilder('\Symfony\Component\HttpFoundation\RequestStack')
             ->disableOriginalConstructor()
-            ->setMethods(['getCurrentRequest'])
+            ->onlyMethods(['getCurrentRequest'])
             ->getMock();
         $requestStack
             ->expects($this->exactly(3))
@@ -53,7 +53,7 @@ class SolrQueryTest extends TestCase
 
         $edisMax = $this->getMockBuilder('\Solarium\Component\EdisMax')
             ->disableOriginalConstructor()
-            ->setMethods(['setQueryFields'])
+            ->onlyMethods(['setQueryFields'])
             ->getMock();
         $edisMax
             ->expects($this->once())
@@ -62,7 +62,7 @@ class SolrQueryTest extends TestCase
 
         $solrQueryClass = $this->getMockBuilder('\Solarium\QueryType\Select\Query\Query')
             ->disableOriginalConstructor()
-            ->setMethods(['getEDisMax', 'setQuery'])
+            ->onlyMethods(['getEDisMax', 'setQuery'])
             ->getMock();
         $solrQueryClass->method('getEDisMax')->willReturn($edisMax);
         $solrQueryClass
@@ -72,7 +72,7 @@ class SolrQueryTest extends TestCase
 
         $searchResult = $this->getMockBuilder('\Solarium\QueryType\Select\Result\Result')
             ->disableOriginalConstructor()
-            ->setMethods(['getNumFound', 'getIterator'])
+            ->onlyMethods(['getNumFound', 'getIterator'])
             ->getMock();
         $searchResult
             ->expects($this->exactly(2))
@@ -85,10 +85,9 @@ class SolrQueryTest extends TestCase
         $solrClient = $this->getMockBuilder('\Solarium\Client')
             ->disableOriginalConstructor()
             ->disableOriginalClone()
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'createQuery',
-                    'getQuery',
                     'addEndpoint',
                     'setDefaultEndpoint',
                     'select'
@@ -96,7 +95,6 @@ class SolrQueryTest extends TestCase
             )
             ->getMock();
         $solrClient->method('createQuery')->willReturn($solrQueryClass);
-        $solrClient->method('getQuery')->willReturn($solrQueryClass);
         $solrClient->method('addEndpoint');
         $solrClient->method('setDefaultEndpoint');
         // return results here

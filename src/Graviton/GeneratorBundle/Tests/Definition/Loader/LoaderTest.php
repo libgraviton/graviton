@@ -31,7 +31,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['validateJsonDefinition'])
+            ->onlyMethods(['validateJsonDefinition'])
             ->getMock();
         $validator->expects($this->once())
             ->method('validateJsonDefinition')
@@ -39,7 +39,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
+            ->onlyMethods(['serialize', 'deserialize'])
             ->getMock();
         $serializer->expects($this->once())
             ->method('deserialize')
@@ -75,7 +75,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['validateJsonDefinition'])
+            ->onlyMethods(['validateJsonDefinition'])
             ->getMock();
         $validator->expects($this->once())
             ->method('validateJsonDefinition')
@@ -84,7 +84,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
+            ->onlyMethods(['serialize', 'deserialize'])
             ->getMock();
         $serializer->expects($this->never())
             ->method('deserialize');
@@ -94,11 +94,11 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $strategy->expects($this->once())
             ->method('supports')
             ->with(null)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $strategy->expects($this->once())
             ->method('load')
             ->with(null)
-            ->will($this->returnValue([$json]));
+            ->willReturn([$json]);
 
         $sut = new Loader($validator, $serializer);
         $sut->addStrategy($strategy);
@@ -119,7 +119,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['validateJsonDefinition'])
+            ->returnValue(['validateJsonDefinition'])
             ->getMock();
         $validator->expects($this->once())
             ->method('validateJsonDefinition')
@@ -128,7 +128,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
+            ->returnValue(['serialize', 'deserialize'])
             ->getMock();
         $serializer->expects($this->never())
             ->method('deserialize');
@@ -138,11 +138,11 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $strategy->expects($this->once())
             ->method('supports')
             ->with(null)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $strategy->expects($this->once())
             ->method('load')
             ->with(null)
-            ->will($this->returnValue([$json]));
+            ->willReturn([$json]);
 
         $sut = new Loader($validator, $serializer);
         $sut->addStrategy($strategy);

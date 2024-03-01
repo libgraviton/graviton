@@ -71,7 +71,7 @@ class RqlSearchNodeListenerTest extends TestCase
         // request stack
         $this->requestAttrs = $this->getMockBuilder(ParameterBag::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'set'])
+            ->onlyMethods(['get', 'set'])
             ->getMock();
 
         $this->request = new Request();
@@ -79,23 +79,23 @@ class RqlSearchNodeListenerTest extends TestCase
 
         $this->requestStack = $this->getMockBuilder(RequestStack::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getCurrentRequest'])
+            ->onlyMethods(['getCurrentRequest'])
             ->getMock();
 
         // solr client stuff
         $this->solrClientResult = $this->getMockBuilder(Result::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getNumFound', 'getIterator'])
+            ->onlyMethods(['getNumFound', 'getIterator'])
             ->getMock();
 
         $this->solrClientQuery = $this->getMockBuilder(Query::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getEDisMax', 'setQuery', 'setStart', 'setRows', 'setFields'])
+            ->onlyMethods(['getEDisMax', 'setQuery', 'setStart', 'setRows', 'setFields'])
             ->getMock();
 
         $this->eDismax = $this->getMockBuilder(EdisMax::class)
             ->disableOriginalConstructor()
-            ->setMethods(['setQueryFields'])
+            ->onlyMethods(['setQueryFields'])
             ->getMock();
 
         $this->solrClient = $this->getMockBuilder(Client::class)
@@ -105,7 +105,7 @@ class RqlSearchNodeListenerTest extends TestCase
                     $this->getMockBuilder(EventDispatcher::class)->getMock()
                 ]
             )
-            ->setMethods(['createQuery', 'addEndpoint', 'setDefaultEndpoint', 'select'])
+            ->onlyMethods(['createQuery', 'addEndpoint', 'setDefaultEndpoint', 'select'])
             ->getMock();
 
         $this->solrClient

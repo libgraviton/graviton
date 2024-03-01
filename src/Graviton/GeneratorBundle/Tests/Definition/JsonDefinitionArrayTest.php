@@ -31,7 +31,7 @@ class JsonDefinitionArrayTest extends TestCase
     protected function setUp() : void
     {
         $this->element = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
-            ->setMethods(
+            ->onlyMethods(
                 [
                 'getName',
                 'getType',

@@ -120,7 +120,7 @@ class GravitonTestCase extends WebTestCase
     {
         return $this->getMockBuilder($class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
