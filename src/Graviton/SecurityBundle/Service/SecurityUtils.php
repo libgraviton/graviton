@@ -4,7 +4,6 @@
  */
 namespace Graviton\SecurityBundle\Service;
 
-use Graviton\CoreBundle\Util\CoreUtils;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;

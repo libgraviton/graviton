@@ -17,7 +17,6 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

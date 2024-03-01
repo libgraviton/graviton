@@ -9,7 +9,6 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ServerRequestInterface;
 use Rs\Json\Patch;
 use Rs\Json\Pointer;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

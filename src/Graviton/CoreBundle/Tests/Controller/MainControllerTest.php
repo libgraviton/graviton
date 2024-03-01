@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 

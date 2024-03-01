@@ -15,7 +15,6 @@ use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
 use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\GeneratorBundle\Tests\Utils;
 use Graviton\RestBundle\Service\I18nUtils;
-use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;

@@ -12,7 +12,6 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
 use Graviton\TestBundle\Test\GravitonTestCase;
 use JMS\Serializer\SerializerBuilder;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

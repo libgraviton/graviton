@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="app/bootstrap.tests.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage>
-    <include>
-      <directory>src/Graviton/**</directory>
-    </include>
-    <exclude>
-      <directory>**/Tests/**</directory>
-      <directory>**/Exception/**</directory>
-      <directory>**/Composer/**</directory>
-      <directory>**/Resources/**</directory>
-      <directory>**/*Bundle.php</directory>
-      <directory>**/TestBundle/**</directory>
-    </exclude>
-  </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" processIsolation="false" stopOnFailure="false" bootstrap="app/bootstrap.tests.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
   <testsuites>
     <testsuite name="all">
       <directory>src/*/*Bundle/Tests</directory>
@@ -27,7 +14,17 @@
     <!--<env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>-->
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
   </php>
-  <listeners>
-    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-  </listeners>
+  <source>
+    <include>
+      <directory>src/Graviton/**</directory>
+    </include>
+    <exclude>
+      <directory>**/Tests/**</directory>
+      <directory>**/Exception/**</directory>
+      <directory>**/Composer/**</directory>
+      <directory>**/Resources/**</directory>
+      <directory>**/*Bundle.php</directory>
+      <directory>**/TestBundle/**</directory>
+    </exclude>
+  </source>
 </phpunit>

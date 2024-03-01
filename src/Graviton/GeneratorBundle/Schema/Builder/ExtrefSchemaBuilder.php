@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Schema\Builder;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Schema\SchemaBuilderInterface;
 use Symfony\Component\Routing\Router;
 

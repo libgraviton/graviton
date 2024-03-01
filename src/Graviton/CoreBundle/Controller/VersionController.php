@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 

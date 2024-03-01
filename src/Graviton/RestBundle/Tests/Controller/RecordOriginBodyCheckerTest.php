@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Tests\Controller;
 
-use Graviton\SchemaBundle\Constraint\RecordOriginConstraint;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
