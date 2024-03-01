@@ -33,15 +33,13 @@
 
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/common-bundle": "~4",
+        "graviton/common-bundle": "dev-develop",
+        "symfony/runtime": "^6.4.0",
+
         "graviton/rql-parser-bundle": "dev-develop",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/mongodb-migrations-bundle": "~2",
-
-        "symfony/framework-bundle": "~6.4.0",
-        "symfony/runtime": "~6.4.0",
-        "symfony/monolog-bundle": "~3.0",
 
         "jms/serializer-bundle": "~5",
 
@@ -66,7 +64,6 @@
 
         "solarium/solarium": "~6",
         "mtdowling/jmespath.php": "^2.4",
-
 
         "seld/jsonlint": "*",
         "league/mime-type-detection": "^1.15",
