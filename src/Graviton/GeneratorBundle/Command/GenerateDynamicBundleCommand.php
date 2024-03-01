@@ -140,11 +140,11 @@ class GenerateDynamicBundleCommand extends Command
         ResourceGenerator $resourceGenerator,
         DynamicBundleBundleGenerator $bundleBundleGenerator,
         SerializerInterface $serializer,
-        $bundleAdditions = null,
-        $serviceWhitelist = null,
-        $name = null,
-        $syntheticFields = null,
-        $ensureIndexes = null,
+        $bundleAdditions,
+        $serviceWhitelist,
+        $name,
+        $syntheticFields,
+        $ensureIndexes,
         SchemaGenerator $schemaGenerator,
         RuntimeDefinitionBuilder $runtimeDefinitionBuilder
     ) {

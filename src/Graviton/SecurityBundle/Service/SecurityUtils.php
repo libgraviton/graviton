@@ -7,7 +7,7 @@ namespace Graviton\SecurityBundle\Service;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 
@@ -102,21 +102,21 @@ class SecurityUtils
      * Find current user
      *
      * @return string
-     * @throws UsernameNotFoundException
+     * @throws UserNotFoundException
      */
     public function getSecurityUser()
     {
         if ($this->isSecurityUser()) {
             return $this->securityUser;
         }
-        throw new UsernameNotFoundException('No security user');
+        throw new UserNotFoundException('No security user');
     }
 
     /**
      * Return users username
      *
      * @return string
-     * @throws UsernameNotFoundException
+     * @throws UserNotFoundException
      */
     public function getSecurityUsername()
     {
@@ -131,14 +131,14 @@ class SecurityUtils
      *
      * @param string $role User role expected
      * @return bool
-     * @throws UsernameNotFoundException
+     * @throws UserNotFoundException
      */
     public function hasRole($role)
     {
         if ($this->isSecurityUser()) {
             return (bool) $this->securityUser->hasRole($role);
         }
-        throw new UsernameNotFoundException('No security user');
+        throw new UserNotFoundException('No security user');
     }
 
     /**

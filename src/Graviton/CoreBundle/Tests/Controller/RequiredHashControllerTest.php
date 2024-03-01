@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -109,89 +110,52 @@ class RequiredHashControllerTest extends RestTestCase
     }
 
     /**
-     * yielding for incremental error checking
+     * data provider
      *
-     * @return \Generator data
+     * @return \Generator
      */
-    public static function postWithoutFieldInOptionalHashDataProvider() : \Generator
+    public static function postWithEmptyOptionalHashDataProvider(): \Generator
     {
+        // OPTIONAL HASH
         $data = [
             'name'         => __METHOD__,
             'optionalHash' => [
-                'name'     => 'abc',
+                'name'     => null,
+                'value'    => null,
+                'optional' => null,
             ],
-            'requiredHash' => [
-                'name'     => 'abc',
-                'value'    => 123,
-                'optional' => '2015-09-03T12:00:00+0000',
-
-                'optionalSubHash' => [
-                    'name'     => 'abc',
-                ],
-                'requiredSubHash' => [
-                    'name'     => 'abc',
-                    'value'    => 123,
-                    'optional' => '2015-09-03T12:00:00+0000',
-                ],
-            ],
-        ];
-
-        yield 'base-test' => [$data, 'optionalHash.requiredSubHash'];
-
-        $data['optionalHash']['requiredSubHash'] = [];
-
-        yield 'with-optional-hash' => [$data, 'optionalHash.value'];
-
-        $data['optionalHash']['value'] = 222;
-
-        yield 'with-optional-hash-value' => [$data, 'optionalHash.requiredSubHash.name'];
-
-        $data['optionalHash']['requiredSubHash'] = ['name' => 'hans'];
-
-        yield 'with-optional-hash-req-sub-name' => [$data, 'optionalHash.requiredSubHash.value'];
-
-        $data['optionalHash']['requiredSubHash']['value'] = 22;
-
-        yield 'with-optional-hash-req-sub-val' => [$data, 'requiredHash.optionalSubHash.value'];
-
-        $data['requiredHash']['optionalSubHash']['value'] = 22;
-
-        // all ok!
-        yield 'all-ok' => [$data, null];
-    }
-
-    /**
-     * Test POST method without field in optional hash
-     *
-     * @dataProvider postWithoutFieldInOptionalHashDataProvider
-     *
-     * @return void
-     */
-    public function testPostWithoutFieldInOptionalHash($data, $complainField)
-    {
-        $client = static::createRestClient();
-        $client->post('/testcase/requiredhash/', $data);
-
-        if (!empty($complainField)) {
-            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-            $this->assertEquals($complainField, $client->getResults()[1]->propertyPath);
-        } else {
-            $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
-        }
-    }
-
-    /**
-     * data provider
-     *
-     * @return \Generator data
-     */
-    public static function postWithoutRequiredHashDataProvider(): \Generator
-    {
-        $data = [
-            'name' => __METHOD__,
             'requiredHash' => []
         ];
 
+        yield 'basic' => [$data, 'optionalHash.requiredSubHash'];
+
+        $data['optionalHash']['requiredSubHash'] = new \stdClass();
+
+        yield 'opt-req-sub' => [$data, 'optionalHash.name'];
+
+        $data['optionalHash']['name'] = 'str';
+
+        yield 'opt-name' => [$data, 'optionalHash.value'];
+
+        $data['optionalHash']['value'] = 'str';
+
+        yield 'opt-val' => [$data, 'optionalHash.value'];
+
+        $data['optionalHash']['value'] = 11;
+
+        yield 'opt-val-int' => [$data, 'optionalHash.optional'];
+
+        $data['optionalHash']['optional'] = '2015-09-03T12:00:00+0000';
+
+        yield 'opt-opt-dat' => [$data, 'optionalHash.requiredSubHash.name'];
+
+        $data['optionalHash']['requiredSubHash'] = ['name' => 'str'];
+
+        yield 'with-opt-req-sub-name' => [$data, 'optionalHash.requiredSubHash.value'];
+
+        $data['optionalHash']['requiredSubHash']['value'] = 33;
+
+        // continue with required field!
         yield 'missing' => [$data, 'requiredHash.name'];
 
         $data['requiredHash'] = ['name' => 'str'];
@@ -211,92 +175,21 @@ class RequiredHashControllerTest extends RestTestCase
 
         yield 'with-req-val-int' => [$data, 'requiredHash.requiredSubHash.name'];
 
-        $data['requiredHash']['requiredSubHash']->name = 'hans';
+        $data['requiredHash']['requiredSubHash'] = ['name' => 'hans'];
 
-        yield 'with-req-sub-name' => [$data, 'requiredHash.requiredSubHash.name'];
+        yield 'with-req-sub-name' => [$data, 'requiredHash.requiredSubHash.value'];
 
-        $data['requiredHash']['requiredSubHash']->value = 33;
+        $data['requiredHash']['requiredSubHash']['value'] = 33;
 
         yield 'with-req-all-ok' => [$data, null];
     }
 
     /**
-     * Test POST method without required hash
-     *
-     * @dataProvider postWithoutRequiredHashDataProvider
-     *
-     * @return void
-     */
-    public function testPostWithoutRequiredHash($data, $complainField)
-    {
-        $client = static::createRestClient();
-        $client->post('/testcase/requiredhash/', $data);
-
-        if (!empty($complainField)) {
-            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-            $this->assertEquals($complainField, $client->getResults()[1]->propertyPath);
-        } else {
-            $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
-        }
-    }
-
-    /**
-     * data provider
-     *
-     * @return \Generator
-     */
-    public static function postWithEmptyOptionalHashDataProvider(): \Generator
-    {
-        $data = [
-            'name'         => __METHOD__,
-            'optionalHash' => [
-                'name'     => null,
-                'value'    => null,
-                'optional' => null,
-            ],
-            'requiredHash' => [
-                'name'     => 'abc',
-                'value'    => 123,
-                'optional' => '2015-09-03T12:00:00+0000',
-            ],
-        ];
-
-        //yield 'basic' => [$data, 'optionalHash.requiredSubHash'];
-
-        $data['optionalHash']['requiredSubHash'] = new \stdClass();
-
-        //yield 'opt-req-sub' => [$data, 'optionalHash.name'];
-
-        $data['optionalHash']['name'] = 'str';
-
-        //yield 'opt-name' => [$data, 'optionalHash.name'];
-
-        $data['optionalHash']['value'] = 'str';
-
-        //yield 'opt-val' => [$data, 'optionalHash.value'];
-
-        $data['optionalHash']['value'] = 11;
-
-        //yield 'opt-val-int' => [$data, 'optionalHash.optional'];
-
-        $data['optionalHash']['optional'] = '2015-09-03T12:00:00+0000';
-
-        //yield 'opt-opt-dat' => [$data, 'optionalHash.optional'];
-
-        //$data['requiredHash']['requiredSubHash']->name = 'str';
-
-        yield 'with-req-sub-name' => [$data, 'requiredHash.requiredSubHash.value'];
-
-        //$data['requiredHash']['requiredSubHash']->value = 33;
-    }
-
-    /**
      * Test POST method with empty optional hash
      *
-     * @dataProvider postWithEmptyOptionalHashDataProvider
-     *
      * @return void
      */
+    #[DataProvider('postWithEmptyOptionalHashDataProvider')]
     public function testPostWithEmptyOptionalHash($data, $complainField)
     {
         $client = static::createRestClient();
@@ -307,67 +200,6 @@ class RequiredHashControllerTest extends RestTestCase
         } else {
             $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         }
-        return;
-
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath'  => 'optionalHash.requiredSubHash',
-                    'message'       => 'The property requiredSubHash is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'optionalHash.name',
-                    'message'       => 'NULL value found, but a string is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'optionalHash.value',
-                    'message'       => 'NULL value found, but an integer is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'requiredHash.requiredSubHash',
-                    'message'       => 'The property requiredSubHash is required',
-                ]
-            ],
-            $client->getResults()
-        );
-    }
-
-    /**
-     * Test POST method with empty required hash
-     *
-     * @return void
-     */
-    public function testPostWithEmptyRequiredHash()
-    {
-        $data = [
-            'name'         => __METHOD__,
-            'requiredHash' => [
-                'name'     => null,
-                'value'    => null,
-                'optional' => null,
-            ],
-        ];
-
-        $client = static::createRestClient();
-        $client->post('/testcase/requiredhash/', $data);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath'  => 'requiredHash.requiredSubHash',
-                    'message'       => 'The property requiredSubHash is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'requiredHash.name',
-                    'message'       => 'NULL value found, but a string is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'requiredHash.value',
-                    'message'       => 'NULL value found, but an integer is required',
-                ]
-            ],
-            $client->getResults()
-        );
     }
 
     /**
@@ -378,7 +210,7 @@ class RequiredHashControllerTest extends RestTestCase
     public function testCollectionHasNoRealId()
     {
         $client = static::createRestclient();
-        $client->request('GET', '/schema/testcase/requiredhash/collection');
+        $client->request('GET', '/schema/testcase/requiredhash/openapi.json');
 
         $response = $client->getResponse();
 

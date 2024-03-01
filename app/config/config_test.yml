@@ -45,7 +45,7 @@ parameters:
     graviton.security.authentication.strategy.header.key: x-graviton-user
 
 framework:
-    test: ~
+    test: true
     profiler:
         enabled: false
         collect: false

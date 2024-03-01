@@ -1,25 +1,24 @@
 <?php
 /**
- * BaseJsonDefinitionFieldTest class file
+ * BaseJsonDefinitionFieldTest
  */
 
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
 use Graviton\GeneratorBundle\Definition\Schema;
+use PHPUnit\Framework\TestCase;
 
 /**
- * Base JsonDefinitionField test
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-abstract class BaseJsonDefinitionFieldTest extends \PHPUnit\Framework\TestCase
+abstract class BaseJsonDefinitionFieldTest extends TestCase
 {
     /**
      * @return Schema\Field
      */
-    protected function getBaseField()
+    protected function getBaseField(): Schema\Field
     {
         return (new Schema\Field())
             ->setName('name')

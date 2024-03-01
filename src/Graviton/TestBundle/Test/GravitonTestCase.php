@@ -133,7 +133,7 @@ class GravitonTestCase extends WebTestCase
      */
     public function loadFixturesLocal(array $classNames = [])
     {
-        return $this->loadFixtures(
+        $this->loadFixtures(
             $classNames,
             false,
             'doctrine_mongodb.odm.default_document_manager'

@@ -77,18 +77,18 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by simple field' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a')
                 ),
                 ['a'],
             ],
             'nothing by simple field' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('not-found')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('not-found')
                 ),
                 [],
             ],
@@ -96,18 +96,18 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by extref' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/b')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/b')
                 ),
                 ['a'],
             ],
             'nothing by extref' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/not-found')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/not-found')
                 ),
                 [],
             ],
@@ -115,22 +115,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by two condition' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('A')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('A')
                 ),
                 ['a'],
             ],
             'nothing by two condition' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('B')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('B')
                 ),
                 [],
             ],
@@ -138,22 +138,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by two condition with extref' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/a')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/a')
                 ),
                 ['a'],
             ],
             'nothing by two condition with extref' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/b')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/b')
                 ),
                 [],
             ],
@@ -161,22 +161,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by two array elements' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('B')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('B')
                 ),
                 ['a'],
             ],
             'nothing by two array elements' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('p'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('q')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('p'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('q')
                 ),
                 [],
             ],
@@ -184,22 +184,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by both documents' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('a'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('X')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('a'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('X')
                 ),
                 ['a', 'x'],
             ],
             'nothing by both documents' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('c'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('d')
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('c'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('d')
                 ),
                 [],
             ],
@@ -207,18 +207,18 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by deep array' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa')
                 ),
                 ['a'],
             ],
             'nothing by deep array' => [
                 sprintf(
                     'elemMatch(%s,eq(%s,%s))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('pp')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('pp')
                 ),
                 [],
             ],
@@ -226,22 +226,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by deep and two condition' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('AA')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('AA')
                 ),
                 ['a'],
             ],
             'nothing by deep and two condition' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('PP')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('PP')
                 ),
                 [],
             ],
@@ -249,22 +249,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by deep and two condition with extref' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/aa')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/aa')
                 ),
                 ['a'],
             ],
             'nothing deep and by two condition with extref' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$ref'),
-                    $this->encodeRqlString('http://localhost/core/module/bb')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$ref'),
+                    self::encodeRqlString('http://localhost/core/module/bb')
                 ),
                 [],
             ],
@@ -272,22 +272,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by deep and two array elements' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('BB')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('BB')
                 ),
                 ['a'],
             ],
             'nothing by deep and two array elements' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('pp'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('qq')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('pp'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('qq')
                 ),
                 [],
             ],
@@ -296,22 +296,22 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by deep and both documents' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('XX')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('XX')
                 ),
                 ['a', 'x'],
             ],
             'nothing by deep and both documents' => [
                 sprintf(
                     'elemMatch(%s,or(eq(%s,%s),eq(%s,%s)))',
-                    $this->encodeRqlString('$deep.$deep..$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('pp'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('QQ')
+                    self::encodeRqlString('$deep.$deep..$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('pp'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('QQ')
                 ),
                 [],
             ],
@@ -319,14 +319,14 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             'by two elemMatch' => [
                 sprintf(
                     'elemMatch(%s,and(eq(%s,%s),elemMatch(%s,and(eq(%s,%s),eq(%s,%s)))))',
-                    $this->encodeRqlString('$deep.$deep'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('A'),
-                    $this->encodeRqlString('$array'),
-                    $this->encodeRqlString('$type'),
-                    $this->encodeRqlString('aa'),
-                    $this->encodeRqlString('$name'),
-                    $this->encodeRqlString('AA')
+                    self::encodeRqlString('$deep.$deep'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('A'),
+                    self::encodeRqlString('$array'),
+                    self::encodeRqlString('$type'),
+                    self::encodeRqlString('aa'),
+                    self::encodeRqlString('$name'),
+                    self::encodeRqlString('AA')
                 ),
                 ['a'],
             ],
@@ -339,7 +339,7 @@ class ElemMatchOperatorControllerTest extends RestTestCase
      * @param string $string String
      * @return string
      */
-    private function encodeRqlString($string)
+    private static function encodeRqlString($string)
     {
         return strtr(
             rawurlencode($string),

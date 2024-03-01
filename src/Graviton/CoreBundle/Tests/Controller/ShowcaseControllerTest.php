@@ -168,7 +168,7 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @return array[] data
      */
-    private static function emptyFieldsDataProvider() : array
+    public static function emptyFieldsDataProvider() : array
     {
         return [
             'simple' => [
