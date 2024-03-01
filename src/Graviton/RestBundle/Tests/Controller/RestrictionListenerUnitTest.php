@@ -82,9 +82,9 @@ class RestrictionListenerUnitTest extends GravitonTestCase
     /**
      * Data provider for restriction modes
      *
-     * @return array[] modes
+     * @return array modes
      */
-    public function dataProviderModes()
+    public static function dataProviderModes(): array
     {
         return [
             // in this mode, we make "EQ" comparisons with the client id..

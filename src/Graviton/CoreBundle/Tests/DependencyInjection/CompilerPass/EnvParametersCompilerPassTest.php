@@ -58,7 +58,7 @@ class EnvParametersCompilerPassTest extends \PHPUnit\Framework\TestCase
      *
      * @return array data
      */
-    public function parameterSettingDataProvider()
+    public static function parameterSettingDataProvider(): array
     {
         return [
             'simple' => [

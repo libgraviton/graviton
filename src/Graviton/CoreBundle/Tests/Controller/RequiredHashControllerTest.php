@@ -111,9 +111,9 @@ class RequiredHashControllerTest extends RestTestCase
     /**
      * yielding for incremental error checking
      *
-     * @return void
+     * @return \Generator data
      */
-    public function postWithoutFieldInOptionalHashDataProvider()
+    public static function postWithoutFieldInOptionalHashDataProvider() : \Generator
     {
         $data = [
             'name'         => __METHOD__,
@@ -185,7 +185,7 @@ class RequiredHashControllerTest extends RestTestCase
      *
      * @return \Generator data
      */
-    public function postWithoutRequiredHashDataProvider(): \Generator
+    public static function postWithoutRequiredHashDataProvider(): \Generator
     {
         $data = [
             'name' => __METHOD__,
@@ -240,7 +240,12 @@ class RequiredHashControllerTest extends RestTestCase
         }
     }
 
-    public function postWithEmptyOptionalHashDataProvider(): \Generator
+    /**
+     * data provider
+     *
+     * @return \Generator
+     */
+    public static function postWithEmptyOptionalHashDataProvider(): \Generator
     {
         $data = [
             'name'         => __METHOD__,
@@ -283,7 +288,6 @@ class RequiredHashControllerTest extends RestTestCase
         yield 'with-req-sub-name' => [$data, 'requiredHash.requiredSubHash.value'];
 
         //$data['requiredHash']['requiredSubHash']->value = 33;
-
     }
 
     /**

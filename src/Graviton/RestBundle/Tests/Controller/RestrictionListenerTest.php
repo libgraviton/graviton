@@ -123,7 +123,7 @@ class RestrictionListenerTest extends RestTestCase
      *
      * @return array data
      */
-    public function fetchDataProvider()
+    public static function fetchDataProvider(): array
     {
         return [
             'all' => [

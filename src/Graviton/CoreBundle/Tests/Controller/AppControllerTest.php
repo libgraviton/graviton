@@ -398,7 +398,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return array[]
      */
-    public function invalidPagingPageSizeProvider()
+    public static function invalidPagingPageSizeProvider(): array
     {
         return [
             [0],
@@ -1045,7 +1045,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function searchableTranslationDataProvider()
+    public static function searchableTranslationDataProvider(): array
     {
         return [
             'simple-de' => array('eq(name.de,Die%20Administration)', 1),

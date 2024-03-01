@@ -34,7 +34,7 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function buildBasicParamData()
+    public static function buildBasicParamData(): array
     {
         return [
             ['document', 'document'],
@@ -66,7 +66,7 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function buildBasenameParams()
+    public static function buildBasenameParams(): array
     {
         return [
             ['Name', 'name'],
@@ -134,7 +134,7 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function buildJsonParamsIdFieldDefData()
+    public static function buildJsonParamsIdFieldDefData(): array
     {
         return [
             [null],

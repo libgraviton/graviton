@@ -32,7 +32,7 @@ class FieldTypeMapperTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function mapData()
+    public static function mapData(): array
     {
         return [
             'simple string' => [

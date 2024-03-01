@@ -37,7 +37,7 @@ class JsonStrategyTest extends \PHPUnit\Framework\TestCase
      * @return array
      * @see testSupports()
      */
-    public function dataSupports()
+    public static function dataSupports(): array
     {
         return [
             [

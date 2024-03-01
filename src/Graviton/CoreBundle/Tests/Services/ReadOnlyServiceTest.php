@@ -84,7 +84,7 @@ class ReadOnlyServiceTest extends RestTestCase
      *
      * @return array
      */
-    public function dataProvider()
+    public static function dataProvider(): array
     {
         $url = "/testcase/readonly/";
         $testEntry = (object) [

@@ -39,7 +39,7 @@ class CoreUtilsTest extends TestCase
      *
      * @return array test data
      */
-    public function parseStringFieldListDataProvider()
+    public static function parseStringFieldListDataProvider(): array
     {
         return [
             [

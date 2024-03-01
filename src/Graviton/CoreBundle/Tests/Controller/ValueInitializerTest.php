@@ -91,9 +91,9 @@ class ValueInitializerTest extends RestTestCase
     /**
      * data provider
      *
-     * @return array[] data
+     * @return array data
      */
-    public function dataProvider()
+    public static function dataProvider(): array
     {
         return [
             [

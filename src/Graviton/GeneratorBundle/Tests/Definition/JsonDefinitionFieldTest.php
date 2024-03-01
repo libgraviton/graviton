@@ -80,7 +80,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
      *
      * @return array
      */
-    public function dataGetTypeDoctrine()
+    public static function dataGetTypeDoctrine(): array
     {
         $map = [
             JsonDefinitionField::TYPE_STRING => 'string',
@@ -123,7 +123,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
      *
      * @return array
      */
-    public function dataGetTypeSerializer()
+    public static function dataGetTypeSerializer(): array
     {
         $map = [
             JsonDefinitionField::TYPE_STRING => 'string',

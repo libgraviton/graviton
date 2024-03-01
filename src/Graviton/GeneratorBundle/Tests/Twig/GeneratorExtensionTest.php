@@ -41,9 +41,9 @@ class GeneratorExtensionTest extends \PHPUnit\Framework\TestCase
     /**
      * data provider
      *
-     * @return array[] data
+     * @return array data
      */
-    public function dataProviderDoctrineIndexesAnnotation()
+    public static function dataProviderDoctrineIndexesAnnotation(): array
     {
         return [
             'normal' => [

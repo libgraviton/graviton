@@ -183,7 +183,7 @@ class NullExtrefControllerTest extends RestTestCase
      *
      * @return array
      */
-    public function dataTestData()
+    public static function dataTestData(): array
     {
         return [
             'empty refs' => [

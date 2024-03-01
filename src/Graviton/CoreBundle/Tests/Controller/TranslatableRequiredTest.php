@@ -60,7 +60,7 @@ class TranslatableRequiredTest extends RestTestCase
      *
      * @return array data
      */
-    public function acceptableDataProvider()
+    public static function acceptableDataProvider(): array
     {
         return [
             'omit-optional' => [
@@ -90,7 +90,7 @@ class TranslatableRequiredTest extends RestTestCase
      *
      * @return array data
      */
-    public function unacceptableDataProvider()
+    public static function unacceptableDataProvider(): array
     {
         return [
             'omit-required' => [

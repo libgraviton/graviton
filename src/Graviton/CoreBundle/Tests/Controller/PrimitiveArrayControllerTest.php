@@ -176,7 +176,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
      *
      * @return array|\Generator data
      */
-    public function validationDataProvider(): array|\Generator
+    public static function validationDataProvider(): array|\Generator
     {
         // all is right!
         $baseObject = [

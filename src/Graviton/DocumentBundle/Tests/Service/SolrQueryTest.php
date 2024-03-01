@@ -154,7 +154,7 @@ class SolrQueryTest extends TestCase
      *
      * @return array searches
      */
-    public function solrQueryHandlingDataProvider()
+    public static function solrQueryHandlingDataProvider(): array
     {
         return [
             'int-tel-search-short' => [
@@ -341,7 +341,7 @@ class SolrQueryTest extends TestCase
      *
      * @return array searches
      */
-    public function solrQueryHandlingDataProviderSecond()
+    public static function solrQueryHandlingDataProviderSecond(): array
     {
         return [
             'simple-search' => [

@@ -63,7 +63,7 @@ class SameSubnetAuthenticatorTest extends TestCase
      *
      * @return array[] data
      */
-    public function handlingData()
+    public static function handlingData(): array
     {
         return [
             'no-handling' => [

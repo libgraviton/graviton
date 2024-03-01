@@ -52,7 +52,7 @@ class EmptyObjectControllerTest extends RestTestCase
      *
      * @return array
      */
-    public function dataCheckGetOne()
+    public static function dataCheckGetOne(): array
     {
         return [
             'empty all' => [

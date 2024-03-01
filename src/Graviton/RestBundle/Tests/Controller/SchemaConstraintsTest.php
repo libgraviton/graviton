@@ -55,7 +55,7 @@ class SchemaConstraintsTest extends RestTestCase
      *
      * @return array data
      */
-    public function schemaConstraintDataProvider()
+    public static function schemaConstraintDataProvider(): array
     {
         return [
 

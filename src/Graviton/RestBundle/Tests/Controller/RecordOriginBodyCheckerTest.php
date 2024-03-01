@@ -175,7 +175,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
      *
      * @return array
      */
-    public function createDataProvider()
+    public static function createDataProvider(): array
     {
         $baseObj = [
             'customerNumber' => 888,
@@ -222,7 +222,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
      *
      * @return array
      */
-    public function updateDataProvider()
+    public static function updateDataProvider(): array
     {
         return [
 
@@ -271,7 +271,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
      *
      * @return array
      */
-    public function patchDataProvider()
+    public static function patchDataProvider(): array
     {
         return [
 

@@ -174,7 +174,7 @@ class DefaultControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function paramHandlingWithIntDataProvider()
+    public static function paramHandlingWithIntDataProvider(): array
     {
         return [
             [
@@ -234,7 +234,7 @@ class DefaultControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function paramHandlingWithIntOnStringFieldDataProvider()
+    public static function paramHandlingWithIntOnStringFieldDataProvider(): array
     {
         return [
             [
@@ -285,7 +285,7 @@ class DefaultControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function paramHandlingArrayWithIntOnStringFieldDataProvider()
+    public static function paramHandlingArrayWithIntOnStringFieldDataProvider(): array
     {
         return [
             [
@@ -495,7 +495,7 @@ class DefaultControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function booleanHandlingDataProvider()
+    public static function booleanHandlingDataProvider(): array
     {
         return [
             [

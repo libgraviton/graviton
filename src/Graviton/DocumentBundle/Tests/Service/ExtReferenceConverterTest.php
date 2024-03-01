@@ -90,7 +90,7 @@ class ExtReferenceConverterTest extends TestCase
     /**
      * @return array
      */
-    public function getExtReferenceProvider()
+    public static function getExtReferenceProvider(): array
     {
         return [
             [
@@ -137,7 +137,7 @@ class ExtReferenceConverterTest extends TestCase
     /**
      * @return array
      */
-    public function getUrlProvider()
+    public static function getUrlProvider(): array
     {
         return [
             [

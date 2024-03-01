@@ -49,7 +49,7 @@ class RestServicesCompilerPassTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function setsParamsProvider()
+    public static function setsParamsProvider(): array
     {
         return array(
             array(array()),

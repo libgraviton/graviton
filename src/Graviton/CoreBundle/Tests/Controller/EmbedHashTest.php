@@ -36,7 +36,7 @@ class EmbedHashTest extends RestTestCase
     /**
      * @return array
      */
-    public function dataValid()
+    public static function dataValid(): array
     {
         return [
             'all' => [
@@ -138,7 +138,7 @@ class EmbedHashTest extends RestTestCase
     /**
      * @return array
      */
-    public function dataInvalid()
+    public static function dataInvalid(): array
     {
         return [
             'no value' => [

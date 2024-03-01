@@ -43,7 +43,7 @@ class ValuePatternTest extends RestTestCase
      *
      * @return array[] data
      */
-    public function dataProvider()
+    public static function dataProvider(): array
     {
         return [
             [

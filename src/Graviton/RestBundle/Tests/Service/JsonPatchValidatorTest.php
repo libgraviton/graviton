@@ -34,7 +34,7 @@ class JsonPatchValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public static function invalidJsonPatchesProvider()
+    public static function invalidJsonPatchesProvider(): array
     {
         return [
             [
@@ -63,7 +63,7 @@ class JsonPatchValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public static function validJsonPatchesProvider()
+    public static function validJsonPatchesProvider(): array
     {
         return [
             [

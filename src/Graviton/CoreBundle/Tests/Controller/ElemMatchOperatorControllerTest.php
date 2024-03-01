@@ -66,7 +66,7 @@ class ElemMatchOperatorControllerTest extends RestTestCase
      *
      * @return array
      */
-    public function dataElemMatchOperator()
+    public static function dataElemMatchOperator(): array
     {
         return [
             'all' => [

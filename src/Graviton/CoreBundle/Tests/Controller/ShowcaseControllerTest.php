@@ -168,7 +168,7 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @return array[] data
      */
-    private function emptyFieldsDataProvider() : array
+    private static function emptyFieldsDataProvider() : array
     {
         return [
             'simple' => [
@@ -409,7 +409,7 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @return array
      */
-    public function postCreationDataProvider()
+    public static function postCreationDataProvider(): array
     {
         $basePath = dirname(__FILE__).'/../resources/';
 
@@ -963,7 +963,7 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @return array
      */
-    public function rqlDataProvider()
+    public static function rqlDataProvider(): array
     {
         return [
             'rql' => ['url' => '/hans/showcase?id=blah' , 'redirect_url' => 'http://localhost/hans/showcase/?id=blah'],
@@ -1033,7 +1033,7 @@ class ShowcaseControllerTest extends RestTestCase
     /**
      * @return array
      */
-    public function findByExtrefProvider()
+    public static function findByExtrefProvider(): array
     {
         return [
             'find a linked record when searching for "tablet" ref by array field' => [

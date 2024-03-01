@@ -274,7 +274,7 @@ class ModuleControllerTest extends RestTestCase
     /**
      * @return array
      */
-    public function findByAppRefProvider()
+    public static function findByAppRefProvider(): array
     {
         return [
             'find all tablet records' => [
@@ -331,7 +331,7 @@ class ModuleControllerTest extends RestTestCase
     /**
      * @return array
      */
-    public function dataExtrefOperators()
+    public static function dataExtrefOperators(): array
     {
         $tabletIds = [
             'tablet-realEstate',
@@ -348,64 +348,64 @@ class ModuleControllerTest extends RestTestCase
             '== tablet' => [
                 sprintf(
                     '%s=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $tabletIds,
             ],
             '!= tablet' => [
                 sprintf(
                     '%s!=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $adminIds,
             ],
             '> tablet' => [
                 sprintf(
                     '%s>%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 [],
             ],
             '< tablet' => [
                 sprintf(
                     '%s<%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $adminIds,
             ],
             '>= tablet' => [
                 sprintf(
                     '%s>=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $tabletIds,
             ],
             '<= tablet' => [
                 sprintf(
                     '%s<=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 array_merge($tabletIds, $adminIds),
             ],
             '=in= tablet' => [
                 sprintf(
                     '%s=in=(%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $tabletIds,
             ],
             '=out= tablet' => [
                 sprintf(
                     '%s=out=(%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 $adminIds,
             ],
@@ -413,48 +413,48 @@ class ModuleControllerTest extends RestTestCase
             '> admin' => [
                 sprintf(
                     '%s>%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 $tabletIds,
             ],
             '< admin' => [
                 sprintf(
                     '%s<%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 [],
             ],
             '>= admin' => [
                 sprintf(
                     '%s>=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 array_merge($tabletIds, $adminIds),
             ],
             '<= admin' => [
                 sprintf(
                     '%s<=%s',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 $adminIds,
             ],
             '=in= admin' => [
                 sprintf(
                     '%s=in=(%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 $adminIds,
             ],
             '=out= admin' => [
                 sprintf(
                     '%s=out=(%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin')
                 ),
                 $tabletIds,
             ],
@@ -462,18 +462,18 @@ class ModuleControllerTest extends RestTestCase
             '=in= admin, tablet' => [
                 sprintf(
                     '%s=in=(%s,%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 array_merge($adminIds, $tabletIds),
             ],
             '=out= admin, tablet' => [
                 sprintf(
                     '%s=out=(%s,%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 [],
             ],
@@ -481,20 +481,20 @@ class ModuleControllerTest extends RestTestCase
             '== admin || == tablet' => [
                 sprintf(
                     '(%s==%s|%s==%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin'),
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin'),
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 array_merge($adminIds, $tabletIds),
             ],
             '== admin && == tablet' => [
                 sprintf(
                     '(%s==%s&%s==%s)',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin'),
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin'),
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet')
                 ),
                 [],
             ],
@@ -502,20 +502,20 @@ class ModuleControllerTest extends RestTestCase
             '== admin || some logic' => [
                 sprintf(
                     'or(eq(%s,%s),and(eq(id,%s),eq(id,%s)))',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/admin'),
-                    $this->encodeRqlString('not-existing-id-1'),
-                    $this->encodeRqlString('not-existing-id-2')
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/admin'),
+                    self::encodeRqlString('not-existing-id-1'),
+                    self::encodeRqlString('not-existing-id-2')
                 ),
                 $adminIds,
             ],
             '== tablet && some logic' => [
                 sprintf(
                     'and(eq(%s,%s),or(eq(id,%s),eq(id,%s)))',
-                    $this->encodeRqlString('app.$ref'),
-                    $this->encodeRqlString('http://localhost/core/app/tablet'),
-                    $this->encodeRqlString($tabletIds[0]),
-                    $this->encodeRqlString($tabletIds[1])
+                    self::encodeRqlString('app.$ref'),
+                    self::encodeRqlString('http://localhost/core/app/tablet'),
+                    self::encodeRqlString($tabletIds[0]),
+                    self::encodeRqlString($tabletIds[1])
                 ),
                 [$tabletIds[0], $tabletIds[1]]
             ],
@@ -740,7 +740,7 @@ class ModuleControllerTest extends RestTestCase
      * @param string $value Value
      * @return string
      */
-    private function encodeRqlString($value)
+    private static function encodeRqlString($value)
     {
         return strtr(
             rawurlencode($value),

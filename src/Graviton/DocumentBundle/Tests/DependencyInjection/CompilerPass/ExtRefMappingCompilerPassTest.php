@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ExtRefMappingCompilerPass test
@@ -14,7 +15,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPa
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtRefMappingCompilerPassTest extends \PHPUnit\Framework\TestCase
+class ExtRefMappingCompilerPassTest extends TestCase
 {
     /**
      * @param string $serviceId      Service ID
@@ -64,7 +65,7 @@ class ExtRefMappingCompilerPassTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function dataProcess()
+    public static function dataProcess(): array
     {
         return [
             [

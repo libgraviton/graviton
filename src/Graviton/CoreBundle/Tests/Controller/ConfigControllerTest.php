@@ -58,22 +58,22 @@ class ConfigControllerTest extends RestTestCase
      *
      * @return array data
      */
-    public function rqlCheckDataProvider()
+    public static function rqlCheckDataProvider(): array
     {
         return array(
             array(
-                'eq(id,'.$this->encodeString('tablet-hello-message').')',
-                'eq(id,string:'.$this->encodeString('tablet-hello-message').')',
+                'eq(id,'.self::encodeString('tablet-hello-message').')',
+                'eq(id,string:'.self::encodeString('tablet-hello-message').')',
                 1
             ),
             array(
-                'eq(id,'.$this->encodeString('admin-additional+setting').')',
-                'eq(id,string:'.$this->encodeString('admin-additional+setting').')',
+                'eq(id,'.self::encodeString('admin-additional+setting').')',
+                'eq(id,string:'.self::encodeString('admin-additional+setting').')',
                 1
             ),
             array(
-                'like(key,'.$this->encodeString('hello-').'*)',
-                'like(key,'.$this->encodeString('hello-').'*)',
+                'like(key,'.self::encodeString('hello-').'*)',
+                'like(key,'.self::encodeString('hello-').'*)',
                 1
             )
         );
@@ -86,7 +86,7 @@ class ConfigControllerTest extends RestTestCase
      *
      * @return string encoded value
      */
-    private function encodeString($value)
+    private static function encodeString($value)
     {
         return str_replace(
             array('-', '_', '.', '~'),
