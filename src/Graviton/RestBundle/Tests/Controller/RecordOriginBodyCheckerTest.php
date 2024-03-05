@@ -164,8 +164,12 @@ class RecordOriginBodyCheckerTest extends RestTestCase
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertStringContainsString(
-            "'recordOrigin' must not be one of the following keywords",
-            $client->getResults()->message
+            "Unable to delete this record, protected recordOrigin.",
+            $client->getResults()[0]->message
+        );
+        $this->assertStringContainsString(
+            "recordOrigin",
+            $client->getResults()[0]->propertyPath
         );
     }
 

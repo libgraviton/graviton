@@ -413,10 +413,13 @@ class RestController
     {
         $this->logger->info('REST: deleteAction');
 
+        $response = new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
+        $this->restUtils->validateRequest($request, $response, $this->getModel());
+
         $this->model->deleteRecord($id);
         $this->addRequestAttributes($request);
 
-        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
+        return $response;
     }
 
     /**

@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Service\BodyChecks;
 
 use Rs\Json\Pointer;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -58,9 +59,18 @@ readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
             if (!in_array($existingRecordOrigin, $this->recordOriginBlacklist)) {
                 return;
             }
+
         } catch (\Throwable $t) {
             // nothing -> finish
             return;
+        }
+
+        // this is a protected recordOrigin. if delete, deny now
+        if ($data->request->getMethod() == Request::METHOD_DELETE) {
+            throw new BodyCheckViolation(
+                'Unable to delete this record, protected recordOrigin.',
+                'recordOrigin'
+            );
         }
 
         // ok, need to do checking!
