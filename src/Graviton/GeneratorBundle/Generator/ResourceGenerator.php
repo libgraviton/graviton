@@ -311,6 +311,13 @@ class ResourceGenerator extends AbstractGenerator
             ]
         );
 
+        $hasIdFieldDefined = false;
+        foreach ($fields as $field) {
+            if ($field['exposedName'] == 'id') {
+                $hasIdFieldDefined = true;
+            }
+        }
+
         $parameters = $this->parameterBuilder
             ->reset()
             ->setParameter('document', $document)
@@ -318,6 +325,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('bundle', $bundleName)
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
+            ->setParameter('hasIdFieldDefined', $hasIdFieldDefined)
             ->setParameter('basename', $basename)
             ->setParameter('jsonDefinitions', $allDefinitions)
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())

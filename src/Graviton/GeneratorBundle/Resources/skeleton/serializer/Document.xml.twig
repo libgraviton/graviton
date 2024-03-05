@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
   <class name="{{ base }}Document\{{ document }}" exclusion-policy="NONE">
-
-{% if isEmbedded == true %}
-    <!-- hidden id for embedding purposes -->
-    <property name="realId" serialized-name="realId" type="string" accessor-getter="getRealId" exclude="true"/>
-{% else %}
-    <property name="id" type="string" accessor-getter="getId" />
+    <property name="id" type="string" accessor-getter="getId"{% if not hasIdFieldDefined %} exclude="true"{% endif %} />
 
 {# add id to reserved fieldnames when NOT embedded #}
 {% set reservedFieldnames = reservedFieldnames|join('id') %}
 
+{% if isEmbedded == true %}
+    <!-- hidden id for embedding purposes -->
+    <property name="realId" serialized-name="realId" type="string" accessor-getter="getRealId" exclude="true"/>
 {% endif %}
 
     <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
