@@ -85,7 +85,6 @@
         "graviton/mongodb-fixtures-bundle": "dev-develop",
         "libgraviton/codesniffer": "~2",
 
-        "dms/phpunit-arraysubset-asserts": "~0",
         "phan/phan": "^5.3",
         "masterminds/html5": "^2.8"
     },
