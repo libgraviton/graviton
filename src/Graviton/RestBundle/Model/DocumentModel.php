@@ -59,18 +59,6 @@ readonly class DocumentModel
     }
 
     /**
-     * toggle flag if we should use mongodb secondary
-     *
-     * @param bool $isUseSecondary if secondary or not
-     *
-     * @return void
-     */
-    public function setIsUseSecondary(bool $isUseSecondary): void
-    {
-        $this->queryService->setIsUseSecondary($isUseSecondary);
-    }
-
-    /**
      * get repository instance
      *
      * @return DocumentRepository
@@ -99,7 +87,7 @@ readonly class DocumentModel
      */
     public function findAll(Request $request)
     {
-        return $this->queryService->getWithRequest($request, $this->getRepository());
+        return $this->queryService->getWithRequest($request, $this);
     }
 
     /**
@@ -225,7 +213,7 @@ readonly class DocumentModel
 
         $request->attributes->set('singleDocument', $documentId);
 
-        $document = $this->queryService->getWithRequest($request, $this->getRepository());
+        $document = $this->queryService->getWithRequest($request, $this);
         if (empty($document)) {
             throw new NotFoundException(
                 sprintf(
