@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
 use Graviton\RqlParser\AbstractNode;
@@ -138,37 +139,35 @@ class QueryService
      * @return array|null|object either array of records or the record
      *
      */
-    public function getWithRequest(Request $request, DocumentRepository $repository)
+    public function getWithRequest(Request $request, DocumentModel $model)
     {
         $returnValue = null;
-
-        $this->request = &$request;
-        $this->repository = $repository;
-        $this->queryBuilder = $repository->createQueryBuilder();
+        $repository = $model->getRepository();
 
         // if id is *not* empty, then a single document is requested!
-        $singleDocumentRequest = !empty($this->getDocumentId());
+        $singleDocumentRequest = !empty($this->getDocumentId($request));
 
-        $this->applyRqlQuery($request, $singleDocumentRequest);
+        $queryBuilder = $this->applyRqlQuery($request, $model, $singleDocumentRequest);
 
-        if ($this->isUseSecondary) {
+        if ($model->getRuntimeDefinition()->isPreferredReadFromSecondary()) {
             $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
         } else {
             $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY);
         }
 
         // dispatch our event if normal builder
-        if ($this->queryBuilder instanceof Builder) {
-            $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
-            $this->queryBuilder = $this->queryBuilder->setReadPreference($readPreference);
+        if ($queryBuilder instanceof Builder) {
+            $queryBuilder = $this
+                ->executeQueryEvent($queryBuilder)
+                ->setReadPreference($readPreference);
         }
 
-        if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
+        if ($queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
              * this is only the case when queryBuilder was overridden, most likely via a PostEvent
              * in the rql parsing phase.
              */
-            $this->queryBuilder->hydrate($repository->getClassName());
+            $queryBuilder->hydrate($repository->getClassName());
 
             $this->logger->info(
                 'QueryService: Aggregate query',
@@ -178,7 +177,7 @@ class QueryService
             );
 
             $records = array_values(
-                $this->queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
+                $queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
             );
 
             $request->attributes->set('recordCount', count($records));
@@ -210,7 +209,7 @@ class QueryService
              * - only return the original limit amount of records.
              */
 
-            $mainQueryParts = $this->queryBuilder->getQuery()->getQuery();
+            $mainQueryParts = $queryBuilder->getQuery()->getQuery();
             if (!isset($mainQueryParts['limit'])) {
                 $mainQueryParts['limit'] = $this->getPaginationPageSize();
             }
@@ -218,9 +217,9 @@ class QueryService
             // save original size!
             $originalPagesize = $mainQueryParts['limit'];
             // set one more on querybuilder!
-            $this->queryBuilder->limit($originalPagesize + 1);
+            $queryBuilder->limit($originalPagesize + 1);
 
-            $mainQuery = $this->queryBuilder->getQuery();
+            $mainQuery = $queryBuilder->getQuery();
 
             $this->logger->info(
                 'QueryService: allAction query',
@@ -253,14 +252,14 @@ class QueryService
             /**
              * this is the "getAction" -> one document returned
              */
-            $this->queryBuilder->field('id')->equals($this->getDocumentId());
+            $queryBuilder->field('id')->equals($this->getDocumentId($request));
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
+                ['q' => $queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
             );
 
-            $query = $this->queryBuilder->getQuery();
+            $query = $queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
 
             if (is_array($records) && !empty($records) && is_object($records[0])) {
@@ -312,9 +311,9 @@ class QueryService
      *
      * @return string|null either document id or null
      */
-    private function getDocumentId()
+    private function getDocumentId(Request $request)
     {
-        return $this->request->attributes->get('singleDocument', null);
+        return $request->attributes->get('singleDocument', null);
     }
 
     /**
@@ -323,11 +322,12 @@ class QueryService
      * @param Request $request               request
      * @param bool    $singleDocumentRequest if single document is requested
      *
-     * @return void
+     * @return Builder|\Doctrine\ODM\MongoDB\Aggregation\Builder builder
      */
-    private function applyRqlQuery(Request $request, bool $singleDocumentRequest)
+    private function applyRqlQuery(Request $request, DocumentModel $model, bool $singleDocumentRequest)
     {
-        $rqlQuery = $this->getRqlQuery($singleDocumentRequest);
+        $rqlQuery = $this->getRqlQuery($request, $singleDocumentRequest);
+        $queryBuilder = null;
 
         // Setting RQL Query
         if ($rqlQuery) {
@@ -347,25 +347,31 @@ class QueryService
                 }
             }
 
-            $this->visitor->setRepository($this->repository);
-            $this->queryBuilder = $this->visitor->visit($rqlQuery);
+            $this->visitor->setRepository($model->getRepository());
+            $queryBuilder = $this->visitor->visit($rqlQuery);
         }
 
-        if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
-            $currentQuery = $this->queryBuilder->getQuery()->getQuery();
+        if (is_null($queryBuilder)) {
+            $queryBuilder = $model->getRepository()->createQueryBuilder();
+        }
+
+        if (is_null($this->getDocumentId($request)) && $queryBuilder instanceof Builder) {
+            $currentQuery = $queryBuilder->getQuery()->getQuery();
 
             /*** default sort ***/
 
             if (!array_key_exists('sort', $currentQuery)) {
-                $this->queryBuilder->sort('_id');
+                $queryBuilder->sort('_id');
             }
 
             /*** pagination stuff ***/
             if (!array_key_exists('limit', $currentQuery)) {
-                $this->queryBuilder->skip($this->getPaginationSkip());
-                $this->queryBuilder->limit($this->getPaginationPageSize());
+                $queryBuilder->skip($this->getPaginationSkip());
+                $queryBuilder->limit($this->getPaginationPageSize());
             }
         }
+
+        return $queryBuilder;
     }
 
     /**
@@ -376,9 +382,9 @@ class QueryService
      *
      * @return Query|null the query
      */
-    private function getRqlQuery(bool $singleDocumentRequest) : ?Query
+    private function getRqlQuery(Request $request, bool $singleDocumentRequest) : ?Query
     {
-        $res = $this->rqlRequestParser->parse($this->request);
+        $res = $this->rqlRequestParser->parse($request);
 
         if (!$res->isHasRql()) {
             return null;
@@ -393,7 +399,6 @@ class QueryService
                 $node = $query->$method();
                 if ($node != null) {
                     throw new RqlOperatorNotAllowedException($node->getNodeName());
-                    ;
                 }
             }
         }
