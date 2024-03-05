@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-abstract class BaseJsonDefinitionFieldTest extends TestCase
+abstract class JsonDefinitionFieldTestAbstract extends TestCase
 {
     /**
      * @return Schema\Field

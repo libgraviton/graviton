@@ -17,7 +17,7 @@ use Graviton\GeneratorBundle\Definition\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
+class JsonDefinitionFieldTest extends JsonDefinitionFieldTestAbstract
 {
     /**
      * Test JsonDefinitionField::getDef()
