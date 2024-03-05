@@ -61,7 +61,7 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             ]
         ];
 
-        $tokenStorageMock = $this->getMockForAbstractClass(TokenStorageInterface::class);
+        $tokenStorageMock = $this->getMockBuilder(TokenStorageInterface::class)->getMock();
 
         $securityUtils = new SecurityUtils(
             $tokenStorageMock,
@@ -73,7 +73,6 @@ class RestrictionListenerUnitTest extends GravitonTestCase
         return new RestrictionListener(
             $logger,
             $securityUtils,
-            $requestStack,
             $persistRestrictions,
             $restrictSolr
         );

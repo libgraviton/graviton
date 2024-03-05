@@ -113,9 +113,6 @@ parameters:
     graviton.router.port_http: null
     graviton.router.port_https: null
 
-    # service info injected by cloudfoundry
-    vcap.services: ~
-
     mailer_transport:  smtp
     mailer_host:       127.0.0.1
     mailer_user:       ~

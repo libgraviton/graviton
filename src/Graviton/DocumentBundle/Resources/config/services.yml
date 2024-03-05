@@ -74,8 +74,6 @@ services:
         priority: 1
 
   Graviton\DocumentBundle\Serializer\Handler\HashHandler:
-    arguments:
-      - "@request_stack"
     tags:
       - name: jms_serializer.handler
         type: Graviton\DocumentBundle\Entity\Hash

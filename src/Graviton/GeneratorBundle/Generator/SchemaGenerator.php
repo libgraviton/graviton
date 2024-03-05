@@ -100,6 +100,22 @@ class SchemaGenerator extends AbstractGenerator
     {
         $schema = $this->getSchema($targetFile, $parameters['document']);
 
+        // these reservedFields are predefined and included if in field list!
+        $allowedReservedFieldDefinitions = [
+            'lastModifiedBy' => [
+                'schemaType' => 'string'
+            ],
+            '_createdBy' => [
+                'schemaType' => 'string'
+            ],
+            'lastModifiedAt' => [
+                'schemaType' => 'datetime'
+            ],
+            '_createdAt' => [
+                'schemaType' => 'datetime'
+            ]
+        ];
+
         $json = $parameters['json'];
 
         // add document!
@@ -124,10 +140,6 @@ class SchemaGenerator extends AbstractGenerator
             $reservedFieldNames[] = 'id';
         }
 
-        if ($json->getId() == 'TestCasePrimitiveArray') {
-            $hans = "33";
-        }
-
         // add record origin if applicable
         if (isset($parameters['isrecordOriginFlagSet']) && $parameters['isrecordOriginFlagSet'] == true) {
             $thisSchema['properties']['recordOrigin'] = [
@@ -143,8 +155,17 @@ class SchemaGenerator extends AbstractGenerator
             $fieldName = $field['exposedName'];
 
             if (in_array($fieldName, $reservedFieldNames)) {
-                // skip!
-                continue;
+                // expose predefined?
+                if (!isset($allowedReservedFieldDefinitions[$field['exposedName']])) {
+                    // skip!
+                    continue;
+                }
+
+                // redefine!
+                $field = array_merge(
+                    $field,
+                    $allowedReservedFieldDefinitions[$field['exposedName']]
+                );
             }
 
             $fieldDefinition['type'] = $field['schemaType'];

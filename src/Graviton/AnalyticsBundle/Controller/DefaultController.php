@@ -15,22 +15,18 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefaultController
+readonly class DefaultController
 {
-
     use SchemaTrait;
-
-    /** @var ServiceManager */
-    private $serviceManager;
 
     /**
      * DefaultController constructor.
+     *
      * @param ServiceManager $serviceManager Parsing the requested date
      */
     public function __construct(
-        ServiceManager $serviceManager
+        private ServiceManager $serviceManager
     ) {
-        $this->serviceManager = $serviceManager;
     }
 
     /**

@@ -7,7 +7,6 @@ namespace Graviton;
 
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\CacheBundle\GravitonCacheBundle;
 use Graviton\CoreBundle\GravitonCoreBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
@@ -96,7 +95,6 @@ class AppKernel extends Kernel
                 new GravitonDocumentBundle(),
                 new GravitonRestBundle(),
                 new GravitonGeneratorBundle(),
-                new GravitonCacheBundle(),
                 new GravitonLogBundle(),
                 new GravitonSecurityBundle(),
                 new GravitonFileBundle(),

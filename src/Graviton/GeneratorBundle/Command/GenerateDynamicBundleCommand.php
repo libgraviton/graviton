@@ -34,13 +34,13 @@ class GenerateDynamicBundleCommand extends Command
 {
 
     /** @var  string */
-    const BUNDLE_NAMESPACE = 'GravitonDyn';
+    const string BUNDLE_NAMESPACE = 'GravitonDyn';
 
     /** @var  string */
-    const BUNDLE_NAME_MASK = self::BUNDLE_NAMESPACE.'/%sBundle';
+    const string BUNDLE_NAME_MASK = self::BUNDLE_NAMESPACE.'/%sBundle';
 
     /** @var  string */
-    const GENERATION_HASHFILE_FILENAME = 'genhash';
+    const string GENERATION_HASHFILE_FILENAME = 'genhash';
 
     /** @var  string */
     private $bundleBundleNamespace;
@@ -553,18 +553,14 @@ class GenerateDynamicBundleCommand extends Command
             $this->fs->remove($schemaFile);
         }
 
-        if ($jsonDef->getId() == 'TestCasePrimitiveArray') {
-            $hans = 3;
-        }
-
-        foreach ($this->getSubResources($jsonDef) as $subRecource) {
-            $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
+        foreach ($this->getSubResources($jsonDef) as $subResource) {
+            $generator->setJson(new JsonDefinition($subResource->getDef()->setIsSubDocument(true)));
             $generator->generate(
                 $allDefinitions,
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
-                $subRecource->getId(),
+                $subResource->getId(),
                 $schemaFile,
                 true
             );

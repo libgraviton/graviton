@@ -23,25 +23,10 @@ use Symfony\Component\Routing\Router;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class MainController
+readonly class MainController
 {
 
     use SchemaTrait;
-
-    /**
-     * @var Router
-     */
-    private Router $router;
-
-    /**
-     * @var RestUtils
-     */
-    private RestUtils $restUtils;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @param Router                   $router          router
@@ -49,13 +34,10 @@ class MainController
      * @param EventDispatcherInterface $eventDispatcher event dispatcher
      */
     public function __construct(
-        Router $router,
-        RestUtils $restUtils,
-        EventDispatcherInterface $eventDispatcher
+        private Router $router,
+        private RestUtils $restUtils,
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        $this->router = $router;
-        $this->restUtils = $restUtils;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

@@ -18,21 +18,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceConverter
+readonly class ExtReferenceConverter
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
 
     /**
      * Constructor
      *
      * @param RouterInterface $router Router
      */
-    public function __construct(RouterInterface $router)
+    public function __construct(private RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     /**

@@ -8,6 +8,7 @@ namespace Graviton\CoreBundle\Listener;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckViolation;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -19,24 +20,14 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonExceptionListener
+readonly class JsonExceptionListener
 {
 
     /**
-     * @var Logger
+     * @param LoggerInterface $logger logger
      */
-    private $logger;
-
-    /**
-     * set Logger
-     *
-     * @param Logger $logger logger
-     *
-     * @return void
-     */
-    public function setLogger($logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -50,9 +41,7 @@ class JsonExceptionListener
     {
         $exception = $event->getThrowable();
 
-        if ($this->logger instanceof Logger) {
-            $this->logger->critical($exception, ['exception' => $exception]);
-        }
+        $this->logger->critical($exception, ['exception' => $exception]);
 
         // Should return a error 400 bad request
         if ($exception instanceof ValidationException
@@ -98,11 +87,11 @@ class JsonExceptionListener
      *
      * @return array|null either a error message array or null if the general should be displayed
      */
-    private function decorateKnownCases($exception)
+    private function decorateKnownCases($exception) : ?array
     {
         if (
             $exception instanceof \ErrorException &&
-            strpos($exception->getMessage(), 'Undefined index: $id') !== false
+            str_contains($exception->getMessage(), 'Undefined index: $id')
         ) {
             return [
                 'code' => $exception->getCode(),
@@ -112,10 +101,10 @@ class JsonExceptionListener
             ];
         } elseif (
             $exception instanceof SerializationException &&
-            strpos($exception->getMessage(), 'Cannot serialize content class') !== false
+            str_contains($exception->getMessage(), 'Cannot serialize content class')
         ) {
             $error = $exception->getMessage();
-            $message =  strpos($error, 'not be found.') !== false ?
+            $message =  str_contains($error, 'not be found.') ?
                 substr($error, 0, strpos($error, 'not be found.')).'not be found.' : $error;
             preg_match('/\bwith id: (.*);.*?\bdocument\\\(.*)".*?\bidentifier "(.*)"/is', $message, $matches);
             if (array_key_exists(3, $matches)) {
@@ -128,5 +117,7 @@ class JsonExceptionListener
                 'message' => $message
             ];
         }
+
+        return null;
     }
 }

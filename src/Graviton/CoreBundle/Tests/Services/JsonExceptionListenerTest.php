@@ -7,6 +7,7 @@ namespace Graviton\CoreBundle\Tests\Services;
 
 use Graviton\CoreBundle\Listener\JsonExceptionListener;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -29,9 +30,10 @@ class JsonExceptionListenerTest extends TestCase
      */
     public function testStatus500()
     {
-        $sut = new JsonExceptionListener();
+        $kernelMock = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
+        $loggerMock = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
-        $kernelMock = $this->getMockForAbstractClass(HttpKernelInterface::class);
+        $sut = new JsonExceptionListener($loggerMock);
         $req = new Request();
 
         $exception = new \Exception('This is the exception message', 501);

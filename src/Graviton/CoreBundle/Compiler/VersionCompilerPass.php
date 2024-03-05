@@ -12,22 +12,16 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class VersionCompilerPass implements CompilerPassInterface
+readonly class VersionCompilerPass implements CompilerPassInterface
 {
-
-    /**
-     * @var VersionInformation
-     */
-    private $versionInformation;
 
     /**
      * VersionCompilerPass constructor.
      *
      * @param VersionInformation $versionInformation version util
      */
-    public function __construct(VersionInformation $versionInformation)
+    public function __construct(private VersionInformation $versionInformation)
     {
-        $this->versionInformation = $versionInformation;
     }
 
     /**

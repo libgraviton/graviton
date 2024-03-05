@@ -13,62 +13,29 @@ use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestrictionListener
+readonly class RestrictionListener
 {
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var SecurityUtils
-     */
-    private SecurityUtils $securityUtils;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var bool
-     */
-    private bool $persistRestrictions;
-
-    /**
-     * @var bool
-     */
-    private bool $restrictSolr;
 
     /**
      * HttpHeader constructor.
      *
      * @param LoggerInterface $logger              logger
      * @param SecurityUtils   $securityUtils       security utils
-     * @param RequestStack    $requestStack        request stack
      * @param bool            $persistRestrictions true to save the restrictions value to the entity (default)
      * @param bool            $restrictSolr        if we should restrict on solr queries
      */
     public function __construct(
-        LoggerInterface $logger,
-        SecurityUtils $securityUtils,
-        RequestStack $requestStack,
-        bool $persistRestrictions = true,
-        bool $restrictSolr = true
+        private LoggerInterface $logger,
+        private SecurityUtils $securityUtils,
+        private bool $persistRestrictions = true,
+        private bool $restrictSolr = true
     ) {
-        $this->logger = $logger;
-        $this->securityUtils = $securityUtils;
-        $this->requestStack = $requestStack;
-        $this->persistRestrictions = $persistRestrictions;
-        $this->restrictSolr = $restrictSolr;
     }
 
     /**

@@ -31,4 +31,10 @@ graviton.core.static.version.options:
     methods: [OPTIONS]
     defaults: { _controller: Graviton\CoreBundle\Controller\VersionController::optionsAction }
 
-
+graviton.core.static.version.schema:
+    path: /schema/core/version/openapi.{format}
+    methods: [GET]
+    requirements:
+        format: '^(json|yaml)$'
+    defaults:
+        _controller: Graviton\CoreBundle\Controller\VersionController::versionsSchemaAction

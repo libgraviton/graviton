@@ -64,6 +64,7 @@ services:
           - method: setSecurityUtils
             arguments:
               - "@graviton.security.service.utils"
+
     Graviton\RestBundle\RestListener\WhoamiRestrictionListener:
         parent: graviton.rest.listener.abstract
         class: Graviton\RestBundle\RestListener\WhoamiRestrictionListener
@@ -203,12 +204,21 @@ services:
             event: kernel.response
             method: onKernelResponse
 
+
+    Graviton\RestBundle\Listener\CacheHeaderListener:
+      arguments:
+        - "%graviton.cache.server.header%"
+      tags:
+        -
+          name: kernel.event_listener
+          event: kernel.response
+          method: onKernelResponse
+
     # listener that restricts the data given to the user by manipulating the querybuilder before executing
     Graviton\RestBundle\Listener\RestrictionListener:
       arguments:
         - "@logger"
         - "@graviton.security.service.utils"
-        - "@request_stack"
         - "%graviton.rest.data_restriction.persist%"
         - "%graviton.rest.data_restriction.solr%"
       tags:

@@ -22,17 +22,8 @@ use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceSearchListener
+readonly class ExtReferenceSearchListener
 {
-    /**
-     * @var ExtReferenceConverter
-     */
-    private $converter;
-
-    /**
-     * @var array
-     */
-    private $fields;
 
     /**
      * construct
@@ -40,10 +31,8 @@ class ExtReferenceSearchListener
      * @param ExtReferenceConverter $converter Extref converter
      * @param array                 $fields    map of fields to process
      */
-    public function __construct(ExtReferenceConverter $converter, array $fields)
+    public function __construct(private ExtReferenceConverter $converter, private array $fields)
     {
-        $this->converter = $converter;
-        $this->fields = $fields;
     }
 
     /**

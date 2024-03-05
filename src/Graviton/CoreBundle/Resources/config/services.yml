@@ -7,12 +7,14 @@ services:
           - "jms"
           - "@graviton.cache.adapter.app"
 
+    graviton.cache.adapter.app:
+      alias: graviton.common.cache.adapter.app
+
     # we must alias this as external bundles refer to this service that way
     graviton.core.http.client:
       parent: graviton.common.http.client
 
     Graviton\CoreBundle\Controller\MainController:
-      #public: true
       tags: ['controller.service_arguments']
       arguments:
         - "@router"
@@ -34,11 +36,8 @@ services:
 
     Graviton\CoreBundle\Controller\VersionController:
       tags: ['controller.service_arguments']
-      calls:
-        -
-          method: "setVersionInformation"
-          arguments:
-            - "%graviton.core.version.data%"
+      arguments:
+        - "%graviton.core.version.data%"
 
     graviton.core.service.jmespath:
         class: JmesPath\CompilerRuntime
@@ -47,11 +46,8 @@ services:
           - "%graviton.jmespath.cache_dir%"
 
     Graviton\CoreBundle\Listener\JsonExceptionListener:
-        calls:
-          -
-            method: "setLogger"
-            arguments:
-              - "@logger"
+        arguments:
+          - "@logger"
         tags:
           -
             name: "kernel.event_listener"

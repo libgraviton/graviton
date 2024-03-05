@@ -24,27 +24,21 @@ use JMS\Serializer\Visitor\SerializationVisitorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DateHandler implements SubscribingHandlerInterface
+readonly class DateHandler implements SubscribingHandlerInterface
 {
-
-    /**
-     * @var DateConverter
-     */
-    private $dateConverter;
 
     /**
      * @var \JMS\Serializer\Handler\DateHandler
      */
-    private $baseDateHandler;
+    private \JMS\Serializer\Handler\DateHandler $baseDateHandler;
 
     /**
      * DateHandler constructor.
      *
      * @param DateConverter $dateConverter date converter
      */
-    public function __construct(DateConverter $dateConverter)
+    public function __construct(private DateConverter $dateConverter)
     {
-        $this->dateConverter = $dateConverter;
         $this->baseDateHandler = new BaseDateHandler(
             $dateConverter->getDateFormat(),
             $dateConverter->getTimezone(),
