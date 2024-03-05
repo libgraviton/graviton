@@ -10,8 +10,8 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\RestUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
 use GravitonDyn\EventStatusBundle\Document\EventStatusInformationEmbedded;
-use GravitonDyn\EventStatusBundle\Document\EventStatusStatus;
 use GravitonDyn\EventStatusBundle\Document\EventStatusStatusActionEmbedded;
+use GravitonDyn\EventStatusBundle\Document\EventStatusStatusEmbedded;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,20 +21,15 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class StatusUpdateController
+readonly class StatusUpdateController
 {
-
-    private ?DocumentModel $model;
-    private RestUtils $restUtils;
 
     /**
      * @param DocumentModel|null $model     model
      * @param RestUtils          $restUtils restutils
      */
-    public function __construct(?DocumentModel $model, RestUtils $restUtils)
+    public function __construct(private ?DocumentModel $model, private RestUtils $restUtils)
     {
-        $this->model = $model;
-        $this->restUtils = $restUtils;
     }
 
     /**
@@ -82,7 +77,7 @@ class StatusUpdateController
 
         if (!$isUpdated) {
             // add new, is not in array yet
-            $statusEntry = new EventStatusStatus();
+            $statusEntry = new EventStatusStatusEmbedded();
             $statusEntry->setStatus($status);
             $statusEntry->setWorkerid($workerId);
             if ($actionId != null) {

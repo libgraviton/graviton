@@ -69,7 +69,6 @@ class AppKernel extends Kernel
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new FlysystemBundle(),
-            new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()

@@ -64,7 +64,6 @@ services:
     graviton_generator.definition.loader:
         class: "%graviton_generator.definition.loader.class%"
         arguments:
-            - "@graviton.jsonschema.validator"
             - "@jms_serializer"
         calls:
           -

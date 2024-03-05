@@ -13,22 +13,16 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ContentLanguageResponseListener
+readonly class ContentLanguageResponseListener
 {
-
-    /**
-     * @var I18nUtils
-     */
-    private $utils;
 
     /**
      * ContentLanguageResponseListener constructor.
      *
      * @param I18nUtils $utils utils
      */
-    public function __construct(I18nUtils $utils)
+    public function __construct(private I18nUtils $utils)
     {
-        $this->utils = $utils;
     }
 
     /**

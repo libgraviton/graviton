@@ -7,10 +7,8 @@ namespace Graviton\CoreBundle\Listener;
 
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckViolation;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
@@ -44,8 +42,7 @@ readonly class JsonExceptionListener
         $this->logger->critical($exception, ['exception' => $exception]);
 
         // Should return a error 400 bad request
-        if ($exception instanceof ValidationException
-         || $exception instanceof ValidationFailed
+        if ($exception instanceof ValidationFailed
          || $exception instanceof BodyCheckViolation
          || $exception instanceof SyntaxErrorException) {
             return;

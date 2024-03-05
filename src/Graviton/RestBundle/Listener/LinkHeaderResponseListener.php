@@ -26,22 +26,17 @@ use Symfony\Component\Routing\Route;
  */
 class LinkHeaderResponseListener
 {
-    /**
-     * @var Router
-     */
-    private $router;
 
     /**
      * @var LinkHeader
      */
-    private $linkHeader;
+    private LinkHeader $linkHeader;
 
     /**
      * @param Router $router router
      */
-    public function __construct(Router $router)
+    public function __construct(readonly private Router $router)
     {
-        $this->router = $router;
     }
 
     /**

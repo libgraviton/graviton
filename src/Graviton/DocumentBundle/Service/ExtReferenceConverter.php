@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-readonly class ExtReferenceConverter
+class ExtReferenceConverter
 {
 
     /**
@@ -26,7 +26,7 @@ readonly class ExtReferenceConverter
      *
      * @param RouterInterface $router Router
      */
-    public function __construct(private RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router)
     {
     }
 

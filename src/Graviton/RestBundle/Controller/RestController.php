@@ -46,41 +46,17 @@ class RestController
     private DocumentModel $model;
 
     /**
-     * @var RestUtils
-     */
-    protected RestUtils $restUtils;
-
-    /**
-     * @var Router
-     */
-    private Router $router;
-
-    /**
-     * @var JsonPatchValidator
-     */
-    private JsonPatchValidator $jsonPatchValidator;
-
-    /**
-     * @var SecurityUtils
-     */
-    protected SecurityUtils $securityUtils;
-
-    /**
      * @param RestUtils          $restUtils Rest Utils
      * @param Router             $router    Router
-     * @param JsonPatchValidator $jsonPatch Service for validation json patch
-     * @param SecurityUtils      $security  The securityUtils service
+     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
+     * @param SecurityUtils      $securityUtils  The securityUtils service
      */
     public function __construct(
-        RestUtils          $restUtils,
-        Router             $router,
-        JsonPatchValidator $jsonPatch,
-        SecurityUtils      $security
+        protected readonly RestUtils $restUtils,
+        protected readonly Router $router,
+        protected readonly JsonPatchValidator $jsonPatchValidator,
+        protected readonly SecurityUtils $securityUtils
     ) {
-        $this->restUtils = $restUtils;
-        $this->router = $router;
-        $this->jsonPatchValidator = $jsonPatch;
-        $this->securityUtils = $security;
     }
 
     /**
