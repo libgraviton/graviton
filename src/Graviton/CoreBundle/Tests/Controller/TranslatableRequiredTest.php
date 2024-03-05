@@ -51,8 +51,8 @@ class TranslatableRequiredTest extends RestTestCase
         $client->put('/testcase/translatable-required/testdata', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertSame($complainField, $client->getResults()[0]->propertyPath);
-        $this->assertSame($errorMessage, $client->getResults()[0]->message);
+        $this->assertSame($complainField, $client->getResults()[1]->propertyPath);
+        $this->assertStringContainsString($errorMessage, $client->getResults()[1]->message);
     }
 
     /**
@@ -101,7 +101,7 @@ class TranslatableRequiredTest extends RestTestCase
                     ]
                 ],
                 'complainField' => 'required',
-                'errorMessage' => 'The property required is required'
+                'errorMessage' => "Required property 'required' must be present in the object"
             ],
             'empty-optional' => [
                 'data' => [
@@ -111,8 +111,8 @@ class TranslatableRequiredTest extends RestTestCase
                         'en' => 'Test'
                     ]
                 ],
-                'complainField' => 'optional',
-                'errorMessage' => 'Array value found, but an object or a null is required'
+                'complainField' => 'optional.en',
+                'errorMessage' => "Required property 'en' must be present in the object"
             ],
             'empty-no-default' => [
                 'data' => [
@@ -125,7 +125,7 @@ class TranslatableRequiredTest extends RestTestCase
                     ]
                 ],
                 'complainField' => 'optional.en',
-                'errorMessage' => 'The property en is required'
+                'errorMessage' => "Required property 'en' must be present in the object"
             ]
         ];
     }

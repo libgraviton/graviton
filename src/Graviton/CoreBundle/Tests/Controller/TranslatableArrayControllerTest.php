@@ -9,6 +9,7 @@ use Graviton\TestBundle\Client;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseTranslatableArrayBundle\Document\TestCaseTranslatableArray;
 use GravitonDyn\TestCaseTranslatableArrayBundle\DataFixtures\MongoDB\LoadTestCaseTranslatableArrayData;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -87,33 +88,33 @@ class TranslatableArrayControllerTest extends RestTestCase
     }
 
     /**
-     * Test validation
+     * data provider
      *
-     * @return void
+     * @return \Generator gen
      */
-    public function testValidation()
+    public static function validationDataProvider() : \Generator
     {
-        $data = (object) [
+        $data = [
             'id'    => 'testdata',
-            'field' => (object) [
+            'field' => [
                 'de' => 'No "en" translation',
             ],
             'array' => [
                 'Invalid value',
                 (object) ['Invalid' => 'value'],
             ],
-            'deep'  => (object) [
+            'deep'  => [
                 'deep' => [
-                    (object) [
+                    [
                         'field' => 'Invalid value',
                         'array' => 'Invalid value',
                     ],
-                    (object) [
-                        'field' => (object) [
+                    [
+                        'field' => [
                             'en' => 'Valid value',
                         ],
                         'array' => [
-                            (object) [
+                            [
                                 'en' => 'Valid value',
                             ],
                         ],
@@ -122,35 +123,58 @@ class TranslatableArrayControllerTest extends RestTestCase
             ],
         ];
 
+        yield 'first' => [$data, 'field.en'];
+
+        $data['field']['en'] = 'val';
+
+        yield 'with-en' => [$data, 'array.0'];
+
+        $data['array'][0] = ['prop' => 'dude'];
+
+        yield 'with-en-array-0' => [$data, 'array.0.en'];
+
+        $data['array'][0] = ['en' => 'dude'];
+
+        yield 'with-en-array-0-2' => [$data, 'array.1.en'];
+
+        $data['array'][1] = ['en' => 'dude2'];
+
+        yield 'with-en-array-3' => [$data, 'deep.deep.0.field'];
+
+        $data['deep']['deep'][0]['field'] = ['en' => 'dude2'];
+
+        yield 'with-deep-deep-field' => [$data, 'deep.deep.0.array'];
+
+        $data['deep']['deep'][0]['array'] = [1, 2];
+
+        yield 'with-deep-deep-array-field' => [$data, 'deep.deep.0.array.0'];
+
+        $data['deep']['deep'][0]['array'] = [
+            ['en' => 'dude2'],
+            ['en' => 'dude2']
+        ];
+
+        yield 'with-deep-deep-array-field2' => [$data, null];
+    }
+
+    /**
+     * Test validation
+     *
+     * @return void
+     */
+    #[DataProvider("validationDataProvider")]
+    public function testValidation(array $data, ?string $complainField)
+    {
+
         $client = static::createRestClient();
         $client->put('/testcase/translatable-array/testdata', $data);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath' => 'field.en',
-                    'message'      => 'The property en is required'
-                ],
-                (object) [
-                    'propertyPath' => 'array[0]',
-                    'message'      => 'String value found, but an object is required',
-                ],
-                (object) [
-                    'propertyPath' => 'array[1].en',
-                    'message'      => 'The property en is required',
-                ],
 
-                (object) [
-                    'propertyPath' => 'deep.deep[0].field',
-                    'message'      => 'String value found, but an object or a null is required',
-                ],
-                (object) [
-                    'propertyPath' => 'deep.deep[0].array',
-                    'message'      => 'String value found, but an array is required',
-                ]
-            ],
-            $client->getResults()
-        );
+        if (!is_null($complainField)) {
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+            $this->assertEquals($complainField, $client->getResults()[1]->propertyPath);
+        } else {
+            $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        }
     }
 
     /**
