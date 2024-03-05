@@ -30,7 +30,8 @@
         "customerNumber": 1234,
         "name": "Hans",
         "$ref": "http:\/\/localhost\/core\/app\/admin",
-        "id": "1234"
+        "id": "1234",
+        "subArray": []
       }
     ],
     "choices": ">=",

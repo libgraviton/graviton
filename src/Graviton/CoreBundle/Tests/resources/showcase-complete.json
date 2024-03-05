@@ -95,14 +95,16 @@
       "customerNumber": 1234,
       "name": "Hans",
       "customerNumber": 1234,
-      "$ref": "http://localhost/core/app/admin"
+      "$ref": "http://localhost/core/app/admin",
+      "subArray": []
     },
     {
       "id": "1235",
       "customerNumber": 1234,
       "name": "Franz",
       "customerNumber" : 1235,
-      "$ref": "http://localhost/core/app/tablet"
+      "$ref": "http://localhost/core/app/tablet",
+      "subArray": []
     }
   ],
   "choices": "<>"
