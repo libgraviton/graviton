@@ -1,10 +1,5 @@
 parameters:
-  graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
-  graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
-  graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
-  graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
-  graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
-  graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
+
   graviton.rest.services: []
   graviton.rest.not_modifiable.origin.records:
     - "core"
@@ -15,14 +10,12 @@ services:
         parent: "jms_serializer"
         public: true
         arguments:
-            index_4: "@graviton.rest.serializer.serializercontext.factory"
+            index_4: '@Graviton\RestBundle\Serializer\SerializationContextFactory'
 
-    graviton.rest.serializer.serializercontext.factory:
-        parent: "graviton.rest.serializer.context.abstract"
-        class: "%graviton.rest.serializer.serializercontext.factory.class%"
+    Graviton\RestBundle\Serializer\SerializationContextFactory:
+        parent: 'Graviton\RestBundle\Serializer\ContextFactoryAbstract'
 
-    graviton.rest.serializer.context.abstract:
-        class: "%graviton.rest.serializer.context.abstract.class%"
+    Graviton\RestBundle\Serializer\ContextFactoryAbstract:
         calls:
           -
             method: setSetSerializeNull
@@ -118,29 +111,14 @@ services:
 
     Graviton\RestBundle\Model\DocumentModelFactory:
       arguments:
-        - '@graviton.rest.service.query'
+        - '@Graviton\RestBundle\Service\QueryService'
         - '@event_dispatcher'
         - '@Graviton\RestBundle\Service\RestUtils'
         - '@graviton.security.service.utils'
         - '@doctrine_mongodb.odm.default_document_manager'
 
-    #Model -->
-#    graviton.rest.model:
-#        abstract: true
-#        class: "%graviton.rest.model.documentmodel.class%"
-#        calls:
-#          - method: setQueryService
-#            arguments: ['@graviton.rest.service.query']
-#          - method: setEventDispatcher
-#            arguments: ['@event_dispatcher']
-#          - method: setRestUtils
-#            arguments: ['@Graviton\RestBundle\Service\RestUtils']
-#          - method: setSecurityUtils
-#            arguments: ['@graviton.security.service.utils']
-
     # query service -->
-    graviton.rest.service.query:
-        class: Graviton\RestBundle\Service\QueryService
+    Graviton\RestBundle\Service\QueryService:
         arguments:
           - "@logger"
           - '@graviton.rql.requestparser'
@@ -206,8 +184,7 @@ services:
 
     #Graviton rest event listeners -->
     #Paging listener >
-    graviton.rest.listener.linkheaderresponselistener:
-        class: "%graviton.rest.listener.linkheaderresponselistener.class%"
+    Graviton\RestBundle\Listener\LinkHeaderResponseListener:
         arguments:
           - "@router"
         tags:
@@ -217,8 +194,7 @@ services:
             method: onKernelResponse
 
     #X-Version response listener -->
-    graviton.rest.listener.xversionresponselistener:
-        class: "%graviton.rest.listener.xversionresponselistener.class%"
+    Graviton\RestBundle\Listener\XVersionResponseListener:
         arguments:
           - "%graviton.core.version.header%"
         tags:
@@ -228,8 +204,7 @@ services:
             method: onKernelResponse
 
     # listener that restricts the data given to the user by manipulating the querybuilder before executing
-    graviton.rest.listener.restriction:
-      class: "%graviton.rest.listener.restriction.class%"
+    Graviton\RestBundle\Listener\RestrictionListener:
       arguments:
         - "@logger"
         - "@graviton.security.service.utils"
