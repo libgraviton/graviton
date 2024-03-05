@@ -71,21 +71,24 @@ class DefinitionElementTest extends GravitonTestCase
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionField', $field);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\Schema\Field', $field->getDef());
 
-        $this->assertArraySubset(
-            [
-                'name'              => $field->getName(),
-                'exposedName'       => 'testField',
-                'type'              => 'translatable',
-                'doctrineType'      => 'translatable',
-                'serializerType'    => 'Graviton\DocumentBundle\Entity\Translatable',
-                'isClassType'       => false,
-                'relType'           => null,
-                'description'       => 'A lengthy and detailed description.',
-                'length'            => 200,
-                'readOnly'          => false,
-            ],
-            $field->getDefAsArray()
-        );
+        $subArray = [
+            'name'              => $field->getName(),
+            'exposedName'       => 'testField',
+            'type'              => 'translatable',
+            'doctrineType'      => 'translatable',
+            'serializerType'    => 'Graviton\DocumentBundle\Entity\Translatable',
+            'isClassType'       => false,
+            'relType'           => null,
+            'description'       => 'A lengthy and detailed description.',
+            'length'            => 200,
+            'readOnly'          => false,
+        ];
+
+        $def = $field->getDefAsArray();
+
+        foreach ($subArray as $key => $val) {
+            $this->assertEquals($val, $def[$key], $key);
+        }
     }
 
     /**
