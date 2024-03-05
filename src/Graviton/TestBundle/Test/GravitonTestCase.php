@@ -5,7 +5,6 @@
 
 namespace Graviton\TestBundle\Test;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Graviton\AppKernel;
 use Graviton\MongoDB\Fixtures\FixturesTrait;
 use Graviton\TestBundle\Client;
@@ -31,7 +30,6 @@ class GravitonTestCase extends WebTestCase
 
     use PrivateClassMethodTrait;
     use FixturesTrait;
-    use ArraySubsetAsserts;
 
     /**
      * @var KernelBrowser[]
