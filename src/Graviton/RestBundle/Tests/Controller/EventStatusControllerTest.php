@@ -34,6 +34,11 @@ class EventStatusControllerTest extends RestTestCase
      */
     private $clientOptions = ['environment' => 'test_restricted'];
 
+    public function setUp(): void
+    {
+        $this->loadFixturesLocal([]);
+    }
+
     /**
      * test to see if we can insert a status and if graviton complains about an invalid status
      *
@@ -237,7 +242,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $client = static::createRestClient($this->clientOptions);
         /** @var Dummy $dbProducer */
-        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.producer.extamqp');
+        $dbProducer = $client->getContainer()->get('graviton.rest.messageproducer.extamqp');
         $dbProducer->resetEventList();
 
         $client->put(
@@ -258,7 +263,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertStringContainsString('eventStatus', $response->headers->get('link'));
 
         // get again
-        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.producer.extamqp');
+        $dbProducer = $client->getContainer()->get('graviton.rest.messageproducer.extamqp');
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
