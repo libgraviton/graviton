@@ -3,9 +3,9 @@
  * monolog processor that adds a requestid to the record
  */
 
-namespace Graviton\LogBundle\Monolog\Processor;
+namespace Graviton\RestBundle\Monolog\Processor;
 
-use Graviton\LogBundle\Listener\RequestIdListener;
+use Graviton\RestBundle\Listener\RequestIdListener;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,13 +16,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RequestIdProcessor implements ProcessorInterface
+readonly class RequestIdProcessor implements ProcessorInterface
 {
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
 
     /**
      * RequestIdProcessor constructor.
@@ -31,9 +26,8 @@ class RequestIdProcessor implements ProcessorInterface
      *
      * @return void
      */
-    public function __construct(RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
     }
 
     /**

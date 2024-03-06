@@ -12,7 +12,6 @@ use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
-use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
@@ -93,7 +92,6 @@ class AppKernel extends Kernel
                 new GravitonDocumentBundle(),
                 new GravitonRestBundle(),
                 new GravitonGeneratorBundle(),
-                new GravitonLogBundle(),
                 new GravitonSecurityBundle(),
                 new GravitonFileBundle(),
                 new GravitonMigrationBundle()

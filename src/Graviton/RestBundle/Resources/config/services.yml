@@ -226,6 +226,12 @@ services:
           arguments:
             - "@logger"
 
+    Graviton\RestBundle\Listener\RequestIdListener:
+      tags:
+        - name: "kernel.event_listener"
+          event: "kernel.request"
+          method: "onKernelRequest"
+          priority: 900
 
     #X-Version response listener -->
     Graviton\RestBundle\Listener\XVersionResponseListener:
@@ -317,3 +323,9 @@ services:
 
     psr_http_factory:
       alias: Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory
+
+    Graviton\RestBundle\Monolog\Processor\RequestIdProcessor:
+      arguments:
+        - "@request_stack"
+      tags:
+        - { name: monolog.processor }

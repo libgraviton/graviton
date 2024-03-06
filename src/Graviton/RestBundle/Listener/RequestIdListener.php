@@ -3,7 +3,7 @@
  * sets an id on the request
  */
 
-namespace Graviton\LogBundle\Listener;
+namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -19,7 +19,7 @@ class RequestIdListener
     /**
      * @var string
      */
-    public const ATTRIBUTE_NAME = 'requestId';
+    public const string ATTRIBUTE_NAME = 'requestId';
 
     /**
      * sets the request id
