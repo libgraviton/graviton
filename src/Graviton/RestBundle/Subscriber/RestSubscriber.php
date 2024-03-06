@@ -5,12 +5,18 @@
 
 namespace Graviton\RestBundle\Subscriber;
 
+use Graviton\LinkHeaderParser\LinkHeader;
+use Graviton\LinkHeaderParser\LinkHeaderItem;
+use Graviton\RqlParser\Node\LimitNode;
+use Graviton\RqlParser\Query;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @category GravitonRestBundle
@@ -22,6 +28,10 @@ use Symfony\Component\Routing\Router;
 readonly class RestSubscriber implements EventSubscriberInterface
 {
 
+    public function __construct(private readonly RouterInterface $router)
+    {
+    }
+
     #[\Override] public static function getSubscribedEvents()
     {
         // return the subscribed events, their methods and priorities
@@ -30,7 +40,7 @@ readonly class RestSubscriber implements EventSubscriberInterface
                 ['onRequest', 0]
             ],
             KernelEvents::RESPONSE => [
-                ['onResponse', 0]
+                ['onResponse', -2]
             ]
         ];
     }
@@ -66,6 +76,14 @@ readonly class RestSubscriber implements EventSubscriberInterface
             );
         }
 
+        // total count header
+        if ($request->attributes->has('totalCount')) {
+            $response->headers->set(
+                'X-Total-Count',
+                (string) $request->attributes->get('totalCount')
+            );
+        }
+
         // search source header?
         if ($request->attributes->has('X-Search-Source')) {
             $response->headers->set(
@@ -73,5 +91,164 @@ readonly class RestSubscriber implements EventSubscriberInterface
                 (string) $request->attributes->get('X-Search-Source')
             );
         }
+
+        $linkHeader = $this->generateLinkHeader($request, $response);
+        if (!empty($linkHeader)) {
+            $response->headers->set('Link', $linkHeader);
+        }
     }
+
+    private function generateLinkHeader(Request $request, Response $response) : ?string
+    {
+        $collectionName = $request->attributes->get('collection');
+        if (empty($collectionName)) {
+            return null;
+        }
+
+        $selfUrl = null;
+        if ($request->getMethod() == 'POST' && !empty($request->attributes->get('id'))) {
+            $putRouteName = sprintf("%s.put", $collectionName);
+            try {
+                $selfUrl = $this->router->generate(
+                    $putRouteName,
+                    ['id' => $request->attributes->get('id')],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                $relativeUrl = $this->router->generate(
+                    $putRouteName,
+                    ['id' => $request->attributes->get('id')],
+                    UrlGeneratorInterface::ABSOLUTE_PATH
+                );
+
+                $response->headers->set('location', $relativeUrl);
+            } catch (\Throwable $t) {
+                // ignored
+            }
+        } else {
+            $selfUrl = $this->router->generate(
+                $request->attributes->get('_route'),
+                $request->attributes->get('_route_params'),
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }
+
+        $linkHeader = LinkHeader::fromString($response->headers->get('link'));
+
+        // event status?
+        if ($request->attributes->has('eventStatus')) {
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $request->attributes->get('eventStatus'),
+                    ['rel' => 'eventStatus']
+                )
+            );
+        }
+
+        if (!empty($selfUrl)) {
+            $queryString = $this->getQueryString($request);
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    empty($queryString) ? $selfUrl : $selfUrl.'?'.$queryString,
+                    ['rel' => 'self']
+                )
+            );
+        } else {
+            return null;
+        }
+
+        // schema link
+        try {
+            $schemaRouteName = sprintf("%s.schemaJsonGet", $collectionName);
+            $schemaUrl = $this->router->generate(
+                $schemaRouteName,
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $schemaUrl,
+                    ['rel' => 'schema']
+                )
+            );
+        } catch (\Throwable $t) {
+            // ignored
+        }
+
+        // paging stuff!
+        $perPage = $request->attributes->get('perPage');
+
+        if (empty($perPage)) {
+            return (string) $linkHeader;
+        }
+
+        $page = $request->attributes->get('page');
+        $numPages = $request->attributes->get('numPages');
+        $hasNextPage = $request->attributes->get('hasNextPage', false);
+
+        if ($page > 2) {
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $selfUrl.'?'.$this->getQueryString($request, $perPage, 1),
+                    ['rel' => 'first']
+                )
+            );
+        }
+        if ($page > 1) {
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $selfUrl.'?'.$this->getQueryString($request, $perPage, $page - 1),
+                    ['rel' => 'prev']
+                )
+            );
+        }
+        if ($hasNextPage === true || ($numPages != null && $page < $numPages)) {
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $selfUrl.'?'.$this->getQueryString($request, $perPage, $page + 1),
+                    ['rel' => 'next']
+                )
+            );
+        }
+        if ($numPages != null && $page != $numPages) {
+            $linkHeader->add(
+                new LinkHeaderItem(
+                    $selfUrl.'?'.$this->getQueryString($request, $perPage, $numPages),
+                    ['rel' => 'last']
+                )
+            );
+        }
+
+        return (string) $linkHeader;
+    }
+
+    /**
+     * returns the rql query string based on the current request
+     *
+     * @param Request $request request
+     * @param int     $limit   limit
+     * @param int     $offset  offset
+     *
+     * @return string rql query string
+     */
+    private function getQueryString(Request $request, int $perPage = 0, int $page = 0) : string
+    {
+        /**
+         * @var $query Query
+         */
+        $query = $request->attributes->get('rqlQuery', new Query());
+
+        if ($perPage < 1) {
+            return $query->toRql();
+        }
+
+        $limit = $perPage;
+        $offset = ($page - 1) * $perPage;
+
+        // apply custom limit
+        $query->setLimit(new LimitNode($limit, $offset));
+
+        return $query->toRql();
+    }
+
 }

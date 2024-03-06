@@ -119,6 +119,7 @@ class RestController
         $this->logger->info('REST: getAction');
 
         $document = $this->getModel()->getSerialised($id, $request);
+        $this->getModel()->addRequestAttributes($id, $request);
 
         return new JsonResponse($document, Response::HTTP_OK, [], true);
     }
@@ -166,7 +167,7 @@ class RestController
         $this->logger->info('REST: allAction -> got model, starting findAll() on QueryService');
         $data = $model->findAll($request);
 
-        $this->addRequestAttributes($request);
+        $this->getModel()->addRequestAttributes(null, $request);
 
         $response = new StreamedResponse();
         $response->headers->set('x-accel-buffering', 'no');

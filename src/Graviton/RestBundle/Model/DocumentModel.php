@@ -135,9 +135,11 @@ readonly class DocumentModel
         return $entity;
     }
 
-    private function addRequestAttributes(string $id, Request $request)
+    public function addRequestAttributes(?string $id, Request $request)
     {
-        $request->attributes->set('id', $id);
+        if (!is_null($id)) {
+            $request->attributes->set('id', $id);
+        }
         $request->attributes->set('varnishTags', $this->getEntityClass(true));
     }
 

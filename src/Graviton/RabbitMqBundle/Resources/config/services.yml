@@ -1,6 +1,4 @@
 parameters:
-  graviton.rabbitmq.document.queueevent.class: Graviton\RabbitMqBundle\Document\QueueEvent
-  graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener
   graviton.rabbitmq.document.eventworker.class: GravitonDyn\EventWorkerBundle\Document\EventWorker
   graviton.rabbitmq.document.eventstatus.class: GravitonDyn\EventStatusBundle\Document\EventStatus
   graviton.rabbitmq.document.eventstatusstatus.class: GravitonDyn\EventStatusBundle\Document\EventStatusStatusEmbedded
@@ -8,9 +6,6 @@ parameters:
   graviton.rabbitmq.validator.validinformationtype.class: Graviton\RabbitMqBundle\Validator\Constraints\ValidInformationTypeValidator
   graviton.rabbitmq.validator.validstatus.class: Graviton\RabbitMqBundle\Validator\Constraints\ValidStatusValidator
   graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\ExtAmqp
-
-  # this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
-  graviton.rabbitmq.document.eventstatusstatus.route: gravitondyn.eventstatus.rest.eventstatus.get
 
 services:
 
@@ -20,9 +15,6 @@ services:
         - '@Graviton\RestBundle\Service\RestUtils'
       tags:
         - name: controller.service_arguments
-
-    graviton.rabbitmq.document.queueevent:
-        class: "%graviton.rabbitmq.document.queueevent.class%"
 
     graviton.rabbitmq.producer.extamqp:
       class: "%graviton.rabbitmq.producer.extamqp.class%"
@@ -40,32 +32,21 @@ services:
             - "@logger"
 
     # the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
-    graviton.rabbitmq.listener.eventstatusresponselistener:
-        class: "%graviton.rabbitmq.listener.eventstatusresponselistener.class%"
+    Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener:
         tags:
-          -
-            name: "kernel.event_listener"
-            event: "graviton.rest.response.selfaware"
-            method: "onKernelResponse"
-          -
-            name: "kernel.event_listener"
-            event: "kernel.terminate"
-            method: "onKernelTerminate"
+          - name: kernel.event_subscriber
         arguments:
           - "@logger"
           - "@graviton.rabbitmq.producer.extamqp"
           - "@router"
-          - "@request_stack"
           - "@doctrine_mongodb.odm.default_document_manager"
           - "@event_dispatcher"
           - '@Graviton\DocumentBundle\Service\ExtReferenceConverter'
-          - "@graviton.rabbitmq.document.queueevent"
-          - "%graviton.document.eventmap%"
           - "%graviton.rabbitmq.document.eventworker.class%"
           - "%graviton.rabbitmq.document.eventstatus.class%"
           - "%graviton.rabbitmq.document.eventstatusstatus.class%"
           - "%graviton.rabbitmq.document.eventstatuseventresource.class%"
-          - "%graviton.rabbitmq.document.eventstatusstatus.route%"
+          - 'EventStatus.get'
           - "@graviton.security.service.utils"
           - "%graviton.worker.relativeUrl%"
           - "%graviton.rabbitmq.queueevent.transient_headers%"

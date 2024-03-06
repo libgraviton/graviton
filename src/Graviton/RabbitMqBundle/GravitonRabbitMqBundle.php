@@ -40,7 +40,5 @@ class GravitonRabbitMqBundle extends Bundle implements GravitonBundleInterface
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-
-        $container->addCompilerPass(new DocumentEventMapCompilerPass());
     }
 }

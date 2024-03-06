@@ -266,7 +266,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertCount(1, $events);
         $data = json_decode($events[0], true);
 
-        $this->assertEquals('document.app.app.update', $data['event']);
+        $this->assertEquals('document.app.app.create', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
         $this->assertEquals('https://backendalias:9443/core/app/'.$testApp->id, $data['document']['$ref']);
         $this->assertStringContainsString('https://backendalias:9443/event/status/', $data['status']['$ref']);

@@ -10,18 +10,20 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
-use Graviton\RabbitMqBundle\Document\QueueEvent;
+use Graviton\RabbitMqBundle\Entity\QueueEvent;
 use Graviton\RabbitMqBundle\Producer\ProducerInterface;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
+use Graviton\RestBundle\Event\ModelEvent;
 use Laminas\Diactoros\Uri;
 use MongoDB\BSON\Regex;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
@@ -31,109 +33,16 @@ use GravitonDyn\EventStatusBundle\Document\EventStatus;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class EventStatusLinkResponseListener
+class EventStatusLinkResponseListener implements EventSubscriberInterface
 {
-
-    /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
-     * @var ProducerInterface Producer for publishing messages.
-     */
-    private $rabbitMqProducer = null;
-
-    /**
-     * @var RouterInterface Router to generate resource URLs
-     */
-    private $router = null;
-
-    /**
-     * @var RequestStack requestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var QueueEvent queue event document
-     */
-    private $queueEventDocument;
-
-    /**
-     * @var array
-     */
-    private $eventMap;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var ExtReferenceConverter ExtReferenceConverter
-     */
-    private $extRefConverter;
-
-    /**
-     * @var string classname of the EventWorker document
-     */
-    private $eventWorkerClassname;
-
-    /**
-     * @var string classname of the EventStatus document
-     */
-    private $eventStatusClassname;
-
-    /**
-     * @var string classname of the EventStatusStatus document
-     */
-    private $eventStatusStatusClassname;
-
-    /**
-     * @var string classname of the EventStatusEventResource document
-     */
-    private $eventStatusEventResourceClassname;
-
-    /**
-     * @var string route name of the /event/status route
-     */
-    private $eventStatusRouteName;
-
-    /**
-     * @var DocumentManager Document manager
-     */
-    private $documentManager;
-
-    /**
-     * @var SecurityUtils
-     */
-    protected $securityUtils;
-
-    /**
-     * @var Uri
-     */
-    protected $workerRelativeUrl;
-
-    /**
-     * @var array
-     */
-    private $transientHeaders = [];
-
-    /**
-     * @var array
-     */
-    private $queueToSend = [];
 
     /**
      * @param Logger                   $logger                            logger
      * @param ProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface          $router                            Router dependency
-     * @param RequestStack             $requestStack                      Request stack
      * @param DocumentManager          $documentManager                   Doctrine document manager
      * @param EventDispatcherInterface $eventDispatcher                   event dispatcher
      * @param ExtReferenceConverter    $extRefConverter                   instance of the ExtReferenceConverter service
-     * @param QueueEvent               $queueEventDocument                queueevent document
-     * @param array                    $eventMap                          eventmap
      * @param string                   $eventWorkerClassname              classname of the EventWorker document
      * @param string                   $eventStatusClassname              classname of the EventStatus document
      * @param string                   $eventStatusStatusClassname        classname of the EventStatusStatus document
@@ -144,97 +53,83 @@ class EventStatusLinkResponseListener
      * @param array                    $transientHeaders                  headers to be included from request in event
      */
     public function __construct(
-        Logger $logger,
-        ProducerInterface $rabbitMqProducer,
-        RouterInterface $router,
-        RequestStack $requestStack,
-        DocumentManager $documentManager,
-        EventDispatcherInterface $eventDispatcher,
-        ExtReferenceConverter $extRefConverter,
-        QueueEvent $queueEventDocument,
-        array $eventMap,
-        $eventWorkerClassname,
-        $eventStatusClassname,
-        $eventStatusStatusClassname,
-        $eventStatusEventResourceClassname,
-        $eventStatusRouteName,
-        SecurityUtils $securityUtils,
-        $workerRelativeUrl,
-        $transientHeaders
+        private readonly LoggerInterface $logger,
+        private readonly ProducerInterface $rabbitMqProducer,
+        private readonly RouterInterface $router,
+        private readonly DocumentManager $documentManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ExtReferenceConverter $extRefConverter,
+        private readonly string $eventWorkerClassname,
+        private readonly string $eventStatusClassname,
+        private readonly string $eventStatusStatusClassname,
+        private readonly string $eventStatusEventResourceClassname,
+        private readonly string $eventStatusRouteName,
+        private readonly SecurityUtils $securityUtils,
+        private readonly ?string $workerRelativeUrl,
+        private readonly array $transientHeaders,
+        private array $queueToSend = []
     ) {
-        $this->logger = $logger;
-        $this->rabbitMqProducer = $rabbitMqProducer;
-        $this->router = $router;
-        $this->requestStack = $requestStack;
-        $this->documentManager = $documentManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->extRefConverter = $extRefConverter;
-        $this->queueEventDocument = $queueEventDocument;
-        $this->eventMap = $eventMap;
-        $this->eventWorkerClassname = $eventWorkerClassname;
-        $this->eventStatusClassname = $eventStatusClassname;
-        $this->eventStatusStatusClassname = $eventStatusStatusClassname;
-        $this->eventStatusEventResourceClassname = $eventStatusEventResourceClassname;
-        $this->eventStatusRouteName = $eventStatusRouteName;
-        $this->securityUtils = $securityUtils;
-        if (!is_null($workerRelativeUrl)) {
-            $this->workerRelativeUrl = new Uri($workerRelativeUrl);
-        }
-        $this->transientHeaders = $transientHeaders;
+    }
+
+    #[\Override] public static function getSubscribedEvents()
+    {
+        // return the subscribed events, their methods and priorities
+        return [
+            KernelEvents::TERMINATE => [
+                ['onKernelTerminate', 0]
+            ],
+            ModelEvent::MODEL_EVENT_INSERT => [
+                ['onModelEvent', 0]
+            ],
+            ModelEvent::MODEL_EVENT_UPDATE => [
+                ['onModelEvent', 0]
+            ],
+            ModelEvent::MODEL_EVENT_DELETE => [
+                ['onModelEvent', 0]
+            ]
+        ];
     }
 
     /**
      * add a rel=eventStatus Link header to the response if necessary
      *
-     * @param ResponseEvent $event response listener event
+     * @param ModelEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onModelEvent(ModelEvent $event)
     {
-        /**
-         * @var Response $response
-         */
-        $response = $event->getResponse();
+        // what is the document event name?
+        $eventName = $this->getDocumentEventName($event);
 
-        // exit if not master request, uninteresting method or an error occurred
-        if (!$event->isMainRequest() || $this->isNotConcerningRequest() || !$response->isSuccessful()) {
+        // any worker subscribed?
+        $workerIds = $this->getSubscribedWorkerIds($eventName);
+        if (empty($workerIds)) {
             return;
         }
 
-        // we can always safely call this, it doesn't need much resources.
-        // only if we have subscribers, it will create more load as it persists an EventStatus
-        $queueEvent = $this->createQueueEventObject();
+        $this->logger->info(
+            sprintf("Found '%s' worker(s) subscribed for event '%s', will notify on queue.", count($workerIds), $eventName),
+            ['workerIds' => $workerIds]
+        );
 
-        if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
-            $linkHeader = LinkHeader::fromString($response->headers->get('Link', null));
-            $linkHeader->add(
-                new LinkHeaderItem(
-                    $queueEvent->getStatusurl(),
-                    'eventStatus'
-                )
-            );
+        // the url to the resource that caused this EventStatus
+        $documentUrl = $this->getEventRefUrl($event);
 
-            $response->headers->set(
-                'Link',
-                (string) $linkHeader
-            );
+        // now, create EventStatus and get it's url
+        $eventStatusUrl = $this->getStatusUrl($event, $eventName, $documentUrl, $workerIds);
+        // set on request!
+        if (!is_null($event->getRequest())) {
+            $event->getRequest()->attributes->set('eventStatus', $eventStatusUrl);
         }
 
-        // let's send it to the queue(s) if appropriate
-        if (!empty($queueEvent->getEvent())) {
-            $queuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
+        // create the QueueEvent object
+        $queueEvent = $this->createQueueEventObject($event, $eventName, $documentUrl, $eventStatusUrl);
 
-            // if needed and activated, change urls relative to workers
-            if (!empty($queuesForEvent) && $this->workerRelativeUrl instanceof Uri) {
-                $queueEvent = $this->getWorkerQueueEvent($queueEvent);
-            }
-
-            foreach ($queuesForEvent as $queueForEvent) {
-                $this->queueToSend[$queueForEvent] = json_encode($queueEvent);
-            }
-        }
+        // put stuff in instance so we can send it in onTerminate
+        $this->queueToSend[] = [$queueEvent, $workerIds];
     }
+
 
     /**
      * sends the events
@@ -245,20 +140,43 @@ class EventStatusLinkResponseListener
      */
     public function onKernelTerminate(TerminateEvent $event)
     {
-        foreach ($this->queueToSend as $queueName => $payload) {
-            $this->logger->info('Sending message to queue', ['queue' => $queueName, 'message' => $payload]);
-            $this->rabbitMqProducer->send($queueName, $payload);
+        foreach ($this->queueToSend as $index => $sendInfo) {
+            $payload = \json_encode($sendInfo[0]);
+            foreach ($sendInfo[1] as $workerId) {
+                $this->logger->info('Sending message to queue', ['queue' => $workerId, 'message' => $payload]);
+                $this->rabbitMqProducer->send($workerId, $payload);
+            }
+            unset($this->queueToSend[$index]);
         }
     }
 
-    /**
-     * we only want to do something if we have a mapped event..
-     *
-     * @return boolean true if it should not concern us, false otherwise
-     */
-    private function isNotConcerningRequest()
+    private function getEventRefUrl(ModelEvent $event) : string
     {
-        return is_null($this->generateRoutingKey());
+        return $this->router->generate(
+            sprintf('%s.put', $event->getDocumentModel()->getEntityClass(true)),
+            ['id' => $event->getRecordId()],
+            Router::ABSOLUTE_URL
+        );
+    }
+
+    private function getDocumentEventName(ModelEvent $event) : string
+    {
+        $eventNames = $event->getDocumentModel()->getRuntimeDefinition()->getRestEventNames();
+        $eventName = null;
+
+        switch ($event->getEventName()) {
+            case ModelEvent::MODEL_EVENT_UPDATE:
+                $eventName = $eventNames['put'];
+                break;
+            case ModelEvent::MODEL_EVENT_INSERT:
+                $eventName = $eventNames['post'];
+                break;
+            case ModelEvent::MODEL_EVENT_DELETE:
+                $eventName = $eventNames['delete'];
+                break;
+        }
+
+        return $eventName;
     }
 
     /**
@@ -266,54 +184,25 @@ class EventStatusLinkResponseListener
      *
      * @return QueueEvent event
      */
-    private function createQueueEventObject()
+    private function createQueueEventObject(ModelEvent $event, string $eventName, string $documentUrl, string $statusUrl) : QueueEvent
     {
-        $obj = clone $this->queueEventDocument;
-        $obj->setEvent($this->generateRoutingKey());
-        $obj->setDocumenturl($this->requestStack->getCurrentRequest()->get('selfLink'));
-        $obj->setStatusurl($this->getStatusUrl($obj));
+        $obj = new QueueEvent();
+        $obj->setEvent($eventName);
+        $obj->setDocumenturl($this->getWorkerRelativeUrl($documentUrl));
+        $obj->setStatusurl($this->getWorkerRelativeUrl($statusUrl));
         $obj->setCoreUserId($this->securityUtils->getSecurityUsername());
 
-        // transient header?
-        foreach ($this->transientHeaders as $headerName) {
-            if ($this->requestStack->getCurrentRequest()->headers->has($headerName)) {
-                $obj->addTransientHeader(
-                    $headerName,
-                    $this->requestStack->getCurrentRequest()->headers->get($headerName)
-                );
+        // transient headers?
+        if (!is_null($event->getRequest())) {
+            foreach ($this->transientHeaders as $headerName) {
+                $headerVal = $event->getRequest()->headers->get($headerName);
+                if (!empty($headerVal)) {
+                    $obj->addTransientHeader($headerName, $headerVal);
+                }
             }
         }
 
         return $obj;
-    }
-
-    /**
-     * compose our routingKey. this will have the form of 'document.[bundle].[document].[event]'
-     * rules:
-     *  * always 4 parts divided by points.
-     *  * in this context (doctrine/odm stuff) we prefix with 'document.'
-     *
-     * @return string routing key
-     */
-    private function generateRoutingKey()
-    {
-        $routeParts = explode('.', $this->requestStack->getCurrentRequest()->get('_route'));
-        $action = array_pop($routeParts);
-        $baseRoute = implode('.', $routeParts);
-
-        // find our route in the map
-        $routingKey = null;
-
-        foreach ($this->eventMap as $mapElement) {
-            if ($mapElement['baseRoute'] == $baseRoute &&
-                isset($mapElement['events'][$action])
-            ) {
-                $routingKey = $mapElement['events'][$action];
-                break;
-            }
-        }
-
-        return $routingKey;
     }
 
     /**
@@ -323,24 +212,18 @@ class EventStatusLinkResponseListener
      *
      * @return string
      */
-    private function getStatusUrl($queueEvent)
+    private function getStatusUrl(ModelEvent $event, string $eventName, string $documentUrl, array $workerIds) : string
     {
-        // this has to be checked after cause we should not call getSubscribedWorkerIds() if above is true
-        $workerIds = $this->getSubscribedWorkerIds($queueEvent);
-        if (empty($workerIds)) {
-            return '';
-        }
-
         // we have subscribers; create the EventStatus entry
         /** @var EventStatus $eventStatus **/
         $eventStatus = new $this->eventStatusClassname();
         $eventStatus->setCreatedate(new \DateTime());
-        $eventStatus->setEventname($queueEvent->getEvent());
+        $eventStatus->setEventname($eventName);
 
         // if available, transport the ref document to the eventStatus instance
-        if (!empty($queueEvent->getDocumenturl())) {
+        if (!empty($documentUrl)) {
             $eventStatusResource = new $this->eventStatusEventResourceClassname();
-            $eventStatusResource->setRef($this->extRefConverter->getExtReference($queueEvent->getDocumenturl()));
+            $eventStatusResource->setRef($this->extRefConverter->getExtReference($documentUrl));
             $eventStatus->setEventresource($eventStatusResource);
         }
 
@@ -367,7 +250,7 @@ class EventStatusLinkResponseListener
         $this->documentManager->persist($eventStatus);
         $this->documentManager->flush();
 
-        // get the url..
+        // get the url.
         $url = $this->router->generate(
             $this->eventStatusRouteName,
             [
@@ -387,11 +270,11 @@ class EventStatusLinkResponseListener
      *
      * @return array array of worker ids
      */
-    private function getSubscribedWorkerIds(QueueEvent $queueEvent)
+    private function getSubscribedWorkerIds(string $queueEvent) : array
     {
         // compose our regex to match stars ;-)
         // results in = /((\*|document)+)\.((\*|dude)+)\.((\*|config)+)\.((\*|update)+)/
-        $routingArgs = explode('.', $queueEvent->getEvent());
+        $routingArgs = explode('.', $queueEvent);
         $regex =
             '^'.
             implode(
@@ -424,33 +307,26 @@ class EventStatusLinkResponseListener
     }
 
     /**
-     * Changes the urls in the QueueEvent for the workers
-     *
-     * @param QueueEvent $queueEvent queue event
-     *
-     * @return QueueEvent altered queue event
-     */
-    private function getWorkerQueueEvent(QueueEvent $queueEvent)
-    {
-        $queueEvent->setDocumenturl($this->getWorkerRelativeUrl($queueEvent->getDocumenturl()));
-        $queueEvent->setStatusurl($this->getWorkerRelativeUrl($queueEvent->getStatusurl()));
-        return $queueEvent;
-    }
-
-    /**
      * changes an uri for the workers
      *
      * @param string $uri uri
      *
      * @return string changed uri
      */
-    private function getWorkerRelativeUrl($uri)
+    private function getWorkerRelativeUrl(string $uri) : string
     {
+        if (empty($this->workerRelativeUrl)) {
+            return $uri;
+        }
+
+        $relUrl = new Uri($this->workerRelativeUrl);
+
         $uri = new Uri($uri);
         $uri = $uri
-            ->withHost($this->workerRelativeUrl->getHost())
-            ->withScheme($this->workerRelativeUrl->getScheme())
-            ->withPort($this->workerRelativeUrl->getPort());
+            ->withHost($relUrl->getHost())
+            ->withScheme($relUrl->getScheme())
+            ->withPort($relUrl->getPort());
+
         return (string) $uri;
     }
 }

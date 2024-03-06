@@ -178,19 +178,10 @@ services:
         - "%graviton.translator.languages%"
 
     Graviton\RestBundle\Subscriber\RestSubscriber:
+      arguments:
+        - "@router"
       tags:
         - name: kernel.event_subscriber
-
-    #Graviton rest event listeners -->
-    #Paging listener >
-    Graviton\RestBundle\Listener\LinkHeaderResponseListener:
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: kernel.response
-            method: onKernelResponse
 
     #X-Version response listener -->
     Graviton\RestBundle\Listener\XVersionResponseListener:

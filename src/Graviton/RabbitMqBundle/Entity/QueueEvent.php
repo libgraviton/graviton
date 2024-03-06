@@ -3,7 +3,7 @@
  * queueevent
  */
 
-namespace Graviton\RabbitMqBundle\Document;
+namespace Graviton\RabbitMqBundle\Entity;
 
 /**
  * Graviton\RabbitMqBundle\Document\QueueEvent
