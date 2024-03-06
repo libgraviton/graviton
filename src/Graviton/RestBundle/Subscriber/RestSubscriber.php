@@ -19,15 +19,8 @@ use Symfony\Component\Routing\Router;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestSubscriber implements EventSubscriberInterface
+readonly class RestSubscriber implements EventSubscriberInterface
 {
-
-    private Router $router;
-
-    public function __construct(Router $router)
-    {
-        $this->router = $router;
-    }
 
     #[\Override] public static function getSubscribedEvents()
     {
@@ -38,10 +31,7 @@ class RestSubscriber implements EventSubscriberInterface
             ],
             KernelEvents::RESPONSE => [
                 ['onResponse', 0]
-            ],
-            KernelEvents::EXCEPTION => [
-                ['onException', 0]
-            ],
+            ]
         ];
     }
 
@@ -83,11 +73,5 @@ class RestSubscriber implements EventSubscriberInterface
                 (string) $request->attributes->get('X-Search-Source')
             );
         }
-    }
-
-    public function onException(ExceptionEvent $event): void
-    {
-        $hans = 3;
-        // ...
     }
 }

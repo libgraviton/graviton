@@ -487,16 +487,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "07e16cd7b80a2cffed99e36b541876af172f0257"
+                "reference": "420480fc085bc65f3c956af13abe8e7546f94813"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/07e16cd7b80a2cffed99e36b541876af172f0257",
-                "reference": "07e16cd7b80a2cffed99e36b541876af172f0257",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/420480fc085bc65f3c956af13abe8e7546f94813",
+                "reference": "420480fc085bc65f3c956af13abe8e7546f94813",
                 "shasum": ""
             },
             "require": {
@@ -553,7 +553,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/collections/issues",
-                "source": "https://github.com/doctrine/collections/tree/2.2.0"
+                "source": "https://github.com/doctrine/collections/tree/2.2.1"
             },
             "funding": [
                 {
@@ -569,7 +569,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-25T22:55:36+00:00"
+            "time": "2024-03-05T22:28:45+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -949,16 +949,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "2.6.2",
+            "version": "2.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "a51bfc01425d2c30b69f2c5ce13fe0d3c58bbd98"
+                "reference": "58c2b1f49aa2b03405fc98343f62f044838f1ef2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/a51bfc01425d2c30b69f2c5ce13fe0d3c58bbd98",
-                "reference": "a51bfc01425d2c30b69f2c5ce13fe0d3c58bbd98",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/58c2b1f49aa2b03405fc98343f62f044838f1ef2",
+                "reference": "58c2b1f49aa2b03405fc98343f62f044838f1ef2",
                 "shasum": ""
             },
             "require": {
@@ -1038,7 +1038,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/mongodb-odm/issues",
-                "source": "https://github.com/doctrine/mongodb-odm/tree/2.6.2"
+                "source": "https://github.com/doctrine/mongodb-odm/tree/2.6.3"
             },
             "funding": [
                 {
@@ -1054,7 +1054,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-17T22:00:36+00:00"
+            "time": "2024-02-28T22:36:13+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -9992,12 +9992,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "e0b0ccbc95f8218adaf4c04857e2cfb638e5cf0b"
+                "reference": "8135a8e7764d01cc3712193fa36bc0b2f0c06268"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/e0b0ccbc95f8218adaf4c04857e2cfb638e5cf0b",
-                "reference": "e0b0ccbc95f8218adaf4c04857e2cfb638e5cf0b",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/8135a8e7764d01cc3712193fa36bc0b2f0c06268",
+                "reference": "8135a8e7764d01cc3712193fa36bc0b2f0c06268",
                 "shasum": ""
             },
             "require-dev": {
@@ -10026,7 +10026,7 @@
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues",
                 "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop"
             },
-            "time": "2024-03-05T07:19:09+00:00"
+            "time": "2024-03-06T11:47:07+00:00"
         },
         {
             "name": "libgraviton/codesniffer",
@@ -10286,16 +10286,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.0.1",
+            "version": "v5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "2218c2252c874a4624ab2f613d86ac32d227bc69"
+                "reference": "139676794dc1e9231bf7bcd123cfc0c99182cb13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/2218c2252c874a4624ab2f613d86ac32d227bc69",
-                "reference": "2218c2252c874a4624ab2f613d86ac32d227bc69",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/139676794dc1e9231bf7bcd123cfc0c99182cb13",
+                "reference": "139676794dc1e9231bf7bcd123cfc0c99182cb13",
                 "shasum": ""
             },
             "require": {
@@ -10338,9 +10338,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.0.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.0.2"
             },
-            "time": "2024-02-21T19:24:10+00:00"
+            "time": "2024-03-05T20:51:40+00:00"
         },
         {
             "name": "phan/phan",

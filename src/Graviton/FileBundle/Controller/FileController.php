@@ -58,15 +58,13 @@ class FileController extends RestController
         $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel());
 
         // Insert the new record
-        $this->getModel()->insertRecord($file);
+        $this->getModel()->insertRecord($file, $request);
 
         // Set status code and content
         $response->headers->set(
             'Location',
             $this->getRouter()->generate('File.get', array('id' => $file->getId()))
         );
-
-        $request->attributes->set('id', $file->getId());
 
         return $response;
     }
@@ -115,10 +113,7 @@ class FileController extends RestController
         // get merged File instance of existing and PUTted..
         $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel(), $id);
 
-        $this->getModel()->upsertRecord($id, $file);
-
-        $this->addRequestAttributes($request);
-        $request->attributes->set('id', $id);
+        $this->getModel()->upsertRecord($id, $file, $request);
 
         // Set status code and content
         $response->headers->set(

@@ -178,8 +178,6 @@ services:
         - "%graviton.translator.languages%"
 
     Graviton\RestBundle\Subscriber\RestSubscriber:
-      arguments:
-        - '@router'
       tags:
         - name: kernel.event_subscriber
 

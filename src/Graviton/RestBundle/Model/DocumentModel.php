@@ -96,12 +96,12 @@ readonly class DocumentModel
      * @param $record
      * @return void
      */
-    public function upsertRecord(string $id, $record)
+    public function upsertRecord(string $id, object $record, ?Request $request = null)
     {
         if (!$this->recordExists($id)) {
-            $this->insertRecord($record);
+            $this->insertRecord($record, $request);
         } else {
-            $this->updateRecord($id, $record);
+            $this->updateRecord($id, $record, $request);
         }
     }
 
@@ -112,7 +112,7 @@ readonly class DocumentModel
      *
      * @return Object|null entity or null
      */
-    public function insertRecord($entity)
+    public function insertRecord(object $entity, ?Request $request = null)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
 
@@ -121,10 +121,24 @@ readonly class DocumentModel
         $this->documentManager->persist($entity);
         $this->documentManager->flush();
 
-        // Fire ModelEvent
-        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
+        if (is_callable([$entity, 'getId'])) {
+            $recordId = $entity->getId();
+
+            if (!is_null($request)) {
+                $this->addRequestAttributes($recordId, $request);
+            }
+
+            // Fire ModelEvent
+            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $recordId, $request);
+        }
 
         return $entity;
+    }
+
+    private function addRequestAttributes(string $id, Request $request)
+    {
+        $request->attributes->set('id', $id);
+        $request->attributes->set('varnishTags', $this->getEntityClass(true));
     }
 
     /**
@@ -234,27 +248,24 @@ readonly class DocumentModel
      *
      * @return Object|null
      */
-    public function updateRecord($documentId, $entity)
+    public function updateRecord(string $documentId, object $entity, ?Request $request = null)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
 
-        if (!is_null($documentId)) {
-            $collection = $this->documentManager->getDocumentCollection($this->getEntityClass());
-            $existing = $collection->findOne(
-                ['_id' => $documentId],
-                ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
-            );
+        // see if we find existing
+        $collection = $this->documentManager->getDocumentCollection($this->getEntityClass());
+        $existing = $collection->findOne(
+            ['_id' => $documentId],
+            ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
+        );
 
-            $this->deleteById($documentId);
+        $this->deleteById($documentId);
 
-            // detach so odm knows it's gone
-            $this->documentManager->detach($entity);
-            $this->documentManager->clear();
+        // detach so odm knows it's gone
+        $this->documentManager->detach($entity);
+        $this->documentManager->clear();
 
-            $this->setChangeTrackingData($entity, $existing);
-        } else {
-            $this->setChangeTrackingData($entity);
-        }
+        $this->setChangeTrackingData($entity, $existing);
 
         $entity = $this->documentManager->merge($entity);
 
@@ -262,8 +273,12 @@ readonly class DocumentModel
         $this->documentManager->flush();
         $this->documentManager->detach($entity);
 
+        if (!is_null($request)) {
+            $this->addRequestAttributes($documentId, $request);
+        }
+
         // Fire ModelEvent
-        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
+        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $documentId, $request);
 
         return $entity;
     }
@@ -275,7 +290,7 @@ readonly class DocumentModel
      *
      * @return null|Object
      */
-    public function deleteRecord($id)
+    public function deleteRecord($id, ?Request $request = null)
     {
         if (is_object($id)) {
             $entity = $id;
@@ -293,8 +308,13 @@ readonly class DocumentModel
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
             $this->documentManager->clear();
+
+            if (!is_null($request)) {
+                $this->addRequestAttributes($entity->getId(), $request);
+            }
+
             // Dispatch ModelEvent
-            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
+            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, (string) $id, $request);
             $return = null;
         }
 
@@ -399,23 +419,16 @@ readonly class DocumentModel
      *
      * @return void
      */
-    private function dispatchModelEvent($action, $collection)
+    public function dispatchModelEvent(string $eventName, string $recordId, ?Request $request = null)
     {
-        if (!($this->getRepository() instanceof DocumentRepository)) {
-            return;
-        }
-        if (!method_exists($collection, 'getId')) {
-            return;
-        }
+        $event = new ModelEvent(
+            $eventName,
+            $recordId,
+            $this,
+            $request
+        );
 
-        $event = new ModelEvent();
-        $event->setCollectionId($collection->getId());
-        $event->setActionByDispatchName($action);
-        $event->setCollectionName($this->getRepository()->getClassMetadata()->getCollection());
-        $event->setCollectionClass($this->getRepository()->getClassName());
-        $event->setCollection($collection);
-
-        $this->eventDispatcher->dispatch($event, $action);
+        $this->eventDispatcher->dispatch($event, $eventName);
     }
 
     /**

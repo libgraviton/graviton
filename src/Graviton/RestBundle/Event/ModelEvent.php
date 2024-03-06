@@ -5,7 +5,8 @@
 
 namespace Graviton\RestBundle\Event;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Graviton\RestBundle\Model\DocumentModel;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -26,141 +27,43 @@ class ModelEvent extends Event
     /** EVENT: Delete a new Document */
     const string MODEL_EVENT_DELETE = 'document.model.event.delete';
 
-    /**
-     * @var array list with event names
-     */
-    private $availableEvents = [
-        self::MODEL_EVENT_INSERT => 'insert',
-        self::MODEL_EVENT_UPDATE => 'update',
-        self::MODEL_EVENT_DELETE => 'delete'
-    ];
-
-    /**
-     * Containing operation executed
-     * update or insert
-     *
-     * @var string
-     */
-    private $action;
-
-    /**
-     * Containing the ID of the Model on which the change happened
-     *
-     * @var string
-     */
-    private $collectionId;
-
-    /**
-     * Containing the name of the Collection affected
-     *
-     * @var string
-     */
-    private $collectionName;
-
-    /**
-     * Containing the name of the Collection affected
-     *
-     * @var string
-     */
-    private $collectionClass;
-
-    /**
-     * Containing the changed object collection
-     *
-     * @var Object
-     */
-    private $collection;
-
-    /**
-     * Set the event ACTION name based on the fired name
-     *
-     * @param string $dispatchName the CONST value for dispatch names
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function setActionByDispatchName($dispatchName)
-    {
-        if (array_key_exists($dispatchName, $this->availableEvents)) {
-            $this->action = $this->availableEvents[$dispatchName];
-        } else {
-            throw new \RuntimeException('Document Model event dispatch type not found: ' . $dispatchName);
-        }
+    public function __construct(
+        protected readonly string $eventName,
+        protected readonly string $recordId,
+        protected readonly DocumentModel $documentModel,
+        protected readonly ?Request $request = null
+    ) {
     }
 
     /**
      * @return string
      */
-    public function getAction()
+    public function getEventName(): string
     {
-        return $this->action;
-    }
-
-    /**
-     * @return string Collection ID
-     */
-    public function getCollectionId()
-    {
-        return $this->collectionId;
-    }
-
-    /**
-     * @param string $collectionId Collection ID
-     * @return void
-     */
-    public function setCollectionId($collectionId)
-    {
-        $this->collectionId = $collectionId;
+        return $this->eventName;
     }
 
     /**
      * @return string
      */
-    public function getCollectionName()
+    public function getRecordId(): string
     {
-        return $this->collectionName;
+        return $this->recordId;
     }
 
     /**
-     * @param string $collectionName Name to Be
-     * @return void
+     * @return DocumentModel
      */
-    public function setCollectionName($collectionName)
+    public function getDocumentModel(): DocumentModel
     {
-        $this->collectionName = $collectionName;
+        return $this->documentModel;
     }
 
     /**
-     * @return string
+     * @return Request|null
      */
-    public function getCollectionClass()
+    public function getRequest(): ?Request
     {
-        return $this->collectionClass;
-    }
-
-    /**
-     * @param string $collectionClass Collection Class
-     * @return void
-     */
-    public function setCollectionClass($collectionClass)
-    {
-        $this->collectionClass = $collectionClass;
-    }
-
-    /**
-     * @return Object
-     */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
-
-    /**
-     * @param Object $collection Collection Object
-     * @return void
-     */
-    public function setCollection($collection)
-    {
-        $this->collection = $collection;
+        return $this->request;
     }
 }

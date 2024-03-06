@@ -120,24 +120,7 @@ class RestController
 
         $document = $this->getModel()->getSerialised($id, $request);
 
-        $this->addRequestAttributes($request);
-
         return new JsonResponse($document, Response::HTTP_OK, [], true);
-    }
-
-    /**
-     * Get the response object
-     *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response object
-     */
-    public function getResponse()
-    {
-        trigger_deprecation(
-            'graviton',
-            '8.0.0',
-            'getResponse() on RestController will be removed in 9.0'
-        );
-        return new Response();
     }
 
     /**
@@ -251,11 +234,7 @@ class RestController
         $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
         // Insert the new record
-        $record = $model->insertRecord($record);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
-        $this->addRequestAttributes($request);
+        $model->insertRecord($record, $request);
 
         return $response;
     }
@@ -291,10 +270,7 @@ class RestController
         $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
         $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
-        $this->getModel()->upsertRecord($id, $record);
-
-        $this->addRequestAttributes($request);
-        $request->attributes->set('id', $record->getId());
+        $this->getModel()->upsertRecord($id, $record, $request);
 
         return $response;
     }
@@ -370,9 +346,7 @@ class RestController
         $record = $this->restUtils->getEntityFromRequest($putRequest, $model);
 
         // Update object
-        $this->getModel()->updateRecord($id, $record);
-
-        $this->addRequestAttributes($request);
+        $this->getModel()->updateRecord($id, $record, $request);
 
         return $response;
     }
@@ -392,8 +366,7 @@ class RestController
         $response = new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
         $this->restUtils->validateRequest($request, $response, $this->getModel());
 
-        $this->model->deleteRecord($id);
-        $this->addRequestAttributes($request);
+        $this->model->deleteRecord($id, $request);
 
         return $response;
     }
@@ -453,17 +426,5 @@ class RestController
     public function getSecurityUser(): ?UserInterface
     {
         return $this->securityUtils->getSecurityUser();
-    }
-
-    /**
-     * add some attributes to request
-     *
-     * @param Request $request request
-     *
-     * @return void
-     */
-    protected function addRequestAttributes(Request $request)
-    {
-        $request->attributes->set('varnishTags', $this->getModel()->getEntityClass(true));
     }
 }
