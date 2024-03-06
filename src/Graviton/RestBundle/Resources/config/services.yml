@@ -1,8 +1,8 @@
 parameters:
-
   graviton.rest.services: []
   graviton.rest.not_modifiable.origin.records:
     - "core"
+  graviton.rest.messageproducer.extamqp.class: Graviton\RestBundle\MessageProducer\ExtAmqp
 
 services:
 
@@ -95,6 +95,13 @@ services:
     graviton.rest.service.jsonpatchvalidator:
         class: Graviton\RestBundle\Service\JsonPatchValidator
 
+    Graviton\RestBundle\Controller\StatusUpdateController:
+      arguments:
+        - '@?gravitondyn.eventstatus.model.eventstatus'
+        - '@Graviton\RestBundle\Service\RestUtils'
+      tags:
+        - name: controller.service_arguments
+
     #Controller -->
     graviton.rest.controller:
         abstract: true
@@ -178,10 +185,47 @@ services:
         - "%graviton.translator.languages%"
 
     Graviton\RestBundle\Subscriber\RestSubscriber:
-      arguments:
-        - "@router"
       tags:
         - name: kernel.event_subscriber
+      arguments:
+        - "@router"
+
+    # the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
+    Graviton\RestBundle\Subscriber\EventStatusLinkResponseListener:
+      tags:
+        - name: kernel.event_subscriber
+      arguments:
+        - "@logger"
+        - "@graviton.rest.messageproducer.extamqp"
+        - "@router"
+        - "@doctrine_mongodb.odm.default_document_manager"
+        - "@event_dispatcher"
+        - '@Graviton\DocumentBundle\Service\ExtReferenceConverter'
+        - 'GravitonDyn\EventWorkerBundle\Document\EventWorker'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatus'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatusStatusEmbedded'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded'
+        - 'EventStatus.get'
+        - "@graviton.security.service.utils"
+        - "%graviton.worker.relativeUrl%"
+        - "%graviton.rabbitmq.queueevent.transient_headers%"
+
+    # message producer!
+    graviton.rest.messageproducer.extamqp:
+      class: "%graviton.rest.messageproducer.extamqp.class%"
+      public: true
+      arguments:
+        - '%graviton.rabbitmq.host%'
+        - '%graviton.rabbitmq.port%'
+        - '%graviton.rabbitmq.user%'
+        - '%graviton.rabbitmq.password%'
+        - '%graviton.rabbitmq.vhost%'
+      calls:
+        -
+          method: setLogger
+          arguments:
+            - "@logger"
+
 
     #X-Version response listener -->
     Graviton\RestBundle\Listener\XVersionResponseListener:

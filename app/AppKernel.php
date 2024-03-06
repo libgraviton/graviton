@@ -14,7 +14,6 @@ use Graviton\FileBundle\GravitonFileBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
-use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use League\FlysystemBundle\FlysystemBundle;
@@ -97,7 +96,6 @@ class AppKernel extends Kernel
                 new GravitonLogBundle(),
                 new GravitonSecurityBundle(),
                 new GravitonFileBundle(),
-                new GravitonRabbitMqBundle(),
                 new GravitonMigrationBundle()
             ]
         );

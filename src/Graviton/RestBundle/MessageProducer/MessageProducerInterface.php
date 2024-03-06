@@ -3,7 +3,7 @@
  * interface for producer
  */
 
-namespace Graviton\RabbitMqBundle\Producer;
+namespace Graviton\RestBundle\MessageProducer;
 
 use Psr\Log\LoggerInterface;
 
@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-interface ProducerInterface
+interface MessageProducerInterface
 {
 
     /**

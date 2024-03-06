@@ -6,7 +6,7 @@ parameters:
     kernel.debug: false
     debug.container.dump: true
     # we shall not produce queue messages in tests
-    graviton.rabbitmq.producer.extamqp.class: Graviton\RabbitMqBundle\Producer\Dummy
+    graviton.rest.messageproducer.extamqp.class: Graviton\RestBundle\MessageProducer\Dummy
 
     graviton.translator.default.language: en
 

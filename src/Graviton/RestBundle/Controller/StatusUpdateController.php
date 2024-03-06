@@ -3,7 +3,7 @@
  * controller to update event status with 1 request
  */
 
-namespace Graviton\RabbitMqBundle\Controller;
+namespace Graviton\RestBundle\Controller;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RestBundle\Model\DocumentModel;

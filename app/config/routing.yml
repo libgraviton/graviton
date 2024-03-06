@@ -10,8 +10,8 @@ graviton_security_routing:
     resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /
 
-graviton_rabbitmq_routing:
-    resource: "@GravitonRabbitMqBundle/Resources/config/routing.yml"
+graviton_rest_routing:
+    resource: "@GravitonRestBundle/Resources/config/routing.yml"
     prefix: /
 
 graviton_rest_route_loader:

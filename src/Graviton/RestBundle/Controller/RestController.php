@@ -36,9 +36,9 @@ class RestController
     use SchemaTrait;
 
     /**
-     * @var LoggerInterface
+     * @var ?LoggerInterface
      */
-    private $logger;
+    private ?LoggerInterface $logger;
 
     /**
      * @var DocumentModel

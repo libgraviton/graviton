@@ -3,9 +3,9 @@
  * functional test for /event/status
  */
 
-namespace Graviton\RabbitMqBundle\Tests\Controller;
+namespace Graviton\RestBundle\Tests\Controller;
 
-use Graviton\RabbitMqBundle\Producer\Dummy;
+use Graviton\RestBundle\MessageProducer\Dummy;
 use Graviton\TestBundle\Test\RestTestCase;
 use Laminas\Diactoros\Uri;
 use Symfony\Component\HttpFoundation\Response;

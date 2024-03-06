@@ -4,16 +4,16 @@
  * and publishes the change to the queue
  */
 
-namespace Graviton\RabbitMqBundle\Listener;
+namespace Graviton\RestBundle\Subscriber;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
-use Graviton\LinkHeaderParser\LinkHeader;
-use Graviton\LinkHeaderParser\LinkHeaderItem;
-use Graviton\RabbitMqBundle\Entity\QueueEvent;
-use Graviton\RabbitMqBundle\Producer\ProducerInterface;
+use Graviton\RestBundle\Entity\QueueEvent;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
+use Graviton\RestBundle\MessageProducer\MessageProducerInterface;
+use Graviton\SecurityBundle\Service\SecurityUtils;
+use GravitonDyn\EventStatusBundle\Document\EventStatus;
 use Laminas\Diactoros\Uri;
 use MongoDB\BSON\Regex;
 use Monolog\Logger;
@@ -25,8 +25,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;
-use Graviton\SecurityBundle\Service\SecurityUtils;
-use GravitonDyn\EventStatusBundle\Document\EventStatus;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -38,7 +36,7 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
 
     /**
      * @param Logger                   $logger                            logger
-     * @param ProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
+     * @param MessageProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface          $router                            Router dependency
      * @param DocumentManager          $documentManager                   Doctrine document manager
      * @param EventDispatcherInterface $eventDispatcher                   event dispatcher
@@ -49,22 +47,22 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
      * @param string                   $eventStatusEventResourceClassname classname of the E*S*E*Resource document
      * @param string                   $eventStatusRouteName              name of the route to EventStatus
      * @param SecurityUtils            $securityUtils                     Security utils service
-     * @param string                   $workerRelativeUrl                 backend url relative from the workers
+     * @param ?string                  $workerRelativeUrl                 backend url relative from the workers
      * @param array                    $transientHeaders                  headers to be included from request in event
      */
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly ProducerInterface $rabbitMqProducer,
-        private readonly RouterInterface $router,
-        private readonly DocumentManager $documentManager,
+        private readonly LoggerInterface          $logger,
+        private readonly MessageProducerInterface $rabbitMqProducer,
+        private readonly RouterInterface          $router,
+        private readonly DocumentManager          $documentManager,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly ExtReferenceConverter $extRefConverter,
-        private readonly string $eventWorkerClassname,
-        private readonly string $eventStatusClassname,
-        private readonly string $eventStatusStatusClassname,
-        private readonly string $eventStatusEventResourceClassname,
-        private readonly string $eventStatusRouteName,
-        private readonly SecurityUtils $securityUtils,
+        private readonly ExtReferenceConverter    $extRefConverter,
+        private readonly string                   $eventWorkerClassname,
+        private readonly string                   $eventStatusClassname,
+        private readonly string                   $eventStatusStatusClassname,
+        private readonly string                   $eventStatusEventResourceClassname,
+        private readonly string                   $eventStatusRouteName,
+        private readonly SecurityUtils            $securityUtils,
         private readonly ?string $workerRelativeUrl,
         private readonly array $transientHeaders,
         private array $queueToSend = []
