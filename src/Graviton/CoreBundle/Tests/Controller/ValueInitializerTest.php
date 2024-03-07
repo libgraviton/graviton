@@ -98,12 +98,12 @@ class ValueInitializerTest extends RestTestCase
         return [
             [
                 'test1',
-                29,
+                28,
                 31
             ],
             [
                 'test2',
-                299,
+                298,
                 301
             ]
         ];
