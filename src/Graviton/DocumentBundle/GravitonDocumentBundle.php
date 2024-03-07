@@ -7,17 +7,13 @@ namespace Graviton\DocumentBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
 use Graviton\DocumentBundle\Types\TypeLoader;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\RqlFieldsCompilerPass;
 
 /**
  * GravitonDocumentBundle
@@ -65,27 +61,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
             100
         );
         $container->addCompilerPass(
-            new ExtRefMappingCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
             new ExtRefFieldsCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
-            new RqlFieldsCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
-            new ReadOnlyFieldsCompilerPass(),
-            PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            5
-        );
-        $container->addCompilerPass(
-            new RecordOriginExceptionFieldsCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             5
         );
