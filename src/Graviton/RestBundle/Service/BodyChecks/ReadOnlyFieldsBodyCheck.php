@@ -24,7 +24,7 @@ readonly class ReadOnlyFieldsBodyCheck extends BodyCheckerAbstract
         $runtimeDef = $data->model->getRuntimeDefinition();
 
         // nothing done!
-        if (empty($runtimeDef->getReadOnlyFields()) || $data->jsonDiff->getModifiedCnt() < 1) {
+        if (empty($runtimeDef->getReadOnlyFields()) || count($data->getAllModifiedFields()) < 1) {
             return;
         }
 
