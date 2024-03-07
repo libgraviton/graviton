@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\RqlFieldsCompilerPass;
 
 /**
  * GravitonDocumentBundle
@@ -62,6 +63,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         );
         $container->addCompilerPass(
             new ExtRefFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new RqlFieldsCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             5
         );
