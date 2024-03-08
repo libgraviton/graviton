@@ -24,16 +24,21 @@ readonly class ReadOnlyFieldsBodyCheck extends BodyCheckerAbstract
         $runtimeDef = $data->model->getRuntimeDefinition();
 
         // nothing done!
-        if (empty($runtimeDef->getReadOnlyFields()) || count($data->getAllModifiedFields()) < 1) {
+        if (empty($runtimeDef->getReadOnlyFields())) {
             return;
         }
 
+        // deleted and modified count, not added!
+        $changedFields = array_unique(
+            $data->jsonDiff->getModifiedPaths() +
+            $data->jsonDiff->getRemovedPaths()
+        );
+
         // check modified fields
-        $modifiedFields = $data->getAllModifiedFields();
         $readOnlyFields = $data->pathListToPatchFormat($runtimeDef->getReadOnlyFields());
 
-        foreach ($modifiedFields as $modifiedField) {
-            if (in_array($modifiedField, $readOnlyFields)) {
+        foreach ($changedFields as $modifiedField) {
+            if (in_array($changedFields, $readOnlyFields)) {
                 throw new BodyCheckViolation(
                     sprintf(
                         'The fields "%s" are read-only in this service.',
