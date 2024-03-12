@@ -271,7 +271,7 @@ readonly class RestUtils
      * @param object|object[] $result Record(s)
      *
      * @return string $content Json content
-     *@throws \Graviton\RestBundle\Exception\SerializationException
+     * @throws \Graviton\RestBundle\Exception\SerializationException
      *
      */
     public function serialize($result)
