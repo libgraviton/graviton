@@ -6,9 +6,9 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
-use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\RestBundle\Exception\RestrictedIdCollisionException;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SecurityBundle\Service\SecurityUtils;

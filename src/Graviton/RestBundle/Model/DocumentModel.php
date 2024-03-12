@@ -10,12 +10,12 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
+use Graviton\RestBundle\Exception\NotFoundException;
 use Graviton\RestBundle\Service\QueryService;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
  * Use doctrine odm as backend

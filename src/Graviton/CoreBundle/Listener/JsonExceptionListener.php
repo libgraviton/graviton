@@ -5,13 +5,13 @@
 
 namespace Graviton\CoreBundle\Listener;
 
+use Graviton\RestBundle\Exception\SerializationException;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckViolation;
+use Graviton\RqlParser\Exception\SyntaxErrorException;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Graviton\RqlParser\Exception\SyntaxErrorException;
-use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

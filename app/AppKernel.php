@@ -9,7 +9,6 @@ use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\CoreBundle\GravitonCoreBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
@@ -88,7 +87,6 @@ class AppKernel extends Kernel
             $bundles,
             [
                 new GravitonCoreBundle(),
-                new GravitonExceptionBundle(),
                 new GravitonDocumentBundle(),
                 new GravitonRestBundle(),
                 new GravitonGeneratorBundle(),

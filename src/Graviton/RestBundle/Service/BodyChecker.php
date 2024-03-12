@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
+use Graviton\RestBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckData;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckerAbstract;

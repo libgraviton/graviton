@@ -5,9 +5,9 @@
 
 namespace Graviton\FileBundle\Controller;
 
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Exception\MalformedInputException;
 use GravitonDyn\FileBundle\Document\File;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;

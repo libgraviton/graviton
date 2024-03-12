@@ -83,6 +83,18 @@ services:
           event: kernel.exception
           method: onKernelException
 
+    Graviton\RestBundle\Listener\RestExceptionListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
+
+    Graviton\RestBundle\Listener\RqlSyntaxErrorListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
+
     #Routing loader -->
     Graviton\RestBundle\Routing\Loader\RestRoutingLoader:
         arguments:

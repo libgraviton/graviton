@@ -5,11 +5,12 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Graviton\ExceptionBundle\Exception\DeserializationException;
-use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\RestBundle\Exception\DeserializationException;
+use Graviton\RestBundle\Exception\InvalidJsonPatchException;
+use Graviton\RestBundle\Exception\MalformedInputException;
+use Graviton\RestBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
+use JMS\Serializer\Serializer;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,7 +18,6 @@ use Psr\Log\LoggerInterface;
 use Rs\Json\Pointer;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -270,9 +270,9 @@ readonly class RestUtils
      *
      * @param object|object[] $result Record(s)
      *
-     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
-     *
      * @return string $content Json content
+     *@throws \Graviton\RestBundle\Exception\SerializationException
+     *
      */
     public function serialize($result)
     {

@@ -5,23 +5,22 @@
 namespace Graviton\RestBundle\Service;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\DocumentBundle\Service\SolrQuery;
-use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\RestBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
 use Graviton\RqlParser\AbstractNode;
+use Graviton\RqlParser\Exception\SyntaxErrorException;
+use Graviton\RqlParser\Node\LimitNode;
+use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;
+use Graviton\RqlParser\Query;
 use Graviton\RqlParserBundle\Component\RequestParser;
 use MongoDB\Driver\ReadPreference;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Graviton\RqlParser\Exception\SyntaxErrorException;
-use Graviton\RqlParser\Node\LimitNode;
-use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;
-use Graviton\RqlParser\Query;
 
 /**
  * class that deals with the Request and applies it to the query builder

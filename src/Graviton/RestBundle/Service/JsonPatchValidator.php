@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
+use Graviton\RestBundle\Exception\InvalidJsonPatchException;
 use Rs\Json\Pointer;
 use Rs\Json\Pointer\InvalidPointerException;
 use Rs\Json\Pointer\NonexistentValueReferencedException;

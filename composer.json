@@ -21,6 +21,11 @@
             "app/Graviton.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Graviton\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=8.3.0",
         "ext-json": "*",

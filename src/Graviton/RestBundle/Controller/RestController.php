@@ -5,8 +5,8 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\RestBundle\Exception\InvalidJsonPatchException;
+use Graviton\RestBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\JsonPatchValidator;
 use Graviton\RestBundle\Service\RestUtils;
