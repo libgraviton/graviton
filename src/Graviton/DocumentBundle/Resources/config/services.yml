@@ -101,9 +101,3 @@ services:
       - '@Graviton\DocumentBundle\Service\DateConverter'
     tags:
       - name: jms_serializer.subscribing_handler
-
-  Graviton\DocumentBundle\Serializer\Subscriber\DoctrineProxySubscriber:
-    tags:
-      - name: jms_serializer.event_subscriber
-        type: Graviton\DocumentBundle\Entity\ExtReference
-        format: json
