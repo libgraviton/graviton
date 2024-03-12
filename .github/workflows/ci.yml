@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Docs: https://github.com/shivammathur/setup-php
       - name: Setup PHP
@@ -48,7 +48,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           # Use composer.json for key, if composer.lock is not committed.
@@ -64,6 +64,8 @@ jobs:
           echo "APP_ENV=test" > .env.local
           echo "APP_DEBUG=0" >> .env.local
           echo "MONGODB_URI=${MONGODB_URI}" >> .env.local
+          
+          php -i
           
           composer configure
           bash prepare-for-tests.sh
