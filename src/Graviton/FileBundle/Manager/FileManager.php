@@ -136,6 +136,10 @@ readonly class FileManager
             $metadata->getFilename()
         );
 
+        if (str_contains($mimeType, 'json')) {
+            $mimeType = 'text/plain';
+        }
+
         $response
             ->setStatusCode(Response::HTTP_OK);
         $response
@@ -198,6 +202,9 @@ readonly class FileManager
         // read and set mimetype
         $mimeType = mime_content_type($fileResource);
         if (!empty($mimeType)) {
+            if (str_contains($mimeType, 'json')) {
+                $mimeType = 'text/plain';
+            }
             $metadata->setMime($mimeType);
         }
 

@@ -192,6 +192,12 @@ readonly class RestUtils
     {
         $id = $request->getAttribute('id');
 
+        // no json request?
+        $contentType = $request->getHeaderLine('content-type');
+        if (!empty($contentType) && !str_contains($contentType, 'json')) {
+            return $id;
+        }
+
         // in body?
         $bodyId = null;
         try {

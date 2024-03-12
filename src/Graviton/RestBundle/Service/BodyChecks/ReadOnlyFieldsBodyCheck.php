@@ -38,7 +38,7 @@ readonly class ReadOnlyFieldsBodyCheck extends BodyCheckerAbstract
         $readOnlyFields = $data->pathListToPatchFormat($runtimeDef->getReadOnlyFields());
 
         foreach ($changedFields as $modifiedField) {
-            if (in_array($changedFields, $readOnlyFields)) {
+            if (in_array($modifiedField, $readOnlyFields)) {
                 throw new BodyCheckViolation(
                     sprintf(
                         'The fields "%s" are read-only in this service.',
