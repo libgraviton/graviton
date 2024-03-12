@@ -581,7 +581,10 @@ class FileControllerTest extends RestTestCase
 
         // is set by file service!
         $this->assertEquals('test.txt', $returnData['metadata']['filename']);
-        $this->assertEquals('2113410fe33761122a00ccaf7bce6b6ac3498b1f0c9dab81ffac503f5293a04a', $returnData['metadata']['hash']);
+        $this->assertEquals(
+            '2113410fe33761122a00ccaf7bce6b6ac3498b1f0c9dab81ffac503f5293a04a',
+            $returnData['metadata']['hash']
+        );
 
         // override metadata!
         $returnData['metadata']['hash'] = 'MY-CUSTOM-HASH';
@@ -679,6 +682,14 @@ class FileControllerTest extends RestTestCase
         $client->request('GET', sprintf('/file/%s', $fileId), [], [], ['HTTP_ACCEPT' => 'text/plain']);
 
         $this->assertEquals($newContent, (string) $client->getResponse()->getContent());
+
+        // now, get metadata for it
+        $client->request('GET', sprintf('/file/%s', $fileId), [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $res = $client->getResults();
+        $this->assertEquals(42, $res->metadata->size);
+        $this->assertEquals("text/plain", $res->metadata->mime);
+        $this->assertEquals("simple-json-content", $res->metadata->filename);
     }
 
     /**

@@ -9,6 +9,8 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\Manager\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use GravitonDyn\FileBundle\Document\File;
+use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,7 +24,9 @@ class FileController extends RestController
     /**
      * @var FileManager
      */
-    private $fileManager;
+    private FileManager $fileManager;
+
+    private HttpMessageFactoryInterface $httpMessageFactory;
 
     /**
      * On build time we inject the Manager
@@ -31,42 +35,10 @@ class FileController extends RestController
      *
      * @return void
      */
-    public function setFileManager(FileManager $fileManager)
+    public function setComponents(FileManager $fileManager, HttpMessageFactoryInterface $httpMessageFactory)
     {
         $this->fileManager = $fileManager;
-    }
-
-    /**
-     * Writes a new Entry to the database
-     * Can accept either direct Post data or Form upload
-     *
-     * @param Request $request Current http request
-     *
-     * @return Response $response Result of action with data (if successful)
-     */
-    public function postAction(Request $request)
-    {
-        $response = new Response('', Response::HTTP_CREATED);
-
-        // validate request!
-        $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
-
-        // uniform
-        $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
-
-        // get File object
-        $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel());
-
-        // Insert the new record
-        $this->getModel()->insertRecord($file, $request);
-
-        // Set status code and content
-        $response->headers->set(
-            'Location',
-            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
-        );
-
-        return $response;
+        $this->httpMessageFactory = $httpMessageFactory;
     }
 
     /**
@@ -94,6 +66,36 @@ class FileController extends RestController
     }
 
     /**
+     * Writes a new Entry to the database
+     * Can accept either direct Post data or Form upload
+     *
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function postAction(Request $request)
+    {
+        $response = new Response('', Response::HTTP_CREATED);
+
+        // validate request!
+        $psrRequest = $this->validateAndUniformIncomingRequest($request, $response);
+
+        // get File object
+        $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel());
+
+        // Insert the new record
+        $this->getModel()->insertRecord($file, $request);
+
+        // Set status code and content
+        $response->headers->set(
+            'Location',
+            $this->getRouter()->generate('File.get', array('id' => $file->getId()))
+        );
+
+        return $response;
+    }
+
+    /**
      * Update a record
      *
      * @param Number  $id      ID of record
@@ -105,10 +107,8 @@ class FileController extends RestController
     {
         // validate first
         $response = new Response('', Response::HTTP_NO_CONTENT);
-        $psrRequest = $this->restUtils->validateRequest($request, $response, $this->getModel());
 
-        // uniform it..
-        $psrRequest = $this->fileManager->uniformFileRequest($psrRequest);
+        $psrRequest = $this->validateAndUniformIncomingRequest($request, $response);
 
         // get merged File instance of existing and PUTted..
         $file = $this->fileManager->getFileInstance($psrRequest, $this->getModel(), $id);
@@ -122,6 +122,27 @@ class FileController extends RestController
         );
 
         return $response;
+    }
+
+    /**
+     * does stuff when request comes in
+     *
+     * @param Request  $request  req
+     * @param Response $response resp
+     * @return ServerRequestInterface psr request
+     * @throws \Exception
+     */
+    private function validateAndUniformIncomingRequest(Request $request, Response $response) : ServerRequestInterface
+    {
+        // should we do bodychecks or not?
+        $psrRequest = $this->fileManager->uniformFileRequest($this->httpMessageFactory->createRequest($request));
+
+        // if the body has *no* metadata, then we skip body checks!
+        $hasMetadataBody = $psrRequest->getAttribute('metadataBody', false);
+
+        $this->restUtils->validateRequest($request, $response, $this->getModel(), !$hasMetadataBody);
+
+        return $psrRequest;
     }
 
     /**

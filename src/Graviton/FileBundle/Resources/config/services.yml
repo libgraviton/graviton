@@ -36,7 +36,8 @@ services:
           arguments:
               - "@?gravitondyn.file.model.file"
         -
-          method: setFileManager
+          method: setComponents
           arguments:
               - '@Graviton\FileBundle\Manager\FileManager'
+              - '@psr_http_factory'
 
