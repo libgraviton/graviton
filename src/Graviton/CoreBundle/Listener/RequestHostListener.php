@@ -23,8 +23,12 @@ readonly class RequestHostListener
      * @param ?int    $portHttp  port for http
      * @param ?int    $portHttps port for https
      */
-    public function __construct(private Router $router, private ?string $host, private ?int $portHttp, private ?int $portHttps)
-    {
+    public function __construct(
+        private Router $router,
+        private ?string $host,
+        private ?int $portHttp,
+        private ?int $portHttps
+    ) {
     }
 
     /**

@@ -22,18 +22,46 @@ use Symfony\Component\HttpFoundation\Response;
 readonly class BodyChecker
 {
 
+    /**
+     * @param \SplStack $bodyChecks body checks
+     */
     public function __construct(
         public \SplStack $bodyChecks = new \SplStack(),
     ) {
     }
 
+    /**
+     * add a bodycheck
+     *
+     * @param BodyCheckerAbstract $bodyChecker body check
+     *
+     * @return void
+     */
     public function addBodyCheck(BodyCheckerAbstract $bodyChecker)
     {
         $this->bodyChecks->push($bodyChecker);
     }
 
-    public function checkRequest(ServerRequestInterface $request, Response $response, DocumentModel $model, ?string $existingId) : ServerRequestInterface
-    {
+    /**
+     * check the request
+     *
+     * @param ServerRequestInterface $request    req
+     * @param Response               $response   resp
+     * @param DocumentModel          $model      model
+     * @param string|null            $existingId existing id
+     *
+     * @return ServerRequestInterface
+     *
+     * @throws Pointer\InvalidJsonException
+     * @throws Pointer\NonWalkableJsonException
+     * @throws \Swaggest\JsonDiff\Exception
+     */
+    public function checkRequest(
+        ServerRequestInterface $request,
+        Response $response,
+        DocumentModel $model,
+        ?string $existingId
+    ) : ServerRequestInterface {
         $existingPayload = null;
         $existingDiff = null;
         $existingPointer = null;

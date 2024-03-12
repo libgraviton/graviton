@@ -46,10 +46,10 @@ class RestController
     private DocumentModel $model;
 
     /**
-     * @param RestUtils          $restUtils Rest Utils
-     * @param Router             $router    Router
+     * @param RestUtils          $restUtils          Rest Utils
+     * @param Router             $router             Router
      * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
-     * @param SecurityUtils      $securityUtils  The securityUtils service
+     * @param SecurityUtils      $securityUtils      The securityUtils service
      */
     public function __construct(
         protected readonly RestUtils $restUtils,

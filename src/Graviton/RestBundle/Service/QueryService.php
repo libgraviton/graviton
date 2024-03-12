@@ -212,7 +212,9 @@ readonly class QueryService
             $request->attributes->set('perPage', $this->getPaginationPageSize($request));
 
             if ($request->attributes->has('totalCount')) {
-                $numPages = (int) ceil($request->attributes->get('totalCount') / $this->getPaginationPageSize($request));
+                $numPages = (int) ceil(
+                    $request->attributes->get('totalCount') / $this->getPaginationPageSize($request)
+                );
                 $request->attributes->set('numPages', $numPages);
             }
         }

@@ -250,5 +250,4 @@ readonly class RestSubscriber implements EventSubscriberInterface
 
         return $query->toRql();
     }
-
 }

@@ -229,7 +229,7 @@ class SchemaGenerator extends AbstractGenerator
         if (isset($schema['components']['schemas'][$parameters['document']])) {
             throw new \RuntimeException(
                 sprintf(
-                    'The schema for object "%s" has already been defined, will not overwrite. Name collision for file %s.',
+                    'Schema object "%s" already exists, will not overwrite. Name collision for file %s.',
                     $parameters['document'],
                     $targetFile
                 )

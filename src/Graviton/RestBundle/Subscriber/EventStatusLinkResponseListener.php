@@ -36,7 +36,7 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
 
     /**
      * @param Logger                   $logger                            logger
-     * @param MessageProducerInterface        $rabbitMqProducer                  RabbitMQ dependency
+     * @param MessageProducerInterface $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface          $router                            Router dependency
      * @param DocumentManager          $documentManager                   Doctrine document manager
      * @param EventDispatcherInterface $eventDispatcher                   event dispatcher
@@ -107,15 +107,21 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
         }
 
         $this->logger->info(
-            sprintf("Found '%s' worker(s) subscribed for event '%s', will notify on queue.", count($workerIds), $eventName),
-            ['workerIds' => $workerIds]
+            sprintf(
+                "Found '%s' worker(s) subscribed for event '%s', will notify on queue.",
+                count($workerIds),
+                $eventName
+            ),
+            [
+                'workerIds' => $workerIds
+            ]
         );
 
         // the url to the resource that caused this EventStatus
         $documentUrl = $this->getEventRefUrl($event);
 
         // now, create EventStatus and get it's url
-        $eventStatusUrl = $this->getStatusUrl($event, $eventName, $documentUrl, $workerIds);
+        $eventStatusUrl = $this->getStatusUrl($eventName, $documentUrl, $workerIds);
         // set on request!
         if (!is_null($event->getRequest())) {
             $event->getRequest()->attributes->set('eventStatus', $eventStatusUrl);
@@ -127,7 +133,6 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
         // put stuff in instance so we can send it in onTerminate
         $this->queueToSend[] = [$queueEvent, $workerIds];
     }
-
 
     /**
      * sends the events
@@ -148,6 +153,13 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
         }
     }
 
+    /**
+     * gets the event ref url
+     *
+     * @param ModelEvent $event event
+     *
+     * @return string ref url
+     */
     private function getEventRefUrl(ModelEvent $event) : string
     {
         return $this->router->generate(
@@ -157,6 +169,12 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
         );
     }
 
+    /**
+     * gets the event name
+     *
+     * @param ModelEvent $event
+     * @return string
+     */
     private function getDocumentEventName(ModelEvent $event) : string
     {
         $eventNames = $event->getDocumentModel()->getRuntimeDefinition()->getRestEventNames();
@@ -178,12 +196,20 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
     }
 
     /**
-     * Creates the structured object that will be sent to the queue (eventually..)
+     * creates the obj for the queue
      *
-     * @return QueueEvent event
+     * @param ModelEvent $event       event
+     * @param string     $eventName   event name
+     * @param string     $documentUrl url to doc
+     * @param string     $statusUrl   url to status
+     * @return QueueEvent
      */
-    private function createQueueEventObject(ModelEvent $event, string $eventName, string $documentUrl, string $statusUrl) : QueueEvent
-    {
+    private function createQueueEventObject(
+        ModelEvent $event,
+        string $eventName,
+        string $documentUrl,
+        string $statusUrl
+    ) : QueueEvent {
         $obj = new QueueEvent();
         $obj->setEvent($eventName);
         $obj->setDocumenturl($this->getWorkerRelativeUrl($documentUrl));
@@ -204,13 +230,17 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
     }
 
     /**
-     * Creates a EventStatus object that gets persisted..
+     * gets the status url
      *
-     * @param QueueEvent $queueEvent queueEvent object
+     * @param string $eventName   event name
+     * @param string $documentUrl doc url
+     * @param array  $workerIds   worker ids
      *
      * @return string
+     *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function getStatusUrl(ModelEvent $event, string $eventName, string $documentUrl, array $workerIds) : string
+    private function getStatusUrl(string $eventName, string $documentUrl, array $workerIds) : string
     {
         // we have subscribers; create the EventStatus entry
         /** @var EventStatus $eventStatus **/

@@ -59,7 +59,6 @@ readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
             if (!in_array($existingRecordOrigin, $this->recordOriginBlacklist)) {
                 return;
             }
-
         } catch (\Throwable $t) {
             // nothing -> finish
             return;

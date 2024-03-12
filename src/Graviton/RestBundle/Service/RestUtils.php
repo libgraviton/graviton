@@ -164,14 +164,19 @@ readonly class RestUtils
      * performs body checks. these are checks that cannot be done by the openapi validator library - they
      * mostly rely on the current database object.
      *
-     * @param ServerRequestInterface $request request
-     * @param DocumentModel          $model   model
+     * @param ServerRequestInterface $request  request
+     * @param Response               $response response
+     * @param DocumentModel          $model    model
      *
      * @return void
+     *
      * @throws \Throwable
      */
-    private function validateBodyChecks(ServerRequestInterface $request, Response $response, DocumentModel $model) : ServerRequestInterface
-    {
+    private function validateBodyChecks(
+        ServerRequestInterface $request,
+        Response $response,
+        DocumentModel $model
+    ) : ServerRequestInterface {
         $id = $this->getTargetIdFromRequest($request);
         return $this->bodyChecker->checkRequest(
             $request,
