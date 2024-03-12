@@ -61,8 +61,8 @@ readonly class QueryService
      * based on the Request passed to it.
      * sets all necessary stuff on the querybuilder and the request
      *
-     * @param Request            $request    request
-     * @param DocumentRepository $repository repository
+     * @param Request       $request request
+     * @param DocumentModel $model   model
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      *
@@ -241,6 +241,8 @@ readonly class QueryService
      * if a single document has been requested, this returns the document id. if it returns null,
      * then we return multiple documents
      *
+     * @param Request $request request
+     *
      * @return string|null either document id or null
      */
     private function getDocumentId(Request $request)
@@ -251,8 +253,9 @@ readonly class QueryService
     /**
      * apply all stuff from the rql query (if any) to the local querybuilder
      *
-     * @param Request $request               request
-     * @param bool    $singleDocumentRequest if single document is requested
+     * @param Request       $request               request
+     * @param DocumentModel $model                 model
+     * @param bool          $singleDocumentRequest if single document is requested
      *
      * @return Builder|\Doctrine\ODM\MongoDB\Aggregation\Builder builder
      */
@@ -310,7 +313,8 @@ readonly class QueryService
      * returns the correct rql query for the request, including optional specified restrictions
      * in the service definition (via restrictionManager)
      *
-     * @param bool $singleDocumentRequest if single document is requested
+     * @param Request $request               request
+     * @param bool    $singleDocumentRequest if single document is requested
      *
      * @return Query|null the query
      */

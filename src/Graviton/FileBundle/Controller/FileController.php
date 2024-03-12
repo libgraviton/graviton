@@ -26,12 +26,16 @@ class FileController extends RestController
      */
     private FileManager $fileManager;
 
+    /**
+     * @var HttpMessageFactoryInterface
+     */
     private HttpMessageFactoryInterface $httpMessageFactory;
 
     /**
      * On build time we inject the Manager
      *
-     * @param FileManager $fileManager Service Manager
+     * @param FileManager                 $fileManager        Service Manager
+     * @param HttpMessageFactoryInterface $httpMessageFactory factory
      *
      * @return void
      */

@@ -88,7 +88,9 @@ class RuntimeDefinition
     }
 
     /**
-     * @return array
+     * getIncrementalDateFields
+     *
+     * @return array fields
      */
     public function getIncrementalDateFields(): array
     {
@@ -96,7 +98,11 @@ class RuntimeDefinition
     }
 
     /**
-     * @param array $incrementalDateFields
+     * setIncrementalDateFields
+     *
+     * @param array $incrementalDateFields fields
+     *
+     * @return void
      */
     public function setIncrementalDateFields(array $incrementalDateFields): void
     {
@@ -104,7 +110,9 @@ class RuntimeDefinition
     }
 
     /**
-     * @return bool
+     * isVersioned
+     *
+     * @return bool yes or not
      */
     public function isVersioned(): bool
     {
@@ -112,7 +120,11 @@ class RuntimeDefinition
     }
 
     /**
-     * @param bool $isVersioned
+     * setIsVersioned
+     *
+     * @param bool $isVersioned if versioned
+     *
+     * @return void
      */
     public function setIsVersioned(bool $isVersioned): void
     {
@@ -120,7 +132,9 @@ class RuntimeDefinition
     }
 
     /**
-     * @return array
+     * getRestEventNames
+     *
+     * @return array event names
      */
     public function getRestEventNames(): array
     {
@@ -128,7 +142,11 @@ class RuntimeDefinition
     }
 
     /**
-     * @param array $restEventNames
+     * setRestEventNames
+     *
+     * @param array $restEventNames event names
+     *
+     * @return void
      */
     public function setRestEventNames(array $restEventNames): void
     {
@@ -136,7 +154,9 @@ class RuntimeDefinition
     }
 
     /**
-     * @return bool
+     * isPreferredReadFromSecondary
+     *
+     * @return bool yes or not
      */
     public function isPreferredReadFromSecondary(): bool
     {
@@ -144,7 +164,11 @@ class RuntimeDefinition
     }
 
     /**
-     * @param bool $preferredReadFromSecondary
+     * setPreferredReadFromSecondary
+     *
+     * @param bool $preferredReadFromSecondary secondary
+     *
+     * @return void
      */
     public function setPreferredReadFromSecondary(bool $preferredReadFromSecondary): void
     {

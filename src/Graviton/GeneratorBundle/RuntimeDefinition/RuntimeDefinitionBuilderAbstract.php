@@ -22,6 +22,8 @@ abstract class RuntimeDefinitionBuilderAbstract
      * work on RuntimeDefinition
      *
      * @param RuntimeBuilderData $data data
+     *
+     * @return void
      */
     abstract public function build(RuntimeBuilderData $data) : void;
 

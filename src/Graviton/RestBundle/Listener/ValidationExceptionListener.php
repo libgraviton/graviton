@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\RestBundle\Service\BodyChecks\BodyCheckViolation;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
@@ -59,9 +58,11 @@ class ValidationExceptionListener
     }
 
     /**
-     * @param ValidationExceptionError[] $errors errors
+     * get messages
      *
-     * @return array
+     * @param ValidationFailed $exception exception
+     *
+     * @return array messages
      */
     private function getErrorMessages(ValidationFailed $exception) : array
     {

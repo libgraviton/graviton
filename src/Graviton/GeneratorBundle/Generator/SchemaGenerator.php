@@ -39,7 +39,7 @@ class SchemaGenerator extends AbstractGenerator
     /**
      * @var I18nUtils
      */
-    private I18nUtils $i18nUtils;
+    private I18nUtils $intUtils;
 
     /**
      * @var array
@@ -58,6 +58,12 @@ class SchemaGenerator extends AbstractGenerator
         $this->schemaBuilder = $schemaBuilder;
     }
 
+    /**
+     * set dispatcher
+     *
+     * @param EventDispatcherInterface $eventDispatcher event dispatcher
+     * @return void
+     */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
@@ -66,13 +72,13 @@ class SchemaGenerator extends AbstractGenerator
     /**
      * set I18nUtils
      *
-     * @param I18nUtils $i18nUtils
+     * @param I18nUtils $intUtils int utils
      *
      * @return void
      */
-    public function setI18nUtils(I18nUtils $i18nUtils)
+    public function setIntUtils(I18nUtils $intUtils)
     {
-        $this->i18nUtils = $i18nUtils;
+        $this->intUtils = $intUtils;
     }
 
     /**
@@ -414,8 +420,8 @@ class SchemaGenerator extends AbstractGenerator
             'type' => 'object'
         ];
 
-        $defLanguage = $this->i18nUtils->getDefaultLanguage();
-        foreach ($this->i18nUtils->getLanguages() as $language) {
+        $defLanguage = $this->intUtils->getDefaultLanguage();
+        foreach ($this->intUtils->getLanguages() as $language) {
             $translatable['properties'][$language] = [
                 'type' => 'string',
                 'title' => $language,
@@ -607,6 +613,13 @@ class SchemaGenerator extends AbstractGenerator
         );
     }
 
+    /**
+     * recursively returns a list of all referenced (by #ref) schemas in the schema
+     *
+     * @param string $content  start schema
+     * @param array  $mainFile the big schema containing all
+     * @return array the complete schema
+     */
     private function getAllReferencedSchemas(string $content, array $mainFile) : array
     {
         $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';

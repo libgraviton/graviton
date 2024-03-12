@@ -13,6 +13,13 @@ namespace Graviton\RestBundle\Service\BodyChecks;
 readonly class ReadOnlyFieldsBodyCheck extends BodyCheckerAbstract
 {
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     public function check(BodyCheckData $data): void
     {
         if (empty($data->jsonExisting)) {

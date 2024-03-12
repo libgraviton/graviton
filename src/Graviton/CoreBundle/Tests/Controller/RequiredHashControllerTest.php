@@ -187,6 +187,9 @@ class RequiredHashControllerTest extends RestTestCase
     /**
      * Test POST method with empty optional hash
      *
+     * @param array  $data          data
+     * @param string $complainField complain field
+     *
      * @return void
      */
     #[DataProvider('postWithEmptyOptionalHashDataProvider')]

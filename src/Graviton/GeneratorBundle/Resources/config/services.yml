@@ -140,7 +140,7 @@ services:
           - method: setSchemaBuilder
             arguments:
               - '@Graviton\GeneratorBundle\Schema\SchemaBuilder'
-          - method: setI18nUtils
+          - method: setIntUtils
             arguments:
               - '@Graviton\RestBundle\Service\I18nUtils'
           - method: setVersionInformation
@@ -199,8 +199,6 @@ services:
     Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder: ~
     Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder:
-      arguments:
-        - '@router'
     Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder:
       arguments:
         - "%graviton.document.dateFormatRegex%"

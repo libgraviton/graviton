@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
@@ -27,12 +28,14 @@ readonly class DocumentModel
 {
 
     /**
-     * constructor
-     *
-     * @param string          $schemaPath        schema path
-     * @param string          $runtimeDefFile    path to runtime def file
-     * @param string          $documentClassName class name
-     * @param DocumentManager $documentManager   dm
+     * @param QueryService             $queryService      queryservice
+     * @param EventDispatcherInterface $eventDispatcher   dispatcher
+     * @param RestUtils                $restUtils         rest utils
+     * @param SecurityUtils            $securityUtils     security utils
+     * @param DocumentManager          $documentManager   doc manager
+     * @param string                   $schemaPath        schemapath
+     * @param string                   $runtimeDefFile    rd path
+     * @param string                   $documentClassName full class name
      */
     public function __construct(
         // common stuff
@@ -61,7 +64,7 @@ readonly class DocumentModel
     /**
      * get repository instance
      *
-     * @return DocumentRepository
+     * @return DocumentRepository repo
      */
     public function getRepository(): DocumentRepository
     {
@@ -91,9 +94,11 @@ readonly class DocumentModel
     }
 
     /**
-     * upserts an entity
+     * upserts an entry
      *
-     * @param $record
+     * @param string       $id      id
+     * @param object       $record  record
+     * @param Request|null $request request
      * @return void
      */
     public function upsertRecord(string $id, object $record, ?Request $request = null)
@@ -108,7 +113,8 @@ readonly class DocumentModel
     /**
      * inserts a record
      *
-     * @param object $entity entity to insert
+     * @param object   $entity  entity to insert
+     * @param ?Request $request request
      *
      * @return Object|null entity or null
      */
@@ -135,7 +141,14 @@ readonly class DocumentModel
         return $entity;
     }
 
-    public function addRequestAttributes(?string $id, Request $request)
+    /**
+     * adds the request attributes
+     *
+     * @param string|null $id      id
+     * @param Request     $request request
+     * @return void
+     */
+    public function addRequestAttributes(?string $id, Request $request) : void
     {
         if (!is_null($id)) {
             $request->attributes->set('id', $id);
@@ -146,11 +159,12 @@ readonly class DocumentModel
     /**
      * add change tracking to entity
      *
-     * @param \stdClass $entity entity
+     * @param \stdClass  $entity   entity
+     * @param ?\stdClass $existing existing entity
      *
      * @return void
      */
-    private function setChangeTrackingData($entity, $existing = null)
+    private function setChangeTrackingData($entity, $existing = null): void
     {
         if (!is_null($existing)) {
             // pass old attrs to new one.
@@ -215,11 +229,11 @@ readonly class DocumentModel
      * Will attempt to find Document by ID.
      * If config cache is enabled for document it will save it.
      *
-     * @param string  $documentId id of entity to find
-     * @param Request $request    request
+     * @param string       $documentId id of entity to find
+     * @param Request|null $request    request
      *
      * @return string Serialised object
-     * @throws NotFoundException
+     * @throws MongoDBException
      */
     public function getSerialised($documentId, Request $request = null)
     {
@@ -245,8 +259,9 @@ readonly class DocumentModel
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to update
-     * @param Object $entity     new entity
+     * @param string   $documentId id of entity to update
+     * @param object   $entity     new entity
+     * @param ?Request $request    request
      *
      * @return Object|null
      */
@@ -288,7 +303,8 @@ readonly class DocumentModel
     /**
      * {@inheritDoc}
      *
-     * @param string|object $id id of entity to delete or entity instance
+     * @param string|object $id      id of entity to delete or entity instance
+     * @param ?Request      $request request
      *
      * @return null|Object
      */
@@ -324,25 +340,13 @@ readonly class DocumentModel
     }
 
     /**
-     * Triggers a flush on the DocumentManager
-     *
-     * @param null $document optional document
-     *
-     * @return void
-     */
-    public function flush($document = null)
-    {
-        $this->documentManager->flush($document);
-    }
-
-    /**
      * A low level delete without any checks
      *
      * @param mixed $id record id
      *
      * @return void
      */
-    private function deleteById($id)
+    private function deleteById($id): void
     {
         $builder = $this->getRepository()->createQueryBuilder();
         $builder
@@ -359,7 +363,7 @@ readonly class DocumentModel
      *
      * @return bool true if it exists, false otherwise
      */
-    public function recordExists($id)
+    public function recordExists($id): bool
     {
         return is_array($this->selectSingleFields($id, ['id'], false));
     }
@@ -416,12 +420,13 @@ readonly class DocumentModel
     /**
      * Will fire a ModelEvent
      *
-     * @param string $action     insert or update
-     * @param object $collection the changed Document
+     * @param string   $eventName insert or update
+     * @param string   $recordId  record id
+     * @param ?Request $request   request
      *
      * @return void
      */
-    public function dispatchModelEvent(string $eventName, string $recordId, ?Request $request = null)
+    public function dispatchModelEvent(string $eventName, string $recordId, ?Request $request = null): void
     {
         $event = new ModelEvent(
             $eventName,

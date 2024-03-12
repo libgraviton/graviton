@@ -21,6 +21,13 @@ readonly class VersionedServiceBodyCheck extends BodyCheckerAbstract
     /** DB Field name used for validation and incremental */
     const string FIELD_NAME = 'version';
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     public function check(BodyCheckData $data): void
     {
         if (!$data->model->getRuntimeDefinition()->isVersioned()) {
@@ -32,6 +39,7 @@ readonly class VersionedServiceBodyCheck extends BodyCheckerAbstract
             try {
                 $currentVersion = $data->jsonExisting->get('/'.self::FIELD_NAME);
             } catch (\Throwable $t) {
+                /* has no version */
             }
         }
 
@@ -40,6 +48,7 @@ readonly class VersionedServiceBodyCheck extends BodyCheckerAbstract
         try {
             $userVersion = $payload->get('/'.self::FIELD_NAME);
         } catch (\Throwable $t) {
+            /* has no version */
         }
 
         if (!empty($currentVersion) && $currentVersion != $userVersion) {

@@ -43,7 +43,10 @@ readonly class VersionController
     /**
      * Returns schema
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @param string  $format  format
+     * @param Request $request request
+     *
+     * @return Response $response Response with result or error
      */
     public function versionsSchemaAction($format, Request $request)
     {

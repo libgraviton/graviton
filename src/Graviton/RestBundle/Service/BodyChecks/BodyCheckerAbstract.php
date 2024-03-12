@@ -13,5 +13,12 @@ namespace Graviton\RestBundle\Service\BodyChecks;
 abstract readonly class BodyCheckerAbstract
 {
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     abstract public function check(BodyCheckData $data) : void;
 }

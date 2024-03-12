@@ -32,9 +32,11 @@ readonly class RestUtils
 {
 
     /**
-     * @param Serializer             $serializer    serializer
-     * @param LoggerInterface        $logger        PSR logger (e.g. Monolog)
-     * @param CacheItemPoolInterface $cacheProvider Cache service
+     * @param Serializer                  $serializer         serializer
+     * @param BodyChecker                 $bodyChecker        body checker
+     * @param LoggerInterface             $logger             logger
+     * @param CacheItemPoolInterface      $cacheProvider      cache provider
+     * @param HttpMessageFactoryInterface $httpMessageFactory psr factory
      */
     public function __construct(
         private Serializer $serializer,
@@ -101,10 +103,13 @@ readonly class RestUtils
      * If all is good, you will receive an empty array.
      *
      * @param ServerRequestInterface $request        request
+     * @param Response               $response       response
      * @param DocumentModel          $model          the model to check the schema for
      * @param bool                   $skipBodyChecks should we skip body checks?
      *
-     * @throws \Exception
+     * @return ServerRequestInterface request
+     *
+     * @throws \Exception|\Throwable
      */
     public function validatePsrRequest(
         ServerRequestInterface $request,
@@ -137,13 +142,13 @@ readonly class RestUtils
     }
 
     /**
-     * Validates content with the given schema, returning an array of errors.
-     * If all is good, you will receive an empty array.
+     * validates the passed request and converts it to a PSR request - throws an Exception if something is wrong
      *
      * @param Request       $request        request
-     * @param DocumentModel $model          the model to check the schema for
-     * @param bool          $skipBodyChecks should we skip body checks?
-     *
+     * @param Response      $response       response
+     * @param DocumentModel $model          model
+     * @param bool          $skipBodyChecks should the body be checked?
+     * @return ServerRequestInterface
      * @throws \Exception
      */
     public function validateRequest(

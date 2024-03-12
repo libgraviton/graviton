@@ -28,10 +28,20 @@ use Symfony\Component\Routing\RouterInterface;
 readonly class RestSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private readonly RouterInterface $router)
+    /**
+     * constructor
+     *
+     * @param RouterInterface $router router
+     */
+    public function __construct(private RouterInterface $router)
     {
     }
 
+    /**
+     * get events
+     *
+     * @return array[] events
+     */
     #[\Override] public static function getSubscribedEvents()
     {
         // return the subscribed events, their methods and priorities
@@ -45,6 +55,12 @@ readonly class RestSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * onRequest
+     *
+     * @param RequestEvent $event event
+     * @return void
+     */
     public function onRequest(RequestEvent $event): void
     {
         // fill content-type if not set; to make it better for older clients
@@ -54,6 +70,11 @@ readonly class RestSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * onResponse
+     * @param ResponseEvent $event event
+     * @return void
+     */
     public function onResponse(ResponseEvent $event): void
     {
         $request = $event->getRequest();
@@ -98,6 +119,13 @@ readonly class RestSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * generates the Link header content
+     *
+     * @param Request  $request  request
+     * @param Response $response response
+     * @return string|null header content or null
+     */
     private function generateLinkHeader(Request $request, Response $response) : ?string
     {
         $collectionName = $request->attributes->get('collection');
@@ -225,11 +253,10 @@ readonly class RestSubscriber implements EventSubscriberInterface
     /**
      * returns the rql query string based on the current request
      *
-     * @param Request $request request
-     * @param int     $limit   limit
-     * @param int     $offset  offset
-     *
-     * @return string rql query string
+     * @param Request $request req
+     * @param int     $perPage how many per page
+     * @param int     $page    which page
+     * @return string the query string
      */
     private function getQueryString(Request $request, int $perPage = 0, int $page = 0) : string
     {

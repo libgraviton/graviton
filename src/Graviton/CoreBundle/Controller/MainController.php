@@ -43,6 +43,8 @@ readonly class MainController
     /**
      * create simple start page.
      *
+     * @param Request $request request
+     *
      * @return Response $response Response with result or error
      */
     public function indexAction(Request $request)

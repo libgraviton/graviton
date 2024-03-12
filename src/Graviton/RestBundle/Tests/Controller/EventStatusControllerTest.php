@@ -34,6 +34,11 @@ class EventStatusControllerTest extends RestTestCase
      */
     private $clientOptions = ['environment' => 'test_restricted'];
 
+    /**
+     * setup
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->loadFixturesLocal([]);

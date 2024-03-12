@@ -38,7 +38,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * @var I18nUtils
      */
-    private I18nUtils $i18nUtils;
+    private I18nUtils $intUtils;
 
     /**
      * our json file definition
@@ -111,20 +111,21 @@ class ResourceGenerator extends AbstractGenerator
      * Instantiates generator object
      *
      * @param Filesystem       $filesystem       fs abstraction layer
-     * @param I18nUtils        $i18nUtils        i18n utils
+     * @param I18nUtils        $intUtils         i18n utils
      * @param FieldMapper      $mapper           field type mapper
      * @param ParameterBuilder $parameterBuilder parameter builder
+     * @param SchemaGenerator  $schemaGenerator  schema generator
      */
     public function __construct(
-        Filesystem $filesystem,
-        I18nUtils $i18nUtils,
-        FieldMapper $mapper,
+        Filesystem       $filesystem,
+        I18nUtils        $intUtils,
+        FieldMapper      $mapper,
         ParameterBuilder $parameterBuilder,
-        SchemaGenerator $schemaGenerator
+        SchemaGenerator  $schemaGenerator
     ) {
         parent::__construct();
         $this->filesystem = $filesystem;
-        $this->i18nUtils = $i18nUtils;
+        $this->intUtils = $intUtils;
         $this->mapper = $mapper;
         $this->parameterBuilder = $parameterBuilder;
         $this->schemaGenerator = $schemaGenerator;
@@ -236,8 +237,8 @@ class ResourceGenerator extends AbstractGenerator
             'entity/Translatable.php.twig',
             $fullClassName,
             [
-                'defaultLanguage' => $this->i18nUtils->getDefaultLanguage(),
-                'languages' =>  $this->i18nUtils->getLanguages()
+                'defaultLanguage' => $this->intUtils->getDefaultLanguage(),
+                'languages' =>  $this->intUtils->getLanguages()
             ]
         );
 

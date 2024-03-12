@@ -27,6 +27,12 @@ class ModelEvent extends Event
     /** EVENT: Delete a new Document */
     const string MODEL_EVENT_DELETE = 'document.model.event.delete';
 
+    /**
+     * @param string        $eventName     event name
+     * @param string        $recordId      record id
+     * @param DocumentModel $documentModel document model
+     * @param Request|null  $request       request
+     */
     public function __construct(
         protected readonly string $eventName,
         protected readonly string $recordId,

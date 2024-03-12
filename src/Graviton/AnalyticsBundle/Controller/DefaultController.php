@@ -83,6 +83,8 @@ readonly class DefaultController
     /**
      * renders the openapi schema
      *
+     * @param Request $request request
+     *
      * @return Response response
      */
     public function serviceSchemaAction(Request $request)

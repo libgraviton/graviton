@@ -21,12 +21,14 @@ readonly class BodyCheckData
     /**
      * constructor.
      *
-     * @param ServerRequestInterface $request
-     * @param DocumentModel          $model
-     * @param string|null            $existingId
-     * @param string|null            $existingSerialized
-     * @param Pointer|null           $jsonExisting
-     * @param JsonDiff|null          $jsonDiff
+     * @param ServerRequestInterface $request             request
+     * @param DocumentModel          $model               model
+     * @param string|null            $existingId          existing id
+     * @param string|null            $existingSerialized  existing record as serialized
+     * @param Pointer|null           $jsonExisting        json pointer for existing
+     * @param JsonDiff|null          $jsonDiff            diff from old to new
+     * @param \SplStack              $userPayloadModifier payload modified
+     * @param \SplStack              $responseModifier    response modified
      */
     public function __construct(
         public ServerRequestInterface $request,
@@ -40,11 +42,23 @@ readonly class BodyCheckData
     ) {
     }
 
+    /**
+     * add a payload modified
+     *
+     * @param callable $modifier modifier
+     * @return void
+     */
     public function addPayloadModifier(callable $modifier)
     {
         $this->userPayloadModifier->push($modifier);
     }
 
+    /**
+     * add response modifier
+     *
+     * @param callable $modifier modifier
+     * @return void
+     */
     public function addResponseModifier(callable $modifier)
     {
         $this->responseModifier->push($modifier);
@@ -53,7 +67,7 @@ readonly class BodyCheckData
     /**
      * returns all modified field paths
      *
-     * @return array
+     * @return string[] modified paths
      */
     public function getAllModifiedFields() : array
     {
@@ -73,7 +87,7 @@ readonly class BodyCheckData
      * for array fields, this is not really possible as we cannot access all indexes.
      * so the list produced helps more with matching that is modified.
      *
-     * @param array $pathList
+     * @param array $pathList path list
      * @return array
      */
     public function pathListToPatchFormat(array $pathList) : array
@@ -89,9 +103,9 @@ readonly class BodyCheckData
     /**
      * tells whether one list of jsonPatch fields is included in another list
      *
-     * @param array $list
-     * @param array $subList
-     * @return bool
+     * @param array $list    list
+     * @param array $subList sublist
+     * @return bool true if yes, false otherwise
      */
     public function isListIncludedInSublist(array $list, array $subList) : bool
     {

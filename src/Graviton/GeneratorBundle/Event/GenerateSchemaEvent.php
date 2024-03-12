@@ -29,7 +29,7 @@ final class GenerateSchemaEvent extends Event
     /**
      * adds a single openapi schema
      *
-     * @param array $schema
+     * @param array $schema schema
      *
      * @return void
      */
@@ -38,6 +38,11 @@ final class GenerateSchemaEvent extends Event
         $this->addedSchemas[] = $schema;
     }
 
+    /**
+     * gets additional schemas
+     *
+     * @return array schemas
+     */
     public function getAdditionalSchemas() : array
     {
         return $this->addedSchemas;

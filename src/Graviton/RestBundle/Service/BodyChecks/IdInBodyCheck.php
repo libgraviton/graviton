@@ -17,6 +17,13 @@ use Rs\Json\Patch;
 readonly class IdInBodyCheck extends BodyCheckerAbstract
 {
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     public function check(BodyCheckData $data): void
     {
         if (empty($data->existingId)) {
@@ -39,6 +46,7 @@ readonly class IdInBodyCheck extends BodyCheckerAbstract
                 $patch = new Patch($input, \json_encode($patchDocument));
                 $input = $patch->apply();
             } catch (\Throwable $t) {
+                /* probably already set */
             }
 
             return $request->withBody(Utils::streamFor($input));

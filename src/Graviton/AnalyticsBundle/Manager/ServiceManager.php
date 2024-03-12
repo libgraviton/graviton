@@ -36,6 +36,7 @@ readonly class ServiceManager
      * @param DateConverter    $dateConverter     date converter
      * @param Router           $router            To manage routing generation
      * @param array            $analyticsServices the services
+     * @param JsonMapper       $jsonMapper        json mapper
      */
     public function __construct(
         private RequestStack $requestStack,
@@ -117,6 +118,8 @@ readonly class ServiceManager
 
     /**
      * Will map and find data for defined route
+     *
+     * @param string $modelName model name
      *
      * @return array
      */

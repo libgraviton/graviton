@@ -18,6 +18,11 @@ class BodyCheckViolation extends \Exception
      */
     public string $propertyPath = '';
 
+    /**
+     * @param string          $message      message
+     * @param string          $propertyPath property path
+     * @param \Throwable|null $previous     previous
+     */
     public function __construct(string $message = "", string $propertyPath = '.', ?\Throwable $previous = null)
     {
         parent::__construct($message, 0, $previous);

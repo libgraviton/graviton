@@ -35,6 +35,8 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
 {
 
     /**
+     * constructor
+     *
      * @param Logger                   $logger                            logger
      * @param MessageProducerInterface $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface          $router                            Router dependency
@@ -49,6 +51,7 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
      * @param SecurityUtils            $securityUtils                     Security utils service
      * @param ?string                  $workerRelativeUrl                 backend url relative from the workers
      * @param array                    $transientHeaders                  headers to be included from request in event
+     * @param array                    $queueToSend                       private queue
      */
     public function __construct(
         private readonly LoggerInterface          $logger,
@@ -69,6 +72,11 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * gets events
+     *
+     * @return array[] events
+     */
     #[\Override] public static function getSubscribedEvents()
     {
         // return the subscribed events, their methods and priorities
@@ -172,7 +180,7 @@ class EventStatusLinkResponseListener implements EventSubscriberInterface
     /**
      * gets the event name
      *
-     * @param ModelEvent $event
+     * @param ModelEvent $event event
      * @return string
      */
     private function getDocumentEventName(ModelEvent $event) : string

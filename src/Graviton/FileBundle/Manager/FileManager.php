@@ -16,7 +16,6 @@ use League\Flysystem\Filesystem;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
-use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -28,11 +27,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 readonly class FileManager
 {
+
+    /**
+     * @param Filesystem   $fileSystem       filesystem
+     * @param RestUtils    $restUtils        rest utils
+     * @param Psr17Factory $psrFactory       psr factory
+     * @param array        $allowedMimeTypes allowed mime types
+     */
     public function __construct(
-        private Filesystem $fileSystem,
-        private RestUtils $restUtils,
-        private Psr17Factory $psr17Factory,
-        private array $allowedMimeTypes = []
+        private Filesystem   $fileSystem,
+        private RestUtils    $restUtils,
+        private Psr17Factory $psrFactory,
+        private array        $allowedMimeTypes = []
     ) {
     }
 
@@ -58,7 +64,7 @@ readonly class FileManager
             // json -> is body!
             $metadata = $part->getPartsByName('metadata');
             if (!empty($metadata[0])) {
-                $request = $request->withBody($this->psr17Factory->createStream($metadata[0]->getBody()));
+                $request = $request->withBody($this->psrFactory->createStream($metadata[0]->getBody()));
             }
 
             // file upload
@@ -66,8 +72,8 @@ readonly class FileManager
             if (!empty($upload[0])) {
                 $request = $request->withUploadedFiles(
                     [
-                        'upload' => $this->psr17Factory->createUploadedFile(
-                            $this->psr17Factory->createStream($upload[0]->getBody()),
+                        'upload' => $this->psrFactory->createUploadedFile(
+                            $this->psrFactory->createStream($upload[0]->getBody()),
                             clientFilename: $upload[0]->getFileName(),
                             clientMediaType: $upload[0]->getMimeType()
                         )
@@ -81,17 +87,17 @@ readonly class FileManager
             $parsedBody = $request->getParsedBody();
             if (is_array($parsedBody) && isset($parsedBody['metadata'])) {
                 $request = $request
-                    ->withBody($this->psr17Factory->createStream($parsedBody['metadata']))
+                    ->withBody($this->psrFactory->createStream($parsedBody['metadata']))
                     ->withParsedBody(null)
                     ->withAttribute('metadataBody', true);
             } else {
                 $request = $request->withUploadedFiles(
                     [
-                        'upload' => $this->psr17Factory->createUploadedFile(
+                        'upload' => $this->psrFactory->createUploadedFile(
                             $request->getBody()
                         )
                     ]
-                )->withBody($this->psr17Factory->createStream('{}'))
+                )->withBody($this->psrFactory->createStream('{}'))
                  ->withAttribute('metadataBody', true);
             }
         }
@@ -153,12 +159,12 @@ readonly class FileManager
     /**
      * Save or update a file
      *
-     * @param string $id       ID of file
-     * @param String $filepath path to the file to save
+     * @param File                  $file         file
+     * @param UploadedFileInterface $uploadedFile file
      *
      * @return void
      */
-    private function applyUploadMetadata(File $file, UploadedFileInterface $uploadedFile)
+    private function applyUploadMetadata(File $file, UploadedFileInterface $uploadedFile) : void
     {
         $fileResource = $uploadedFile->getStream()->detach();
 
@@ -213,7 +219,17 @@ readonly class FileManager
         $this->fileSystem->writeStream($file->getId(), $fileResource);
     }
 
-    public function getFileInstance(ServerRequestInterface $request, DocumentModel $model, ?string $id = null) : object
+    /**
+     * gets a consolidated File instance of the new and existing one
+     *
+     * @param ServerRequestInterface $request request
+     * @param DocumentModel          $model   model
+     * @param string|null            $id      record id
+     *
+     * @return File file
+     * @throws \Exception
+     */
+    public function getFileInstance(ServerRequestInterface $request, DocumentModel $model, ?string $id = null) : File
     {
         $payload = (string) $request->getBody();
         if (empty($payload)) {
@@ -249,6 +265,7 @@ readonly class FileManager
                     $payload = \json_encode($payload);
                 }
             } catch (\Throwable $t) {
+                /* not tragic */
             }
         }
 
@@ -276,6 +293,11 @@ readonly class FileManager
         return $file;
     }
 
+    /**
+     * gets a random record id for files
+     *
+     * @return string record id
+     */
     private function getRecordId() : string
     {
         return str_repeat(str_replace('.', '', uniqid('', true)), 2);
@@ -288,7 +310,7 @@ readonly class FileManager
      *
      * @return void
      */
-    public function remove($id)
+    public function remove($id): void
     {
         if ($this->fileSystem->fileExists($id)) {
             $this->fileSystem->delete($id);

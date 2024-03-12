@@ -50,6 +50,11 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new RestrictionListenerCompilerPass());
     }
 
+    /**
+     * boot hook
+     *
+     * @return void
+     */
     public function boot()
     {
         // add schema format validator

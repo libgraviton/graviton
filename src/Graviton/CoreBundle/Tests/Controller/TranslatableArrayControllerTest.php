@@ -160,6 +160,9 @@ class TranslatableArrayControllerTest extends RestTestCase
     /**
      * Test validation
      *
+     * @param array   $data          data
+     * @param ?string $complainField complain field
+     *
      * @return void
      */
     #[DataProvider("validationDataProvider")]

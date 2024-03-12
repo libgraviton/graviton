@@ -39,8 +39,7 @@ class GenerateDynamicBundleTest extends GravitonTestCase
     {
         $loaderDouble = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\Loader\\LoaderInterface')
             ->disableOriginalConstructor()
-            ->onlyMethods(['load'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $definitions = [
             Utils::getJsonDefinition(__DIR__ . '/Resources/Definition/TestA.json'),
@@ -58,14 +57,14 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $fieldMapper->addMapper(new ResourceGenerator\FieldTitleMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldHiddenRestrictionMapper());
 
-        $i18nUtils = new I18nUtils('en', 'en,de,fr');
+        $intUtils = new I18nUtils('en', 'en,de,fr');
 
         $bundleGenerator = new BundleGenerator();
         $bundleGenerator->setExposeSyntheticMap(null);
 
         $schemaBuilder = new SchemaBuilder();
 
-        $i18nUtils = new I18nUtils('de', 'en,de,fr,it');
+        $intUtils = new I18nUtils('de', 'en,de,fr,it');
 
         $eventDispatcher = $this->getMockForAbstractClass(EventDispatcherInterface::class);
         $eventDispatcher->method('dispatch')->willReturn(new GenerateSchemaEvent());
@@ -73,12 +72,12 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $schemaGenerator = new SchemaGenerator();
         $schemaGenerator->setVersionInformation(['self' => 'testing']);
         $schemaGenerator->setSchemaBuilder($schemaBuilder);
-        $schemaGenerator->setI18nUtils($i18nUtils);
+        $schemaGenerator->setIntUtils($intUtils);
         $schemaGenerator->setEventDispatcher($eventDispatcher);
 
         $resourceGenerator = new ResourceGenerator(
             new Filesystem(),
-            $i18nUtils,
+            $intUtils,
             $fieldMapper,
             new ResourceGenerator\ParameterBuilder(),
             $schemaGenerator

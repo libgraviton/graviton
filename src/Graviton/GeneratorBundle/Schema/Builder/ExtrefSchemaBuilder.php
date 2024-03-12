@@ -13,18 +13,8 @@ use Symfony\Component\Routing\Router;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtrefSchemaBuilder implements SchemaBuilderInterface
+readonly class ExtrefSchemaBuilder implements SchemaBuilderInterface
 {
-
-    /**
-     * @var Router
-     */
-    private Router $router;
-
-    public function __construct(Router $router)
-    {
-        $this->router = $router;
-    }
 
     /**
      * gives the SchemaBuilder the opportunity to alter the json schema for that field.

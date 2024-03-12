@@ -124,6 +124,10 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @dataProvider emptyFieldsDataProvider
      *
+     * @param array   $changes            changes
+     * @param int     $expectedCode       exp code
+     * @param ?string $expectedErrorField exp error field
+     *
      * @return void
      */
     public function testEmptyAllFields(array $changes, int $expectedCode, ?string $expectedErrorField)

@@ -16,6 +16,13 @@ use Rs\Json\Pointer;
 readonly class IncrementalDateBodyCheck extends BodyCheckerAbstract
 {
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     public function check(BodyCheckData $data): void
     {
         if (empty($data->jsonExisting)) {
@@ -43,6 +50,15 @@ readonly class IncrementalDateBodyCheck extends BodyCheckerAbstract
         }
     }
 
+    /**
+     * compares two fields
+     *
+     * @param string  $fieldPath field path
+     * @param Pointer $payload   payload
+     * @param Pointer $existing  existing
+     * @return void
+     * @throws BodyCheckViolation
+     */
     private function compareTwoFields(string $fieldPath, Pointer $payload, Pointer $existing)
     {
         $existingDate = null;

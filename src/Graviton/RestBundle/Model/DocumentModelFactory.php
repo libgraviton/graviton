@@ -19,6 +19,15 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 readonly class DocumentModelFactory
 {
 
+    /**
+     * constructor.
+     *
+     * @param QueryService             $queryService    query service
+     * @param EventDispatcherInterface $eventDispatcher dispatcher
+     * @param RestUtils                $restUtils       rest utils
+     * @param SecurityUtils            $securityUtils   security utils
+     * @param DocumentManager          $documentManager doc manager
+     */
     public function __construct(
         private QueryService $queryService,
         private EventDispatcherInterface $eventDispatcher,
@@ -28,6 +37,14 @@ readonly class DocumentModelFactory
     ) {
     }
 
+    /**
+     * create a DocumentModel
+     *
+     * @param string $schemaPath        path to schema file
+     * @param string $runtimeDefFile    path to rd file
+     * @param string $documentClassName class name
+     * @return DocumentModel model
+     */
     public function createInstance(
         string $schemaPath,
         string $runtimeDefFile,

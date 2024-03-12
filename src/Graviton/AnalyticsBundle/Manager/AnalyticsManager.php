@@ -27,10 +27,11 @@ readonly class AnalyticsManager
 
     /**
      * AnalyticsManager constructor.
-     * @param DocumentManager          $documentManager Db manager and query control
-     * @param string                   $databaseName    Db string name
-     * @param DateConverter            $dateConverter   date converter
-     * @param EventDispatcherInterface $eventDispatcher event dispatcher
+     * @param DocumentManager          $documentManager  Db manager and query control
+     * @param string                   $databaseName     Db string name
+     * @param DateConverter            $dateConverter    date converter
+     * @param EventDispatcherInterface $eventDispatcher  event dispatcher
+     * @param array                    $aggregateOptions options
      */
     public function __construct(
         private DocumentManager $documentManager,

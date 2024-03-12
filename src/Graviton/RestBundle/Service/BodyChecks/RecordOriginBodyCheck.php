@@ -16,10 +16,21 @@ use Symfony\Component\HttpFoundation\Request;
 readonly class RecordOriginBodyCheck extends BodyCheckerAbstract
 {
 
+    /**
+     * @param string $recordOriginField     which field is the record origin field
+     * @param array  $recordOriginBlacklist forbidden values
+     */
     public function __construct(private string $recordOriginField, private array $recordOriginBlacklist)
     {
     }
 
+    /**
+     * checks the body
+     *
+     * @param BodyCheckData $data data
+     *
+     * @return void
+     */
     public function check(BodyCheckData $data): void
     {
         if (empty($data->jsonExisting)) {
