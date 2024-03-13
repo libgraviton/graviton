@@ -75,7 +75,7 @@ jobs:
 
       - name: Run tests
         run: |
-          php -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~vendor~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
+          php -dpcov.directory=${PWD}/src/Graviton -dpcov.exclude="~[vendor|GeneratorBundle]~" vendor/bin/phpunit --coverage-clover ${PWD}/coverage.clover --log-junit ${PWD}/phpunit_junit.xml
 
       - name: Upload Coveralls coverage
         run: |

@@ -50,7 +50,7 @@ class SimpleExtrefControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/testcase/simpleextref/', $data);
-        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
-        $this->assertEmpty($client->getResults());
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertNotEmpty($client->getResults());
     }
 }

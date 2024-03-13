@@ -361,7 +361,7 @@ class ShowcaseControllerTest extends RestTestCase
         // fix both
         $payload->nestedApps = [
             (object) ['$ref' => '/core/app/name'],
-            (object) ['$ref' => 'http://full-path:port/core/app/name2']
+            (object) ['$ref' => 'http://full-path:22/core/app/name2']
         ];
 
         $client->post('/hans/showcase', $payload);
