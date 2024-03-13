@@ -19,12 +19,12 @@
       <directory>src/Graviton/**</directory>
     </include>
     <exclude>
-      <directory>**/Tests/**</directory>
+      <!-- no need to try to bump up coverage of GeneratorBundle -->
+      <directory>**/GeneratorBundle/**</directory>
       <directory>**/Exception/**</directory>
       <directory>**/Composer/**</directory>
       <directory>**/Resources/**</directory>
       <directory>**/*Bundle.php</directory>
-      <directory>**/TestBundle/**</directory>
     </exclude>
   </source>
 </phpunit>
