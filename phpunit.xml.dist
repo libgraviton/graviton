@@ -14,17 +14,23 @@
     <!--<env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>-->
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
   </php>
+  <coverage includeUncoveredFiles="false"
+            pathCoverage="false"
+            ignoreDeprecatedCodeUnits="true"
+            disableCodeCoverageIgnore="false">
+  </coverage>
   <source>
     <include>
       <directory>src/Graviton/**</directory>
     </include>
     <exclude>
       <!-- no need to try to bump up coverage of GeneratorBundle -->
-      <directory>**/GeneratorBundle/**</directory>
+      <directory>src/Graviton/GeneratorBundle/**</directory>
+      <directory>src/Graviton/GeneratorBundle/*</directory>
       <directory>**/Exception/**</directory>
       <directory>**/Composer/**</directory>
       <directory>**/Resources/**</directory>
-      <directory>**/*Bundle.php</directory>
+      <directory suffix="Bundle.php">src/Graviton/**</directory>
     </exclude>
   </source>
 </phpunit>
