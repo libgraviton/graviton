@@ -515,17 +515,21 @@ class ResourceGenerator extends AbstractGenerator
             $repoName,
             null,
             [],
-            null,
-            array(
-                array(
+            [
+                [
+                    'name' => 'graviton.document.repository',
+                    'key' => $documentName
+                ]
+            ],
+            [
+                [
                     'type' => 'string',
                     'value' => $documentName
-                )
-            ),
+                ]
+            ],
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\Repository\DocumentRepository',
-            true
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
 
         // are there any rest listeners defined?
@@ -875,7 +879,12 @@ class ResourceGenerator extends AbstractGenerator
                 $paramName,
                 null,
                 [],
-                null,
+                [
+                    [
+                        'name' => 'graviton.document.model',
+                        'key' => $documentClassName
+                    ]
+                ],
                 [
                     [
                         'type' => 'string',
@@ -895,29 +904,6 @@ class ResourceGenerator extends AbstractGenerator
                 'Graviton\RestBundle\Model\DocumentModel'
             );
         }
-
-        /*
-        $this->addService(
-            $paramName . 'embedded',
-            'graviton.rest.model',
-            [],
-            arguments: [
-                [
-                    'type' => 'string',
-                    'value' => '@=service(\'kernel\').locateResource(\'@'.$parameters['bundle'].
-                        '/Resources/config/schema/openapi.json\')'
-                ],
-                [
-                    'type' => 'string',
-                    'value' => $documentClassName.'Embedded'
-                ],
-                [
-                    'value' => '@doctrine_mongodb.odm.default_document_manager'
-                ]
-            ],
-            className: 'Graviton\RestBundle\Model\DocumentModel',
-            public: true
-        ); */
     }
 
     /**
@@ -971,8 +957,7 @@ class ResourceGenerator extends AbstractGenerator
             $parameters['parent'],
             $controllerCalls,
             ['graviton.rest', 'controller.service_arguments'],
-            className: $baseController,
-            public: true
+            className: $baseController
         );
     }
 

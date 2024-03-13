@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-readonly class DocumentModel
+class DocumentModel
 {
 
     /**
@@ -39,15 +39,15 @@ readonly class DocumentModel
      */
     public function __construct(
         // common stuff
-        private QueryService $queryService,
-        protected EventDispatcherInterface $eventDispatcher,
-        private RestUtils $restUtils,
-        private SecurityUtils $securityUtils,
-        protected DocumentManager $documentManager,
+        private readonly QueryService $queryService,
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RestUtils $restUtils,
+        private readonly SecurityUtils $securityUtils,
+        protected readonly DocumentManager $documentManager,
         // model specific stuff
-        private string $schemaPath,
-        private string $runtimeDefFile,
-        private string $documentClassName
+        private readonly string $schemaPath,
+        private readonly string $runtimeDefFile,
+        private readonly string $documentClassName
     ) {
     }
 

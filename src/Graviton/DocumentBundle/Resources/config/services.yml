@@ -44,7 +44,7 @@ services:
   Graviton\DocumentBundle\Listener\ExtReferenceSearchListener:
     arguments:
       - '@Graviton\DocumentBundle\Service\ExtReferenceConverter'
-      - "%graviton.document.extref.fields%"
+      - '@Graviton\RestBundle\Service\RestServiceLocator'
     tags:
       - name: kernel.event_listener
         event: rql.visit.node

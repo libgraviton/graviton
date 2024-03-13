@@ -29,6 +29,11 @@ class RuntimeDefinition
     private array $incrementalDateFields = [];
 
     /**
+     * @var string[]
+     */
+    private array $extRefFields = [];
+
+    /**
      * @var array[string, string]
      */
     private array $restEventNames = [];
@@ -107,6 +112,28 @@ class RuntimeDefinition
     public function setIncrementalDateFields(array $incrementalDateFields): void
     {
         $this->incrementalDateFields = $incrementalDateFields;
+    }
+
+    /**
+     * getExtRefFields
+     *
+     * @return array fields
+     */
+    public function getExtRefFields(): array
+    {
+        return $this->extRefFields;
+    }
+
+    /**
+     * setExtRefFields
+     *
+     * @param array $extRefFields fields
+     *
+     * @return void
+     */
+    public function setExtRefFields(array $extRefFields): void
+    {
+        $this->extRefFields = $extRefFields;
     }
 
     /**

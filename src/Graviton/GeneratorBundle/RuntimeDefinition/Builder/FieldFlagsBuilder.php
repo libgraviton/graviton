@@ -31,6 +31,7 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
         $recordOriginExceptionFields = [];
         $readOnlyFields = [];
         $incrementalDateFields = [];
+        $extRefFields = [];
 
         foreach ($fields as $path => $field) {
             if (isset($field->{'x-recordOriginException'}) && $field->{'x-recordOriginException'} === true) {
@@ -44,10 +45,15 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
             if (isset($field->{'x-incrementalDate'}) && $field->{'x-incrementalDate'} === true) {
                 $incrementalDateFields[] = $path;
             }
+
+            if (isset($field->{'format'}) && $field->{'format'} == 'extref') {
+                $extRefFields[] = $path;
+            }
         }
 
         $data->runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
         $data->runtimeDefinition->setReadOnlyFields($readOnlyFields);
         $data->runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
+        $data->runtimeDefinition->setExtRefFields($extRefFields);
     }
 }

@@ -277,6 +277,31 @@ class ModuleControllerTest extends RestTestCase
     public static function findByAppRefProvider(): array
     {
         return [
+            'cat in array 1' => [
+                'categories..$ref',
+                'http://localhost/core/app',
+                0
+            ],
+            'cat in array 2' => [
+                'categories..$ref',
+                'http://localhost/core/app/admin',
+                1
+            ],
+            'cat in array 3' => [
+                'categories.0.$ref',
+                'http://localhost/core/app/admin',
+                1
+            ],
+            'cat in array 4' => [
+                'categories.0.$ref',
+                'http://localhost/core/app/admin2',
+                1
+            ],
+            'cat in array 5' => [
+                'categories.0.$ref',
+                'http://localhost/core/app/BUBI',
+                0
+            ],
             'find all tablet records' => [
                 'app.$ref',
                 'http://localhost/core/app/tablet',
@@ -296,7 +321,7 @@ class ModuleControllerTest extends RestTestCase
                 'app.$ref',
                 'http://localhost/core/app',
                 0
-            ],
+            ]
         ];
     }
 

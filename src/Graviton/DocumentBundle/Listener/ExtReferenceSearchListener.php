@@ -12,6 +12,8 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
+use Graviton\RestBundle\Model\RuntimeDefinition;
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
@@ -29,9 +31,9 @@ readonly class ExtReferenceSearchListener
      * construct
      *
      * @param ExtReferenceConverter $converter Extref converter
-     * @param array                 $fields    map of fields to process
+     * @param RestServiceLocator    $locator   service locator
      */
-    public function __construct(private ExtReferenceConverter $converter, private array $fields)
+    public function __construct(private ExtReferenceConverter $converter, private RestServiceLocator $locator)
     {
     }
 
@@ -42,13 +44,25 @@ readonly class ExtReferenceSearchListener
      */
     public function onVisitNode(VisitNodeEvent $event)
     {
+        $model = $this->locator->getDocumentModel($event->getClassName());
+        if (is_null($model)) {
+            return $event;
+        }
+
+        $runtimeDef = $model->getRuntimeDefinition();
+
+        // no extref fields?
+        if (empty($runtimeDef->getExtRefFields())) {
+            return $event;
+        }
+
         $node = $event->getNode();
-        $documentClassName = $event->getClassName();
+
         if ($node instanceof AbstractScalarOperatorNode &&
-            $this->isExtrefField($documentClassName, $node->getField(), $event->getContext())) {
+            $this->isExtrefField($runtimeDef, $node->getField(), $event->getContext())) {
             $event->setNode($this->processScalarNode($node));
         } elseif ($node instanceof AbstractArrayOperatorNode &&
-            $this->isExtrefField($documentClassName, $node->getField(), $event->getContext())) {
+            $this->isExtrefField($runtimeDef, $node->getField(), $event->getContext())) {
             $event->setNode($this->processArrayNode($node));
         }
 
@@ -86,12 +100,12 @@ readonly class ExtReferenceSearchListener
      *
      * @param string $url Extref URL representation
      *
-     * @return \Graviton\DocumentBundle\Entity\ExtReference extref
+     * @return array extref as json
      */
-    private function getDbRefValue($url)
+    private function getDbRefValue($url) : array
     {
         if (empty($url)) {
-            return null;
+            return [];
         }
 
         try {
@@ -105,17 +119,13 @@ readonly class ExtReferenceSearchListener
     /**
      * Get document field name by query name
      *
-     * @param string    $documentClassName document class name
-     * @param string    $searchName        Exposed field name from RQL query
-     * @param \SplStack $nodeContext       Current node context
+     * @param RuntimeDefinition $runtimeDefinition runtime def
+     * @param string            $searchName        Exposed field name from RQL query
+     * @param \SplStack         $nodeContext       Current node context
      * @return bool
      */
-    private function isExtrefField(string $documentClassName, string $searchName, \SplStack $nodeContext)
+    private function isExtrefField(RuntimeDefinition $runtimeDefinition, string $searchName, \SplStack $nodeContext)
     {
-        if (!isset($this->fields[$documentClassName])) {
-            throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $documentClassName));
-        }
-
         $fieldName = $searchName;
         foreach ($nodeContext as $parentNode) {
             if ($parentNode instanceof ElemMatchNode) {
@@ -125,7 +135,7 @@ readonly class ExtReferenceSearchListener
 
         return in_array(
             strtr($fieldName, ['..' => '.0.']),
-            $this->fields[$documentClassName],
+            $runtimeDefinition->getExtRefFields(),
             true
         );
     }

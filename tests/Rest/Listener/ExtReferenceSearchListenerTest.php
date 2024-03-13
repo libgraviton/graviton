@@ -8,11 +8,15 @@ namespace Graviton\Tests\Rest\Listener;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\RuntimeDefinition;
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Graviton\RqlParser\Node\Query\ArrayOperator\InNode;
 use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -44,9 +48,24 @@ class ExtReferenceSearchListenerTest extends TestCase
      * @param array $fields Field mapping
      * @return ExtReferenceSearchListener
      */
-    private function createListener(array $fields)
+    private function createListener(array $fields) : ExtReferenceSearchListener
     {
-        return new ExtReferenceSearchListener($this->converter, $fields);
+        $runtimeDef = new RuntimeDefinition();
+        $runtimeDef->setExtRefFields($fields);
+
+        $container = $this->createStub(ContainerInterface::class);
+        $container->method('has')->willReturn(true);
+        $container->method('has')->willReturn(true);
+
+        $model = $this->createStub(DocumentModel::class);
+        $model->method('getRuntimeDefinition')->willReturn($runtimeDef);
+
+
+
+        $locator = $this->createStub(RestServiceLocator::class);
+        $locator->method('getDocumentModel')->willReturn($model);
+
+        return new ExtReferenceSearchListener($this->converter, $locator);
     }
 
     /**
@@ -77,14 +96,12 @@ class ExtReferenceSearchListenerTest extends TestCase
     }
 
     /**
-     * Test ExtReferenceSearchListener::onVisitNode() with not mapped route
+     * Test ExtReferenceSearchListener::onVisitNode() with not mapped field
      *
      * @return void
      */
-    public function testOnVisitNodeWithNotMappedRoute()
+    public function testOnVisitNodeWithNotMappedField()
     {
-        $this->expectException(\LogicException::class);
-
         $extrefMapping = [];
 
         $this->converter->expects($this->never())
@@ -93,37 +110,7 @@ class ExtReferenceSearchListenerTest extends TestCase
         $node = $this->getMockBuilder('Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode')
             ->disableOriginalConstructor()
             ->getMock();
-        $node->expects($this->once())
-            ->method('getField')
-            ->willReturn('field');
         $node->expects($this->never())
-            ->method('getValue');
-
-        $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
-        $listener = $this->createListener($extrefMapping);
-        $listener->onVisitNode($event);
-    }
-
-    /**
-     * Test ExtReferenceSearchListener::onVisitNode() with not mapped field
-     *
-     * @return void
-     */
-    public function testOnVisitNodeWithNotMappedField()
-    {
-        $extrefMapping = ['Hans\Document\Class' => []];
-
-        $this->converter->expects($this->never())
-            ->method('getExtReference');
-
-        $node = $this->getMockBuilder('Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $node->expects($this->once())
             ->method('getField')
             ->willReturn('field');
         $node->expects($this->never())
@@ -148,7 +135,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithMappedScalarField()
     {
-        $extrefMapping = ['Hans\Document\Class' => ['field']];
+        $extrefMapping = ['field'];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
         $dbRefValue = $extrefValue->jsonSerialize();
@@ -184,7 +171,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithMappedArrayField()
     {
-        $extrefMapping = ['Hans\Document\Class' => ['field.0.$ref']];
+        $extrefMapping = ['field.0.$ref'];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
         $dbRefValue = $extrefValue->jsonSerialize();
@@ -220,7 +207,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithInvalidExtref()
     {
-        $extrefMapping = ['Hans\Document\Class' => ['field']];
+        $extrefMapping = ['field'];
         $extrefUrl = 'extref.url';
 
         $this->converter->expects($this->once())
@@ -255,7 +242,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithContext()
     {
-        $extrefMapping = ['Hans\Document\Class' => ['array.0.field.$ref']];
+        $extrefMapping = ['array.0.field.$ref'];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
         $dbRefValue = $extrefValue->jsonSerialize();

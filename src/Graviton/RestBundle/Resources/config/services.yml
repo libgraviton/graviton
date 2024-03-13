@@ -149,6 +149,11 @@ services:
           - "%graviton.rest.calculate_total_record_count%"
           - "%graviton.rest.total_count_enable_header_name%"
 
+    Graviton\RestBundle\Service\RestServiceLocator:
+      arguments:
+        - !tagged_locator { tag: 'graviton.document.model', index_by: 'key'}
+        - !tagged_locator { tag: 'graviton.document.repository', index_by: 'key'}
+
     Graviton\RestBundle\Listener\ContentLanguageResponseListener:
       arguments:
         - '@Graviton\RestBundle\Service\I18nUtils'
