@@ -49,12 +49,15 @@ abstract class RuntimeDefinitionBuilderAbstract
      *
      * @return Schema[] all fields
      */
-    public function getAllFields(Schema $schema, string $prefix = '') : array
+    public function getAllFields(Schema $schema, string $prefix = '', string $internalPrefix = '') : array
     {
         $fields = [];
 
         if (!empty($prefix)) {
             $prefix .= '.';
+        }
+        if (!empty($internalPrefix)) {
+            $internalPrefix .= '.';
         }
 
         if (empty($schema->properties) && $schema->additionalProperties === true) {
@@ -62,6 +65,11 @@ abstract class RuntimeDefinitionBuilderAbstract
             if (str_ends_with($prefix, '.')) {
                 $prefix = substr($prefix, 0, -1);
             }
+            if (str_ends_with($internalPrefix, '.')) {
+                $internalPrefix = substr($internalPrefix, 0, -1);
+            }
+
+            $schema->{'x-full-name-internal'} = $internalPrefix;
 
             return [
                 $prefix => $schema,
@@ -70,19 +78,28 @@ abstract class RuntimeDefinitionBuilderAbstract
         }
 
         foreach ($schema->properties as $fieldName => $property) {
+
+            if ($fieldName == '$deep') {
+                $hans = 3;
+            }
+
+            $internalFieldName = !empty($property->{'x-internal-name'}) ? $property->{'x-internal-name'} : $fieldName;
+
             if ($property->type == 'object') {
-                $fields += $this->getAllFields($property, $prefix.$fieldName);
+                $fields += $this->getAllFields($property, $prefix.$fieldName, $internalPrefix.$internalFieldName);
             } elseif ($property->type == 'array') {
                 if (is_array($property->items)) {
                     foreach ($property->items as $item) {
-                        $fields += $this->getAllFields($item, $prefix.$fieldName.'.0');
+                        $fields += $this->getAllFields($item, $prefix.$fieldName.'.0', $internalPrefix.$internalFieldName.'.0');
                     }
                 } elseif (is_string($property->items->type) && $property->items->type == 'object') {
-                    $fields += $this->getAllFields($property->items, $prefix.$fieldName.'.0');
+                    $fields += $this->getAllFields($property->items, $prefix.$fieldName.'.0', $internalPrefix.$internalFieldName.'.0');
                 } elseif (is_string($property->items->type)) {
+                    $property->{'x-full-name-internal'} = $internalPrefix.$internalFieldName.'.0';
                     $fields[$prefix.$fieldName.'.0'] = $property;
                 }
             } else {
+                $property->{'x-full-name-internal'} = $internalPrefix.$internalFieldName;
                 $fields[$prefix.$fieldName] = $property;
             }
         }

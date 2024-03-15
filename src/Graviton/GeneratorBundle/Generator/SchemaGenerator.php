@@ -190,6 +190,11 @@ class SchemaGenerator extends AbstractGenerator
                 $fieldDefinition['pattern'] = $field['valuePattern'];
             }
 
+            // different expose name? store original!
+            if ($field['exposedName'] != $field['name']) {
+                $fieldDefinition['x-internal-name'] = $field['name'];
+            }
+
             $fieldDefinition = $this->schemaBuilder->buildSchema(
                 $fieldDefinition,
                 $field,

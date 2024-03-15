@@ -5,6 +5,8 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
+use Graviton\RestBundle\Model\RuntimeDefinition;
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Graviton\RqlParser\Node\Query\AbstractComparisonOperatorNode;
@@ -22,7 +24,7 @@ readonly class FieldNameSearchListener
      *
      * @param array $fields Fields mapping
      */
-    public function __construct(private array $fields)
+    public function __construct(private array $fields, private readonly RestServiceLocator $locator)
     {
     }
 
@@ -33,12 +35,17 @@ readonly class FieldNameSearchListener
      */
     public function onVisitNode(VisitNodeEvent $event)
     {
+        $model = $this->locator->getDocumentModel($event->getClassName());
+        if (is_null($model)) {
+            return $event;
+        }
+
         $node = $event->getNode();
         if (!$node instanceof AbstractComparisonOperatorNode) {
             return $event;
         }
 
-        $fieldName = $this->getDocumentFieldName($event->getClassName(), $node->getField(), $event->getContext());
+        $fieldName = $this->getDocumentFieldName($model->getRuntimeDefinition()->getExposeAsMap(), $event->getClassName(), $node->getField(), $event->getContext());
         if ($fieldName === false) {
             return $event;
         }
@@ -58,7 +65,7 @@ readonly class FieldNameSearchListener
      *
      * @return string|bool Field name or FALSE
      */
-    private function getDocumentFieldName($className, $searchName, \SplStack $nodeContext)
+    private function getDocumentFieldName(array $fields, $className, $searchName, \SplStack $nodeContext)
     {
         if (!isset($this->fields[$className])) {
             throw new \LogicException(sprintf('No field mapping found for class "%s"', $className));
@@ -75,7 +82,10 @@ readonly class FieldNameSearchListener
         $fieldName = strtr($fieldName, ['..' => '.0.']);
         $fieldPrefix = strtr($fieldPrefix, ['..' => '.0.']);
 
+        $otherFiels = $this->fields[$className];
+
         $documentField = array_search($fieldName, $this->fields[$className], true);
+        $documentField2 = array_search($fieldName, $fields, true);
         if ($documentField === false) {
             return false;
         }
@@ -84,6 +94,7 @@ readonly class FieldNameSearchListener
         }
 
         $documentPrefix = array_search(rtrim($fieldPrefix, '.'), $this->fields[$className], true);
+        $documentPrefix2 = array_search(rtrim($fieldPrefix, '.'), $fields, true);
         if ($documentPrefix === false) {
             return false;
         }

@@ -24,7 +24,6 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
      */
     public function build(RuntimeBuilderData $data) : void
     {
-
         $baseSchema = $this->getSchemaBaseObject($data->definition, $data->schemaFile);
         $fields = $this->getAllFields($baseSchema);
 
@@ -32,6 +31,7 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
         $readOnlyFields = [];
         $incrementalDateFields = [];
         $extRefFields = [];
+        $exposeAsMap = [];
 
         foreach ($fields as $path => $field) {
             if (isset($field->{'x-recordOriginException'}) && $field->{'x-recordOriginException'} === true) {
@@ -49,11 +49,17 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
             if (isset($field->{'format'}) && $field->{'format'} == 'extref') {
                 $extRefFields[] = $path;
             }
+
+            // different names?
+            if (!empty($field->{'x-full-name-internal'}) && $field->{'x-full-name-internal'} != $path) {
+                $exposeAsMap[$path] = $field->{'x-full-name-internal'};
+            }
         }
 
         $data->runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
         $data->runtimeDefinition->setReadOnlyFields($readOnlyFields);
         $data->runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
         $data->runtimeDefinition->setExtRefFields($extRefFields);
+        $data->runtimeDefinition->setExposeAsMap($exposeAsMap);
     }
 }
