@@ -93,6 +93,8 @@ readonly class FieldNameSearchListener
             return $documentField;
         }
 
+        $oneFields = $this->fields[$className];
+
         $documentPrefix = array_search(rtrim($fieldPrefix, '.'), $this->fields[$className], true);
         $documentPrefix2 = array_search(rtrim($fieldPrefix, '.'), $fields, true);
         if ($documentPrefix === false) {

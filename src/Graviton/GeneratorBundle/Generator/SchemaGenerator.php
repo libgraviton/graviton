@@ -203,7 +203,15 @@ class SchemaGenerator extends AbstractGenerator
 
             // if full ref, pass as-is
             if (!empty($fieldDefinition['$ref'])) {
-                $thisSchema['properties'][$fieldName] = ['$ref' => $fieldDefinition['$ref']];
+                // transport x-attributes
+                $refObj = ['$ref' => $fieldDefinition['$ref']];
+                foreach ($fieldDefinition as $prop => $val) {
+                    if (str_starts_with($prop, 'x-')) {
+                        $refObj[$prop] = $val;
+                    }
+                }
+
+                $thisSchema['properties'][$fieldName] = $refObj;
                 continue;
             }
 

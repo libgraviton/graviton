@@ -70,6 +70,7 @@ abstract class RuntimeDefinitionBuilderAbstract
             }
 
             $schema->{'x-full-name-internal'} = $internalPrefix;
+            $schema->{'x-full-name-external'} = $prefix;
 
             return [
                 $prefix => $schema,
@@ -78,11 +79,6 @@ abstract class RuntimeDefinitionBuilderAbstract
         }
 
         foreach ($schema->properties as $fieldName => $property) {
-
-            if ($fieldName == '$deep') {
-                $hans = 3;
-            }
-
             $internalFieldName = !empty($property->{'x-internal-name'}) ? $property->{'x-internal-name'} : $fieldName;
 
             if ($property->type == 'object') {
@@ -95,10 +91,12 @@ abstract class RuntimeDefinitionBuilderAbstract
                 } elseif (is_string($property->items->type) && $property->items->type == 'object') {
                     $fields += $this->getAllFields($property->items, $prefix.$fieldName.'.0', $internalPrefix.$internalFieldName.'.0');
                 } elseif (is_string($property->items->type)) {
+                    $property->{'x-full-name-external'} = $prefix.$fieldName.'.0';
                     $property->{'x-full-name-internal'} = $internalPrefix.$internalFieldName.'.0';
                     $fields[$prefix.$fieldName.'.0'] = $property;
                 }
             } else {
+                $property->{'x-full-name-external'} = $prefix.$fieldName;
                 $property->{'x-full-name-internal'} = $internalPrefix.$internalFieldName;
                 $fields[$prefix.$fieldName] = $property;
             }
