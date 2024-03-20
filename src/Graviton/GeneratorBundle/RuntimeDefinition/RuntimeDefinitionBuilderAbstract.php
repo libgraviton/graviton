@@ -9,6 +9,7 @@ use cebe\openapi\Reader;
 use cebe\openapi\spec\Schema;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\RuntimeDefinition\Builder\RuntimeBuilderData;
+use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -37,8 +38,9 @@ abstract class RuntimeDefinitionBuilderAbstract
      */
     public function getSchemaBaseObject(JsonDefinition $definition, SplFileInfo $schemaFile) : Schema
     {
+        $entityName = SchemaBuilder::getSchemaEntityName($definition->getId(), $definition->getNamespace());
         $schema = Reader::readFromJsonFile($schemaFile->getPathname());
-        return $schema->components->schemas[$definition->getId()];
+        return $schema->components->schemas[$entityName];
     }
 
     /**

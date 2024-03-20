@@ -231,18 +231,20 @@ class SchemaGenerator extends AbstractGenerator
 
         $thisSchema['additionalProperties'] = false;
 
+        $entityName = SchemaBuilder::getSchemaEntityName($parameters['document'], $parameters['json']->getNamespace());
+
         // already set?
-        if (isset($schema['components']['schemas'][$parameters['document']])) {
+        if (isset($schema['components']['schemas'][$entityName])) {
             throw new \RuntimeException(
                 sprintf(
                     'Schema object "%s" already exists, will not overwrite. Name collision for file %s.',
-                    $parameters['document'],
+                    $entityName,
                     $targetFile
                 )
             );
         }
 
-        $schema['components']['schemas'][$parameters['document']] = $thisSchema;
+        $schema['components']['schemas'][$entityName] = $thisSchema;
 
         if (!$isSubResource) {
             $schema = $this->writePaths($schema, $parameters);
@@ -278,10 +280,6 @@ class SchemaGenerator extends AbstractGenerator
 
         // this is the resource name!
         $docName = $parameters['document'];
-
-        if ($docName == 'NewEmbedHashTest') {
-            $hans = 3;
-        }
 
         $writeResponses = [
             201 => [
@@ -471,6 +469,7 @@ class SchemaGenerator extends AbstractGenerator
             ->files()
             ->in($directories)
             ->path('config/schema')
+            ->sortByName()
             ->name(['openapi.tmp.json', 'openapi.yaml']); // ending in .tmp!
 
         $mainFile = $this->getSchema($targetFile, 'Graviton');

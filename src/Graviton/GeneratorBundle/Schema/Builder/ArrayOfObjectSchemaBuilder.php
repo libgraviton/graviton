@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Schema\Builder;
 
+use Graviton\GeneratorBundle\Schema\SchemaBuilder;
 use Graviton\GeneratorBundle\Schema\SchemaBuilderInterface;
 
 /**
@@ -41,9 +42,11 @@ class ArrayOfObjectSchemaBuilder implements SchemaBuilderInterface
         }
 
         if (str_starts_with($type, 'class:')) {
-            $className = explode('\\', $type);
-            $shortClassName = array_pop($className);
-            $type = '#/components/schemas/'.$shortClassName;
+            // and take the 2nd one, the bundle name
+            $type = sprintf(
+                '#/components/schemas/%s',
+                SchemaBuilder::getSchemaEntityName($type, $type)
+            );
         }
 
         if ($isArray) {
