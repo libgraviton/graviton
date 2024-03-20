@@ -24,7 +24,6 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
      */
     public function build(RuntimeBuilderData $data) : void
     {
-
         $baseSchema = $this->getSchemaBaseObject($data->definition, $data->schemaFile);
         $fields = $this->getAllFields($baseSchema);
 

@@ -60,4 +60,31 @@ class SchemaBuilder
 
         return $schemaField;
     }
+
+    /**
+     * get the name for an entity that is used in the openapi schema
+     *
+     * @param string $shortName        class name
+     * @param string $bundleScanString a string containing the bundle name somewhere
+     * @return string entity name
+     */
+    public static function getSchemaEntityName(string $shortName, string $bundleScanString) : string
+    {
+        if (str_contains($shortName, '\\')) {
+            $parts = explode('\\', $shortName);
+            $shortName = array_pop($parts);
+        }
+
+        preg_match('/([a-zA-Z0-9]*)Bundle/i', $bundleScanString, $matches);
+
+        if (!isset($matches[1])) {
+            throw new \RuntimeException('Unable to determine entity name from bundlescanstring: '.$bundleScanString);
+        }
+
+        if ($matches[1] != $shortName) {
+            return $matches[1].$shortName;
+        }
+
+        return $shortName;
+    }
 }
