@@ -67,6 +67,7 @@ services:
   Graviton\DocumentBundle\Listener\FieldNameSearchListener:
     arguments:
       - "%graviton.document.rql.fields%"
+      - '@Graviton\RestBundle\Service\RestServiceLocator'
     tags:
       - name: kernel.event_listener
         event: rql.visit.node

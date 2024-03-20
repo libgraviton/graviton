@@ -34,6 +34,11 @@ class RuntimeDefinition
     private array $extRefFields = [];
 
     /**
+     * @var array<string, string>
+     */
+    private array $exposeAsMap = [];
+
+    /**
      * @var array[string, string]
      */
     private array $restEventNames = [];
@@ -134,6 +139,28 @@ class RuntimeDefinition
     public function setExtRefFields(array $extRefFields): void
     {
         $this->extRefFields = $extRefFields;
+    }
+
+    /**
+     * getExposeAsMap
+     *
+     * @return array map
+     */
+    public function getExposeAsMap(): array
+    {
+        return $this->exposeAsMap;
+    }
+
+    /**
+     * setExposeAsMap
+     *
+     * @param array $exposeAsMap map
+     *
+     * @return void
+     */
+    public function setExposeAsMap(array $exposeAsMap): void
+    {
+        $this->exposeAsMap = $exposeAsMap;
     }
 
     /**
