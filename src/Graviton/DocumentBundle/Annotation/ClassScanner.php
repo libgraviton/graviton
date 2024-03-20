@@ -5,7 +5,6 @@
 
 namespace Graviton\DocumentBundle\Annotation;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Graviton\DocumentBundle\Annotation\Driver\DocumentDriver;
 use Graviton\Graviton;
 use Symfony\Component\Finder\Finder;
@@ -19,48 +18,14 @@ class ClassScanner
 {
 
     /**
-     * @var array all annotation we want to load
-     */
-    private static $relevantAnnotations = [
-        ODM\Document::class,
-        ODM\InheritanceType::class,
-        ODM\Id::class,
-        ODM\Field::class,
-        ODM\Indexes::class,
-        ODM\Index::class,
-        ODM\EmbedOne::class,
-        ODM\EmbedMany::class,
-        ODM\ReferenceOne::class,
-        ODM\ReferenceMany::class,
-        ODM\MappedSuperclass::class,
-        ODM\EmbeddedDocument::class
-    ];
-
-    /**
-     * load all known annotations
-     *
-     * @return void
-     */
-    public static function loadAnnotations()
-    {
-        foreach (self::$relevantAnnotations as $className) {
-            class_exists($className);
-        }
-    }
-
-    /**
      * returns an annotation driver that can be used to list all documents
      *
      * @param array|null $directories directories to scan
      *
-     * @throws \Doctrine\Common\Annotations\AnnotationException
-     *
      * @return DocumentDriver driver
      */
-    public static function getDocumentAnnotationDriver(?array $directories = null)
+    public static function getDocumentAnnotationDriver(?array $directories = null): DocumentDriver
     {
-        self::loadAnnotations();
-
         if ($directories == null) {
             $classFinder = Finder::create()
                 ->directories()
@@ -82,18 +47,6 @@ class ClassScanner
             );
         }
 
-        return self::getDocumentDriver($directories);
-    }
-
-    /**
-     * just return the document driver itself
-     *
-     * @param array $directories directories
-     *
-     * @return DocumentDriver driver
-     */
-    public static function getDocumentDriver(array $directories = [])
-    {
         return new DocumentDriver($directories);
     }
 }

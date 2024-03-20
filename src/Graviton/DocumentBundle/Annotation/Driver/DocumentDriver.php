@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
-use Graviton\Graviton;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,47 +25,13 @@ class DocumentDriver
     use ColocatedMappingDriver;
 
     /**
-     * @var string cache location
-     */
-    private $cacheLocation;
-
-    /**
-     * @var array cache cache
-     */
-    private $classCache = [];
-
-    /**
      * DocumentDriver constructor.
      *
      * @param array $paths paths
      */
     public function __construct(array $paths)
     {
-        $this->cacheLocation = Graviton::getTransientCacheDir() . 'document_annotations';
         $this->addPaths($paths);
-        $this->loadCache();
-    }
-
-    /**
-     * get CacheLocation
-     *
-     * @return string CacheLocation
-     */
-    public function getCacheLocation()
-    {
-        return $this->cacheLocation;
-    }
-
-    /**
-     * loads annotation cache if it exists
-     *
-     * @return void
-     */
-    private function loadCache()
-    {
-        if (file_exists($this->cacheLocation)) {
-            $this->classCache = unserialize(file_get_contents($this->cacheLocation));
-        }
     }
 
     /**
@@ -77,37 +42,36 @@ class DocumentDriver
      * @return array field annotation
      * @throws \ReflectionException
      */
-    public function getFields($className)
+    public function getFields($className): array
     {
-        if (isset($this->classCache[$className])) {
-            return $this->classCache[$className];
-        }
-
         $refClass = new \ReflectionClass($className);
         $map = [];
 
         foreach ($refClass->getProperties() as $property) {
-            $attributes = $property->getAttributes();
+            $attributes = $this->getPropertyAttributes(
+                $property->getAttributes(),
+                [
+                    Id::class,
+                    Field::class,
+                    EmbedOne::class,
+                    EmbedMany::class,
+                    ReferenceOne::class,
+                    ReferenceMany::class
+                ]
+            );
 
-            $idField = $this->getPropertyAttribute($attributes, Id::class);
-            $field = $this->getPropertyAttribute($attributes, Field::class);
-            $embedOne = $this->getPropertyAttribute($attributes, EmbedOne::class);
-            $embedMany = $this->getPropertyAttribute($attributes, EmbedMany::class);
-            $referenceOne = $this->getPropertyAttribute($attributes, ReferenceOne::class);
-            $referenceMany = $this->getPropertyAttribute($attributes, ReferenceMany::class);
-
-            if (!is_null($field)) {
-                $map[$property->getName()] = $field;
-            } elseif (!is_null($idField)) {
-                $map[$property->getName()] = $idField;
-            } elseif (!is_null($embedOne)) {
-                $map[$property->getName()] = $embedOne;
-            } elseif (!is_null($embedMany)) {
-                $map[$property->getName()] = $embedMany;
-            } elseif (!is_null($referenceOne)) {
-                $map[$property->getName()] = $referenceOne;
-            } elseif (!is_null($referenceMany)) {
-                $map[$property->getName()] = $referenceMany;
+            if (isset($attributes[Field::class])) {
+                $map[$property->getName()] = $attributes[Field::class];
+            } elseif (isset($attributes[Id::class])) {
+                $map[$property->getName()] = $attributes[Id::class];
+            } elseif (isset($attributes[EmbedOne::class])) {
+                $map[$property->getName()] = $attributes[EmbedOne::class];
+            } elseif (isset($attributes[EmbedMany::class])) {
+                $map[$property->getName()] = $attributes[EmbedMany::class];
+            } elseif (isset($attributes[ReferenceOne::class])) {
+                $map[$property->getName()] = $attributes[ReferenceOne::class];
+            } elseif (isset($attributes[ReferenceMany::class])) {
+                $map[$property->getName()] = $attributes[ReferenceMany::class];
             }
         }
 
@@ -126,25 +90,26 @@ class DocumentDriver
     }
 
     /**
-     * returns the reflectionattribute or null
+     * getPropertyAttributes
      *
-     * @param ?array $attributes attributes
-     * @param string $className  class name
+     * @param ?array $attributes       attributes
+     * @param array  $attributesToFind attributes to find
      *
-     * @return Annotation|null optional attribute
+     * @return Annotation[] attributes
      */
-    private function getPropertyAttribute(?array $attributes, string $className) : ?Annotation
+    private function getPropertyAttributes(?array $attributes, array $attributesToFind) : array
     {
         if (!is_array($attributes)) {
-            return null;
+            return [];
         }
 
+        $attrs = [];
         foreach ($attributes as $attribute) {
-            if ($attribute->getName() == $className) {
-                return $attribute->newInstance();
+            if (in_array($attribute->getName(), $attributesToFind)) {
+                $attrs[$attribute->getName()] = $attribute->newInstance();
             }
         }
 
-        return null;
+        return $attrs;
     }
 }
