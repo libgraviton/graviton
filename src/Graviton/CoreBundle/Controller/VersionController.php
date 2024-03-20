@@ -5,7 +5,9 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Trait\SchemaTrait;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,55 +15,44 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class VersionController extends RestController
+readonly class VersionController
 {
-    /**
-     * @var array
-     */
-    private $versionInformation;
+    use SchemaTrait;
 
     /**
-     * Build core utils
      * @param array $versionInformation version information
-     * @return void
      */
-    public function setVersionInformation(array $versionInformation)
+    public function __construct(private array $versionInformation)
     {
-        $this->versionInformation = $versionInformation;
     }
 
     /**
      * Returns all version numbers
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @return Response $response Response with result or error
      */
-    public function versionsAction()
+    public function versionsAction() : Response
     {
-        $versions = [
-            'versions' => $this->versionInformation
-        ];
-
-        $response = $this->getResponse()
-                         ->setStatusCode(Response::HTTP_OK)
-                         ->setContent(json_encode($versions));
-
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return new JsonResponse(
+            [
+                'versions' => $this->versionInformation
+            ]
+        );
     }
 
     /**
      * Returns schema
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @param string  $format  format
+     * @param Request $request request
+     *
+     * @return Response $response Response with result or error
      */
-    public function versionsSchemaAction()
+    public function versionsSchemaAction($format, Request $request)
     {
-        $response = $this->getResponse()
-                         ->setStatusCode(Response::HTTP_OK)
-                         ->setContent(json_encode($this->getModel()->getSchema()));
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $this->getResponseFromSchemaFile(
+            __DIR__.'/../Resources/config/schema/openapi.json',
+            $format
+        );
     }
 }

@@ -6,17 +6,16 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
+use Graviton\RestBundle\Exception\NotFoundException;
 use Graviton\RestBundle\Service\QueryService;
-use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Graviton\ExceptionBundle\Exception\NotFoundException;
-use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
@@ -25,143 +24,61 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class DocumentModel extends SchemaModel implements ModelInterface
+class DocumentModel
 {
-    /**
-     * @var string
-     */
-    protected $description;
-    /**
-     * @var string[]
-     */
-    protected $fieldTitles;
-    /**
-     * @var string[]
-     */
-    protected $fieldDescriptions;
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = [];
-    /**
-     * @var string[]
-     */
-    protected $searchableFields = [];
-    /**
-     * @var string[]
-     */
-    protected $textIndexes = [];
 
     /**
-     * @var QueryService
+     * @param QueryService             $queryService      queryservice
+     * @param EventDispatcherInterface $eventDispatcher   dispatcher
+     * @param RestUtils                $restUtils         rest utils
+     * @param SecurityUtils            $securityUtils     security utils
+     * @param DocumentManager          $documentManager   doc manager
+     * @param string                   $schemaPath        schemapath
+     * @param string                   $runtimeDefFile    rd path
+     * @param string                   $documentClassName full class name
      */
-    private $queryService;
-
-    /**
-     * @var array
-     */
-    protected $notModifiableOriginRecords;
-    protected EventDispatcherInterface $eventDispatcher;
-    private RestUtils $restUtils;
-    private SecurityUtils $securityUtils;
-
-    protected string $documentClassName;
-    protected DocumentManager $documentManager;
-
-    /**
-     * constructor
-     *
-     * @param string          $jsonSchemaPath    schema path
-     * @param string          $documentClassName class name
-     * @param DocumentManager $documentManager   dm
-     */
-    public function __construct(string $jsonSchemaPath, string $documentClassName, DocumentManager $documentManager)
-    {
-        parent::__construct($jsonSchemaPath);
-        $this->documentClassName = $documentClassName;
-        $this->documentManager = $documentManager;
+    public function __construct(
+        // common stuff
+        private readonly QueryService $queryService,
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RestUtils $restUtils,
+        private readonly SecurityUtils $securityUtils,
+        protected readonly DocumentManager $documentManager,
+        // model specific stuff
+        private readonly string $schemaPath,
+        private readonly string $runtimeDefFile,
+        private readonly string $documentClassName
+    ) {
     }
 
     /**
-     * set query service
+     * returns the runtime definition
      *
-     * @param QueryService $queryService qs
-     *
-     * @return void
+     * @return RuntimeDefinition runtime def
      */
-    public function setQueryService(QueryService $queryService)
+    public function getRuntimeDefinition() : RuntimeDefinition
     {
-        $this->queryService = $queryService;
-    }
-
-    /**
-     * set security utils
-     *
-     * @param SecurityUtils $securityUtils utils
-     *
-     * @return void
-     */
-    public function setSecurityUtils(SecurityUtils $securityUtils)
-    {
-        $this->securityUtils = $securityUtils;
-    }
-
-    /**
-     * set event dispatcher
-     *
-     * @param EventDispatcherInterface $eventDispatcher ed
-     *
-     * @return void
-     */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * set notModifiableOriginRecords
-     *
-     * @param array $notModifiableOriginRecords arr
-     *
-     * @return void
-     */
-    public function setNotModifiableOriginRecords($notModifiableOriginRecords)
-    {
-        $this->notModifiableOriginRecords = $notModifiableOriginRecords;
-    }
-
-    /**
-     * set restutils
-     *
-     * @param RestUtils $restUtils ru
-     *
-     * @return void
-     */
-    public function setRestUtils(RestUtils $restUtils)
-    {
-        $this->restUtils = $restUtils;
-    }
-
-    /**
-     * toggle flag if we should use mongodb secondary
-     *
-     * @param bool $isUseSecondary if secondary or not
-     *
-     * @return void
-     */
-    public function setIsUseSecondary(bool $isUseSecondary): void
-    {
-        $this->queryService->setIsUseSecondary($isUseSecondary);
+        return unserialize(file_get_contents($this->runtimeDefFile));
     }
 
     /**
      * get repository instance
      *
-     * @return DocumentRepository
+     * @return DocumentRepository repo
      */
-    public function getRepository()
+    public function getRepository(): DocumentRepository
     {
         return $this->documentManager->getRepository($this->documentClassName);
+    }
+
+    /**
+     * get schema path
+     *
+     * @return string schema path
+     */
+    public function getSchemaPath(): string
+    {
+        return $this->schemaPath;
     }
 
     /**
@@ -173,33 +90,109 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function findAll(Request $request)
     {
-        return $this->queryService->getWithRequest($request, $this->getRepository());
+        return $this->queryService->getWithRequest($request, $this);
     }
 
     /**
-     * @param object $entity entity to insert
+     * upserts an entry
+     *
+     * @param string       $id      id
+     * @param object       $record  record
+     * @param Request|null $request request
+     * @return void
+     */
+    public function upsertRecord(string $id, object $record, ?Request $request = null)
+    {
+        if (!$this->recordExists($id)) {
+            $this->insertRecord($record, $request);
+        } else {
+            $this->updateRecord($id, $record, $request);
+        }
+    }
+
+    /**
+     * inserts a record
+     *
+     * @param object   $entity  entity to insert
+     * @param ?Request $request request
      *
      * @return Object|null entity or null
      */
-    public function insertRecord($entity)
+    public function insertRecord(object $entity, ?Request $request = null)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
 
-        // ensure meta fields!
-        if (is_callable([$entity, 'set_CreatedBy'])) {
-            $entity->set_CreatedBy($this->securityUtils->getSecurityUsername());
-        }
-        if (is_callable([$entity, 'set_CreatedAt'])) {
-            $entity->set_CreatedAt(new \DateTime());
-        }
+        $this->setChangeTrackingData($entity);
 
         $this->documentManager->persist($entity);
         $this->documentManager->flush();
 
-        // Fire ModelEvent
-        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
+        if (is_callable([$entity, 'getId'])) {
+            $recordId = $entity->getId();
+
+            if (!is_null($request)) {
+                $this->addRequestAttributes($recordId, $request);
+            }
+
+            // Fire ModelEvent
+            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $recordId, $request);
+        }
 
         return $entity;
+    }
+
+    /**
+     * adds the request attributes
+     *
+     * @param string|null $id      id
+     * @param Request     $request request
+     * @return void
+     */
+    public function addRequestAttributes(?string $id, Request $request) : void
+    {
+        if (!is_null($id)) {
+            $request->attributes->set('id', $id);
+        }
+        $request->attributes->set('varnishTags', $this->getEntityClass(true));
+    }
+
+    /**
+     * add change tracking to entity
+     *
+     * @param \stdClass  $entity   entity
+     * @param ?\stdClass $existing existing entity
+     *
+     * @return void
+     */
+    private function setChangeTrackingData($entity, $existing = null): void
+    {
+        if (!is_null($existing)) {
+            // pass old attrs to new one.
+            if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
+                $entity->set_CreatedBy($existing['_createdBy']);
+            }
+            if (is_callable([$entity, 'set_CreatedAt']) && !empty($existing['_createdAt'])) {
+                $entity->set_CreatedAt($existing['_createdAt']);
+            }
+        }
+
+        // ensure created stuff
+        if (is_callable([$entity, 'get_CreatedBy']) && empty($entity->get_CreatedBy())) {
+            if (is_callable([$entity, 'set_CreatedBy'])) {
+                $entity->set_CreatedBy($this->securityUtils->getSecurityUsername());
+            }
+            if (is_callable([$entity, 'set_CreatedAt'])) {
+                $entity->set_CreatedAt(new \DateTime());
+            }
+        }
+
+        // always set modified
+        if (is_callable([$entity, 'setLastModifiedBy'])) {
+            $entity->setLastModifiedBy($this->securityUtils->getSecurityUsername());
+        }
+        if (is_callable([$entity, 'setLastModifiedAt'])) {
+            $entity->setLastModifiedAt(new \DateTime());
+        }
     }
 
     /**
@@ -214,7 +207,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function find($documentId, $forceClear = false)
     {
         if ($forceClear) {
-            $this->getRepository()->clear();
+            $this->documentManager->clear();
         }
 
         $builder = $this->getRepository()->createQueryBuilder()
@@ -236,11 +229,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * Will attempt to find Document by ID.
      * If config cache is enabled for document it will save it.
      *
-     * @param string  $documentId id of entity to find
-     * @param Request $request    request
+     * @param string       $documentId id of entity to find
+     * @param Request|null $request    request
      *
      * @return string Serialised object
-     * @throws NotFoundException
+     * @throws MongoDBException
      */
     public function getSerialised($documentId, Request $request = null)
     {
@@ -250,7 +243,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $request->attributes->set('singleDocument', $documentId);
 
-        $document = $this->queryService->getWithRequest($request, $this->getRepository());
+        $document = $this->queryService->getWithRequest($request, $this);
         if (empty($document)) {
             throw new NotFoundException(
                 sprintf(
@@ -266,43 +259,30 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to update
-     * @param Object $entity     new entity
+     * @param string   $documentId id of entity to update
+     * @param object   $entity     new entity
+     * @param ?Request $request    request
      *
      * @return Object|null
      */
-    public function updateRecord($documentId, $entity)
+    public function updateRecord(string $documentId, object $entity, ?Request $request = null)
     {
         $entity = $this->dispatchPrePersistEvent($entity);
 
-        if (!is_null($documentId)) {
-            $collection = $this->documentManager->getDocumentCollection($entity::class);
-            $existing = $collection->findOne(
-                ['_id' => $documentId],
-                ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
-            );
+        // see if we find existing
+        $collection = $this->documentManager->getDocumentCollection($this->getEntityClass());
+        $existing = $collection->findOne(
+            ['_id' => $documentId],
+            ['projection' => ['_createdAt' => 1, '_createdBy' => 1, '_id' => 1]]
+        );
 
-            $this->deleteById($documentId);
+        $this->deleteById($documentId);
 
-            // detach so odm knows it's gone
-            $this->documentManager->detach($entity);
-            $this->documentManager->clear();
+        // detach so odm knows it's gone
+        $this->documentManager->detach($entity);
+        $this->documentManager->clear();
 
-            // pass old attrs to new one.
-            if (is_callable([$entity, 'set_CreatedBy']) && !empty($existing['_createdBy'])) {
-                $entity->set_CreatedBy($existing['_createdBy']);
-            }
-            if (is_callable([$entity, 'set_CreatedAt']) && !empty($existing['_createdAt'])) {
-                $entity->set_CreatedAt($existing['_createdAt']);
-            }
-        }
-
-        if (is_callable([$entity, 'setLastModifiedBy'])) {
-            $entity->setLastModifiedBy($this->securityUtils->getSecurityUsername());
-        }
-        if (is_callable([$entity, 'setLastModifiedAt'])) {
-            $entity->setLastModifiedAt(new \DateTime());
-        }
+        $this->setChangeTrackingData($entity, $existing);
 
         $entity = $this->documentManager->merge($entity);
 
@@ -310,8 +290,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->documentManager->flush();
         $this->documentManager->detach($entity);
 
+        if (!is_null($request)) {
+            $this->addRequestAttributes($documentId, $request);
+        }
+
         // Fire ModelEvent
-        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
+        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $documentId, $request);
 
         return $entity;
     }
@@ -319,11 +303,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string|object $id id of entity to delete or entity instance
+     * @param string|object $id      id of entity to delete or entity instance
+     * @param ?Request      $request request
      *
      * @return null|Object
      */
-    public function deleteRecord($id)
+    public function deleteRecord($id, ?Request $request = null)
     {
         if (is_object($id)) {
             $entity = $id;
@@ -334,8 +319,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // dispatch our event
         $this->dispatchPrePersistEvent($entity);
 
-        $this->checkIfOriginRecord($entity);
-
         $return = $entity;
 
         if (is_callable([$entity, 'getId']) && $entity->getId() != null) {
@@ -343,24 +326,17 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // detach so odm knows it's gone
             $this->documentManager->detach($entity);
             $this->documentManager->clear();
+
+            if (!is_null($request)) {
+                $this->addRequestAttributes($entity->getId(), $request);
+            }
+
             // Dispatch ModelEvent
-            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
+            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, (string) $id, $request);
             $return = null;
         }
 
         return $return;
-    }
-
-    /**
-     * Triggers a flush on the DocumentManager
-     *
-     * @param null $document optional document
-     *
-     * @return void
-     */
-    public function flush($document = null)
-    {
-        $this->documentManager->flush($document);
     }
 
     /**
@@ -370,7 +346,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @return void
      */
-    private function deleteById($id)
+    private function deleteById($id): void
     {
         $builder = $this->getRepository()->createQueryBuilder();
         $builder
@@ -387,7 +363,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @return bool true if it exists, false otherwise
      */
-    public function recordExists($id)
+    public function recordExists($id): bool
     {
         return is_array($this->selectSingleFields($id, ['id'], false));
     }
@@ -427,65 +403,39 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * get classname of entity
      *
+     * @param bool $shortName if shortname or not
+     *
      * @return string|null
      */
-    public function getEntityClass()
+    public function getEntityClass(bool $shortName = false)
     {
+        if ($shortName) {
+            $parts = explode('\\', $this->documentClassName);
+            return array_pop($parts);
+        }
+
         return $this->documentClassName;
     }
 
     /**
-     * Checks the recordOrigin attribute of a record and will throw an exception if value is not allowed
-     *
-     * @param Object $record record
-     *
-     * @return void
-     */
-    protected function checkIfOriginRecord($record)
-    {
-        if ($record instanceof RecordOriginInterface
-            && !$record->isRecordOriginModifiable()
-        ) {
-            $values = $this->notModifiableOriginRecords;
-            $originValue = strtolower(trim($record->getRecordOrigin()));
-
-            if (in_array($originValue, $values)) {
-                throw new RecordOriginModifiedException(
-                    sprintf(
-                        "'recordOrigin' must not be one of the following keywords: %s",
-                        implode(', ', $values)
-                    )
-                );
-            }
-        }
-    }
-
-
-    /**
      * Will fire a ModelEvent
      *
-     * @param string $action     insert or update
-     * @param object $collection the changed Document
+     * @param string   $eventName insert or update
+     * @param string   $recordId  record id
+     * @param ?Request $request   request
      *
      * @return void
      */
-    private function dispatchModelEvent($action, $collection)
+    public function dispatchModelEvent(string $eventName, string $recordId, ?Request $request = null): void
     {
-        if (!($this->getRepository() instanceof DocumentRepository)) {
-            return;
-        }
-        if (!method_exists($collection, 'getId')) {
-            return;
-        }
+        $event = new ModelEvent(
+            $eventName,
+            $recordId,
+            $this,
+            $request
+        );
 
-        $event = new ModelEvent();
-        $event->setCollectionId($collection->getId());
-        $event->setActionByDispatchName($action);
-        $event->setCollectionName($this->getRepository()->getClassMetadata()->getCollection());
-        $event->setCollectionClass($this->getRepository()->getClassName());
-        $event->setCollection($collection);
-
-        $this->eventDispatcher->dispatch($event, $action);
+        $this->eventDispatcher->dispatch($event, $eventName);
     }
 
     /**

@@ -29,7 +29,7 @@ class UserProvider implements UserProviderInterface
     /**
      * Loads the user for the given username.
      *
-     * This method must throw UsernameNotFoundException if the user is not
+     * This method must throw UserNotFoundException if the user is not
      * found.
      *
      * @param string $username the consultants username
@@ -54,7 +54,7 @@ class UserProvider implements UserProviderInterface
      *
      * @throws UnsupportedUserException if the account is not supported
      */
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): UserInterface
     {
         return $user;
     }
@@ -66,7 +66,7 @@ class UserProvider implements UserProviderInterface
      *
      * @return bool true
      */
-    public function supportsClass(string $class)
+    public function supportsClass(string $class): bool
     {
         return true;
     }

@@ -19,28 +19,32 @@ final class HomepageRenderEvent extends Event
      *
      * @var string
      */
-    const EVENT_NAME = 'homepage.render';
+    const string EVENT_NAME = 'homepage.render';
 
     /**
      * added routes
      *
      * @var array
      */
-    private $addedRoutes = [];
+    private array $addedRoutes = [];
 
     /**
      * add a route to the homepage
      *
-     * @param string $url       relative (to root) url to the service
-     * @param string $schemaUrl relative (to root) url to the schema
+     * @param string $url        relative (to root) url to the service
+     * @param string $schemaJson json schema url
+     * @param string $schemaYaml yaml schema url
      *
      * @return void
      */
-    public function addRoute($url, $schemaUrl)
+    public function addRoute(string $url, string $schemaJson, string $schemaYaml) : void
     {
         $this->addedRoutes[] = [
             '$ref' => $this->normalizeRelativeUrl($url),
-            'profile' => $this->normalizeRelativeUrl($schemaUrl)
+            'api-docs' => [
+                'json' => ['$ref' => $this->normalizeRelativeUrl($schemaJson)],
+                'yaml' => ['$ref' => $this->normalizeRelativeUrl($schemaYaml)]
+            ]
         ];
     }
 
@@ -51,9 +55,9 @@ final class HomepageRenderEvent extends Event
      *
      * @return string url
      */
-    private function normalizeRelativeUrl($url)
+    private function normalizeRelativeUrl(string $url): string
     {
-        if (substr($url, 0, 1) == '/') {
+        if (str_starts_with($url, '/')) {
             return substr($url, 1);
         }
         return $url;
@@ -64,7 +68,7 @@ final class HomepageRenderEvent extends Event
      *
      * @return array routes
      */
-    public function getRoutes()
+    public function getRoutes() : array
     {
         return $this->addedRoutes;
     }

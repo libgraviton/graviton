@@ -1,8 +1,3 @@
-parameters:
-  graviton.core.controller.main.class: Graviton\CoreBundle\Controller\MainController
-  graviton.core.model.version.class: Graviton\CoreBundle\Model\Version
-  graviton.core.listener.requesthost.class: Graviton\CoreBundle\Listener\RequestHostListener
-  graviton.core.listener.jsonexceptionlistener.class: Graviton\CoreBundle\Listener\JsonExceptionListener
 
 services:
 
@@ -12,31 +7,22 @@ services:
           - "jms"
           - "@graviton.cache.adapter.app"
 
+    graviton.cache.adapter.app:
+      alias: graviton.common.cache.adapter.app
+
     # we must alias this as external bundles refer to this service that way
     graviton.core.http.client:
       parent: graviton.common.http.client
 
-    graviton.core.controller.main:
-      class: "%graviton.core.controller.main.class%"
-      public: true
+    Graviton\CoreBundle\Controller\MainController:
+      tags: ['controller.service_arguments']
       arguments:
         - "@router"
-        - "@graviton.rest.restutils"
+        - '@Graviton\RestBundle\Service\RestUtils'
         - "@event_dispatcher"
-        - "%graviton.core.links%"
-        - "%graviton.core.main.path.whitelist%"
-
-    graviton.core.model.version:
-        class: "%graviton.core.model.version.class%"
-        parent: "graviton.rest.model"
-        arguments:
-          - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Version.json"
-          - Graviton\I18nBundle\Document\Version
-          - '@doctrine_mongodb.odm.default_document_manager'
 
     # Request host listener -->
-    graviton.core.listener.requesthost:
-        class: "%graviton.core.listener.requesthost.class%"
+    Graviton\CoreBundle\Listener\RequestHostListener:
         arguments:
           - "@router"
           - "%graviton.router.host%"
@@ -48,23 +34,10 @@ services:
             event: "kernel.request"
             method: "onKernelRequest"
 
-    graviton.core.controller.version:
-        class: Graviton\CoreBundle\Controller\VersionController
-        public: true
-        parent: "graviton.rest.controller"
-        calls:
-          -
-            method: "setVersionInformation"
-            arguments:
-              - "%graviton.core.version.data%"
-          -
-            method: "setModel"
-            arguments:
-              - "@graviton.core.model.version"
-
-    graviton.core.controller.favicon:
-        class: Graviton\CoreBundle\Controller\FaviconController
-        public: true
+    Graviton\CoreBundle\Controller\VersionController:
+      tags: ['controller.service_arguments']
+      arguments:
+        - "%graviton.core.version.data%"
 
     graviton.core.service.jmespath:
         class: JmesPath\CompilerRuntime
@@ -72,57 +45,27 @@ services:
         arguments:
           - "%graviton.jmespath.cache_dir%"
 
-    graviton.core.listener.json_exception:
-        class: "%graviton.core.listener.jsonexceptionlistener.class%"
-        calls:
-          -
-            method: "setLogger"
-            arguments:
-              - "@logger"
+    Graviton\CoreBundle\Listener\JsonExceptionListener:
+        arguments:
+          - "@logger"
         tags:
           -
             name: "kernel.event_listener"
             event: "kernel.exception"
             method: "onKernelException"
 
-    graviton.core.routing.loader:
-      class: "Graviton\\CoreBundle\\Routing\\RouteLoader"
-      arguments:
-        - "@service_container"
-        - "%graviton.routing.loader.services%"
-      tags:
-        -
-          name: "routing.loader"
-
-    graviton.core.repository.dummy:
-      class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
-      factory: ['@doctrine_mongodb.odm.default_document_manager', 'getRepository']
-      arguments:
-        - 'GravitonCoreBundle:Dummy'
-
-    graviton.core.model.dummy:
-      class: Graviton\CoreBundle\Model\Dummy
-      parent: "graviton.rest.model"
-      arguments:
-        - "%kernel.project_dir%/src/Graviton/CoreBundle/Resources/config/schema/Dummy.json"
-        - Graviton\CoreBundle\Document\Dummy
-        - '@doctrine_mongodb.odm.default_document_manager'
-
-    graviton.core.document.dummy:
-      class: Graviton\CoreBundle\Document\Dummy
-
     # fixtures
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData
+      public: true
       tags:
           - { name: 'doctrine.fixture.orm' }
 
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit
+      public: true
       tags:
         - { name: 'doctrine.fixture.orm' }
 
     Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu:
-      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu
+      public: true
       tags:
         - { name: 'doctrine.fixture.orm' }

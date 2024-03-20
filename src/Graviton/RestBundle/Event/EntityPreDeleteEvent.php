@@ -16,5 +16,5 @@ class EntityPreDeleteEvent extends EntityPrePersistEvent
     /**
      * @var string
      */
-    public const NAME = 'document.model.event.entity.pre_delete';
+    const string NAME = 'document.model.event.entity.pre_delete';
 }

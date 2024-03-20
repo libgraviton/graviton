@@ -1,24 +1,23 @@
 <?php
 /**
- * Handles file specific actions
+ * handles file stuff
  */
 
 namespace Graviton\FileBundle\Manager;
 
-use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use Ckr\Util\ArrayMerger;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Service\RestUtils;
 use GravitonDyn\FileBundle\Document\File;
 use GravitonDyn\FileBundle\Document\FileMetadataBase;
 use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
+use Http\Discovery\Psr17Factory;
 use League\Flysystem\Filesystem;
-use Symfony\Component\Form\Exception\InvalidArgumentException;
-use Symfony\Component\HttpFoundation\Request;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Riverline\MultiPartParser\Converters\PSR7;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\FileBag;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Filesystem\Filesystem as SfFileSystem;
-use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -26,56 +25,83 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileManager
+readonly class FileManager
 {
-    /**
-     * @var Filesystem
-     */
-    private $fileSystem;
 
     /**
-     * @var array allowedMimeTypes Control files to be saved and returned
-     */
-    private $allowedMimeTypes = [];
-
-    /**
-     * @var bool whether or not we should read the files mimetype or trust the database (depending on storage)
-     */
-    private $readFileSystemMimeType = false;
-
-    /**
-     * FileManager constructor.
-     *
-     * @param Filesystem $fileSystem file system abstraction layer for s3 and more
+     * @param Filesystem   $fileSystem       filesystem
+     * @param RestUtils    $restUtils        rest utils
+     * @param Psr17Factory $psrFactory       psr factory
+     * @param array        $allowedMimeTypes allowed mime types
      */
     public function __construct(
-        Filesystem $fileSystem
+        private Filesystem   $fileSystem,
+        private RestUtils    $restUtils,
+        private Psr17Factory $psrFactory,
+        private array        $allowedMimeTypes = []
     ) {
-        $this->fileSystem = $fileSystem;
     }
 
     /**
-     * Configure allowed content types, empty is equal to all
+     * brings the request in a simple form to deal with it
      *
-     * @param array $mimeTypes of Allowed types, application/pdf, image/jpeg...
+     * @param ServerRequestInterface $request request
      *
-     * @return void
+     * @return ServerRequestInterface parsed request
      */
-    public function setAllowedMimeTypes(array $mimeTypes)
+    public function uniformFileRequest(ServerRequestInterface $request) : ServerRequestInterface
     {
-        $this->allowedMimeTypes = $mimeTypes;
-    }
+        $contentType = strtolower($request->getHeaderLine('content-type'));
 
-    /**
-     * set ReadFileSystemMimeType
-     *
-     * @param bool $readFileSystemMimeType readFileSystemMimeType
-     *
-     * @return void
-     */
-    public function setReadFileSystemMimeType($readFileSystemMimeType)
-    {
-        $this->readFileSystemMimeType = $readFileSystemMimeType;
+        // as-is
+        if (str_contains($contentType, 'application/json')) {
+            return $request->withAttribute('metadataBody', true);
+        }
+
+        if (str_contains($contentType, 'multipart')) {
+            $part = PSR7::convert($request);
+
+            // json -> is body!
+            $metadata = $part->getPartsByName('metadata');
+            if (!empty($metadata[0])) {
+                $request = $request->withBody($this->psrFactory->createStream($metadata[0]->getBody()));
+            }
+
+            // file upload
+            $upload = $part->getPartsByName('upload');
+            if (!empty($upload[0])) {
+                $request = $request->withUploadedFiles(
+                    [
+                        'upload' => $this->psrFactory->createUploadedFile(
+                            $this->psrFactory->createStream($upload[0]->getBody()),
+                            clientFilename: $upload[0]->getFileName(),
+                            clientMediaType: $upload[0]->getMimeType()
+                        )
+                    ]
+                );
+            }
+
+            $request = $request->withAttribute('metadataBody', true);
+        } else {
+            // change body!
+            $parsedBody = $request->getParsedBody();
+            if (is_array($parsedBody) && isset($parsedBody['metadata'])) {
+                $request = $request
+                    ->withBody($this->psrFactory->createStream($parsedBody['metadata']))
+                    ->withParsedBody(null)
+                    ->withAttribute('metadataBody', true);
+            } else {
+                $request = $request->withUploadedFiles(
+                    [
+                        'upload' => $this->psrFactory->createUploadedFile(
+                            $request->getBody()
+                        )
+                    ]
+                )->withBody($this->psrFactory->createStream('{}'))
+                 ->withAttribute('metadataBody', true);
+            }
+        }
+        return $request;
     }
 
     /**
@@ -83,10 +109,11 @@ class FileManager
      *
      * @param File $file File document object from DB
      *
-     * @return Response
+     * @return Response response
+     *
      * @throws InvalidArgumentException if invalid info fetched from fileSystem
      */
-    public function buildGetContentResponse(File $file)
+    public function buildGetContentResponse(File $file) : Response
     {
         /** @var FileMetadataBase $metadata */
         $metadata = $file->getMetadata();
@@ -115,6 +142,10 @@ class FileManager
             $metadata->getFilename()
         );
 
+        if (str_contains($mimeType, 'json')) {
+            $mimeType = 'text/plain';
+        }
+
         $response
             ->setStatusCode(Response::HTTP_OK);
         $response
@@ -125,180 +156,151 @@ class FileManager
         return $response;
     }
 
-
     /**
      * Save or update a file
      *
-     * @param string $id       ID of file
-     * @param String $filepath path to the file to save
+     * @param File                  $file         file
+     * @param UploadedFileInterface $uploadedFile file
      *
      * @return void
      */
-    public function saveFile($id, $filepath)
+    private function applyUploadMetadata(File $file, UploadedFileInterface $uploadedFile) : void
     {
-        // will save using a stream
-        $fp = fopen($filepath, 'r+');
+        $fileResource = $uploadedFile->getStream()->detach();
 
-        try {
-            $this->fileSystem->writeStream($id, $fp);
-        } finally {
-            // close file
-            fclose($fp);
-        }
-    }
-
-    /**
-     * @param File          $document File Document
-     * @param Request       $request  Request bag
-     * @param DocumentModel $model    File Document Model
-     * @return File
-     */
-    public function handleSaveRequest(
-        File $document,
-        Request $request,
-        DocumentModel $model
-    ) {
-        $file = $this->getUploadedFileFromRequest($request);
-        $requestId = $request->get('id', '');
-        if ($requestId && !$document->getId()) {
-            $document->setId($requestId);
+        $metadata = $file->getMetadata();
+        if (is_null($metadata)) {
+            $metadata = new FileMetadataEmbedded();
         }
 
-        try {
-            $original = $model->find($requestId, true);
-        } catch (NotFoundException $e) {
-            $original = false;
+        if (!empty($uploadedFile->getSize())) {
+            $metadata->setSize($uploadedFile->getSize());
         }
 
-        $isNew = $requestId ? !$original : true;
-
-        // If posted  file document not equal the one to be created or updated, then error
-        if (!$this->validIdRequest($document, $requestId)) {
-            throw new InvalidArgumentException('File id and Request id must match.');
-        }
-
-        $document = $this->buildFile($document, $file, $original);
-        if (!$document->getId()) {
-            $n = new UuidGenerator();
-            $uuid = (string) $n->generateV4();
-            $document->setId($uuid);
-        }
-
-        // Filename limitation
-        if ($filename = $document->getMetadata()->getFilename()) {
-            // None English chars
-            if (preg_match('/[^a-z_\-0-9.]/i', $filename)) {
-                throw new InvalidArgumentException('None special chars allowed for filename, given: '.$filename);
-            }
-        }
-
-        // All ok, let's save the file
-        if ($isNew) {
-            if (!$file || $file->getSize() == 0) {
-                throw new InvalidArgumentException('You can not create a new empty file resource. No file received.');
-            }
-        }
-
-        if ($file) {
-            $this->saveFile($document->getId(), $file->getRealPath());
-            $sfFileSys = new SfFileSystem();
-            $sfFileSys->remove($file->getRealPath());
-        }
-
-        if ($isNew) {
-            $model->insertRecord($document);
-        } else {
-            $model->updateRecord($document->getId(), $document);
-        }
-
-        // store id of new record so we don't need to re-parse body later when needed
-        $request->attributes->set('id', $document->getId());
-
-        return $document;
-    }
-
-    /**
-     * Create the basic needs for a file
-     *
-     * @param File         $document Post or Put file document
-     * @param UploadedFile $file     To be used in set metadata
-     * @param File         $original If there is a original document
-     *
-     * @return File
-     * @throws InvalidArgumentException
-     */
-    private function buildFile(File $document, $file, $original)
-    {
-        $now = new \DateTime();
-
-        // If only a file is posted, check if there is a original object and clone it
-        if ($file && $original && !$document->getMetadata()) {
-            $document = clone $original;
-        }
-
-        // Basic Metadata update
-        $metadata = $document->getMetadata() ?: new FileMetadataEmbedded();
-
-        // File related, if no file uploaded we keep original file info.
-        if ($file) {
-            $hash = $metadata->getHash();
-            if (!$hash || strlen($hash)>64) {
-                $hash = hash('sha256', file_get_contents($file->getRealPath()));
+        if (empty($metadata->getFilename())) {
+            if (!empty($uploadedFile->getClientFilename())) {
+                $metadata->setFilename($uploadedFile->getClientFilename());
             } else {
-                $hash = preg_replace('/[^a-z0-9_-]/i', '-', $hash);
+                $metadata->setFilename($file->getId());
             }
+        }
+
+        if (!empty($uploadedFile->getClientFilename())) {
+            $metadata->setFilename($uploadedFile->getClientFilename());
+        }
+
+        if (empty($metadata->getCreatedate())) {
+            $metadata->setCreatedate(new \DateTime());
+        }
+        $metadata->setModificationdate(new \DateTime());
+
+        // hash
+        $ctx = hash_init('sha256');
+        rewind($fileResource);
+        hash_update_stream($ctx, $fileResource);
+        $hash = hash_final($ctx);
+        if (!empty($hash)) {
             $metadata->setHash($hash);
-            $metadata->setMime($file->getMimeType());
-
-            // special case -> if determined mime type is json, we need to change it..
-            if ($metadata->getMime() == 'application/json') {
-                $metadata->setMime('text/plain');
-            }
-
-            $metadata->setSize($file->getSize());
-            if (!$metadata->getFilename()) {
-                $fileName = $file->getClientOriginalName() ? $file->getClientOriginalName() : $file->getFilename();
-                $fileName = preg_replace("/[^a-zA-Z0-9.]/", "-", $fileName);
-                $metadata->setFilename($fileName);
-            }
-        } elseif ($original && ($originalMetadata = $original->getMetadata())) {
-            if (!$metadata->getFilename()) {
-                $metadata->setFilename($originalMetadata->getFilename());
-            }
-            $metadata->setHash($originalMetadata->getHash());
-            $metadata->setMime($originalMetadata->getMime());
-            $metadata->setSize($originalMetadata->getSize());
         }
 
-        // Creation date. keep original if available
-        if ($original && $original->getMetadata() && $original->getMetadata()->getCreatedate()) {
-            $metadata->setCreatedate($original->getMetadata()->getCreatedate());
-        } else {
-            $metadata->setCreatedate($now);
+        rewind($fileResource);
+
+        // read and set mimetype
+        $mimeType = mime_content_type($fileResource);
+        if (!empty($mimeType)) {
+            if (str_contains($mimeType, 'json')) {
+                $mimeType = 'text/plain';
+            }
+            $metadata->setMime($mimeType);
         }
 
-        $metadata->setModificationdate($now);
-        $document->setMetadata($metadata);
+        $file->setMetadata($metadata);
 
-        return $document;
+        $this->fileSystem->writeStream($file->getId(), $fileResource);
     }
 
     /**
-     * Simple validation for post/put request
+     * gets a consolidated File instance of the new and existing one
      *
-     * @param File   $document  File document
-     * @param string $requestId Request ID
-     * @return bool
+     * @param ServerRequestInterface $request request
+     * @param DocumentModel          $model   model
+     * @param string|null            $id      record id
+     *
+     * @return File file
+     * @throws \Exception
      */
-    private function validIdRequest(File $document, $requestId)
+    public function getFileInstance(ServerRequestInterface $request, DocumentModel $model, ?string $id = null) : File
     {
-        if (!$requestId && !$document->getId()) {
-            return true;
+        $payload = (string) $request->getBody();
+        if (empty($payload)) {
+            $payload = '{}';
         }
-        if ($requestId === $document->getId()) {
-            return true;
+
+        // existing?
+        if (!empty($id)) {
+            try {
+                $existing = $model->getSerialised($id);
+                if (!empty($existing)) {
+                    $existingArr = \json_decode($existing, true);
+                    $newArr = \json_decode($payload, true);
+
+                    // arrays that take precedence
+                    if (isset($newArr['links'])) {
+                        unset($existingArr['links']);
+                    }
+                    if (isset($newArr['metadata']) && isset($newArr['metadata']['action'])) {
+                        unset($existingArr['metadata']['action']);
+                    }
+                    if (isset($newArr['metadata']) && isset($newArr['metadata']['additionalProperties'])) {
+                        unset($existingArr['metadata']['additionalProperties']);
+                    }
+
+                    $mergerFlags = ArrayMerger::FLAG_OVERWRITE_NUMERIC_KEY;
+                    $payload = ArrayMerger::doMerge(
+                        $existingArr,
+                        $newArr,
+                        $mergerFlags
+                    );
+                    // encode it again!
+                    $payload = \json_encode($payload);
+                }
+            } catch (\Throwable $t) {
+                /* not tragic */
+            }
         }
-        return false;
+
+        $file = $this->restUtils->deserializeContent(
+            $payload,
+            File::class
+        );
+
+        if (empty($file->getId())) {
+            $file->setId($this->getRecordId());
+        }
+
+        if (!empty($id)) {
+            $file->setId($id);
+        }
+
+        // data from upload?
+        if (isset($request->getUploadedFiles()['upload'])) {
+            $this->applyUploadMetadata(
+                $file,
+                $request->getUploadedFiles()['upload']
+            );
+        }
+
+        return $file;
+    }
+
+    /**
+     * gets a random record id for files
+     *
+     * @return string record id
+     */
+    private function getRecordId() : string
+    {
+        return str_repeat(str_replace('.', '', uniqid('', true)), 2);
     }
 
     /**
@@ -308,36 +310,10 @@ class FileManager
      *
      * @return void
      */
-    public function remove($id)
+    public function remove($id): void
     {
         if ($this->fileSystem->fileExists($id)) {
             $this->fileSystem->delete($id);
         }
-    }
-
-    /**
-     * Set global uploaded file.
-     * Only ONE file allowed per upload.
-     *
-     * @param Request $request service request
-     * @return UploadedFile if file was uploaded
-     * @throws InvalidArgumentException
-     */
-    private function getUploadedFileFromRequest(Request $request)
-    {
-        $file = false;
-
-        if ($request->files instanceof FileBag && $request->files->count() > 0) {
-            if ($request->files->count() > 1) {
-                throw new InvalidArgumentException('Only 1 file upload per requests allowed.');
-            }
-            $files = $request->files->all();
-            $file = reset($files);
-            if ($this->allowedMimeTypes && !in_array($file->getMimeType(), $this->allowedMimeTypes)) {
-                throw new InvalidArgumentException('File mime type: '.$file->getMimeType().' is not allowed.');
-            }
-        }
-
-        return $file;
     }
 }

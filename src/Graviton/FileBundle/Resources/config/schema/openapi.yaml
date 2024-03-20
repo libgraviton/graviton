@@ -1,0 +1,61 @@
+openapi: 3.0.2
+paths:
+  /file/:
+    post:
+      operationId: postFile
+      summary: Upload a File
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/GravitonFileMultipartBody"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/GravitonFileMultipartBody"
+          '*/*':
+            schema:
+              # a binary file of any type
+              type: string
+              format: binary
+      responses:
+        201:
+          description: 'Successful operation'
+        400:
+          description: 'Bad request.'
+  /file/{id}:
+    put:
+      operationId: filePut
+      summary: Upload a file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/GravitonFileMultipartBody"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/GravitonFileMultipartBody"
+          '*/*':
+            schema:
+              # a binary file of any type
+              type: string
+              format: binary
+      responses:
+        201:
+          description: 'Successful operation'
+        400:
+          description: 'Bad request.'
+
+components:
+  schemas:
+    GravitonFileMultipartBody:
+      type: object
+      properties:
+        # free flow object
+        metadata:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+        upload:
+          type: string
+          format: binary

@@ -22,3 +22,4 @@ versions.yml
 .idea
 *.cache
 .env.local
+src/Graviton/**/openapi.json

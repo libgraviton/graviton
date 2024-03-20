@@ -12,6 +12,8 @@ use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+use Graviton\GeneratorBundle\Generator\SchemaGenerator;
+use Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,13 +34,13 @@ class GenerateDynamicBundleCommand extends Command
 {
 
     /** @var  string */
-    const BUNDLE_NAMESPACE = 'GravitonDyn';
+    const string BUNDLE_NAMESPACE = 'GravitonDyn';
 
     /** @var  string */
-    const BUNDLE_NAME_MASK = self::BUNDLE_NAMESPACE.'/%sBundle';
+    const string BUNDLE_NAME_MASK = self::BUNDLE_NAMESPACE.'/%sBundle';
 
     /** @var  string */
-    const GENERATION_HASHFILE_FILENAME = 'genhash';
+    const string GENERATION_HASHFILE_FILENAME = 'genhash';
 
     /** @var  string */
     private $bundleBundleNamespace;
@@ -107,34 +109,44 @@ class GenerateDynamicBundleCommand extends Command
      * @var bool
      */
     private $generateSerializerConfig = true;
-    /**
-     * @var bool
-     */
-    private $generateSchema = true;
 
     /**
-     * @param LoaderInterface              $definitionLoader      JSON definition loader
-     * @param BundleGenerator              $bundleGenerator       bundle generator
-     * @param ResourceGenerator            $resourceGenerator     resource generator
-     * @param DynamicBundleBundleGenerator $bundleBundleGenerator bundlebundle generator
-     * @param SerializerInterface          $serializer            Serializer
-     * @param string|null                  $bundleAdditions       Additional bundles list in JSON format
-     * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
-     * @param string|null                  $name                  name
-     * @param string|null                  $syntheticFields       comma separated list of synthetic fields to create
-     * @param string|null                  $ensureIndexes         comma separated list of indexes to ensure
+     * @var SchemaGenerator
+     */
+    private SchemaGenerator $schemaGenerator;
+
+    /**
+     * @var RuntimeDefinitionBuilder
+     */
+    private RuntimeDefinitionBuilder $runtimeDefinitionBuilder;
+
+    /**
+     * @param LoaderInterface              $definitionLoader         JSON definition loader
+     * @param BundleGenerator              $bundleGenerator          bundle generator
+     * @param ResourceGenerator            $resourceGenerator        resource generator
+     * @param DynamicBundleBundleGenerator $bundleBundleGenerator    bundlebundle generator
+     * @param SerializerInterface          $serializer               Serializer
+     * @param string|null                  $bundleAdditions          Additional bundles list in JSON format
+     * @param string|null                  $serviceWhitelist         Service whitelist in JSON format
+     * @param string|null                  $name                     name
+     * @param string|null                  $syntheticFields          comma separated list of synthetic fields to create
+     * @param string|null                  $ensureIndexes            comma separated list of indexes to ensure
+     * @param SchemaGenerator              $schemaGenerator          schema generator
+     * @param RuntimeDefinitionBuilder     $runtimeDefinitionBuilder runtime def builder
      */
     public function __construct(
-        LoaderInterface     $definitionLoader,
+        LoaderInterface $definitionLoader,
         BundleGenerator $bundleGenerator,
         ResourceGenerator $resourceGenerator,
         DynamicBundleBundleGenerator $bundleBundleGenerator,
         SerializerInterface $serializer,
-        $bundleAdditions = null,
-        $serviceWhitelist = null,
-        $name = null,
-        $syntheticFields = null,
-        $ensureIndexes = null
+        $bundleAdditions,
+        $serviceWhitelist,
+        $name,
+        $syntheticFields,
+        $ensureIndexes,
+        SchemaGenerator $schemaGenerator,
+        RuntimeDefinitionBuilder $runtimeDefinitionBuilder
     ) {
         parent::__construct($name);
 
@@ -153,6 +165,9 @@ class GenerateDynamicBundleCommand extends Command
         if (!empty($serviceWhitelist)) {
             $this->serviceWhitelist = $serviceWhitelist;
         }
+
+        $this->schemaGenerator = $schemaGenerator;
+        $this->runtimeDefinitionBuilder = $runtimeDefinitionBuilder;
     }
 
     /**
@@ -212,13 +227,6 @@ class GenerateDynamicBundleCommand extends Command
                 'Should we generate serializer config?',
                 'true'
             )
-            ->addOption(
-                'generateSchema',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Should we generate schema files?',
-                'true'
-            )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
@@ -246,9 +254,6 @@ class GenerateDynamicBundleCommand extends Command
         if ($input->getOption('generateSerializerConfig') == 'false') {
             $this->generateSerializerConfig = false;
         }
-        if ($input->getOption('generateSchema') == 'false') {
-            $this->generateSchema = false;
-        }
         $this->repositoryFactoryService = $input->getOption('repositoryFactoryService');
 
         /**
@@ -273,6 +278,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
+        $definedBundles = [];
 
         /**
          * GENERATE THE BUNDLE(S)
@@ -306,8 +312,11 @@ class GenerateDynamicBundleCommand extends Command
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
 
+                $definedBundles[$bundleDir] = $jsonDef;
+
                 if ($needsGeneration) {
                     $this->generateResources(
+                        $filesToWorkOn,
                         $jsonDef,
                         $bundleName,
                         $bundleDir,
@@ -352,6 +361,62 @@ class GenerateDynamicBundleCommand extends Command
         // generate bundlebundle
         $this->generateBundleBundleClass();
 
+        // generate the main openapi schema file
+        $mainSchemaFile = $input->getOption('srcDir').self::BUNDLE_NAMESPACE.'/openapi.json';
+
+        $this->schemaGenerator->consolidateAllSchemas(
+            $input->getOption('srcDir'),
+            $output,
+            $mainSchemaFile
+        );
+
+        // write the small Entity helper classes
+        $entityBundleNamespace = sprintf(self::BUNDLE_NAME_MASK, 'Entity');
+        $entityBundleDir = $input->getOption('srcDir').$entityBundleNamespace;
+
+        $this->resourceGenerator->generateEntities(
+            $entityBundleNamespace,
+            $entityBundleDir,
+            $mainSchemaFile
+        );
+
+        // write RuntimeDefinition files for each endpoint
+        foreach ($definedBundles as $directory => $jsonDefinition) {
+            // locate openapi.json
+            $finder = Finder::create()
+                ->files()
+                ->in($directory)
+                ->path('config/schema')
+                ->name(['openapi.json']);
+
+            $files = iterator_to_array($finder);
+
+            if (empty($files)) {
+                continue;
+            }
+
+            /**
+             * @var $schemaFile SplFileInfo
+             */
+            $schemaFile = array_pop($files);
+
+            $runtimeDef = $this->runtimeDefinitionBuilder->build(
+                $jsonDefinition,
+                $directory,
+                $schemaFile
+            );
+
+            $destination = $directory.'/Resources/config/graviton.rd';
+            $this->fs->dumpFile(
+                $destination,
+                serialize($runtimeDef)
+            );
+
+            $output->writeln(
+                sprintf('<info>Wrote runtime definition to %s</info>', $destination)
+            );
+        }
+
         return 0;
     }
 
@@ -376,7 +441,6 @@ class GenerateDynamicBundleCommand extends Command
         $bundleFinder = $this->getBundleFinder($baseDir);
 
         foreach ($bundleFinder as $bundleDir) {
-            $genHash = '';
             $hashFileFinder = new Finder();
             $hashFileIterator = $hashFileFinder
                 ->files()
@@ -388,11 +452,14 @@ class GenerateDynamicBundleCommand extends Command
             $hashFileIterator->rewind();
 
             $hashFile = $hashFileIterator->current();
+            $genHash = '';
             if ($hashFile instanceof SplFileInfo) {
                 $genHash = $hashFile->getContents();
             }
 
-            $existingBundles[$bundleDir->getPathname()] = $genHash;
+            if (!empty($genHash)) {
+                $existingBundles[$bundleDir->getPathname()] = $genHash;
+            }
         }
 
         return $existingBundles;
@@ -456,6 +523,7 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * generates the resources of a bundle
      *
+     * @param array          $allDefinitions  all definitions
      * @param JsonDefinition $jsonDef         definition
      * @param string         $bundleName      name
      * @param string         $bundleDir       dir
@@ -464,6 +532,7 @@ class GenerateDynamicBundleCommand extends Command
      * @return void
      */
     protected function generateResources(
+        array $allDefinitions,
         JsonDefinition $jsonDef,
         $bundleName,
         $bundleDir,
@@ -476,17 +545,23 @@ class GenerateDynamicBundleCommand extends Command
         $generator->setRepositoryFactoryService($this->repositoryFactoryService);
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
-        $generator->setGenerateSchema($this->generateSchema);
         $generator->setSyntheticFields($this->syntheticFields);
         $generator->setEnsureIndexes($this->ensureIndexes);
 
-        foreach ($this->getSubResources($jsonDef) as $subRecource) {
-            $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
+        $schemaFile = $bundleDir . '/Resources/config/schema/openapi.tmp.json';
+        if ($this->fs->exists($schemaFile)) {
+            $this->fs->remove($schemaFile);
+        }
+
+        foreach ($this->getSubResources($jsonDef) as $subResource) {
+            $generator->setJson(new JsonDefinition($subResource->getDef()->setIsSubDocument(true)));
             $generator->generate(
+                $allDefinitions,
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
-                $subRecource->getId(),
+                $subResource->getId(),
+                $schemaFile,
                 true
             );
         }
@@ -502,10 +577,12 @@ class GenerateDynamicBundleCommand extends Command
 
             $generator->setJson(new JsonDefinition($jsonDef->getDef()));
             $generator->generate(
+                $allDefinitions,
                 $bundleDir,
                 $bundleNamespace,
                 $bundleName,
                 $jsonDef->getId(),
+                $schemaFile,
                 false
             );
         }

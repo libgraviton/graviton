@@ -1,0 +1,31 @@
+{
+  "x-documentClass": "Graviton\\Tests\\Rest\\DependencyInjection\\CompilerPass\\Resources\\Document\\Extref\\A",
+  "required": [],
+  "searchable": [],
+  "readOnlyFields": [],
+  "properties": [],
+  "solr": {
+    "fields": [
+      {
+        "name": "fieldA",
+        "type": "text_general",
+        "weight": 1
+      },
+      {
+        "name": "fieldB",
+        "type": "text_general",
+        "weight": 15
+      },
+      {
+        "name": "fieldC",
+        "type": "text_general",
+        "weight": 0
+      },
+      {
+        "name": "fieldD",
+        "type": "text_general",
+        "weight": 0.3
+      }
+    ]
+  }
+}

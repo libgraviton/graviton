@@ -19,7 +19,7 @@ class ModelQueryEvent extends Event
     /**
      * @var string
      */
-    public const NAME = 'document.model.event.query';
+    const string NAME = 'document.model.event.query';
 
     /**
      * @var Builder

@@ -24,29 +24,14 @@ class DynServiceRestListener
 {
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * @var RestListenerAbstract
      */
-    private $listener;
+    private RestListenerAbstract $listener;
 
     /**
      * @var string
      */
-    private $entityName;
+    private string $entityName;
 
     /**
      * HttpHeader constructor.
@@ -56,13 +41,10 @@ class DynServiceRestListener
      * @param DocumentManager $dm           document manager
      */
     public function __construct(
-        LoggerInterface $logger,
-        RequestStack $requestStack,
-        DocumentManager $dm
+        protected readonly LoggerInterface $logger,
+        private readonly RequestStack $requestStack,
+        private readonly DocumentManager $dm
     ) {
-        $this->logger = $logger;
-        $this->requestStack = $requestStack;
-        $this->dm = $dm;
     }
 
     /**

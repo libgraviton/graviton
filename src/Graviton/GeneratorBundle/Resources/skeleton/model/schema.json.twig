@@ -55,29 +55,10 @@
         "recordOriginException": {{ field.recordOriginException|json_encode() }},
 {% endif %}
 
-{% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-        "x-dynamic-key": {
-            "document-id": {{ field.xDynamicKey.documentId|json_encode() }},
-            "repository-method": {{ field.xDynamicKey.repositoryMethod|json_encode() }},
-            "ref-field": {{ field.xDynamicKey.refField|json_encode() }}
-        },
-{% endif %}
-
-{% if attribute(field, "groups") is defined and field.groups %}
-        "x-groups": {{ field.groups|json_encode() }},
-{% else %}
-        "x-groups": [],
-{% endif %}
-
-        "x-restrictions": {{ field.restrictions|json_encode() }},
-
 {% if field.constraints is defined and field.constraints != null %}
         "x-constraints": {{ field.constraints|json_encode() }},
 {% endif %}
 
-{% if field.onVariation is defined %}
-        "x-onvariation": {{ field.onVariation|json_encode() }},
-{% endif %}
 
 {% if field.description is defined and field.description != '' %}
         "description": {{ field.description|json_encode() }}

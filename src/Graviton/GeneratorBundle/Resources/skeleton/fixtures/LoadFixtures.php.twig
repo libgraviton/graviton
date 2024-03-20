@@ -2,10 +2,9 @@
 
 namespace {{ base }}DataFixtures\MongoDB;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\MongoDB\Fixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Graviton\RestBundle\Service\RestUtils;
 
 /**
  * Load a example consultant and loads of fake data
@@ -14,27 +13,26 @@ use Doctrine\Persistence\ObjectManager;
  * @link     http://swisscom.ch
  */
 if (interface_exists('Graviton\MongoDB\Fixtures\FixtureInterface')) {
-    class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
+    class Load{{ document }}Data implements FixtureInterface
     {
-        /**
-         * @private ContainerInterface
-         */
-        private $container;
 
-        protected $restUtils;
+        /**
+         * @var RestUtils
+         */
+        private RestUtils $restUtils;
+
         protected $fixtures;
 
         /**
          * {@inheritDoc}
          *
-         * @param ContainerInterface $container service_container
+         * @param RestUtils $restUtils rest utils
          *
          * @return void
          */
-        public function setContainer(ContainerInterface $container = null)
+        public function setRestUtils(RestUtils $restUtils)
         {
-            $this->container = $container;
-            $this->restUtils = $this->container->get('graviton.rest.restutils');
+            $this->restUtils = $restUtils;
             $this->fixtures = json_decode('{{ fixtures_json }}');
         }
 

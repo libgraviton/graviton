@@ -1,0 +1,42 @@
+openapi: 3.0.2
+components:
+  schemas:
+    GravitonExtRef:
+      type: object
+      properties:
+        $ref:
+          type: string
+          description: An url to point to.
+    GravitonPatchBody:
+      type: array
+      items:
+        type: object
+        description: A JSONPatch document as defined by RFC 6902
+        required:
+          - "op"
+          - "path"
+        properties:
+          op:
+            type: string
+            description: The operation to be performed
+            enum:
+              - "add"
+              - "remove"
+              - "replace"
+              - "move"
+              - "copy"
+              - "test"
+          path:
+            type: string
+            description: A JSON-Pointer
+          value:
+            oneOf:
+              - type: string
+              - type: object
+                additionalProperties: true
+              - type: boolean
+              - type: array
+              - type: number
+          from:
+            type: string
+            description: A string containing a JSON Pointer value.

@@ -8,6 +8,8 @@ namespace Graviton\SecurityBundle\Controller;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use MongoDB\BSON\Regex;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -52,43 +54,39 @@ class WhoAmIController extends RestController
             ]
         );
 
-        /** @var Response $response */
-        $response = $this->getResponse();
-        $response->headers->set('Content-Type', 'application/json');
-
-        $response->setStatusCode(Response::HTTP_OK);
-
         if (!$document) {
-            // if we don't have an actual object, we just return an object containing the query field and
-            // anonymous
-            $response->setContent(
-                json_encode(
-                    [
-                        $this->queryField => AnonymousUser::USERNAME
-                    ]
-                )
+            return new JsonResponse(
+                [
+                    $this->queryField => AnonymousUser::USERNAME
+                ]
             );
-            return $response;
         }
 
-        $response->setContent($this->restUtils->serialize($document));
-
-        return $response;
+        return JsonResponse::fromJsonString($this->restUtils->serialize($document));
     }
 
     /**
-     * Returns schema
+     * should return the current model schema
      *
-     * @return Response $response Response with result or error
+     * @param Request $request request
+     *
+     * @return array the schema encoded
      */
-    public function whoAmiSchemaAction()
+    public function getModelSchema(Request $request) : array
     {
-        /** @var Response $response */
-        $response = $this->getResponse();
-        $response->headers->set('Content-Type', 'application/json');
+        $schema = parent::getModelSchema($request);
+        $schema['info']['title'] = 'Whoami endpoint, returning the current identity.';
 
-        $response->setContent(json_encode($this->getModel()->getSchema()));
+        $realPath = array_shift($schema['paths']);
 
-        return $response;
+        foreach ($realPath as $method => $body) {
+            if ($method != 'get') {
+                unset($realPath[$method]);
+            }
+        }
+
+        $schema['paths'] = ['/person/whoami' => $realPath];
+
+        return $schema;
     }
 }

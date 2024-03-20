@@ -5,6 +5,7 @@ parameters:
     graviton.mongodb.default.server.uri: ~
 
     graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
+    graviton.document.dateFormatRegex: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\.]?\d{0,6}[+-]\d{2}[:]?\d{2}$'
     graviton.document.timezone: 'UTC'
 
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
@@ -41,6 +42,8 @@ parameters:
     # if true, the requests to solr as restricted - if false, then not.
     graviton.rest.data_restriction.solr: true
 
+    graviton.rest.openapi.path: "%kernel.project_dir%/app/config/routing.yml"
+
     graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
 
     # security related parameters
@@ -74,7 +77,6 @@ parameters:
 
     # Add full qualified type, application/pdf, image/jpeg...
     graviton.file.allowed.mime_types: []
-    graviton.file.read_filesystem_mimetype: true
 
     graviton.file.local.storage_directory: '%kernel.project_dir%/app/files'
 
@@ -93,8 +95,8 @@ parameters:
     graviton.core.httpclient.debugMaxLength: 5000
     graviton.core.httpclient.verifyPeer: false
 
-    graviton.translator.default.locale: en
-    graviton.translator.cache_name_depth: 3
+    graviton.translator.default.language: de
+    graviton.translator.languages: en,de,fr,it
 
     # optional url to a solr instance for improved search
     graviton.solr.url: null
@@ -110,9 +112,6 @@ parameters:
     graviton.router.host: null
     graviton.router.port_http: null
     graviton.router.port_https: null
-
-    # service info injected by cloudfoundry
-    vcap.services: ~
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1

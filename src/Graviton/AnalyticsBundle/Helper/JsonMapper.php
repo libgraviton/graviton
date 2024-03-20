@@ -44,7 +44,7 @@ class JsonMapper
      *
      * @return string CamelCasedVariableName
      */
-    protected function getCamelCaseName($name)
+    protected function getCamelCaseName($name): string
     {
         return str_replace(
             ' ', '', ucwords(str_replace(array('_', '-'), ' ', $name))
@@ -58,7 +58,7 @@ class JsonMapper
      *
      * @return string Name without hyphen
      */
-    protected function getSafeName($name)
+    protected function getSafeName($name): string
     {
         if (strpos($name, '-') !== false) {
             $name = $this->getCamelCaseName($name);

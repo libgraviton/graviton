@@ -19,7 +19,7 @@ class EntityPrePersistEvent extends Event
     /**
      * @var string
      */
-    public const NAME = 'document.model.event.entity.pre_persist';
+    public const string NAME = 'document.model.event.entity.pre_persist';
 
     /**
      * @var object

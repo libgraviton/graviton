@@ -5,26 +5,20 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Graviton\ExceptionBundle\Exception\DeserializationException;
-use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\NoInputException;
-use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
-use Graviton\JsonSchemaBundle\Validator\Validator;
+use Graviton\RestBundle\Exception\DeserializationException;
+use Graviton\RestBundle\Exception\InvalidJsonPatchException;
+use Graviton\RestBundle\Exception\MalformedInputException;
+use Graviton\RestBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\SchemaBundle\SchemaUtils;
+use JMS\Serializer\Serializer;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Rs\Json\Pointer;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\Router;
-use JMS\Serializer\Serializer;
-use Graviton\RestBundle\Controller\RestController;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -34,93 +28,23 @@ use Graviton\RestBundle\Controller\RestController;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-final class RestUtils implements RestUtilsInterface
+readonly class RestUtils
 {
 
     /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    /**
-     * @var Router
-     */
-    private $router;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var SchemaUtils
-     */
-    private $schemaUtils;
-
-    /**
-     * @var Validator
-     */
-    private $schemaValidator;
-
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cacheProvider;
-
-    /**
-     * @param Router                 $router          router
-     * @param Serializer             $serializer      serializer
-     * @param LoggerInterface        $logger          PSR logger (e.g. Monolog)
-     * @param SchemaUtils            $schemaUtils     schema utils
-     * @param Validator              $schemaValidator schema validator
-     * @param CacheItemPoolInterface $cacheProvider   Cache service
+     * @param Serializer                  $serializer         serializer
+     * @param BodyChecker                 $bodyChecker        body checker
+     * @param LoggerInterface             $logger             logger
+     * @param CacheItemPoolInterface      $cacheProvider      cache provider
+     * @param HttpMessageFactoryInterface $httpMessageFactory psr factory
      */
     public function __construct(
-        Router $router,
-        Serializer $serializer,
-        LoggerInterface $logger,
-        SchemaUtils $schemaUtils,
-        Validator $schemaValidator,
-        CacheItemPoolInterface $cacheProvider
+        private Serializer $serializer,
+        private BodyChecker $bodyChecker,
+        private LoggerInterface $logger,
+        private CacheItemPoolInterface $cacheProvider,
+        private HttpMessageFactoryInterface $httpMessageFactory
     ) {
-        $this->serializer = $serializer;
-        $this->router = $router;
-        $this->logger = $logger;
-        $this->schemaUtils = $schemaUtils;
-        $this->schemaValidator = $schemaValidator;
-        $this->cacheProvider = $cacheProvider;
-    }
-
-    /**
-     * Builds a map of baseroutes (controllers) to its relevant route to the actions.
-     * ignores schema stuff.
-     *
-     * @return array grouped array of basenames and actions..
-     */
-    public function getServiceRoutingMap()
-    {
-        $ret = [];
-        $optionRoutes = $this->getOptionRoutes();
-
-        foreach ($optionRoutes as $routeName => $optionRoute) {
-            // get base name from options action
-            $routeParts = explode('.', $routeName);
-            if (count($routeParts) < 3) {
-                continue;
-            }
-            array_pop($routeParts); // get rid of last part
-            $baseName = implode('.', $routeParts);
-
-            // get routes from same controller
-            foreach ($this->getRoutesByBasename($baseName) as $routeName => $route) {
-                // don't put schema stuff
-                if (!str_contains('schema', strtolower($routeName))) {
-                    $ret[$baseName][$routeName] = $route;
-                }
-            }
-        }
-
-        return $ret;
     }
 
     /**
@@ -159,11 +83,11 @@ final class RestUtils implements RestUtilsInterface
      * @param string $documentClass Document class
      * @param string $format        Which format to deserialize from
      *
+     * @return object|array|integer|double|string|boolean
      * @throws \Exception
      *
-     * @return object|array|integer|double|string|boolean
      */
-    public function deserializeContent($content, $documentClass, $format = 'json')
+    public function deserializeContent($content, string $documentClass, string $format = 'json')
     {
         $record = $this->getSerializer()->deserialize(
             $content,
@@ -178,72 +102,140 @@ final class RestUtils implements RestUtilsInterface
      * Validates content with the given schema, returning an array of errors.
      * If all is good, you will receive an empty array.
      *
-     * @param object        $content \stdClass of the request content
-     * @param DocumentModel $model   the model to check the schema for
+     * @param ServerRequestInterface $request        request
+     * @param Response               $response       response
+     * @param DocumentModel          $model          the model to check the schema for
+     * @param bool                   $skipBodyChecks should we skip body checks?
      *
-     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
-     * @throws \Exception
+     * @return ServerRequestInterface request
+     *
+     * @throws \Exception|\Throwable
      */
-    public function validateContent($content, DocumentModel $model)
-    {
-        if (is_string($content)) {
-            $content = json_decode($content);
+    public function validatePsrRequest(
+        ServerRequestInterface $request,
+        Response $response,
+        DocumentModel $model,
+        bool $skipBodyChecks = false
+    ) : ServerRequestInterface {
+
+        // slash missing at the end of POST requests
+        if ($request->getMethod() == 'POST' && !str_ends_with($request->getUri()->getPath(), '/')) {
+            $newUri = $request->getUri()->withPath(
+                $request->getUri()->getPath() . '/'
+            );
+            $request = $request->withUri($newUri);
         }
 
-        return $this->schemaValidator->validate(
-            $content,
-            $this->schemaUtils->getModelSchema(null, $model, true, true, true, $content)
+        // first, body checks!
+        if (!$skipBodyChecks) {
+            $request = $this->validateBodyChecks($request, $response, $model);
+        }
+
+        $validator = (new ValidatorBuilder())
+            ->setCache($this->cacheProvider)
+            ->fromJsonFile($model->getSchemaPath())
+            ->getServerRequestValidator();
+
+        $validator->validate($request);
+
+        return $request;
+    }
+
+    /**
+     * validates the passed request and converts it to a PSR request - throws an Exception if something is wrong
+     *
+     * @param Request       $request        request
+     * @param Response      $response       response
+     * @param DocumentModel $model          model
+     * @param bool          $skipBodyChecks should the body be checked?
+     * @return ServerRequestInterface
+     * @throws \Exception
+     */
+    public function validateRequest(
+        Request $request,
+        Response $response,
+        DocumentModel $model,
+        bool $skipBodyChecks = false
+    ) : ServerRequestInterface {
+        return $this->validatePsrRequest(
+            $this->httpMessageFactory->createRequest($request),
+            $response,
+            $model,
+            $skipBodyChecks
         );
     }
 
     /**
-     * validate raw json input
+     * performs body checks. these are checks that cannot be done by the openapi validator library - they
+     * mostly rely on the current database object.
      *
-     * @param Request       $request  request
-     * @param Response      $response response
-     * @param DocumentModel $model    model
-     * @param string        $content  Alternative request content.
+     * @param ServerRequestInterface $request  request
+     * @param Response               $response response
+     * @param DocumentModel          $model    model
      *
      * @return void
+     *
+     * @throws \Throwable
      */
-    public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '')
+    private function validateBodyChecks(
+        ServerRequestInterface $request,
+        Response $response,
+        DocumentModel $model
+    ) : ServerRequestInterface {
+        $id = $this->getTargetIdFromRequest($request);
+        return $this->bodyChecker->checkRequest(
+            $request,
+            $response,
+            $model,
+            $id
+        );
+    }
+
+    /**
+     * determines which record id the request targets, if any - or it there is a mismatch
+     *
+     * @param ServerRequestInterface $request request
+     *
+     * @return string|null id or null
+     */
+    public function getTargetIdFromRequest(ServerRequestInterface $request) : ?string
     {
-        if (empty($content)) {
-            $content = $request->getContent();
+        $id = $request->getAttribute('id');
+
+        // no json request?
+        $contentType = $request->getHeaderLine('content-type');
+        if (!empty($contentType) && !str_contains($contentType, 'json')) {
+            return $id;
         }
 
-        if (is_resource($content)) {
-            throw new BadRequestHttpException('unexpected resource in validation');
+        // in body?
+        $bodyId = null;
+        try {
+            $body = new Pointer((string) $request->getBody());
+            $bodyId = $body->get('/id');
+        } catch (\Throwable $t) {
+            // it's ok.
         }
 
-        // is request body empty
-        if ($content === '') {
-            throw new NoInputException();
+        if (!empty($id) && !empty($bodyId) && $id != $bodyId) {
+            // collision!
+            throw new MalformedInputException('Record ID in your payload must be the same');
         }
 
-        $input = json_decode($content, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new MalformedInputException(jsonError: json_last_error_msg());
-        }
-        if (!is_array($input)) {
-            throw new MalformedInputException('JSON request body must be an object');
-        }
+        return !empty($id) ? $id : $bodyId;
+    }
 
-        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
-            // we need to check for id mismatches....
-            if ($request->attributes->get('id') != $input['id']) {
-                throw new MalformedInputException('Record ID in your payload must be the same');
-            }
-        }
-
-        if ($request->getMethod() == 'POST' &&
-            array_key_exists('id', $input) &&
-            !$model->isIdInPostAllowed()
-        ) {
-            throw new MalformedInputException(
-                '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
-            );
-        }
+    /**
+     * returns the deserialized entity from the request
+     *
+     * @param ServerRequestInterface $request request
+     * @param DocumentModel          $model   model
+     *
+     * @return object entity
+     */
+    public function getEntityFromRequest(ServerRequestInterface $request, DocumentModel $model) : object
+    {
+        return $this->deserialize($request->getBody(), $model->getEntityClass());
     }
 
     /**
@@ -257,9 +249,6 @@ final class RestUtils implements RestUtilsInterface
     public function checkJsonPatchRequest(array $jsonPatch)
     {
         foreach ($jsonPatch as $operation) {
-            if (!is_array($operation)) {
-                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
-            }
             if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
                 throw new InvalidJsonPatchException('Change/remove of ID not allowed');
             }
@@ -277,100 +266,13 @@ final class RestUtils implements RestUtilsInterface
     }
 
     /**
-     * It has been deemed that we search for OPTION routes in order to detect our
-     * service routes and then derive the rest from them.
-     *
-     * @return array An array with option routes
-     */
-    public function getOptionRoutes()
-    {
-        $cacheItem = $this->cacheProvider->getItem('cached_restutils_route_options');
-
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
-        $ret = array_filter(
-            $this->router->getRouteCollection()->all(),
-            function ($route) {
-                if (!in_array('OPTIONS', $route->getMethods())) {
-                    return false;
-                }
-                // ignore all schema routes
-                if (str_starts_with($route->getPath(), '/schema')) {
-                    return false;
-                }
-                if ($route->getPath() == '/' || $route->getPath() == '/core/version') {
-                    return false;
-                }
-
-                return is_null($route->getRequirement('id'));
-            }
-        );
-
-        $cacheItem->set($ret);
-        $this->cacheProvider->save($cacheItem);
-
-        return $ret;
-    }
-
-    /**
-     * Based on $baseName, this function returns all routes that match this basename..
-     * So if you pass graviton.cont.action; it will return all route names that start with the same.
-     * In our routing naming schema, this means all the routes from the same controller.
-     *
-     * @param string $baseName basename
-     *
-     * @return array array with matching routes
-     */
-    public function getRoutesByBasename($baseName)
-    {
-        $cacheId = 'cached_restutils_route_'.$baseName;
-        $cacheItem = $this->cacheProvider->getItem($cacheId);
-
-        if ($cacheItem->isHit()) {
-            return $cacheItem->get();
-        }
-
-        $ret = [];
-        $collections = $this->router->getRouteCollection()->all();
-        foreach ($collections as $routeName => $route) {
-            if (preg_match('/^' . $baseName . '/', $routeName)) {
-                $ret[$routeName] = $route;
-            }
-        }
-
-        $cacheItem->set($ret);
-        $this->cacheProvider->save($cacheItem);
-
-        return $ret;
-    }
-
-    /**
-     * @param Request $request request
-     * @return string
-     */
-    public function getRouteName(Request $request)
-    {
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
-        return $routeName;
-    }
-
-    /**
      * Serialize the given record and throw an exception if something went wrong
      *
      * @param object|object[] $result Record(s)
      *
-     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
-     *
      * @return string $content Json content
+     * @throws \Graviton\RestBundle\Exception\SerializationException
+     *
      */
     public function serialize($result)
     {
@@ -416,24 +318,5 @@ final class RestUtils implements RestUtilsInterface
         }
 
         return $record;
-    }
-
-    /**
-     * Validates the current request on schema violations. If there are errors,
-     * the exception is thrown. If not, the deserialized record is returned.
-     *
-     * @param object|string $content \stdClass of the request content
-     * @param DocumentModel $model   the model to check the schema for
-     *
-     * @return ValidationExceptionError|Object
-     * @throws \Exception
-     */
-    public function validateRequest($content, DocumentModel $model)
-    {
-        $errors = $this->validateContent($content, $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-        return $this->deserialize($content, $model->getEntityClass());
     }
 }

@@ -4,14 +4,12 @@ namespace Graviton\GeneratorBundle\Definition;
 use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\Service;
 use Graviton\GeneratorBundle\Definition\Schema\Solr;
-use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
+use Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck;
 
 /**
  * This class represents the json file that defines the structure
  * of a mongo collection that exists and serves as a base to generate
  * a bundle.
- *
- * @todo     if this json format serves in more places; move this class
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
@@ -204,10 +202,10 @@ class JsonDefinition
         }
 
         $routerBase = $this->def->getService()->getRouterBase();
-        if (substr($routerBase, 0, 1) !== '/') {
+        if (!str_starts_with($routerBase, '/')) {
             $routerBase = '/' . $routerBase;
         }
-        if (substr($routerBase, -1) === '/') {
+        if (str_ends_with($routerBase, '/')) {
             $routerBase = substr($routerBase, 0, -1);
         }
 
@@ -269,9 +267,10 @@ class JsonDefinition
     {
         $hierarchy = [];
         foreach ($this->def->getTarget()->getFields() as $field) {
+            $subFields = $this->createFieldHierarchyRecursive($field, $field->getName());
             $hierarchy = array_merge_recursive(
                 $hierarchy,
-                $this->createFieldHierarchyRecursive($field, $field->getName())
+                $subFields
             );
         }
 
@@ -289,7 +288,7 @@ class JsonDefinition
             $definition = new Schema\Field();
             $constraint = new Constraint();
             $constraint->setName('versioning');
-            $definition->setName(VersionServiceConstraint::FIELD_NAME)->setTitle('Version')->setType('int')
+            $definition->setName(VersionedServiceBodyCheck::FIELD_NAME)->setTitle('Version')->setType('int')
                        ->setConstraints([$constraint])
                        ->setDescription('Document version. You need to send current version if you want to update.');
             $fields['version'] = $this->processSimpleField('version',  $definition);
@@ -427,20 +426,6 @@ class JsonDefinition
         }
 
         return $this->def->getService()->getRoles();
-    }
-
-    /**
-     * Provides the variations attribute from the service section
-     *
-     * @return array
-     */
-    public function getVariations()
-    {
-        if ($this->def->getService() === null) {
-            return [];
-        }
-
-        return $this->def->getService()->getVariations();
     }
 
     /**

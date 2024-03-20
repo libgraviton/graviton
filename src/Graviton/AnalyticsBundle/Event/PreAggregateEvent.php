@@ -18,7 +18,7 @@ class PreAggregateEvent extends Event
     /**
      * @var string
      */
-    public const NAME = 'analytics.event.pre_aggregate';
+    public const string NAME = 'analytics.event.pre_aggregate';
 
     /**
      * @var array

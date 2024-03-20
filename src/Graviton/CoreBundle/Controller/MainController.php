@@ -6,13 +6,15 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
-use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\RestBundle\Service\RestUtils;
+use Graviton\RestBundle\Trait\SchemaTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 
 /**
  * MainController
@@ -21,64 +23,51 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class MainController
+readonly class MainController
 {
-    /**
-     * @var Router
-     */
-    private $router;
+
+    use SchemaTrait;
 
     /**
-     * @var RestUtilsInterface
-     */
-    private $restUtils;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var array
-     */
-    private $addditionalRoutes;
-
-    /**
-     * @var array
-     */
-    private $pathWhitelist;
-
-    /**
-     * @param Router                   $router           router
-     * @param RestUtilsInterface       $restUtils        rest-utils from GravitonRestBundle
-     * @param EventDispatcherInterface $eventDispatcher  event dispatcher
-     * @param array                    $additionalRoutes custom routes
-     * @param array                    $pathWhitelist    service path that always get added to the main page
+     * @param Router                   $router          router
+     * @param RestUtils                $restUtils       rest-utils from GravitonRestBundle
+     * @param EventDispatcherInterface $eventDispatcher event dispatcher
      */
     public function __construct(
-        Router $router,
-        RestUtilsInterface $restUtils,
-        EventDispatcherInterface $eventDispatcher,
-        array $additionalRoutes = [],
-        array $pathWhitelist = []
+        private Router $router,
+        private RestUtils $restUtils,
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        $this->router = $router;
-        $this->restUtils = $restUtils;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->addditionalRoutes = $additionalRoutes;
-        $this->pathWhitelist = $pathWhitelist;
     }
 
     /**
      * create simple start page.
      *
+     * @param Request $request request
+     *
      * @return Response $response Response with result or error
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $mainPage = [];
-        $mainPage['services'] = $this->determineServices(
-            $this->restUtils->getOptionRoutes()
+
+        $baseUri = $this->router->generate(
+            $request->attributes->get('_route'),
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $mainPage['services'] = array_merge(
+            [
+                [
+                    '$ref' => $baseUri,
+                    'api-docs' => [
+                        'json' => ['$ref' => $baseUri.'openapi.json'],
+                        'yaml' => ['$ref' => $baseUri.'openapi.yaml']
+                    ]
+                ]
+            ],
+            $this->determineServices()
         );
 
         return new JsonResponse($mainPage);
@@ -87,44 +76,59 @@ class MainController
     /**
      * Determines what service endpoints are available.
      *
-     * @param array $optionRoutes List of routing options.
-     *
      * @return array
      */
-    protected function determineServices(array $optionRoutes)
+    private function determineServices()
     {
-        $router = $this->router;
-        foreach ($this->addditionalRoutes as $route) {
-            $optionRoutes[$route] = null;
+        $routes = [];
+        foreach ($this->router->getRouteCollection() as $routeName => $route) {
+            $isRest = $route->getDefault('graviton-rest');
+            if (!$isRest) {
+                continue;
+            }
+
+            $routerBase = $route->getDefault('router-base');
+            if (empty($routerBase) || !str_contains($route->getPath(), '/schema/')) {
+                continue;
+            }
+
+            $routes[$routerBase][] = $routeName;
         }
 
-        $services = array_map(
-            function ($routeName) use ($router) {
-                $routeParts = explode('.', $routeName);
-                if (count($routeParts) > 3) {
-                    list($app, $bundle, $rest, $document) = $routeParts;
+        $services = [];
+        foreach ($routes as $routerBase => $subRoutes) {
+            $match = $this->router->match($routerBase);
+            $baseRoute = $match['_route'];
 
-                    $schemaRoute = implode('.', [$app, $bundle, $rest, $document, 'canonicalSchema']);
+            $schemas = array_map(
+                function ($routeName) {
+                    return $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
+                },
+                $subRoutes
+            );
 
-                    return [
-                        '$ref' => $router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'profile' => $router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
-                    ];
+            natsort($schemas);
+
+            $docs = [];
+            foreach ($schemas as $schema) {
+                if (str_ends_with($schema, '.json')) {
+                    $type = 'json';
+                } else {
+                    $type = 'yaml';
                 }
-            },
-            array_keys($optionRoutes)
-        );
 
-        $services = array_filter(
-            $services,
-            function ($val) {
-                return !is_null($val);
+                $docs[$type] = ['$ref' => $schema];
             }
-        );
+
+            $services[] = [
+                '$ref' => $this->router->generate($baseRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'api-docs' => $docs
+            ];
+        }
 
         $sortArr = [];
         foreach ($services as $key => $val) {
-            if ($this->isRelevantForMainPage($val) && !in_array($val['$ref'], $sortArr)) {
+            if (!in_array($val['$ref'], $sortArr)) {
                 $sortArr[$key] = $val['$ref'];
             } else {
                 unset($services[$key]);
@@ -137,6 +141,7 @@ class MainController
         $services = array_merge($services, $additionalRoutes);
 
         array_multisort($sortArr, SORT_ASC, $services);
+
         return $services;
     }
 
@@ -156,30 +161,19 @@ class MainController
         if (!empty($routes)) {
             $baseRoute = $this->router->match("/");
             $baseUrl = $this->router->generate($baseRoute['_route'], [], UrlGeneratorInterface::ABSOLUTE_URL);
+
             foreach ($routes as $route) {
-                $thisUrl = $baseUrl.$route['$ref'];
-                $additionalRoutes[] = [
-                    '$ref' => $thisUrl,
-                    'profile' => $baseUrl.$route['profile']
-                ];
-                $sortArr[$thisUrl] = $thisUrl;
+                $route['$ref'] = $baseUrl.$route['$ref'];
+                $route['api-docs']['json']['$ref'] = $baseUrl.$route['api-docs']['json']['$ref'];
+                $route['api-docs']['yaml']['$ref'] = $baseUrl.$route['api-docs']['yaml']['$ref'];
+
+                $sortArr[$route['$ref']] = $route['$ref'];
+
+                $additionalRoutes[] = $route;
             }
         }
 
         return $additionalRoutes;
-    }
-
-    /**
-     * tells if a service is relevant for the mainpage
-     *
-     * @param array $val value of service spec
-     *
-     * @return boolean
-     */
-    private function isRelevantForMainPage($val)
-    {
-        return (substr($val['$ref'], -1) === '/')
-            || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
     }
 
     /**
@@ -192,5 +186,34 @@ class MainController
     public function optionsAction(Request $request)
     {
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Returns the main schema
+     *
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of the action
+     */
+    public function schemaAction(Request $request)
+    {
+        if (!class_exists('\GravitonDyn\EntityBundle\Entity\GravitonSchema')) {
+            throw new \RuntimeException('Unable to locate global schema.');
+        }
+
+        return $this->getResponseFromSchemaFile(
+            \GravitonDyn\EntityBundle\Entity\GravitonSchema::MAIN_SCHEMA_FILE,
+            $request->get('format')
+        );
+    }
+
+    /**
+     * renders a favicon
+     *
+     * @return Response $response icon response
+     */
+    public function iconAction()
+    {
+        return new BinaryFileResponse(__DIR__.'/../Resources/assets/favicon.ico');
     }
 }

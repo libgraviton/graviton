@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Docs: https://github.com/shivammathur/setup-php
       - name: Setup PHP
@@ -48,7 +48,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           # Use composer.json for key, if composer.lock is not committed.
@@ -64,12 +64,10 @@ jobs:
           echo "APP_ENV=test" > .env.local
           echo "APP_DEBUG=0" >> .env.local
           echo "MONGODB_URI=${MONGODB_URI}" >> .env.local
-          
+  
           composer configure
           bash prepare-for-tests.sh
           cat app/config/parameters.yml
-          
-          composer check
         env:
           MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports['27017'] }}/db
 
@@ -83,6 +81,10 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           COVERALLS_FLAG_NAME: '${{ matrix.php-versions }}'
+
+      - name: Run syntax checker
+        run: |
+          composer check
 
       - uses: ashley-taylor/junit-report-annotations-action@1.4
         if: always()

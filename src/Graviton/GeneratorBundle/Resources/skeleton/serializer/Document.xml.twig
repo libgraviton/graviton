@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
   <class name="{{ base }}Document\{{ document }}" exclusion-policy="NONE">
+    <property name="id" type="string" accessor-getter="getId"{% if not hasIdFieldDefined %} exclude="true"{% endif %} />
 
-    <property name="id" type="string" accessor-getter="getId"{% if noIdField is defined %} exclude="true"{% endif %} />
+{# add id to reserved fieldnames when NOT embedded #}
+{% set reservedFieldnames = reservedFieldnames|join('id') %}
 
-{% if realIdField == true %}
+{% if isEmbedded == true %}
     <!-- hidden id for embedding purposes -->
     <property name="realId" serialized-name="realId" type="string" accessor-getter="getRealId" exclude="true"/>
 {% endif %}
@@ -26,17 +28,11 @@
       {% set getterMethod = "get#{field.fieldName|capitalize}" %}
     {% endif %}
 
-    {% set groups = "" %}
-    {% if attribute(field, "groups") is defined and field.groups %}
-        {% set groups = 'groups="' ~ field.groups|join(',') ~ '"' %}
-    {% endif %}
-
     <property
         name="{{ field.fieldName }}"
         max-depth="5"
         {# skip-when-empty="true" #}
         {% if field.hidden == true %}exclude="true"{% else %}exclude="false"{% endif %}
-        {{ groups }}
         serialized-name="{{ field.exposedName }}"
         accessor-getter="{{ getterMethod }}"
         accessor-setter="set{{ field.fieldName|capitalize }}">
