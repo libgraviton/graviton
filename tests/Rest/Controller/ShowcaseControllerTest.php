@@ -993,7 +993,7 @@ class ShowcaseControllerTest extends RestTestCase
         $schema = $client->getResults();
 
         // get the nested app schema
-        $nestedAppSchema = $schema->components->schemas->{'ShowCaseNestedApps'};
+        $nestedAppSchema = $schema->components->schemas->{'ShowCaseShowCaseNestedApps'};
         $this->assertIsObject($nestedAppSchema);
 
         // make sure we have an extref field here
@@ -1002,7 +1002,7 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertObjectNotHasProperty('id', $nestedAppSchema->properties);
 
         // embed case - check the embedded 'contactCode'
-        $contactCodeSchema = $schema->components->schemas->{'ShowCaseContactCode'};
+        $contactCodeSchema = $schema->components->schemas->{'ShowCaseShowCaseContactCode'};
         $this->assertIsObject($contactCodeSchema);
 
         //$this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
