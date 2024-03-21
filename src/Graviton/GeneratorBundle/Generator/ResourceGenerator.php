@@ -348,11 +348,19 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateSerializer($parameters, $bundleDir, $document, $isSubResource);
         }
 
-        $this->schemaGenerator->generateSchema(
-            $parameters,
-            $isSubResource,
-            $schemaFile
-        );
+        try {
+            $this->schemaGenerator->generateSchema(
+                $parameters,
+                $isSubResource,
+                $schemaFile
+            );
+        } catch (\Exception $e) {
+            throw new \Exception(
+                sprintf('Error generating schema for document "%s". Cannot continue.', $document),
+                0,
+                $e
+            );
+        }
 
         if ($this->generateModel) {
             $this->generateModel($parameters, $bundleDir, $document, $isSubResource);

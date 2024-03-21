@@ -296,48 +296,39 @@ class GenerateDynamicBundleCommand extends Command
             $bundleDir = $input->getOption('srcDir').$namespace;
             $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
 
-            try {
-                $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
+            $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
 
-                $needsGeneration = true;
-                if (isset($existingBundles[$bundleDir])) {
-                    if ($existingBundles[$bundleDir] == $thisHash) {
-                        $needsGeneration = false;
-                    }
-                    unset($existingBundles[$bundleDir]);
+            $needsGeneration = true;
+            if (isset($existingBundles[$bundleDir])) {
+                if ($existingBundles[$bundleDir] == $thisHash) {
+                    $needsGeneration = false;
                 }
+                unset($existingBundles[$bundleDir]);
+            }
 
-                if ($needsGeneration) {
-                    $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
-                    $this->generateGenerationHashFile($bundleDir, $thisHash);
-                }
+            if ($needsGeneration) {
+                $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
+                $this->generateGenerationHashFile($bundleDir, $thisHash);
+            }
 
-                $definedBundles[$bundleDir] = $jsonDef;
+            $definedBundles[$bundleDir] = $jsonDef;
 
-                if ($needsGeneration) {
-                    $this->generateResources(
-                        $filesToWorkOn,
-                        $jsonDef,
-                        $bundleName,
-                        $bundleDir,
-                        $bundleNamespace
-                    );
-
-                    $output->writeln(
-                        sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
-                    );
-                } else {
-                    $output->writeln(
-                        sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
-                    );
-                }
-            } catch (\Exception $e) {
-                $output->writeln(
-                    sprintf('<error>%s</error>', $e->getMessage())
+            if ($needsGeneration) {
+                $this->generateResources(
+                    $filesToWorkOn,
+                    $jsonDef,
+                    $bundleName,
+                    $bundleDir,
+                    $bundleNamespace
                 );
 
-                // remove failed bundle from list
-                array_pop($this->bundleBundleList);
+                $output->writeln(
+                    sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
+                );
+            } else {
+                $output->writeln(
+                    sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
+                );
             }
         }
 
