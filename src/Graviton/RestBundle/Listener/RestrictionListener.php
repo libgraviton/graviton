@@ -223,7 +223,7 @@ class RestrictionListener
                 $matchConditions[] = [
                     '$or' => [
                         [$fieldName => null],
-                        [$fieldName => ['$lte' => $fieldValue]],
+                        [$fieldName => ['$lte' => (int) $fieldValue]], // always int
                     ]
                 ];
             } else {
@@ -246,10 +246,11 @@ class RestrictionListener
             $newPipeline[] = ['$project' => $projectStage];
         }
 
-        $newPipeline = array_merge(
-            $newPipeline,
-            $event->getPipeline()
-        );
+        if (is_array($event->getPipeline())) {
+            foreach ($event->getPipeline() as $stage) {
+                $newPipeline[] = $stage;
+            }
+        }
 
         $this->logger->info(
             'RESTRICTION onPreAggregate',
