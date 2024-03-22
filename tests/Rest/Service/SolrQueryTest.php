@@ -160,6 +160,11 @@ class SolrQueryTest extends TestCase
                 '(meier || meier~) && (\&) && (dude*)',
                 true
             ],
+            'literal-escaped-+' => [
+                'meier + dude',
+                '(meier || meier~) && (\+) && (dude*)',
+                true
+            ],
             'int-tel-search-short' => [
                 '+41 79 521 21 21',
                 '"+41795212121"',
