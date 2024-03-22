@@ -160,8 +160,9 @@ readonly class RestrictionListener
 
         $matchConditions = [];
         $projectStage = [];
+        $dataRestrictions = $this->securityUtils->getRequestDataRestrictions();
 
-        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
+        foreach ($dataRestrictions as $fieldName => $fieldValue) {
             $projectStage[$fieldName] = 0;
             if (is_null($fieldValue)) {
                 continue;
@@ -201,8 +202,9 @@ readonly class RestrictionListener
         $this->logger->info(
             'RESTRICTION onPreAggregate',
             [
-                'pipeline' => $newPipeline,
-                'mode' => $this->securityUtils->getDataRestrictionMode()
+                'mode' => $this->securityUtils->getDataRestrictionMode(),
+                'values' => $dataRestrictions,
+                'pipeline' => $newPipeline
             ]
         );
 
