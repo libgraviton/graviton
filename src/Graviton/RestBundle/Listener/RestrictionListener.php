@@ -171,7 +171,7 @@ readonly class RestrictionListener
                 $matchConditions[] = [
                     '$or' => [
                         [$fieldName => null],
-                        [$fieldName => ['$lte' => (int) $fieldValue]], // always int
+                        [$fieldName => ['$lte' => (int) $fieldValue]], // always int in lte
                     ]
                 ];
             } else {
@@ -183,7 +183,12 @@ readonly class RestrictionListener
         }
 
         $newPipeline = [];
-        if (!empty($matchConditions)) {
+        if (!empty($matchConditions) && count($matchConditions) == 1) {
+            $newPipeline[] = [
+                '$match' => $matchConditions
+            ];
+        }
+        if (!empty($matchConditions) && count($matchConditions) > 1) {
             $newPipeline[] = [
                 '$match' => [
                     '$and' => $matchConditions
@@ -205,7 +210,7 @@ readonly class RestrictionListener
             [
                 'mode' => $this->securityUtils->getDataRestrictionMode(),
                 'values' => $dataRestrictions,
-                'pipeline' => $newPipeline
+                'pipeline' => \json_encode($newPipeline, JSON_UNESCAPED_SLASHES)
             ]
         );
 
