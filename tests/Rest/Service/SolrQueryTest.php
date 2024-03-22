@@ -155,6 +155,11 @@ class SolrQueryTest extends TestCase
     public static function solrQueryHandlingDataProvider(): array
     {
         return [
+            'literal-escaped-&' => [
+                'meier & dude',
+                '(meier || meier~) && (\&) && (dude*)',
+                true
+            ],
             'int-tel-search-short' => [
                 '+41 79 521 21 21',
                 '"+41795212121"',

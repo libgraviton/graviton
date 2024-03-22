@@ -189,7 +189,14 @@ class SolrQuery
                 'cleanup' => function ($input) {
                     return trim($this->getSingleTerm($input[0]));
                 }
+            ],
+            'unescaped-literals' => [
+                'pattern' => '\s+([+-&]{1,1})\s+',
+                'cleanup' => function ($input) {
+                    return trim('\\'.$input[0]);
+                }
             ]
+
         ];
     }
 
