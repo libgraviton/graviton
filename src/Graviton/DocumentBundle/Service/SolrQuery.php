@@ -189,14 +189,7 @@ class SolrQuery
                 'cleanup' => function ($input) {
                     return trim($this->getSingleTerm($input[0]));
                 }
-            ],
-            'unescaped-literals' => [
-                'pattern' => '\s+([+-&]{1,1})\s+',
-                'cleanup' => function ($input) {
-                    return trim('\\'.$input[0]);
-                }
             ]
-
         ];
     }
 
@@ -456,6 +449,12 @@ class SolrQuery
      */
     private function getSingleTerm($term)
     {
+        // is it a unescaped literal metachar?
+        $metachars = ['&', '+'];
+        if (in_array($term, $metachars)) {
+            return sprintf('(\\%s)', $term);
+        }
+
         // booleans
         if ($term == 'true') {
             return 'T';
