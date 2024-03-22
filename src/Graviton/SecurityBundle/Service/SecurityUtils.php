@@ -185,7 +185,7 @@ class SecurityUtils
             if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
                 $headerValue = (int) $headerValue;
             }
-            $restrictions[$fieldSpec['name']] = (string) $headerValue;
+            $restrictions[$fieldSpec['name']] = $headerValue;
         }
         return $restrictions;
     }
