@@ -170,7 +170,7 @@ readonly class RestrictionListener
             if ($this->securityUtils->getDataRestrictionMode() == SecurityUtils::DATA_RESTRICTION_MODE_LTE) {
                 $matchConditions[] = [
                     '$or' => [
-                        [$fieldName => null],
+                        [$fieldName => ['$eq' => null]],
                         [$fieldName => ['$lte' => (int) $fieldValue]], // always int in lte
                     ]
                 ];
@@ -185,7 +185,7 @@ readonly class RestrictionListener
         $newPipeline = [];
         if (!empty($matchConditions) && count($matchConditions) == 1) {
             $newPipeline[] = [
-                '$match' => $matchConditions
+                '$match' => array_pop($matchConditions)
             ];
         }
         if (!empty($matchConditions) && count($matchConditions) > 1) {
