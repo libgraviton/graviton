@@ -449,6 +449,12 @@ class SolrQuery
      */
     private function getSingleTerm($term)
     {
+        // is it a unescaped literal metachar?
+        $metachars = ['&', '+'];
+        if (in_array($term, $metachars)) {
+            return sprintf('(\\%s)', $term);
+        }
+
         // booleans
         if ($term == 'true') {
             return 'T';

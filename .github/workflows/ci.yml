@@ -2,9 +2,9 @@ name: Graviton CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, 7.x ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, 7.x ]
 
 jobs:
   symfony:
