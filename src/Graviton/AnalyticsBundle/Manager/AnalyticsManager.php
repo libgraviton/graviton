@@ -54,7 +54,9 @@ class AnalyticsManager
      * @var array
      */
     private $aggregateOptions = [
-        'cursor' => true,
+        'cursor' => [
+            'batchSize' => 100
+        ],
         'allowDiskUse' => true
     ];
 
