@@ -39,7 +39,9 @@ readonly class AnalyticsManager
         private DateConverter $dateConverter,
         private EventDispatcherInterface $eventDispatcher,
         private array $aggregateOptions = [
-            'cursor' => true,
+            'cursor' => [
+                'batchSize' => 100
+            ],
             'allowDiskUse' => true
         ]
     ) {
