@@ -6,6 +6,7 @@ paths:
       operationId: "coreVersionGet"
       responses:
         200:
+          description: "successful operation"
           content:
             application/json:
               schema:
