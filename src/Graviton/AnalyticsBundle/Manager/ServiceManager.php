@@ -186,7 +186,7 @@ readonly class ServiceManager
             $parameters[] = $queryParam;
         }
 
-        $base['paths'][$endpoint]['get'] = [
+        $getEndpoint = [
             'summary' => 'Gets the analytical data.',
             'operationId' => 'analyticalGet'.ucfirst(strtolower($service)),
             'responses' => [
@@ -201,9 +201,14 @@ readonly class ServiceManager
                 400 => [
                     'description' => 'Invalid parameter supplied.',
                 ]
-            ],
-            'parameters' => $parameters
+            ]
         ];
+
+        if (!empty($parameters)) {
+            $getEndpoint['parameters'] = $parameters;
+        }
+
+        $base['paths'][$endpoint]['get'] = $getEndpoint;
 
         $mainType = $model->getType();
 
@@ -250,6 +255,11 @@ readonly class ServiceManager
     {
         // iterate all services
         foreach ($this->analyticsServices as $name => $service) {
+            // no numeric - numerics have no named route, we don't generate schema for these
+            if (is_numeric($name)) {
+                continue;
+            }
+
             $event->addSingleSchema(
                 $this->getSchema($name)
             );
