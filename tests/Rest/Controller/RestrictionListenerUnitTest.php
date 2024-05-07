@@ -216,12 +216,8 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             $expectedPipeline = [
                 [
                     '$match' => [
-                        '$and' => [
-                            [
-                                'clientId' => [
-                                    '$in' => [1, null]
-                                ]
-                            ]
+                        'clientId' => [
+                            '$in' => [1, null]
                         ]
                     ],
                 ],
@@ -235,13 +231,9 @@ class RestrictionListenerUnitTest extends GravitonTestCase
             $expectedPipeline = [
                 [
                     '$match' => [
-                        '$and' => [
-                            [
-                                '$or' => [
-                                    ['clientId' => null],
-                                    ['clientId' => ['$lte' => 1]],
-                                ]
-                            ]
+                        '$or' => [
+                            ['clientId' => ['$eq' => null]],
+                            ['clientId' => ['$lte' => 1]],
                         ]
                     ],
                 ],
