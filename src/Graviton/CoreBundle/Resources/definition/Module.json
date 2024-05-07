@@ -174,6 +174,12 @@
         "description": "Sort order that may be used by clients to define how modules are sorted."
       },
       {
+        "name": "paramTransferAllowed",
+        "type": "boolean",
+        "title": "Parameter Transfer Allowed",
+        "description": "Defines if the user is allowed to transfer this module's param in the Admin-UI."
+      },
+      {
         "name": "service.0.name",
         "type": "varchar",
         "title": "Service Name",
