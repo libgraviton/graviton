@@ -36,6 +36,9 @@ components:
                 additionalProperties: true
               - type: boolean
               - type: array
+                items:
+                  type: object
+                  additionalProperties: true
               - type: number
           from:
             type: string
