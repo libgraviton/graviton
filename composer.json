@@ -43,6 +43,7 @@
         "symfony/twig-bundle": "^6.4.0",
         "symfony/dotenv": "^6.4.0",
         "symfony/expression-language": "^6.4.0",
+        "symfony/mime": "^6.4.0",
 
         "graviton/rql-parser-bundle": "dev-develop",
         "graviton/link-header-rel-parser": "~1",
