@@ -90,7 +90,7 @@ trait SchemaTrait
 
             // also filter entities!
             $fullAsJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
-            $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
+            $pattern = '/#\/components\/schemas\/([a-zA-Z0-9\-_]*)/m';
             preg_match_all($pattern, $fullAsJson, $matches);
 
             if (!empty($matches[1]) && !empty($schema['components']['schemas'])) {
