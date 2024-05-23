@@ -87,6 +87,20 @@ trait SchemaTrait
             }
 
             $schema['paths'] = $newPaths;
+
+            // also filter entities!
+            $fullAsJson = json_encode($schema, JSON_UNESCAPED_SLASHES);
+            $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
+            preg_match_all($pattern, $fullAsJson, $matches);
+
+            if (!empty($matches[1]) && !empty($schema['components']['schemas'])) {
+                $includedEntities = array_unique($matches[1]);
+                foreach ($schema['components']['schemas'] as $key => $content) {
+                    if (!in_array($key, $includedEntities)) {
+                        unset($schema['components']['schemas'][$key]);
+                    }
+                }
+            }
         }
 
         if ($format == 'json') {
