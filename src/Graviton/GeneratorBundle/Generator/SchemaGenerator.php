@@ -621,7 +621,7 @@ class SchemaGenerator extends AbstractGenerator
      */
     private function getAllReferencedSchemas(string $content, array $mainFile) : array
     {
-        $pattern = '/#\/components\/schemas\/([a-zA-Z0-9]*)/m';
+        $pattern = '/#\/components\/schemas\/([a-zA-Z0-9\-_]*)/m';
         preg_match_all($pattern, $content, $matches);
 
         $ret = [];
