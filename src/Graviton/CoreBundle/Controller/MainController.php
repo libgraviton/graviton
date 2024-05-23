@@ -203,7 +203,9 @@ readonly class MainController
 
         return $this->getResponseFromSchemaFile(
             \GravitonDyn\EntityBundle\Entity\GravitonSchema::MAIN_SCHEMA_FILE,
-            $request->get('format')
+            $request->get('format'),
+            $request->get('excludePaths'),
+            $request->get('includePaths'),
         );
     }
 
