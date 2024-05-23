@@ -32,8 +32,8 @@ trait SchemaTrait
     public function getResponseFromSchemaFile(
         string $filepath,
         string $format,
-        ?string $excludePaths,
-        ?string $includePaths
+        ?string $excludePaths = null,
+        ?string $includePaths = null
     ) : Response {
         return $this->getResponseFromSchema(
             \json_decode(file_get_contents($filepath), true),
@@ -56,8 +56,8 @@ trait SchemaTrait
     public function getResponseFromSchema(
         array $schema,
         string $format,
-        ?string $excludePaths,
-        ?string $includePaths
+        ?string $excludePaths = null,
+        ?string $includePaths = null
     ) : Response {
         // excludes?
         if (!is_null($excludePaths)) {
