@@ -238,20 +238,31 @@ class RestController
                 echo "[";
 
                 foreach ($data as $record) {
-                    // all except first record need a "," to separate
-                    if (!$isFirst) {
-                        echo ",";
-                    } else {
-                        $isFirst = false;
-                    }
+                    $element = null;
 
                     try {
-                        echo $this->restUtils->serializeContent($record);
-                        flush();
+                        $element = $this->restUtils->serializeContent($record);
                     } catch (\Exception $e) {
-                        // skipping row! error was logged to STDOUT of service
-                        // skip also comma once again!
-                        $isFirst = true;
+                        $this->logger->error(
+                            "Unable to serialize item!",
+                            [
+                            'collection' => $this->getModel()->getEntityClass(),
+                            'recordId' => isset($record['id']) ? $record['id'] : '?',
+                            'exception' => $e,
+                            ]
+                        );
+                    }
+
+                    if (!empty($element)) {
+                        // all except first record need a "," to separate
+                        if ($isFirst) {
+                            $isFirst = false;
+                        } else {
+                            echo ",".PHP_EOL;
+                        }
+
+                        echo $element.PHP_EOL;
+                        flush();
                     }
                 }
 
