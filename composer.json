@@ -55,6 +55,8 @@
         "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
 
+        "php-http/discovery": "~1",
+
         "php-jsonpatch/php-jsonpatch": "~4.0",
         "php-jsonpointer/php-jsonpointer": "~4.0",
         "swaggest/json-diff": "~3",
