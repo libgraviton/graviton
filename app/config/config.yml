@@ -109,9 +109,11 @@ jms_serializer:
         serialization:
             serialize_null: false
     metadata:
-        cache: graviton.core.jms.cache.provider
+        cache: file
         debug: "%kernel.debug%"
         auto_detection: true
+        file_cache:
+          dir: "%kernel.cache_dir%/serializer"
 
 flysystem:
     storages:
@@ -149,8 +151,8 @@ sentry:
         # see https://github.com/getsentry/sentry-symfony/issues/421
         ## as we cannot filter here, we disable all and enable those that we want
         default_integrations: false
+        ignore_exceptions: "%graviton.sentry.dontReport%"
         integrations:
-            - 'Sentry\Integration\IgnoreErrorsIntegration'
             - 'Sentry\Integration\RequestIntegration'
             - 'Sentry\Integration\TransactionIntegration'
             - 'Sentry\Integration\FrameContextifierIntegration'

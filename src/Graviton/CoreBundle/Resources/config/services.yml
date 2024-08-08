@@ -1,12 +1,6 @@
 
 services:
 
-    graviton.core.jms.cache.provider:
-        class: Metadata\Cache\PsrCacheAdapter
-        arguments:
-          - "jms"
-          - "@graviton.cache.adapter.app"
-
     graviton.cache.adapter.app:
       alias: graviton.common.cache.adapter.app
 

@@ -55,6 +55,8 @@
         "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
 
+        "php-http/discovery": "~1",
+
         "php-jsonpatch/php-jsonpatch": "~4.0",
         "php-jsonpointer/php-jsonpointer": "~4.0",
         "swaggest/json-diff": "~3",
@@ -65,8 +67,7 @@
         "league/flysystem-async-aws-s3": "^3.0",
         "league/flysystem-webdav": "^3.0",
 
-        "sentry/sentry-symfony": "~4",
-        "sentry/sentry": "~3",
+        "sentry/sentry-symfony": "~5",
         "php-http/guzzle7-adapter": "*",
         "guzzlehttp/psr7": "*",
 

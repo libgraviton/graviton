@@ -18,7 +18,3 @@ services:
     Sentry\Integration\FrameContextifierIntegration:
     Sentry\Integration\EnvironmentIntegration:
     Sentry\Integration\ModulesIntegration:
-    Sentry\Integration\IgnoreErrorsIntegration:
-        arguments:
-            $options:
-                ignore_exceptions: "%graviton.sentry.dontReport%"
