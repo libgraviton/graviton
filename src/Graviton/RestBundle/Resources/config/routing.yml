@@ -1,0 +1,33 @@
+
+graviton_rabbit_event_status_update_action:
+    path: /event/status/{eventId}/{workerId}/{status}/{actionId?}/
+    methods: [GET, PUT, OPTIONS]
+    requirements:
+        status: '^(opened|working|ignored|done|failed)$'
+    defaults:
+        _controller: Graviton\RestBundle\Controller\StatusUpdateController::updateStatusAction
+
+graviton_rabbit_event_status_update_action_noslash:
+    path: /event/status/{eventId}/{workerId}/{status}/{actionId?}
+    methods: [GET, PUT, OPTIONS]
+    requirements:
+        status: '^(opened|working|ignored|done|failed)$'
+    defaults:
+        _controller: Graviton\RestBundle\Controller\StatusUpdateController::updateStatusAction
+
+graviton_rabbit_event_status_update:
+    path: /event/status/{eventId}/{workerId}/{status}/
+    methods: [GET, PUT, OPTIONS]
+    requirements:
+        status: '^(opened|working|ignored|done|failed)$'
+    defaults:
+        _controller: Graviton\RestBundle\Controller\StatusUpdateController::updateStatusAction
+
+
+graviton_rabbit_event_status_update_noslash:
+    path: /event/status/{eventId}/{workerId}/{status}
+    methods: [GET, PUT, OPTIONS]
+    requirements:
+        status: '^(opened|working|ignored|done|failed)$'
+    defaults:
+        _controller: Graviton\RestBundle\Controller\StatusUpdateController::updateStatusAction

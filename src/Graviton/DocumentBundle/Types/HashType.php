@@ -8,7 +8,7 @@ namespace Graviton\DocumentBundle\Types;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Entity\Hash;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 
 /**
  * Hash type
@@ -23,18 +23,18 @@ class HashType extends Type
     /**
      * extref converter
      *
-     * @var ExtReferenceConverterInterface
+     * @var ExtReferenceConverter
      */
     private static $extRefConverter;
 
     /**
      * sets the converter
      *
-     * @param ExtReferenceConverterInterface $converter converter
+     * @param ExtReferenceConverter $converter converter
      *
      * @return void
      */
-    public function setExtRefConverter(ExtReferenceConverterInterface $converter)
+    public function setExtRefConverter(ExtReferenceConverter $converter)
     {
         self::$extRefConverter = $converter;
     }

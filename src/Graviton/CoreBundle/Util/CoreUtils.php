@@ -21,7 +21,7 @@ class CoreUtils
      *
      * @return array parsed field list
      */
-    public static function parseStringFieldList(?string $fieldList)
+    public static function parseStringFieldList(?string $fieldList) : array
     {
         if (is_null($fieldList) || empty($fieldList)) {
             return [];
@@ -63,7 +63,7 @@ class CoreUtils
      *
      * @return true if matches, false otherwise
      */
-    public static function subjectMatchesStringWildcards($wildcards, $subject)
+    public static function subjectMatchesStringWildcards($wildcards, $subject) : bool
     {
         $matches = false;
 

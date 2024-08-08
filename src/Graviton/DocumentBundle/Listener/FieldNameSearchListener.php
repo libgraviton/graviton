@@ -14,21 +14,16 @@ use Graviton\RqlParser\Node\Query\AbstractComparisonOperatorNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldNameSearchListener
+readonly class FieldNameSearchListener
 {
-    /**
-     * @var array
-     */
-    private $fields;
 
     /**
      * Constructor
      *
-     * @param array $fieldsMapping Fields mapping
+     * @param array $fields Fields mapping
      */
-    public function __construct(array $fieldsMapping)
+    public function __construct(private array $fields)
     {
-        $this->fields = $fieldsMapping;
     }
 
     /**
@@ -94,7 +89,7 @@ class FieldNameSearchListener
         }
 
         $documentPrefix = $documentPrefix.'.';
-        if (strpos($documentField, $documentPrefix) !== 0) {
+        if (!str_starts_with($documentField, $documentPrefix)) {
             return false;
         }
 

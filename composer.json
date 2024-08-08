@@ -21,6 +21,11 @@
             "app/Graviton.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Graviton\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=8.3.0",
         "ext-json": "*",
@@ -34,50 +39,58 @@
         "incenteev/composer-parameter-handler": "^2.1.0",
 
         "graviton/common-bundle": "~4",
-        "graviton/rql-parser-bundle": "~3",
+        "symfony/runtime": "^6.4.0",
+        "symfony/twig-bundle": "^6.4.0",
+        "symfony/dotenv": "^6.4.0",
+        "symfony/expression-language": "^6.4.0",
+        "symfony/mime": "^6.4.0",
+
+        "graviton/rql-parser-bundle": "~4",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/mongodb-migrations-bundle": "~2",
-
-        "symfony/symfony": "~6.4.0",
-        "symfony/monolog-bundle": "~3.0",
 
         "jms/serializer-bundle": "~5",
 
         "doctrine/persistence": "~3",
         "doctrine/inflector": "~2",
 
+        "php-http/discovery": "~1",
+
         "php-jsonpatch/php-jsonpatch": "~4.0",
-        "justinrainbow/json-schema": "~5.2.0",
+        "php-jsonpointer/php-jsonpointer": "~4.0",
+        "swaggest/json-diff": "~3",
+        "league/openapi-psr7-validator": "~0",
         "riverline/multipart-parser": "~2",
-        "thefrozenfire/swagger": "=2.0.7",
 
         "league/flysystem-bundle": "^3.0",
         "league/flysystem-async-aws-s3": "^3.0",
         "league/flysystem-webdav": "^3.0",
 
-        "sentry/sentry-symfony": "~4",
-        "sentry/sentry": "~3",
+        "sentry/sentry-symfony": "~5",
         "php-http/guzzle7-adapter": "*",
         "guzzlehttp/psr7": "*",
 
         "solarium/solarium": "~6",
         "mtdowling/jmespath.php": "^2.4",
 
-        "symfony/runtime": "^6.0",
         "seld/jsonlint": "*",
-        "league/mime-type-detection": "^1.15"
+        "league/mime-type-detection": "^1.15",
+        "ckr/arraymerger": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~9|~8",
+        "phpunit/phpunit": "~10",
         "squizlabs/php_codesniffer": "~3",
 
-        "graviton/test-services-bundle": "^2.15.0",
-        "graviton/mongodb-fixtures-bundle": "^4.0.1",
+        "symfony/debug-bundle": "^6.4.0",
+        "symfony/phpunit-bridge": "^6.4.0",
+        "symfony/web-profiler-bundle": "^6.4.0",
+        "symfony/browser-kit": "^6.4.0",
+
+        "graviton/test-services-bundle": "dev-develop",
+        "graviton/mongodb-fixtures-bundle": "dev-develop",
         "libgraviton/codesniffer": "~2",
 
-        "symfony/phpunit-bridge": "^6.0",
-        "dms/phpunit-arraysubset-asserts": "~0",
         "phan/phan": "^5.3",
         "masterminds/html5": "^2.8"
     },
@@ -87,7 +100,8 @@
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php73": "*",
         "symfony/polyfill-php80": "*",
-        "symfony/polyfill-php81": "*"
+        "symfony/polyfill-php81": "*",
+        "symfony/polyfill-php82": "*"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
@@ -116,8 +130,7 @@
         "regenerate": [
             "@configure",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
-            "@reset-cache",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+            "@reset-cache"
         ],
         "check": [
             "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,src/Doctrine/*,var/cache,*.css,*.js' src/ app/ public/",
@@ -216,7 +229,9 @@
                     "graviton.solr.fuzzy_bridge": "SOLR_FUZZY_BRIDGE",
                     "graviton.solr.wildcard_bridge": "SOLR_WILDCARD_BRIDGE",
                     "graviton.solr.literal_bridge": "SOLR_LITERAL_BRIDGE",
-                    "graviton.solr.andify_terms": "SOLR_ANDIFY_TERMS"
+                    "graviton.solr.andify_terms": "SOLR_ANDIFY_TERMS",
+                    "graviton.translator.default.language": "TRANSLATOR_DEFAULT_LANGUAGE",
+                    "graviton.translator.languages": "TRANSLATOR_LANGUAGES"
                 }
             },
             {

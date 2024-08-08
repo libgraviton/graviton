@@ -7,20 +7,13 @@ namespace Graviton;
 
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\CacheBundle\GravitonCacheBundle;
 use Graviton\CoreBundle\GravitonCoreBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
-use Graviton\I18nBundle\GravitonI18nBundle;
-use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
-use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
-use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use League\FlysystemBundle\FlysystemBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -73,7 +66,6 @@ class AppKernel extends Kernel
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new FlysystemBundle(),
-            new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
             new \Graviton\CommonBundle\GravitonCommonBundle(),
             new \Sentry\SentryBundle\SentryBundle()
@@ -95,18 +87,11 @@ class AppKernel extends Kernel
             $bundles,
             [
                 new GravitonCoreBundle(),
-                new GravitonExceptionBundle(),
                 new GravitonDocumentBundle(),
-                new GravitonSchemaBundle(),
                 new GravitonRestBundle(),
-                new GravitonI18nBundle(),
                 new GravitonGeneratorBundle(),
-                new GravitonCacheBundle(),
-                new GravitonLogBundle(),
                 new GravitonSecurityBundle(),
-                new GravitonSwaggerBundle(),
                 new GravitonFileBundle(),
-                new GravitonRabbitMqBundle(),
                 new GravitonMigrationBundle()
             ]
         );

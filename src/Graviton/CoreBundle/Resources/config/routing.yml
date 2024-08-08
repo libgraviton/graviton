@@ -1,35 +1,40 @@
 graviton.core.static.main.all:
     path: /
     methods: [GET]
-    defaults: { _controller: graviton.core.controller.main::indexAction }
-
-graviton.core.static.main.options:
-    path: /
-    methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.main::optionsAction }
-
-graviton.core.static.version.get:
-    path: /core/version
-    methods: [GET]
-    defaults: { _controller: graviton.core.controller.version::versionsAction }
-
-graviton.core.static.version.options:
-    path: /core/version
-    methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.version::optionsAction }
-
-graviton.core.static.version.canonicalSchema:
-    path: /schema/core/version
-    methods: [GET]
-    defaults: { _controller: graviton.core.controller.version::versionsSchemaAction }
-
-graviton.core.static.version.canonicalSchema.options:
-    path: /schema/core/version
-    methods: [OPTIONS]
-    defaults: { _controller: graviton.core.controller.version::optionsAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::indexAction }
 
 graviton.core.static.favicon.get:
     path: /favicon.ico
     methods: [GET]
-    defaults: { _controller: graviton.core.controller.favicon::iconAction }
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::iconAction }
 
+graviton.core.static.schema:
+    path: /openapi.{format}
+    methods: [GET]
+    requirements:
+        format: '^(json|yaml)$'
+    defaults:
+        _controller: Graviton\CoreBundle\Controller\MainController::schemaAction
+
+graviton.core.static.main.options:
+    path: /
+    methods: [OPTIONS]
+    defaults: { _controller: Graviton\CoreBundle\Controller\MainController::optionsAction }
+
+graviton.core.static.version.get:
+    path: /core/version
+    methods: [GET]
+    defaults: { _controller: Graviton\CoreBundle\Controller\VersionController::versionsAction }
+
+graviton.core.static.version.options:
+    path: /core/version
+    methods: [OPTIONS]
+    defaults: { _controller: Graviton\CoreBundle\Controller\VersionController::optionsAction }
+
+graviton.core.static.version.schema:
+    path: /schema/core/version/openapi.{format}
+    methods: [GET]
+    requirements:
+        format: '^(json|yaml)$'
+    defaults:
+        _controller: Graviton\CoreBundle\Controller\VersionController::versionsSchemaAction

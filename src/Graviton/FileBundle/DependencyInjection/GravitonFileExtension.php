@@ -6,7 +6,6 @@
 namespace Graviton\FileBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

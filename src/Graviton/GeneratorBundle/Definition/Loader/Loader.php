@@ -13,9 +13,6 @@ namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
-use Graviton\JsonSchemaBundle\Validator\ValidatorInterface;
 use JMS\Serializer\SerializerInterface;
 
 /**
@@ -28,26 +25,15 @@ class Loader implements LoaderInterface
     /**
      * @var StrategyInterface[]
      */
-    private $strategies = [];
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private array $strategies = [];
 
     /**
      * Constructor
      *
-     * @param ValidatorInterface  $validator  Validator
      * @param SerializerInterface $serializer Serializer
      */
-    public function __construct(ValidatorInterface $validator, SerializerInterface $serializer)
+    public function __construct(readonly private SerializerInterface $serializer)
     {
-        $this->validator = $validator;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -85,16 +71,9 @@ class Loader implements LoaderInterface
      *
      * @param string $json JSON code
      * @return JsonDefinition
-     * @throws InvalidJsonException  If JSON is invalid
-     * @throws ValidationException   If definition is not valid
      */
     protected function createJsonDefinition($json)
     {
-        $errors = $this->validator->validateJsonDefinition($json);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-
         $definition = $this->serializer->deserialize(
             $json,
             'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',

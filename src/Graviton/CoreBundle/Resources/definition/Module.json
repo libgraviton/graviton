@@ -103,7 +103,15 @@
         },
         "path": "/module/payandsave",
         "order": 5,
-        "service": []
+        "service": [],
+        "categories": [
+          {
+            "$ref": "http://localhost/core/app/admin3"
+          },
+          {
+            "$ref": "http://localhost/core/app/admin4"
+          }
+        ]
       },
       {
         "id": "admin-AdminRef",
@@ -113,7 +121,15 @@
         },
         "name": {
           "en": "Admin Ref Module"
-        }
+        },
+        "categories": [
+          {
+            "$ref": "http://localhost/core/app/admin2"
+          },
+          {
+            "$ref": "http://localhost/core/app/admin"
+          }
+        ]
       }
     ]
   },
@@ -172,6 +188,12 @@
         "type": "int",
         "title": "Order",
         "description": "Sort order that may be used by clients to define how modules are sorted."
+      },
+      {
+        "name": "paramTransferAllowed",
+        "type": "boolean",
+        "title": "Parameter Transfer Allowed",
+        "description": "Defines if the user is allowed to transfer this module's param in the Admin-UI."
       },
       {
         "name": "service.0.name",

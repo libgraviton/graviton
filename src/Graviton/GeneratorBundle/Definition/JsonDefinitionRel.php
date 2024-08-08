@@ -45,6 +45,7 @@ class JsonDefinitionRel extends JsonDefinitionField
                 'type'              => $this->getType(),
                 'doctrineType'      => $this->getTypeDoctrine(),
                 'serializerType'    => $this->getTypeSerializer(),
+                'schemaType'        => $this->getTypeSchema(),
                 'relType'           => $this->relation === null ? self::REL_TYPE_REF : $this->relation->getType(),
                 'isClassType'       => true,
             ]

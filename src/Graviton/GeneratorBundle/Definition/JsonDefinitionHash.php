@@ -68,6 +68,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'exposedName'       => $this->getName(),
                 'doctrineType'      => $this->getTypeDoctrine(),
                 'serializerType'    => $this->getTypeSerializer(),
+                'schemaType'        => $this->getTypeSchema(),
                 'relType'           => self::REL_TYPE_EMBED,
                 'isClassType'       => true,
                 'constraints'       => [],
@@ -152,6 +153,16 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getTypeSerializer()
     {
         return $this->getClassName(true);
+    }
+
+    /**
+     * get schema type
+     *
+     * @return string schema type
+     */
+    #[\Override] public function getTypeSchema()
+    {
+        return 'class:'.$this->getClassName(true);
     }
 
     /**

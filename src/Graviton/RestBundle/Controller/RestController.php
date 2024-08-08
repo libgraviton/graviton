@@ -5,22 +5,20 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\RestBundle\Exception\InvalidJsonPatchException;
+use Graviton\RestBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\RestBundle\Model\ModelInterface;
+use Graviton\RestBundle\Service\JsonPatchValidator;
 use Graviton\RestBundle\Service\RestUtils;
-use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\RestBundle\Trait\SchemaTrait;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
+use Rs\Json\Patch;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Rs\Json\Patch;
-use Graviton\RestBundle\Service\JsonPatchValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -35,68 +33,30 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class RestController
 {
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    use SchemaTrait;
 
     /**
-     * @var ModelInterface
+     * @var ?LoggerInterface
      */
-    private $model;
+    private ?LoggerInterface $logger;
 
     /**
-     * @var Response
+     * @var DocumentModel
      */
-    private $response;
+    private DocumentModel $model;
 
     /**
-     * @var SchemaUtils
-     */
-    private $schemaUtils;
-
-    /**
-     * @var RestUtils
-     */
-    protected $restUtils;
-
-    /**
-     * @var Router
-     */
-    private $router;
-
-    /**
-     * @var JsonPatchValidator
-     */
-    private $jsonPatchValidator;
-
-    /**
-     * @var SecurityUtils
-     */
-    protected $securityUtils;
-
-    /**
-     * @param Response           $response    Response
-     * @param RestUtils          $restUtils   Rest Utils
-     * @param Router             $router      Router
-     * @param SchemaUtils        $schemaUtils Schema utils
-     * @param JsonPatchValidator $jsonPatch   Service for validation json patch
-     * @param SecurityUtils      $security    The securityUtils service
+     * @param RestUtils          $restUtils          Rest Utils
+     * @param Router             $router             Router
+     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
+     * @param SecurityUtils      $securityUtils      The securityUtils service
      */
     public function __construct(
-        Response $response,
-        RestUtils $restUtils,
-        Router $router,
-        SchemaUtils $schemaUtils,
-        JsonPatchValidator $jsonPatch,
-        SecurityUtils $security
+        protected readonly RestUtils $restUtils,
+        protected readonly Router $router,
+        protected readonly JsonPatchValidator $jsonPatchValidator,
+        protected readonly SecurityUtils $securityUtils
     ) {
-        $this->response = $response;
-        $this->restUtils = $restUtils;
-        $this->router = $router;
-        $this->schemaUtils = $schemaUtils;
-        $this->jsonPatchValidator = $jsonPatch;
-        $this->securityUtils = $security;
     }
 
     /**
@@ -159,34 +119,20 @@ class RestController
         $this->logger->info('REST: getAction');
 
         $document = $this->getModel()->getSerialised($id, $request);
+        $this->getModel()->addRequestAttributes($id, $request);
 
-        $this->addRequestAttributes($request);
-
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent($document);
-
-        return $response;
-    }
-
-    /**
-     * Get the response object
-     *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response object
-     */
-    public function getResponse()
-    {
-        return $this->response;
+        return new JsonResponse($document, Response::HTTP_OK, [], true);
     }
 
     /**
      * Return the model
      *
+     * @return DocumentModel $model Model
+     *
      * @throws \Exception in case no model was defined.
      *
-     * @return DocumentModel $model Model
      */
-    public function getModel()
+    public function getModel() : DocumentModel
     {
         if (!$this->model) {
             throw new \Exception('No model is set for this controller');
@@ -198,14 +144,13 @@ class RestController
     /**
      * Set the model class
      *
-     * @param ModelInterface $model Model class
+     * @param DocumentModel $model Model class
      *
      * @return self
      */
-    public function setModel(ModelInterface $model)
+    public function setModel(DocumentModel $model) : void
     {
         $this->model = $model;
-        return $this;
     }
 
     /**
@@ -217,14 +162,12 @@ class RestController
      */
     public function allAction(Request $request)
     {
-        $this->logger->info('REST: allAction');
-
         $model = $this->getModel();
 
         $this->logger->info('REST: allAction -> got model, starting findAll() on QueryService');
         $data = $model->findAll($request);
 
-        $this->addRequestAttributes($request);
+        $this->getModel()->addRequestAttributes(null, $request);
 
         $response = new StreamedResponse();
         $response->headers->set('x-accel-buffering', 'no');
@@ -238,20 +181,31 @@ class RestController
                 echo "[";
 
                 foreach ($data as $record) {
-                    // all except first record need a "," to separate
-                    if (!$isFirst) {
-                        echo ",";
-                    } else {
-                        $isFirst = false;
-                    }
+                    $element = null;
 
                     try {
-                        echo $this->restUtils->serializeContent($record);
-                        flush();
+                        $element = $this->restUtils->serializeContent($record);
                     } catch (\Exception $e) {
-                        // skipping row! error was logged to STDOUT of service
-                        // skip also comma once again!
-                        $isFirst = true;
+                        $this->logger->error(
+                            "Unable to serialize item!",
+                            [
+                            'collection' => $this->getModel()->getEntityClass(),
+                            'recordId' => isset($record['id']) ? $record['id'] : '?',
+                            'exception' => $e,
+                            ]
+                        );
+                    }
+
+                    if (!empty($element)) {
+                        // all except first record need a "," to separate
+                        if ($isFirst) {
+                            $isFirst = false;
+                        } else {
+                            echo ",".PHP_EOL;
+                        }
+
+                        echo $element.PHP_EOL;
+                        flush();
                     }
                 }
 
@@ -271,34 +225,28 @@ class RestController
      * @param Request $request Current http request
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
+     * @throws \Exception
      */
     public function postAction(Request $request)
     {
         $this->logger->info('REST: postAction');
 
         // Get the response object from container
-        $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-
-        $record = $this->restUtils->validateRequest($request->getContent(), $model);
-
-        // Insert the new record
-        $record = $model->insertRecord($record);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
-
-        // Set status code
-        $response->setStatusCode(Response::HTTP_CREATED);
-
-        $response->headers->set(
-            'Location',
-            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
+        $response = new JsonResponse(
+            '',
+            Response::HTTP_CREATED,
+            [],
+            true
         );
 
-        $this->addRequestAttributes($request);
+        // will throw if not ok
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
+        $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
+
+        // Insert the new record
+        $model->insertRecord($record, $request);
 
         return $response;
     }
@@ -319,45 +267,22 @@ class RestController
      * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
-     * @throws MalformedInputException
-     *
      * @return Response $response Result of action with data (if successful)
+     *
      */
     public function putAction($id, Request $request)
     {
         $this->logger->info('REST: putAction');
 
-        $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-        $record = $this->restUtils->validateRequest($request->getContent(), $model);
+        $response = new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
 
-        // handle missing 'id' field in input to a PUT operation
-        // if it is settable on the document, let's set it and move on.. if not, inform the user..
-        if ($record->getId() != $id) {
-            // try to set it..
-            if (is_callable(array($record, 'setId'))) {
-                $record->setId($id);
-            } else {
-                throw new MalformedInputException('No ID was supplied in the request payload.');
-            }
-        }
+        // will throw if not ok
+        $psrRequest = $this->restUtils->validateRequest($request, $response, $model);
+        $record = $this->restUtils->getEntityFromRequest($psrRequest, $model);
 
-        // And update the record, if everything is ok
-        if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($record);
-        } else {
-            $this->getModel()->updateRecord($id, $record);
-        }
-
-        $this->addRequestAttributes($request);
-
-        // Set status code
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
+        $this->getModel()->upsertRecord($id, $record, $request);
 
         return $response;
     }
@@ -368,59 +293,72 @@ class RestController
      * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
-     * @throws MalformedInputException
-     *
      * @return Response $response Result of action with data (if successful)
+     *
      */
     public function patchAction($id, Request $request)
     {
         $this->logger->info('REST: patchAction');
 
-        $response = $this->getResponse();
         $model = $this->getModel();
 
-        // Validate received data. On failure release the lock.
+        // first, validate the PATCH request itself! skip body checks here.
+        $this->restUtils->validateRequest($request, new Response(), $model, true);
+
+        // Check JSON Patch request
+        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+        // Find record && apply $ref converter
+        $jsonDocument = $model->getSerialised($id, null);
+
         try {
-            // Check JSON Patch request
-            $this->restUtils->checkJsonRequest($request, $response, $model);
-            $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
-
-            // Find record && apply $ref converter
-            $jsonDocument = $model->getSerialised($id, null);
-
-            try {
-                // Check if valid
-                $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
-                // Apply JSON patches
-                $patch = new Patch($jsonDocument, $request->getContent());
-                $patchedDocument = $patch->apply();
-            } catch (\Exception $e) {
-                throw new InvalidJsonPatchException(prev: $e);
-            }
+            // Check if valid
+            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
+            // Apply JSON patches
+            $patch = new Patch($jsonDocument, $request->getContent());
+            $patchedDocument = $patch->apply();
         } catch (\Exception $e) {
-            throw $e;
+            throw new InvalidJsonPatchException(prev: $e);
         }
 
         // if document hasn't changed, pass HTTP_NOT_MODIFIED and exit
         if ($jsonDocument == $patchedDocument) {
-            $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
-            return $response;
+            return new JsonResponse('', Response::HTTP_NOT_MODIFIED, [], true);
         }
 
+        // now we have the 'destination object' -> validate this again as it would be a PUT request!
+        $putRequest = new Request(
+            $request->query->all(),
+            $request->request->all(),
+            $request->attributes->all(),
+            $request->cookies->all(),
+            $request->files->all(),
+            array_merge(
+                $request->server->all(),
+                [
+                    'REQUEST_METHOD' => 'PUT'
+                ]
+            ),
+            $patchedDocument
+        );
+
+        $putRequest->headers->replace($request->headers->all());
+
+        $response = new JsonResponse(
+            '',
+            Response::HTTP_OK,
+            [
+                'Content-Location' => $this->getRouter()->generate($request->get('_route'), ['id' => $id])
+            ],
+            true
+        );
+
         // Validate result object
-        $record = $this->restUtils->validateRequest($patchedDocument, $model);
+        $putRequest = $this->restUtils->validateRequest($putRequest, $response, $model);
+        $record = $this->restUtils->getEntityFromRequest($putRequest, $model);
 
         // Update object
-        $this->getModel()->updateRecord($id, $record);
-
-        $this->addRequestAttributes($request);
-
-        // Set status response code
-        $response->setStatusCode(Response::HTTP_OK);
-        $response->headers->set(
-            'Content-Location',
-            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
-        );
+        $this->getModel()->updateRecord($id, $record, $request);
 
         return $response;
     }
@@ -437,11 +375,10 @@ class RestController
     {
         $this->logger->info('REST: deleteAction');
 
-        $response = $this->getResponse();
-        $this->model->deleteRecord($id);
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response = new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
+        $this->restUtils->validateRequest($request, $response, $this->getModel());
 
-        $this->addRequestAttributes($request);
+        $this->model->deleteRecord($id, $request);
 
         return $response;
     }
@@ -451,79 +388,46 @@ class RestController
      *
      * @param Request $request Current http request
      *
-     * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     * @throws SerializationException
      */
     public function optionsAction(Request $request)
     {
-        list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
-
-        $response = $this->response;
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
-
-        // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-        try {
-            $router = $this->getRouter();
-            // if post route is available we assume everything is readable
-            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
-        } catch (RouteNotFoundException $exception) {
-            // only allow read methods
-            $corsMethods = 'GET, OPTIONS';
-        }
-        $request->attributes->set('corsMethods', $corsMethods);
-
-        $this->addRequestAttributes($request);
-
-        return $response;
+        return new JsonResponse('', Response::HTTP_NO_CONTENT, [], true);
     }
 
+    /**
+     * should return the current model schema
+     *
+     * @param Request $request request
+     *
+     * @return array the schema encoded
+     */
+    public function getModelSchema(Request $request) : array
+    {
+        $schemaFile = $this->getModel()->getSchemaPath();
+
+        if (!file_exists($schemaFile)) {
+            throw new \LogicException('The schemaFile does not exist!');
+        }
+
+        return \json_decode(file_get_contents($schemaFile), true);
+    }
 
     /**
      * Return schema GET results.
      *
      * @param Request $request Current http request
-     * @param string  $id      ID of record
      *
+     * @return Response $response Result of the action
      * @throws SerializationException
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function schemaAction(Request $request, $id = null)
+    public function schemaAction(Request $request)
     {
-        $this->logger->info('REST: schemaAction');
-
-        $request->attributes->set('schemaRequest', true);
-
-        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-
-        $response = $this->response;
-        $response->setStatusCode(Response::HTTP_OK);
-        $response->setVary(['Origin', 'Accept-Encoding']);
-        $response->setPublic();
-
-        if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schema = $this->schemaUtils->getCollectionSchema($modelName, $this->getModel());
-        } else {
-            $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
-        }
-
-        // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-        try {
-            $router = $this->getRouter();
-            // if post route is available we assume everything is readable
-            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
-        } catch (RouteNotFoundException $exception) {
-            // only allow read methods
-            $corsMethods = 'GET, OPTIONS';
-        }
-
-        $request->attributes->set('corsMethods', $corsMethods);
-        $response->setContent($this->restUtils->serialize($schema));
-
-        $this->addRequestAttributes($request);
-
-        return $response;
+        return $this->getResponseFromSchema(
+            $this->getModelSchema($request),
+            str_ends_with($request->getPathInfo(), '.json') ? 'json' : 'yaml'
+        );
     }
 
     /**
@@ -531,27 +435,8 @@ class RestController
      *
      * @return ?UserInterface user
      */
-    public function getSecurityUser() : ?UserInterface
+    public function getSecurityUser(): ?UserInterface
     {
         return $this->securityUtils->getSecurityUser();
-    }
-
-    /**
-     * add some attributes to request
-     *
-     * @param Request $request request
-     *
-     * @return void
-     */
-    private function addRequestAttributes(Request $request)
-    {
-        // try to set mongo collection name as varnishTag
-        $repository = $this->getModel()->getRepository();
-        if ($repository != null) {
-            $classNameParts = explode('\\', $repository->getDocumentName());
-            if (is_array($classNameParts)) {
-                $request->attributes->set('varnishTags', [array_pop($classNameParts)]);
-            }
-        }
     }
 }

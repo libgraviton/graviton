@@ -14,20 +14,16 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class XVersionResponseListener
+readonly class XVersionResponseListener
 {
-
-    /** @var string */
-    private $versionHeader;
 
     /**
      * Constructor
      *
      * @param string $versionHeader version header
      */
-    public function __construct($versionHeader)
+    public function __construct(private string $versionHeader)
     {
-        $this->versionHeader = $versionHeader;
     }
 
     /**

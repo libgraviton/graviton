@@ -2,7 +2,7 @@
 services:
 
   # needs to activate in test env in order to test streamed responses
-  Graviton\TestBundle\Listener\StreamedReponseTestListener:
+  Graviton\Tests\StreamedReponseTestListener:
     tags:
       - name: kernel.event_listener
         event: kernel.response

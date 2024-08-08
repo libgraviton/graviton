@@ -1,21 +1,8 @@
 parameters:
-  graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
-  graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
-  graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
-  graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
-  graviton.rest.request.class: Symfony\Component\HttpFoundation\Request
-  graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
-  graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
-  graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
-  graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
-  graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
-  graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
-  graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
-  graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
   graviton.rest.services: []
-  graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
   graviton.rest.not_modifiable.origin.records:
     - "core"
+  graviton.rest.messageproducer.extamqp.class: Graviton\RestBundle\MessageProducer\ExtAmqp
 
 services:
 
@@ -23,14 +10,12 @@ services:
         parent: "jms_serializer"
         public: true
         arguments:
-            index_4: "@graviton.rest.serializer.serializercontext.factory"
+            index_4: '@Graviton\RestBundle\Serializer\SerializationContextFactory'
 
-    graviton.rest.serializer.serializercontext.factory:
-        parent: "graviton.rest.serializer.context.abstract"
-        class: "%graviton.rest.serializer.serializercontext.factory.class%"
+    Graviton\RestBundle\Serializer\SerializationContextFactory:
+        parent: 'Graviton\RestBundle\Serializer\ContextFactoryAbstract'
 
-    graviton.rest.serializer.context.abstract:
-        class: "%graviton.rest.serializer.context.abstract.class%"
+    Graviton\RestBundle\Serializer\ContextFactoryAbstract:
         calls:
           -
             method: setSetSerializeNull
@@ -79,6 +64,7 @@ services:
           - method: setSecurityUtils
             arguments:
               - "@graviton.security.service.utils"
+
     Graviton\RestBundle\RestListener\WhoamiRestrictionListener:
         parent: graviton.rest.listener.abstract
         class: Graviton\RestBundle\RestListener\WhoamiRestrictionListener
@@ -91,35 +77,50 @@ services:
       parent: graviton.rest.listener.abstract
       class: Graviton\RestBundle\RestListener\ValueInitializerListener
 
-    #Routing -->
-    #Routing collection -->
-    graviton.rest.routing.collection:
-        class: "%graviton.rest.routing.collection.class%"
+    Graviton\RestBundle\Listener\ValidationExceptionListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
+
+    Graviton\RestBundle\Listener\RestExceptionListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
+
+    Graviton\RestBundle\Listener\RqlSyntaxErrorListener:
+      tags:
+        - name: kernel.event_listener
+          event: kernel.exception
+          method: onKernelException
 
     #Routing loader -->
-    graviton.rest.routing.loader:
-        class: "%graviton.rest.routing.loader.class%"
-        public: true
+    Graviton\RestBundle\Routing\Loader\RestRoutingLoader:
         arguments:
-          - "@graviton.rest.routing.collection"
           - "%graviton.rest.services%"
         tags:
           -
-            name: "graviton.routing.loader"
+            name: "routing.loader"
 
     #Service for validating JSON Patches -->
     graviton.rest.service.jsonpatchvalidator:
         class: Graviton\RestBundle\Service\JsonPatchValidator
+
+    Graviton\RestBundle\Controller\StatusUpdateController:
+      arguments:
+        - '@?gravitondyn.eventstatus.model.eventstatus'
+        - '@Graviton\RestBundle\Service\RestUtils'
+      tags:
+        - name: controller.service_arguments
 
     #Controller -->
     graviton.rest.controller:
         abstract: true
         public: true
         arguments:
-          - "@graviton.rest.response"
-          - "@graviton.rest.restutils"
+          - '@Graviton\RestBundle\Service\RestUtils'
           - "@graviton.rest.router"
-          - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
         calls:
@@ -128,38 +129,38 @@ services:
             arguments:
               - "@logger"
 
-    #Model -->
-    graviton.rest.model:
-        abstract: true
-        class: "%graviton.rest.model.documentmodel.class%"
-        parent: "graviton.schema.model.schemamodel"
-        calls:
-          - method: setQueryService
-            arguments: ['@graviton.rest.service.query']
-          - method: setEventDispatcher
-            arguments: ['@event_dispatcher']
-          - method: setNotModifiableOriginRecords
-            arguments: ['%graviton.rest.not_modifiable.origin.records%']
-          - method: setRestUtils
-            arguments: ['@graviton.rest.restutils']
-          - method: setSecurityUtils
-            arguments: ['@graviton.security.service.utils']
+    Graviton\RestBundle\Model\DocumentModelFactory:
+      arguments:
+        - '@Graviton\RestBundle\Service\QueryService'
+        - '@event_dispatcher'
+        - '@Graviton\RestBundle\Service\RestUtils'
+        - '@graviton.security.service.utils'
+        - '@doctrine_mongodb.odm.default_document_manager'
 
     # query service -->
-    graviton.rest.service.query:
-        class: Graviton\RestBundle\Service\QueryService
+    Graviton\RestBundle\Service\QueryService:
         arguments:
           - "@logger"
+          - '@graviton.rql.requestparser'
           - "@graviton.rql.visitor.mongodb"
           - "%graviton.rest.pagination.limit%"
           - "@event_dispatcher"
-          - "@graviton.document.service.solrquery"
+          - '@Graviton\DocumentBundle\Service\SolrQuery'
           - "%graviton.rest.calculate_total_record_count%"
           - "%graviton.rest.total_count_enable_header_name%"
 
-    #Response object wrapper with scope request (get a new one for each request) -->
-    graviton.rest.response:
-        class: "%graviton.rest.response.class%"
+    Graviton\RestBundle\Service\RestServiceLocator:
+      arguments:
+        - !tagged_locator { tag: 'graviton.document.model', index_by: 'key'}
+        - !tagged_locator { tag: 'graviton.document.repository', index_by: 'key'}
+
+    Graviton\RestBundle\Listener\ContentLanguageResponseListener:
+      arguments:
+        - '@Graviton\RestBundle\Service\I18nUtils'
+      tags:
+        - name: "kernel.event_listener"
+          event: "kernel.response"
+          method: "onkernelresponse"
 
     #Json Request listener -->
     graviton.rest.listener.writelocklistener:
@@ -186,91 +187,94 @@ services:
             priority: 9999
             method: onKernelException
 
-    #Json Request listener -->
-    graviton.rest.listener.jsonrequestlistener:
-        class: Graviton\RestBundle\Listener\JsonRequestListener
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onKernelRequest
-
-    #Allowed RQL operator listener -->
-    graviton.rest.listener.rqlallowedoperatorrequestlistener:
-        class: "%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onKernelRequest
-
     #restUtils service - a service providing some helpers dealing with services -->
-    graviton.rest.restutils:
-        class: Graviton\RestBundle\Service\RestUtils
-        public: true
+    Graviton\RestBundle\Service\RestUtils:
         arguments:
-          - "@router"
           - "@graviton.rest.serializer"
+          - '@Graviton\RestBundle\Service\BodyChecker'
           - "@logger"
-          - "@graviton.schema.utils"
-          - "@graviton.jsonschema.validator"
           - "@graviton.cache.adapter.app"
+          - '@psr_http_factory'
 
-    #Graviton rest event stuff -->
-    #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
-    graviton.rest.event:
-        class: Graviton\RestBundle\Event\RestEvent
-        shared: false
+    Graviton\RestBundle\Service\I18nUtils:
+      arguments:
+        - "%graviton.translator.default.language%"
+        - "%graviton.translator.languages%"
 
-    graviton.rest.event.subscriber:
-        class: "%graviton.rest.event.subscriber.class%"
-        arguments:
-          - "@graviton.rest.response"
-          - "@graviton.rest.event"
-          - "@service_container"
-        tags:
-          -
-            name: kernel.event_subscriber
+    Graviton\RestBundle\Subscriber\RestSubscriber:
+      tags:
+        - name: kernel.event_subscriber
+      arguments:
+        - "@router"
 
-    #Graviton rest event listeners -->
-    #Paging listener -->
-    graviton.rest.listener.linkheaderresponselistener:
-        class: "%graviton.rest.listener.linkheaderresponselistener.class%"
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.response
-            method: onKernelResponse
+    # the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
+    Graviton\RestBundle\Subscriber\EventStatusLinkResponseListener:
+      tags:
+        - name: kernel.event_subscriber
+      arguments:
+        - "@logger"
+        - "@graviton.rest.messageproducer.extamqp"
+        - "@router"
+        - "@doctrine_mongodb.odm.default_document_manager"
+        - "@event_dispatcher"
+        - '@Graviton\DocumentBundle\Service\ExtReferenceConverter'
+        - 'GravitonDyn\EventWorkerBundle\Document\EventWorker'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatus'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatusStatusEmbedded'
+        - 'GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded'
+        - 'EventStatus.get'
+        - "@graviton.security.service.utils"
+        - "%graviton.worker.relativeUrl%"
+        - "%graviton.rabbitmq.queueevent.transient_headers%"
+
+    # message producer!
+    graviton.rest.messageproducer.extamqp:
+      class: "%graviton.rest.messageproducer.extamqp.class%"
+      public: true
+      arguments:
+        - '%graviton.rabbitmq.host%'
+        - '%graviton.rabbitmq.port%'
+        - '%graviton.rabbitmq.user%'
+        - '%graviton.rabbitmq.password%'
+        - '%graviton.rabbitmq.vhost%'
+      calls:
+        -
+          method: setLogger
+          arguments:
+            - "@logger"
+
+    Graviton\RestBundle\Listener\RequestIdListener:
+      tags:
+        - name: "kernel.event_listener"
+          event: "kernel.request"
+          method: "onKernelRequest"
+          priority: 900
 
     #X-Version response listener -->
-    graviton.rest.listener.xversionresponselistener:
-        class: "%graviton.rest.listener.xversionresponselistener.class%"
+    Graviton\RestBundle\Listener\XVersionResponseListener:
         arguments:
           - "%graviton.core.version.header%"
         tags:
           -
             name: kernel.event_listener
-            event: graviton.rest.response
+            event: kernel.response
             method: onKernelResponse
 
-    #RQL query listener (see RqlQueryDecoratorCompilerPass) -->
-    graviton.rest.listener.rqlqueryrequestlistener:
-        class: "%graviton.rest.listener.rqlqueryrequestlistener.class%"
-        decorates: graviton.rql.listener.request
-        decoration_inner_name: graviton.rest.listener.rqlqueryrequestlistener.inner
-        arguments:
-          - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
-          - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
+
+    Graviton\RestBundle\Listener\CacheHeaderListener:
+      arguments:
+        - "%graviton.cache.server.header%"
+      tags:
+        -
+          name: kernel.event_listener
+          event: kernel.response
+          method: onKernelResponse
 
     # listener that restricts the data given to the user by manipulating the querybuilder before executing
-    graviton.rest.listener.restriction:
-      class: "%graviton.rest.listener.restriction.class%"
+    Graviton\RestBundle\Listener\RestrictionListener:
       arguments:
         - "@logger"
         - "@graviton.security.service.utils"
-        - "@request_stack"
         - "%graviton.rest.data_restriction.persist%"
         - "%graviton.rest.data_restriction.solr%"
       tags:
@@ -291,8 +295,54 @@ services:
           method: onRqlSearch
           priority: -100
 
-  # fixtures
+    # all body checkers
+    Graviton\RestBundle\Service\BodyChecks\IdInBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck:
+      arguments:
+        - recordOrigin
+        - "%graviton.rest.not_modifiable.origin.records%"
+    Graviton\RestBundle\Service\BodyChecks\IncrementalDateBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\ReadOnlyFieldsBodyCheck: ~
+    Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck: ~
+
+    Graviton\RestBundle\Service\BodyChecker:
+      calls:
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\IdInBodyCheck' ]
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\RecordOriginBodyCheck' ]
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\ReadOnlyFieldsBodyCheck' ]
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\IncrementalDateBodyCheck' ]
+        - method: addBodyCheck
+          arguments: [ '@Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck' ]
+
+    # fixtures
     Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
-      class: Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData
+      public: true
+      calls:
+        - [ setRestUtils, [ '@Graviton\RestBundle\Service\RestUtils' ] ]
       tags:
         - { name: 'doctrine.fixture.orm' }
+
+    psr17_factory:
+      alias: Http\Discovery\Psr17Factory
+
+    Http\Discovery\Psr17Factory: ~
+
+    Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory:
+      arguments:
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+        - '@Http\Discovery\Psr17Factory'
+
+    psr_http_factory:
+      alias: Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory
+
+    Graviton\RestBundle\Monolog\Processor\RequestIdProcessor:
+      arguments:
+        - "@request_stack"
+      tags:
+        - { name: monolog.processor }

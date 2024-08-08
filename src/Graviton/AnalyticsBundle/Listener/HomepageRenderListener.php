@@ -14,22 +14,16 @@ use Graviton\CoreBundle\Event\HomepageRenderEvent;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class HomepageRenderListener
+readonly class HomepageRenderListener
 {
-
-    /**
-     * @var ServiceManager
-     */
-    private $serviceManager;
 
     /**
      * HomepageRenderListener constructor.
      *
      * @param ServiceManager $serviceManager service manager
      */
-    public function __construct(ServiceManager $serviceManager)
+    public function __construct(private ServiceManager $serviceManager)
     {
-        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -43,7 +37,11 @@ class HomepageRenderListener
     {
         $services = $this->serviceManager->getServices();
         foreach ($services as $service) {
-            $event->addRoute($service['$ref'], $service['profile']);
+            $event->addRoute(
+                $service['$ref'],
+                $service['api-docs']['json']['$ref'],
+                $service['api-docs']['yaml']['$ref']
+            );
         }
     }
 }

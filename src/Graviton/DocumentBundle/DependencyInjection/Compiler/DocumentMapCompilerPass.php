@@ -38,7 +38,7 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         $dynamicBundleDir = $container->getParameter('graviton.generator.dynamicbundle.dir');
         if (!empty($dynamicBundleDir)) {
             // if this is not an absolute dir, make it relative to the base dir
-            if (substr($dynamicBundleDir, 0, 1) !== '/') {
+            if (!str_starts_with($dynamicBundleDir, '/')) {
                 $dynamicBundleDir = $container->getParameter('kernel.project_dir').'/'.$dynamicBundleDir;
             }
 

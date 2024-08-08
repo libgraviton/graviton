@@ -21,7 +21,7 @@ services:
         arguments:
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%graviton.mongodb.default.server.db%"
-            - "@graviton.document.service.dateconverter"
+            - '@Graviton\DocumentBundle\Service\DateConverter'
             - "@event_dispatcher"
 
     graviton.analytics.service_manager:
@@ -29,9 +29,13 @@ services:
         arguments:
             - "@request_stack"
             - "@graviton.analytics.analytics_manager"
-            - "@graviton.document.service.dateconverter"
+            - '@Graviton\DocumentBundle\Service\DateConverter'
             - "@router"
             - "%analytics.services%"
+        tags:
+            - name: kernel.event_listener
+              event: generate.global.schema
+              method: onSchemaGeneration
 
     graviton.analytics.homepage_listener:
         class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener

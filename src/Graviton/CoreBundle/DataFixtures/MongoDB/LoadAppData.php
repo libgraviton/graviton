@@ -30,7 +30,14 @@ class LoadAppData implements FixtureInterface
     {
         $tabletApp = new App();
         $tabletApp->setId('tablet');
-        $tabletApp->setName(Translatable::createFromOriginalString('Tablet'));
+        $tabletApp->setName(
+            Translatable::createFromTranslations(
+                [
+                    'en' => 'Tablet',
+                    'de' => 'Tablet'
+                ]
+            )
+        );
         $tabletApp->setShowInMenu(true);
         $tabletApp->setOrder(1);
 
@@ -38,7 +45,14 @@ class LoadAppData implements FixtureInterface
 
         $adminApp = new App();
         $adminApp->setId('admin');
-        $adminApp->setName(Translatable::createFromOriginalString('Administration'));
+        $adminApp->setName(
+            Translatable::createFromTranslations(
+                [
+                    'en' => 'Administration',
+                    'de' => 'Die Administration'
+                ]
+            )
+        );
         $adminApp->setShowInMenu(true);
         $adminApp->setOrder(2);
 

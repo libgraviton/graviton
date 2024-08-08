@@ -18,8 +18,9 @@ graviton_analytics_service:
     defaults: { _controller: graviton.analytics.defaut_controller::serviceAction }
 
 graviton_analytics_service_schema:
-    path:     /schema/{service}
+    path:     /schema/{service}/openapi.{format}
     methods: [GET]
     requirements:
         service: "[A-Za-z0-9_-]+"
+        format: '^(json|yaml)$'
     defaults: { _controller: graviton.analytics.defaut_controller::serviceSchemaAction }

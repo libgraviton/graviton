@@ -6,69 +6,36 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
-use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\RestBundle\Exception\RestrictedIdCollisionException;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestrictionListener
+readonly class RestrictionListener
 {
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var SecurityUtils
-     */
-    private SecurityUtils $securityUtils;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var bool
-     */
-    private bool $persistRestrictions;
-
-    /**
-     * @var bool
-     */
-    private bool $restrictSolr;
 
     /**
      * HttpHeader constructor.
      *
      * @param LoggerInterface $logger              logger
      * @param SecurityUtils   $securityUtils       security utils
-     * @param RequestStack    $requestStack        request stack
      * @param bool            $persistRestrictions true to save the restrictions value to the entity (default)
      * @param bool            $restrictSolr        if we should restrict on solr queries
      */
     public function __construct(
-        LoggerInterface $logger,
-        SecurityUtils $securityUtils,
-        RequestStack $requestStack,
-        bool $persistRestrictions = true,
-        bool $restrictSolr = true
+        private LoggerInterface $logger,
+        private SecurityUtils $securityUtils,
+        private bool $persistRestrictions = true,
+        private bool $restrictSolr = true
     ) {
-        $this->logger = $logger;
-        $this->securityUtils = $securityUtils;
-        $this->requestStack = $requestStack;
-        $this->persistRestrictions = $persistRestrictions;
-        $this->restrictSolr = $restrictSolr;
     }
 
     /**
@@ -140,7 +107,7 @@ class RestrictionListener
             $this->logger->info(
                 'RESTRICTION onPrePersist DISABLED'
             );
-            return $this->setChangeTrackingData($event);
+            return $event;
         }
 
         $entity = $event->getEntity();
@@ -175,25 +142,6 @@ class RestrictionListener
 
         $event->setEntity($entity);
 
-        return $this->setChangeTrackingData($event);
-    }
-
-    /**
-     * add change tracking to event
-     *
-     * @param EntityPrePersistEvent $event event
-     *
-     * @return EntityPrePersistEvent event
-     */
-    private function setChangeTrackingData(EntityPrePersistEvent $event)
-    {
-        if ($this->securityUtils->isSecurityUser() &&
-            ($event->getEntity() instanceof \ArrayAccess)
-        ) {
-            $event->getEntity()['_lastModifiedBy'] = $this->securityUtils->getSecurityUsername();
-            $event->getEntity()['_lastModifiedAt'] = new \DateTime();
-        }
-
         return $event;
     }
 
@@ -212,8 +160,9 @@ class RestrictionListener
 
         $matchConditions = [];
         $projectStage = [];
+        $dataRestrictions = $this->securityUtils->getRequestDataRestrictions();
 
-        foreach ($this->securityUtils->getRequestDataRestrictions() as $fieldName => $fieldValue) {
+        foreach ($dataRestrictions as $fieldName => $fieldValue) {
             $projectStage[$fieldName] = 0;
             if (is_null($fieldValue)) {
                 continue;
@@ -221,8 +170,8 @@ class RestrictionListener
             if ($this->securityUtils->getDataRestrictionMode() == SecurityUtils::DATA_RESTRICTION_MODE_LTE) {
                 $matchConditions[] = [
                     '$or' => [
-                        [$fieldName => null],
-                        [$fieldName => ['$lte' => $fieldValue]],
+                        [$fieldName => ['$eq' => null]],
+                        [$fieldName => ['$lte' => (int) $fieldValue]], // always int in lte
                     ]
                 ];
             } else {
@@ -234,7 +183,12 @@ class RestrictionListener
         }
 
         $newPipeline = [];
-        if (!empty($matchConditions)) {
+        if (!empty($matchConditions) && count($matchConditions) == 1) {
+            $newPipeline[] = [
+                '$match' => array_pop($matchConditions)
+            ];
+        }
+        if (!empty($matchConditions) && count($matchConditions) > 1) {
             $newPipeline[] = [
                 '$match' => [
                     '$and' => $matchConditions
@@ -245,16 +199,18 @@ class RestrictionListener
             $newPipeline[] = ['$project' => $projectStage];
         }
 
-        $newPipeline = array_merge(
-            $newPipeline,
-            $event->getPipeline()
-        );
+        if (is_array($event->getPipeline())) {
+            foreach ($event->getPipeline() as $stage) {
+                $newPipeline[] = $stage;
+            }
+        }
 
         $this->logger->info(
             'RESTRICTION onPreAggregate',
             [
-                'pipeline' => $newPipeline,
-                'mode' => $this->securityUtils->getDataRestrictionMode()
+                'mode' => $this->securityUtils->getDataRestrictionMode(),
+                'values' => $dataRestrictions,
+                'pipeline' => \json_encode($newPipeline, JSON_UNESCAPED_SLASHES)
             ]
         );
 

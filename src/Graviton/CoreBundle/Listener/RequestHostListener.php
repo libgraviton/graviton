@@ -12,51 +12,23 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RequestHostListener
+readonly class RequestHostListener
 {
-
-    /**
-     * router
-     *
-     * @var Router
-     */
-    private $router;
-
-    /**
-     * host
-     *
-     * @var string
-     */
-    private $host;
-
-    /**
-     * configured port for http
-     *
-     * @var int
-     */
-    private $portHttp;
-
-    /**
-     * configured port for https
-     *
-     * @var int
-     */
-    private $portHttps;
 
     /**
      * constructor
      *
-     * @param Router $router    router
-     * @param string $host      host
-     * @param int    $portHttp  port for http
-     * @param int    $portHttps port for https
+     * @param Router  $router    router
+     * @param ?string $host      host
+     * @param ?int    $portHttp  port for http
+     * @param ?int    $portHttps port for https
      */
-    public function __construct(Router $router, $host, $portHttp, $portHttps)
-    {
-        $this->router = $router;
-        $this->host = $host;
-        $this->portHttp = $portHttp;
-        $this->portHttps = $portHttps;
+    public function __construct(
+        private Router $router,
+        private ?string $host,
+        private ?int $portHttp,
+        private ?int $portHttps
+    ) {
     }
 
     /**

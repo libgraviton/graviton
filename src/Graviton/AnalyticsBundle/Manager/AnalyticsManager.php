@@ -12,7 +12,6 @@ use Graviton\AnalyticsBundle\ProcessorInterface;
 use Graviton\DocumentBundle\Service\DateConverter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
-use MongoDB\Client;
 use MongoDB\Driver\ReadPreference;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -23,59 +22,29 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AnalyticsManager
+readonly class AnalyticsManager
 {
-    /**
-     * @var DocumentManager
-     */
-    private $documentManager;
-
-    /**
-     * @var Client
-     */
-    private $connection;
-
-    /**
-     * @var string
-     */
-    private $databaseName;
-
-    /**
-     * @var DateConverter
-     */
-    private $dateConverter;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var array
-     */
-    private $aggregateOptions = [
-        'cursor' => true,
-        'allowDiskUse' => true
-    ];
 
     /**
      * AnalyticsManager constructor.
-     * @param DocumentManager          $documentManager Db manager and query control
-     * @param string                   $databaseName    Db string name
-     * @param DateConverter            $dateConverter   date converter
-     * @param EventDispatcherInterface $eventDispatcher event dispatcher
+     * @param DocumentManager          $documentManager  Db manager and query control
+     * @param string                   $databaseName     Db string name
+     * @param DateConverter            $dateConverter    date converter
+     * @param EventDispatcherInterface $eventDispatcher  event dispatcher
+     * @param array                    $aggregateOptions options
      */
     public function __construct(
-        DocumentManager $documentManager,
-        $databaseName,
-        DateConverter $dateConverter,
-        EventDispatcherInterface $eventDispatcher
+        private DocumentManager $documentManager,
+        private string $databaseName,
+        private DateConverter $dateConverter,
+        private EventDispatcherInterface $eventDispatcher,
+        private array $aggregateOptions = [
+            'cursor' => [
+                'batchSize' => 100
+            ],
+            'allowDiskUse' => true
+        ]
     ) {
-        $this->documentManager = $documentManager;
-        $this->connection = $documentManager->getClient();
-        $this->databaseName = $databaseName;
-        $this->dateConverter = $dateConverter;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -110,7 +79,7 @@ class AnalyticsManager
             if (is_null($dbName)) {
                 $dbName = $this->databaseName;
             }
-            $collection = $this->connection->selectCollection($dbName, $model->getCollection());
+            $collection = $this->documentManager->getClient()->selectCollection($dbName, $model->getCollection());
             $pipeline = $this->executePreAggregateEvent($pipeline);
             $data[] = $collection->aggregate($pipeline, $aggregateOptions)->toArray();
         } else {
@@ -119,7 +88,7 @@ class AnalyticsManager
                 if (is_null($dbName)) {
                     $dbName = $this->databaseName;
                 }
-                $collection = $this->connection->selectCollection(
+                $collection = $this->documentManager->getClient()->selectCollection(
                     $dbName,
                     $model->getCollection($pipelineName)
                 );
@@ -220,6 +189,9 @@ class AnalyticsManager
      */
     private function resolveObject($collection, $id)
     {
-        return $this->connection->selectCollection($this->databaseName, $collection)->findOne(['_id' => $id]);
+        return $this->documentManager->getClient()->selectCollection(
+            $this->databaseName,
+            $collection
+        )->findOne(['_id' => $id]);
     }
 }

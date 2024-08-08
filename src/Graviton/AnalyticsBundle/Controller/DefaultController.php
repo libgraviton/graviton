@@ -5,6 +5,7 @@
 namespace Graviton\AnalyticsBundle\Controller;
 
 use Graviton\AnalyticsBundle\Manager\ServiceManager;
+use Graviton\RestBundle\Trait\SchemaTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,19 +15,18 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefaultController
+readonly class DefaultController
 {
-    /** @var ServiceManager */
-    private $serviceManager;
+    use SchemaTrait;
 
     /**
      * DefaultController constructor.
+     *
      * @param ServiceManager $serviceManager Parsing the requested date
      */
     public function __construct(
-        ServiceManager $serviceManager
+        private ServiceManager $serviceManager
     ) {
-        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -60,16 +60,19 @@ class DefaultController
      */
     public function serviceAction(Request $request)
     {
+        $modelName = $request->get('service');
+        $model = $this->serviceManager->getAnalyticModel($modelName);
+
         $request->attributes->set(
             'varnishTags',
-            $this->serviceManager->getCurrentAnalyticModel()->getCacheInvalidationCollections()
+            $model->getCacheInvalidationCollections()
         );
 
         $resp = new JsonResponse(
-            $this->serviceManager->getData()
+            $this->serviceManager->getData($modelName)
         );
 
-        $cacheTime = $this->serviceManager->getCurrentAnalyticModel()->getCacheTime();
+        $cacheTime = $model->getCacheTime();
         if (!empty($cacheTime) && $cacheTime > 0) {
             $resp->setCache(['max_age' => $cacheTime, 'public' => true]);
         }
@@ -78,12 +81,20 @@ class DefaultController
     }
 
     /**
-     * @return JsonResponse
+     * renders the openapi schema
+     *
+     * @param Request $request request
+     *
+     * @return Response response
      */
-    public function serviceSchemaAction()
+    public function serviceSchemaAction(Request $request)
     {
-        return new JsonResponse(
-            $this->serviceManager->getSchema()
+        $name = $request->get('service');
+        $format = $request->get('format');
+
+        return $this->getResponseFromSchema(
+            $this->serviceManager->getSchema($name),
+            $format
         );
     }
 }

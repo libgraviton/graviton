@@ -5,19 +5,22 @@
 namespace Graviton\RestBundle\Service;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\RestBundle\Exception\RqlOperatorNotAllowedException;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
-use MongoDB\Driver\ReadPreference;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Graviton\RqlParser\AbstractNode;
 use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\RqlParser\Node\LimitNode;
 use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;
 use Graviton\RqlParser\Query;
+use Graviton\RqlParserBundle\Component\RequestParser;
+use MongoDB\Driver\ReadPreference;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * class that deals with the Request and applies it to the query builder
@@ -27,56 +30,12 @@ use Graviton\RqlParser\Query;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class QueryService
+readonly class QueryService
 {
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var VisitorInterface
-     */
-    private $visitor;
-
-    /**
-     * @var integer
-     */
-    private $paginationDefaultLimit;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var Builder
-     */
-    private $queryBuilder;
-
-    /**
-     * @var DocumentRepository
-     */
-    private $repository;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    protected SolrQuery $solrQuery;
-
-    /**
-     * @var bool toggles if we should send readpref 'secondarypreferred'
-     */
-    private bool $isUseSecondary = false;
-
-    private bool $mongoDbCounterEnabled;
-    private ?string $enableMongoDbCounterHeaderName;
-
-    /**
      * @param LoggerInterface          $logger                         logger
+     * @param RequestParser            $rqlRequestParser               request parser
      * @param VisitorInterface         $visitor                        visitor
      * @param integer                  $paginationDefaultLimit         default pagination limit
      * @param EventDispatcherInterface $eventDispatcher                event dispatcher
@@ -85,33 +44,15 @@ class QueryService
      * @param ?string                  $enableMongoDbCounterHeaderName enableMongoDbCounterHeaderName
      */
     public function __construct(
-        LoggerInterface $logger,
-        VisitorInterface $visitor,
-        int $paginationDefaultLimit,
-        EventDispatcherInterface $eventDispatcher,
-        SolrQuery $solrQuery,
-        bool $mongoDbCounterEnabled,
-        ?string $enableMongoDbCounterHeaderName
+        private LoggerInterface $logger,
+        private RequestParser $rqlRequestParser,
+        private VisitorInterface $visitor,
+        private int $paginationDefaultLimit,
+        private EventDispatcherInterface $eventDispatcher,
+        private SolrQuery $solrQuery,
+        private bool $mongoDbCounterEnabled,
+        private ?string $enableMongoDbCounterHeaderName
     ) {
-        $this->logger = $logger;
-        $this->visitor = $visitor;
-        $this->paginationDefaultLimit = $paginationDefaultLimit;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->solrQuery = $solrQuery;
-        $this->mongoDbCounterEnabled = $mongoDbCounterEnabled;
-        $this->enableMongoDbCounterHeaderName = $enableMongoDbCounterHeaderName;
-    }
-
-    /**
-     * toggle flag if we should use mongodb secondary
-     *
-     * @param bool $isUseSecondary if secondary or not
-     *
-     * @return void
-     */
-    public function setIsUseSecondary(bool $isUseSecondary): void
-    {
-        $this->isUseSecondary = $isUseSecondary;
     }
 
     /**
@@ -119,42 +60,43 @@ class QueryService
      * based on the Request passed to it.
      * sets all necessary stuff on the querybuilder and the request
      *
-     * @param Request            $request    request
-     * @param DocumentRepository $repository repository
+     * @param Request       $request request
+     * @param DocumentModel $model   model
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      *
      * @return array|null|object either array of records or the record
      *
      */
-    public function getWithRequest(Request &$request, DocumentRepository $repository)
+    public function getWithRequest(Request $request, DocumentModel $model)
     {
         $returnValue = null;
+        $repository = $model->getRepository();
 
-        $this->request = &$request;
-        $this->repository = $repository;
-        $this->queryBuilder = $repository->createQueryBuilder();
+        // if id is *not* empty, then a single document is requested!
+        $singleDocumentRequest = !empty($this->getDocumentId($request));
 
-        $this->applyRqlQuery();
+        $queryBuilder = $this->applyRqlQuery($request, $model, $singleDocumentRequest);
 
-        if ($this->isUseSecondary) {
+        if ($model->getRuntimeDefinition()->isPreferredReadFromSecondary()) {
             $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
         } else {
             $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY);
         }
 
         // dispatch our event if normal builder
-        if ($this->queryBuilder instanceof Builder) {
-            $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
-            $this->queryBuilder = $this->queryBuilder->setReadPreference($readPreference);
+        if ($queryBuilder instanceof Builder) {
+            $queryBuilder = $this
+                ->executeQueryEvent($queryBuilder)
+                ->setReadPreference($readPreference);
         }
 
-        if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
+        if ($queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
              * this is only the case when queryBuilder was overridden, most likely via a PostEvent
              * in the rql parsing phase.
              */
-            $this->queryBuilder->hydrate($repository->getClassName());
+            $queryBuilder->hydrate($repository->getClassName());
 
             $this->logger->info(
                 'QueryService: Aggregate query',
@@ -164,13 +106,13 @@ class QueryService
             );
 
             $records = array_values(
-                $this->queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
+                $queryBuilder->getAggregation(['readPreference' => $readPreference])->getIterator()->toArray()
             );
 
             $request->attributes->set('recordCount', count($records));
 
             $returnValue = $records;
-        } elseif (is_null($this->getDocumentId())) {
+        } elseif (!$singleDocumentRequest) {
             /**
              * this is or the "all" action -> multiple documents returned
              */
@@ -181,7 +123,7 @@ class QueryService
 
             if ($shouldCalculateTotal) {
                 // count queryBuilder
-                $countQueryBuilder = clone $this->queryBuilder;
+                $countQueryBuilder = clone $queryBuilder;
                 $countQueryBuilder->count()
                                   ->limit(0)
                                   ->skip(0);
@@ -196,17 +138,17 @@ class QueryService
              * - only return the original limit amount of records.
              */
 
-            $mainQueryParts = $this->queryBuilder->getQuery()->getQuery();
+            $mainQueryParts = $queryBuilder->getQuery()->getQuery();
             if (!isset($mainQueryParts['limit'])) {
-                $mainQueryParts['limit'] = $this->getPaginationPageSize();
+                $mainQueryParts['limit'] = $this->getPaginationPageSize($request);
             }
 
             // save original size!
             $originalPagesize = $mainQueryParts['limit'];
             // set one more on querybuilder!
-            $this->queryBuilder->limit($originalPagesize + 1);
+            $queryBuilder->limit($originalPagesize + 1);
 
-            $mainQuery = $this->queryBuilder->getQuery();
+            $mainQuery = $queryBuilder->getQuery();
 
             $this->logger->info(
                 'QueryService: allAction query',
@@ -239,14 +181,14 @@ class QueryService
             /**
              * this is the "getAction" -> one document returned
              */
-            $this->queryBuilder->field('id')->equals($this->getDocumentId());
+            $queryBuilder->field('id')->equals($this->getDocumentId($request));
 
             $this->logger->info(
                 'QueryService: getAction query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
+                ['q' => $queryBuilder->getQuery()->getQuery(), 'readPref' => $readPreference->getModeString()]
             );
 
-            $query = $this->queryBuilder->getQuery();
+            $query = $queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
 
             if (is_array($records) && !empty($records) && is_object($records[0])) {
@@ -262,14 +204,16 @@ class QueryService
 
         // set attributes
         if (!is_null($returnValue)) {
-            $page = (int) ceil($this->getPaginationSkip() / $this->getPaginationPageSize()) + 1;
+            $page = (int) ceil($this->getPaginationSkip($request) / $this->getPaginationPageSize($request)) + 1;
             $request->attributes->set('page', $page);
 
-            $request->attributes->set('startAt', $this->getPaginationSkip());
-            $request->attributes->set('perPage', $this->getPaginationPageSize());
+            $request->attributes->set('startAt', $this->getPaginationSkip($request));
+            $request->attributes->set('perPage', $this->getPaginationPageSize($request));
 
             if ($request->attributes->has('totalCount')) {
-                $numPages = (int) ceil($request->attributes->get('totalCount') / $this->getPaginationPageSize());
+                $numPages = (int) ceil(
+                    $request->attributes->get('totalCount') / $this->getPaginationPageSize($request)
+                );
                 $request->attributes->set('numPages', $numPages);
             }
         }
@@ -296,82 +240,121 @@ class QueryService
      * if a single document has been requested, this returns the document id. if it returns null,
      * then we return multiple documents
      *
+     * @param Request $request request
+     *
      * @return string|null either document id or null
      */
-    private function getDocumentId()
+    private function getDocumentId(Request $request)
     {
-        return $this->request->attributes->get('singleDocument', null);
+        return $request->attributes->get('singleDocument', null);
     }
 
     /**
      * apply all stuff from the rql query (if any) to the local querybuilder
      *
-     * @return void
+     * @param Request       $request               request
+     * @param DocumentModel $model                 model
+     * @param bool          $singleDocumentRequest if single document is requested
+     *
+     * @return Builder|\Doctrine\ODM\MongoDB\Aggregation\Builder builder
      */
-    private function applyRqlQuery()
+    private function applyRqlQuery(Request $request, DocumentModel $model, bool $singleDocumentRequest)
     {
-        $rqlQuery = $this->getRqlQuery();
+        $rqlQuery = $this->getRqlQuery($request, $singleDocumentRequest);
+        $queryBuilder = null;
 
         // Setting RQL Query
         if ($rqlQuery) {
+            // set on request for Link header
+            $request->attributes->set('rqlQuery', $rqlQuery);
+
             // Check if search and if this Repository have search indexes.
             if ($query = $rqlQuery->getQuery()) {
                 if ($query instanceof AndNode) {
                     foreach ($query->getQueries() as $xq) {
-                        if ($xq instanceof SearchNode && !$this->hasSearchIndex()) {
+                        if ($xq instanceof SearchNode && !$this->hasSearchIndex($model)) {
                             throw new \InvalidArgumentException('Search operation not supported on this endpoint');
                         }
                     }
-                } elseif ($query instanceof SearchNode && !$this->hasSearchIndex()) {
+                } elseif ($query instanceof SearchNode && !$this->hasSearchIndex($model)) {
                     throw new \InvalidArgumentException('Search operation not supported on this endpoint');
                 }
             }
 
-            $this->visitor->setRepository($this->repository);
-            $this->queryBuilder = $this->visitor->visit($rqlQuery);
+            $this->visitor->setRepository($model->getRepository());
+            $queryBuilder = $this->visitor->visit($rqlQuery);
         }
 
-        if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
-            $currentQuery = $this->queryBuilder->getQuery()->getQuery();
+        if (is_null($queryBuilder)) {
+            $queryBuilder = $model->getRepository()->createQueryBuilder();
+        }
+
+        if (is_null($this->getDocumentId($request)) && $queryBuilder instanceof Builder) {
+            $currentQuery = $queryBuilder->getQuery()->getQuery();
 
             /*** default sort ***/
 
             if (!array_key_exists('sort', $currentQuery)) {
-                $this->queryBuilder->sort('_id');
+                $queryBuilder->sort('_id');
             }
 
             /*** pagination stuff ***/
             if (!array_key_exists('limit', $currentQuery)) {
-                $this->queryBuilder->skip($this->getPaginationSkip());
-                $this->queryBuilder->limit($this->getPaginationPageSize());
+                $queryBuilder->skip($this->getPaginationSkip($request));
+                $queryBuilder->limit($this->getPaginationPageSize($request));
             }
         }
+
+        return $queryBuilder;
     }
 
     /**
      * returns the correct rql query for the request, including optional specified restrictions
      * in the service definition (via restrictionManager)
      *
-     * @return Query the query
+     * @param Request $request               request
+     * @param bool    $singleDocumentRequest if single document is requested
+     *
+     * @return Query|null the query
      */
-    private function getRqlQuery()
+    private function getRqlQuery(Request $request, bool $singleDocumentRequest) : ?Query
     {
-        /** @var Query $rqlQuery */
-        return $this->request->attributes->get('rqlQuery', false);
+        $res = $this->rqlRequestParser->parse($request);
+
+        if (!$res->isHasRql()) {
+            return null;
+        }
+
+        $query = $res->getRqlQuery();
+
+        if ($singleDocumentRequest) {
+            // complain that some rql operators are not supported on single GET (only getAll)
+            foreach (['getQuery', 'getSort', 'getLimit'] as $method) {
+                /** @var AbstractNode $node */
+                $node = $query->$method();
+                if ($node != null) {
+                    throw new RqlOperatorNotAllowedException($node->getNodeName());
+                }
+            }
+        }
+
+        return $query;
     }
 
     /**
      * Check if collection has search indexes in DB
      *
+     * @param DocumentModel $model model
+     *
      * @return bool
      */
-    private function hasSearchIndex()
+    private function hasSearchIndex(DocumentModel $model) : bool
     {
-        if ($this->solrQuery->hasSolr($this->repository->getClassName())) {
+        if ($this->solrQuery->hasSolr($model->getEntityClass())) {
             return true;
         }
 
-        $metadata = $this->repository->getClassMetadata();
+        $metadata = $model->getRepository()->getClassMetadata();
         $indexes = $metadata->getIndexes();
         if (empty($indexes)) {
             return false;
@@ -398,11 +381,13 @@ class QueryService
     /**
      * get the pagination page size
      *
+     * @param Request $request request
+     *
      * @return int page size
      */
-    private function getPaginationPageSize()
+    private function getPaginationPageSize(Request $request) : int
     {
-        $limitNode = $this->getPaginationLimitNode();
+        $limitNode = $this->getPaginationLimitNode($request);
 
         if ($limitNode) {
             $limit = $limitNode->getLimit();
@@ -420,11 +405,13 @@ class QueryService
     /**
      * gets the pagination skip
      *
+     * @param Request $request request
+     *
      * @return int skip
      */
-    private function getPaginationSkip()
+    private function getPaginationSkip(Request $request) : int
     {
-        $limitNode = $this->getPaginationLimitNode();
+        $limitNode = $this->getPaginationLimitNode($request);
 
         if ($limitNode) {
             return abs($limitNode->getOffset());
@@ -436,17 +423,19 @@ class QueryService
     /**
      * gets the limit node
      *
-     * @return bool|LimitNode the node or false
+     * @param Request $request request
+     *
+     * @return ?LimitNode limit node
      */
-    private function getPaginationLimitNode()
+    private function getPaginationLimitNode(Request $request) : ?LimitNode
     {
         /** @var Query $rqlQuery */
-        $rqlQuery = $this->request->attributes->get('rqlQuery');
+        $rqlQuery = $request->attributes->get('rqlQuery');
 
         if ($rqlQuery instanceof Query && $rqlQuery->getLimit() instanceof LimitNode) {
             return $rqlQuery->getLimit();
         }
 
-        return false;
+        return null;
     }
 }

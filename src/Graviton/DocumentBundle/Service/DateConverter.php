@@ -14,18 +14,8 @@ use JsonSchema\Rfc3339;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DateConverter
+readonly class DateConverter
 {
-
-    /**
-     * @var string
-     */
-    private $dateFormat;
-
-    /**
-     * @var string
-     */
-    private $timezone;
 
     /**
      * Constructor
@@ -33,10 +23,8 @@ class DateConverter
      * @param string $dateFormat date format
      * @param string $timezone   timezone
      */
-    public function __construct($dateFormat, $timezone)
+    public function __construct(private string $dateFormat, private string $timezone)
     {
-        $this->dateFormat = $dateFormat;
-        $this->timezone = $timezone;
     }
 
     /**

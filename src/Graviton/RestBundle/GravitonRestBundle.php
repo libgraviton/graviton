@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
-use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass;
 
 /**
  * GravitonRestBundle
@@ -48,7 +47,27 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         parent::build($container);
 
         $container->addCompilerPass(new RestServicesCompilerPass);
-        $container->addCompilerPass(new RqlQueryRoutesCompilerPass());
         $container->addCompilerPass(new RestrictionListenerCompilerPass());
+    }
+
+    /**
+     * boot hook
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        // add schema format validator
+        // stricter uri format
+
+        $uriValidator = function ($value): bool {
+            return (filter_var($value, FILTER_VALIDATE_URL, FILTER_NULL_ON_FAILURE) !== null);
+        };
+
+        \League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer::registerFormat(
+            'string',
+            'uri',
+            $uriValidator
+        );
     }
 }

@@ -1,3 +1,33 @@
+parameters:
+    graviton_generator.definition.loader.class: Graviton\GeneratorBundle\Definition\Loader\Loader
+    graviton_generator.definition.loader.strategy.file.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy
+    graviton_generator.definition.loader.strategy.dir.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy
+    graviton_generator.definition.loader.strategy.scan.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy
+    graviton_generator.definition.loader.strategy.json.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy
+    graviton_generator.resourcegenerator.field_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper
+    graviton_generator.resourcegenerator.field_type_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper
+    graviton_generator.resourcegenerator.field_name_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper
+    graviton_generator.resourcegenerator.field_title_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTitleMapper
+    graviton_generator.resourcegenerator.field_hiddenrestriction_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldHiddenRestrictionMapper
+    graviton_generator.resourcegenerator.parameter_builder.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder
+    graviton_generator.generator.bundle.class: Graviton\GeneratorBundle\Generator\BundleGenerator
+    graviton_generator.generator.resource.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
+    graviton_generator.generator.dynamicbundlebundle.class: Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator
+    graviton_generator.command.generateresource.class: Graviton\GeneratorBundle\Command\GenerateResourceCommand
+    graviton.document.serializer.handler.arrayobject.class: Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler
+
+    generator.dynamicbundles.mongocollection: ~
+
+    #you can supply a custom json object in order to find specific documents -->
+    generator.dynamicbundles.mongocollection.criteria: {}
+
+    #additional bundles list in JSON format -->
+    generator.bundlebundle.additions: ~
+
+    #service whitelist in JSON format -->
+    generator.dynamicbundles.service.whitelist: ~
+
+
 services:
     graviton_generator.resourcegenerator.field_mapper:
       class: "%graviton_generator.resourcegenerator.field_mapper.class%"
@@ -13,10 +43,6 @@ services:
         -
           method: addMapper
           arguments:
-            - "@graviton_generator.resourcegenerator.field_json_mapper"
-        -
-          method: addMapper
-          arguments:
             - "@graviton_generator.resourcegenerator.field_title_mapper"
         -
           method: addMapper
@@ -29,9 +55,6 @@ services:
     graviton_generator.resourcegenerator.field_name_mapper:
         class: "%graviton_generator.resourcegenerator.field_name_mapper.class%"
 
-    graviton_generator.resourcegenerator.field_json_mapper:
-        class: "%graviton_generator.resourcegenerator.field_json_mapper.class%"
-
     graviton_generator.resourcegenerator.field_title_mapper:
         class: "%graviton_generator.resourcegenerator.field_title_mapper.class%"
 
@@ -41,7 +64,6 @@ services:
     graviton_generator.definition.loader:
         class: "%graviton_generator.definition.loader.class%"
         arguments:
-            - "@graviton.jsonschema.validator"
             - "@jms_serializer"
         calls:
           -
@@ -108,8 +130,25 @@ services:
         class: "%graviton_generator.generator.resource.class%"
         arguments:
           - "@filesystem"
+          - '@Graviton\RestBundle\Service\I18nUtils'
           - "@graviton_generator.resourcegenerator.field_mapper"
           - "@graviton_generator.resourcegenerator.parameter_builder"
+          - '@Graviton\GeneratorBundle\Generator\SchemaGenerator'
+
+    Graviton\GeneratorBundle\Generator\SchemaGenerator:
+        calls:
+          - method: setSchemaBuilder
+            arguments:
+              - '@Graviton\GeneratorBundle\Schema\SchemaBuilder'
+          - method: setIntUtils
+            arguments:
+              - '@Graviton\RestBundle\Service\I18nUtils'
+          - method: setVersionInformation
+            arguments:
+              - '%graviton.core.version.data%'
+          - method: setEventDispatcher
+            arguments:
+              - '@event_dispatcher'
 
     graviton_generator.generator.dynamicbundlebundle:
         parent: graviton_generator.generator.abstract
@@ -129,6 +168,8 @@ services:
           - null
           - "%graviton.generator.synthetic_fields%"
           - "%graviton.generator.ensure_indexes%"
+          - '@Graviton\GeneratorBundle\Generator\SchemaGenerator'
+          - '@Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder'
         tags:
           -
             name: console.command
@@ -139,8 +180,96 @@ services:
         -
             name: console.command
 
-    graviton_generator.command.cachedocumentannotation:
-      class: "Graviton\\GeneratorBundle\\Command\\CacheDocumentAnnotationCommand"
-      tags:
+    # schema stuff
+
+    # schema builder
+    Graviton\GeneratorBundle\Schema\Builder\ChoiceSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\EmailSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\FlagsSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\RangeSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\CountSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\DecimalSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder: ~
+    Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder:
+    Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder:
+      arguments:
+        - "%graviton.document.dateFormatRegex%"
+    Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder: ~
+
+    Graviton\GeneratorBundle\Schema\SchemaBuilder:
+      calls:
         -
-          name: console.command
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ChoiceSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\EmailSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\UrlSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\FlagsSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\RangeSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\CountSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\DecimalSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\EmptySchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ExtrefSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\DatetimeSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\NotNullSchemaBuilder'
+        -
+          method: addSchemaBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\Schema\Builder\ArrayOfObjectSchemaBuilder'
+
+    # runtime definition builder
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\EventNamesBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder: ~
+
+    Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
+      calls:
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\FieldFlagsBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\EventNamesBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder'
