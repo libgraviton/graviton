@@ -4,7 +4,7 @@
     <property name="id" type="string" accessor-getter="getId"{% if not hasIdFieldDefined %} exclude="true"{% endif %} />
 
 {# add id to reserved fieldnames when NOT embedded #}
-{% set reservedFieldnames = reservedFieldnames|join('id') %}
+{% set reservedFieldnames = reservedFieldnames | merge(['id']) %}
 
 {% if isEmbedded == true %}
     <!-- hidden id for embedding purposes -->
@@ -19,6 +19,10 @@
         <type><![CDATA[string]]></type>
     </property>
 {% endif %}
+
+  <!--
+    reserved fieldnames while generating: {{ reservedFieldnames|json_encode|raw }}
+  -->
 
    <property name="fieldsAddedCount" type="int" accessor-getter="getFieldsAddedCount" exclude="true"/>
 {% for field in fields|filter(v => not (v.fieldName in reservedFieldnames) ) %}
