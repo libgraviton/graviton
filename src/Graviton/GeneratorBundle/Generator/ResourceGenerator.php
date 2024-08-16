@@ -245,11 +245,18 @@ class ResourceGenerator extends AbstractGenerator
         // schema stuff
         $schemaClassName = $bundleDir.'/Entity/GravitonSchema.php';
 
+        // get relative path to file!
+        $fs = new Filesystem();
+        $relativeSchemaPath = $fs->makePathRelative($mainSchemaFile, $schemaClassName);
+        if (str_ends_with($relativeSchemaPath, '/')) {
+            $relativeSchemaPath = substr($relativeSchemaPath, 0, -1);
+        }
+
         $this->renderFile(
             'entity/Schema.php.twig',
             $schemaClassName,
             [
-                'schemaFile' => $mainSchemaFile
+                'schemaFile' => $relativeSchemaPath
             ]
         );
     }
