@@ -33,12 +33,12 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
             'BOOST' => 'boost'
         ];
 
-        $envMapExtraParamMask = "SOLR_%s_%s";
         $envMapExtraParams = [
             SolrQuery::EXTRA_PARAM_FUZZY_BRIDGE => 'int',
             SolrQuery::EXTRA_PARAM_LITERAL_BRIDGE => 'int',
             SolrQuery::EXTRA_PARAM_WILDCARD_BRIDGE => 'int',
-            SolrQuery::EXTRA_PARAM_ANDIFY_TERMS => 'bool'
+            SolrQuery::EXTRA_PARAM_ANDIFY_TERMS => 'bool',
+            SolrQuery::EXTRA_PARAM_WEIGHTS => 'string'
         ];
 
         $extraParams = [];
@@ -73,8 +73,6 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
 
                 $extraParams[$className][$settingName] = $value;
             }
-
-            $hans = 3;
         }
 
         $container->setParameter('graviton.document.solr.extra_params', $extraParams);

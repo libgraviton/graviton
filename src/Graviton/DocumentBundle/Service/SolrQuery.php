@@ -90,6 +90,7 @@ class SolrQuery
     public const STRING EXTRA_PARAM_FUZZY_BRIDGE = "FUZZY_BRIDGE";
     public const STRING EXTRA_PARAM_LITERAL_BRIDGE = "LITERAL_BRIDGE";
     public const STRING EXTRA_PARAM_ANDIFY_TERMS = "ANDIFY_TERMS";
+    public const STRING EXTRA_PARAM_WEIGHTS = "WEIGHTS";
 
     /**
      * Constructor

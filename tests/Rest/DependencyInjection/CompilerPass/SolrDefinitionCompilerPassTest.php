@@ -31,6 +31,7 @@ class SolrDefinitionCompilerPassTest extends TestCase
         $_ENV['SOLR_B_BOOST'] = 'feld^3';
         $_ENV['SOLR_B_WILDCARD_BRIDGE'] = '999';
         $_ENV['SOLR_B_ANDIFY_TERMS'] = 'true';
+        $_ENV['SOLR_B_WEIGHTS'] = 'feld^3';
 
         $containerDouble = $this->createMock(ContainerBuilder::class);
 
@@ -57,7 +58,8 @@ class SolrDefinitionCompilerPassTest extends TestCase
             'B' => [
                 'boost' => 'feld^3',
                 'WILDCARD_BRIDGE' => '999',
-                'ANDIFY_TERMS' => 'true'
+                'ANDIFY_TERMS' => true,
+                'WEIGHTS' => 'feld^3'
             ]
         ];
 
@@ -72,5 +74,6 @@ class SolrDefinitionCompilerPassTest extends TestCase
         unset($_ENV['SOLR_B_BOOST']);
         unset($_ENV['SOLR_B_WILDCARD_BRIDGE']);
         unset($_ENV['SOLR_B_ANDIFY_TERMS']);
+        unset($_ENV['SOLR_B_WEIGHTS']);
     }
 }
