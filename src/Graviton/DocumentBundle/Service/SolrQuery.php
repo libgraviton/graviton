@@ -5,7 +5,9 @@
 
 namespace Graviton\DocumentBundle\Service;
 
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Node\SearchNode;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Solarium\Core\Client\Client;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +28,11 @@ class SolrQuery
     private $logger;
 
     /**
+     * @var CacheItemPoolInterface
+     */
+    private CacheItemPoolInterface $cache;
+
+    /**
      * @var string
      */
     private $className;
@@ -41,9 +48,9 @@ class SolrQuery
     private array $defaultSettings = [];
 
     /**
-     * @var array
+     * @var RestServiceLocator
      */
-    private array $solrMap;
+    private RestServiceLocator $restServiceLocator;
 
     /**
      * @var array
@@ -95,26 +102,28 @@ class SolrQuery
     /**
      * Constructor
      *
-     * @param LoggerInterface $logger                 logger
-     * @param string          $solrUrl                url to solr
-     * @param int             $solrFuzzyBridge        fuzzy bridge
-     * @param int             $solrWildcardBridge     wildcard bridge
-     * @param int             $solrLiteralBridge      literal bridge
-     * @param boolean         $andifyTerms            andify terms or not?
-     * @param array           $solrMap                solr class field weight map
-     * @param array           $solrExtraParams        extra params
-     * @param int             $paginationDefaultLimit default pagination limit
-     * @param Client          $solrClient             solr client
-     * @param RequestStack    $requestStack           request stack
+     * @param LoggerInterface        $logger                 logger
+     * @param CacheItemPoolInterface $cache                  cache
+     * @param string                 $solrUrl                url to solr
+     * @param int                    $solrFuzzyBridge        fuzzy bridge
+     * @param int                    $solrWildcardBridge     wildcard bridge
+     * @param int                    $solrLiteralBridge      literal bridge
+     * @param boolean                $andifyTerms            andify terms or not?
+     * @param RestServiceLocator     $restServiceLocator     rest service locator
+     * @param array                  $solrExtraParams        extra params
+     * @param int                    $paginationDefaultLimit default pagination limit
+     * @param Client                 $solrClient             solr client
+     * @param RequestStack           $requestStack           request stack
      */
     public function __construct(
         LoggerInterface $logger,
+        CacheItemPoolInterface $cache,
         $solrUrl,
         $solrFuzzyBridge,
         $solrWildcardBridge,
         $solrLiteralBridge,
         $andifyTerms,
-        array $solrMap,
+        RestServiceLocator $restServiceLocator,
         array $solrExtraParams,
         $paginationDefaultLimit,
         Client $solrClient,
@@ -125,12 +134,14 @@ class SolrQuery
             $this->urlParts = parse_url($solrUrl);
         }
 
+        $this->cache = $cache;
+
         $this->defaultSettings[self::EXTRA_PARAM_FUZZY_BRIDGE] = (int) $solrFuzzyBridge;
         $this->defaultSettings[self::EXTRA_PARAM_WILDCARD_BRIDGE] = (int) $solrWildcardBridge;
         $this->defaultSettings[self::EXTRA_PARAM_LITERAL_BRIDGE] = (int) $solrLiteralBridge;
         $this->defaultSettings[self::EXTRA_PARAM_ANDIFY_TERMS] = (bool) $andifyTerms;
 
-        $this->solrMap = $solrMap;
+        $this->restServiceLocator = $restServiceLocator;
         $this->solrExtraParams = $solrExtraParams;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
@@ -213,7 +224,7 @@ class SolrQuery
      */
     public function isConfigured()
     {
-        if (!empty($this->urlParts) && isset($this->solrMap[$this->className])) {
+        if (!empty($this->urlParts) && $this->hasSolr($this->className)) {
             return true;
         }
         return false;
@@ -228,7 +239,12 @@ class SolrQuery
      */
     public function hasSolr($className) : bool
     {
-        return isset($this->solrMap[$className]);
+        $model = $this->restServiceLocator->getDocumentModel($className);
+        if (is_null($model)) {
+            return false;
+        }
+
+        return !empty($model->getRuntimeDefinition()->getSolrFields());
     }
 
     /**
@@ -240,10 +256,14 @@ class SolrQuery
      */
     public function getSetting(string $settingName) : mixed
     {
-        if (!empty($this->solrExtraParams[$this->className][$settingName])) {
-            return $this->solrExtraParams[$this->className][$settingName];
+        $checkName = strtoupper($this->getCoreFromClassName($this->className));
+        if (!empty($this->solrExtraParams[$checkName][$settingName])) {
+            return $this->solrExtraParams[$checkName][$settingName];
         }
-        return $this->defaultSettings[$settingName];
+        if (isset($this->defaultSettings[$settingName])) {
+            return $this->defaultSettings[$settingName];
+        }
+        return null;
     }
 
     /**
@@ -260,9 +280,10 @@ class SolrQuery
 
         $query = $client->createQuery($client::QUERY_SELECT);
 
+        $weightString = $this->getSolrWeightString($this->className);
+
         // set the weights
-        $queryFields = $this->solrMap[$this->className];
-        $query->getEDisMax()->setQueryFields($queryFields);
+        $query->getEDisMax()->setQueryFields($weightString);
 
         $searchTerm = $this->getSearchTerm($node);
         $query->setQuery($searchTerm);
@@ -274,11 +295,12 @@ class SolrQuery
         }
 
         // sort?
-        if (!empty($this->solrExtraParams[$this->className])) {
-            foreach ($this->solrExtraParams[$this->className] as $param => $value) {
-                if (!in_array($param, array_keys($this->defaultSettings))) {
+        $checkName = strtoupper($this->getCoreFromClassName($this->className));
+        if (!empty($this->solrExtraParams[$checkName])) {
+            foreach ($this->solrExtraParams[$checkName] as $param => $value) {
+                if (!in_array($param, array_keys($this->defaultSettings)) && $param != self::EXTRA_PARAM_WEIGHTS) {
                     $query->addParam(
-                        $param,
+                        strtolower($param),
                         $value
                     );
                 }
@@ -288,8 +310,9 @@ class SolrQuery
         $this->logger->info(
             'Executing solr search',
             [
-                'fields' => $queryFields,
                 'query' => $searchTerm,
+                'fields' => $weightString,
+                'params' => $query->getParams(),
                 'start' => $query->getStart(),
                 'rows' => $query->getRows()
             ]
@@ -600,8 +623,7 @@ class SolrQuery
             );
         }
         // find core name
-        $classnameParts = explode('\\', $this->className);
-        $endpointConfig['core'] = array_pop($classnameParts);
+        $endpointConfig['core'] = $this->getCoreFromClassName($this->className);
 
         $endpointConfig['timeout'] = 10000;
         $endpointConfig['key'] = 'local';
@@ -610,5 +632,71 @@ class SolrQuery
         $this->solrClient->setDefaultEndpoint($endpointConfig['key']);
 
         return $this->solrClient;
+    }
+
+    /**
+     * full class name
+     *
+     * @param string $className full class name
+     * @return void
+     */
+    private function getCoreFromClassName(string $className) : string
+    {
+        $classnameParts = explode('\\', $className);
+        return array_pop($classnameParts);
+    }
+
+    /**
+     * Returns the solr weight string
+     *
+     * @param string $className class name
+     *
+     * @return string weight string
+     */
+    private function getSolrWeightString(string $className) : string
+    {
+        $cacheKey = 'SOLR-WEIGHTSTRING-'.$this->getCoreFromClassName($className);
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if (!$cacheItem->isHit()) {
+            $weightSetting = $this->getSetting(self::EXTRA_PARAM_WEIGHTS);
+
+            // custom weights provided?
+            $customWeights = [];
+            if (!empty($weightSetting)) {
+                $weights = explode(' ', $weightSetting);
+                foreach ($weights as $fullWeight) {
+                    $singleWeight = explode('^', $fullWeight);
+                    if (count($singleWeight) != 2) {
+                        continue;
+                    }
+                    $customWeights[$singleWeight[0]] = $fullWeight;
+                }
+            }
+
+            // compose the final string!
+            $finalWeights = [];
+            $solrFields = $this->restServiceLocator
+                ->getDocumentModel($className)
+                ->getRuntimeDefinition()
+                ->getSolrFields();
+
+            foreach ($solrFields as $field) {
+                if (is_numeric($field['weight']) && $field['weight'] != 0) {
+                    $finalWeights[$field['name']] = $field['name'].'^'.$field['weight'];
+                }
+            }
+
+            // custom overrides
+            foreach ($customWeights as $fieldName => $fieldWeight) {
+                $finalWeights[$fieldName] = $fieldWeight;
+            }
+
+            $cacheItem->set(implode(' ', $finalWeights));
+            $this->cache->save($cacheItem);
+            return $cacheItem->get();
+        }
+
+        return $cacheItem->get();
     }
 }
