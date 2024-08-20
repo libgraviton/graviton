@@ -6,6 +6,9 @@
 namespace Graviton\Tests\Rest\Listener;
 
 use Graviton\DocumentBundle\Service\SolrQuery;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\RuntimeDefinition;
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\RqlParser\Node\LimitNode;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +18,7 @@ use Solarium\Component\EdisMax;
 use Solarium\Core\Client\Adapter\Curl;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -115,18 +119,61 @@ class RqlSearchNodeListenerTest extends TestCase
             ->method('select')
             ->willReturn($this->solrClientResult);
 
+        $runtimeDefA = new RuntimeDefinition();
+        $runtimeDefA->setSolrFields([
+            [
+                'name' => 'fieldName',
+                'weight' => 2
+            ],
+            [
+                'name' => 'fieldNameTwo',
+                'weight' => 3
+            ]
+        ]);
+        $documentModelA = $this->getMockBuilder(DocumentModel::class)->disableOriginalConstructor()->getMock();
+        $documentModelA->method('getRuntimeDefinition')->willReturn($runtimeDefA);
+
+        $runtimeDefB = new RuntimeDefinition();
+        $runtimeDefB->setSolrFields([
+            [
+                'name' => 'fieldName',
+                'weight' => 20
+            ],
+            [
+                'name' => 'fieldNameTwo',
+                'weight' => 30
+            ]
+        ]);
+        $documentModelB = $this->getMockBuilder(DocumentModel::class)->disableOriginalConstructor()->getMock();
+        $documentModelB->method('getRuntimeDefinition')->willReturn($runtimeDefB);
+
+        $serviceLocator = $this->getMockBuilder(RestServiceLocator::class)->disableOriginalConstructor()->getMock();
+
+        $serviceLocator
+            ->expects(self::atLeast(0))
+            ->method('getDocumentModel')
+            ->willReturnCallback(function ($value) use ($documentModelA, $documentModelB) {
+                if ($value == 'MyNiceDocument') {
+                    return $documentModelA;
+                }
+                if ($value == 'MyOtherNiceDocument') {
+                    return $documentModelB;
+                }
+                return null;
+            });
+
+        $cache = new ArrayAdapter();
+
         // SolrQuery class
         $this->solrQuery = new SolrQuery(
             $this->getMockBuilder(LoggerInterface::class)->getMock(),
+            $cache,
             'http://localhost/solr',
             5,
             3,
             2,
             true,
-            [
-                'MyNiceDocument' => 'fieldName^2 fieldNameTwo^3',
-                'MyOtherNiceDocument' => 'fieldName^20 fieldNameTwo^30'
-            ],
+            $serviceLocator,
             [],
             2,
             $this->solrClient,
