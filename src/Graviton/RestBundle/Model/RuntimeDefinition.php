@@ -48,6 +48,8 @@ class RuntimeDefinition
      */
     private bool $preferredReadFromSecondary = false;
 
+    private array $solrFields = [];
+
     /**
      * get fields
      *
@@ -200,5 +202,27 @@ class RuntimeDefinition
     public function setPreferredReadFromSecondary(bool $preferredReadFromSecondary): void
     {
         $this->preferredReadFromSecondary = $preferredReadFromSecondary;
+    }
+
+    /**
+     * get solr fields
+     *
+     * @return array solr fields
+     */
+    public function getSolrFields(): array
+    {
+        return $this->solrFields;
+    }
+
+    /**
+     * set solr fields
+     *
+     * @param array $solrFields fields
+     *
+     * @return void
+     */
+    public function setSolrFields(array $solrFields): void
+    {
+        $this->solrFields = $solrFields;
     }
 }

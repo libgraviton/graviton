@@ -5,10 +5,14 @@
 namespace Graviton\Tests\Rest\Service;
 
 use Graviton\DocumentBundle\Service\SolrQuery;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Model\RuntimeDefinition;
+use Graviton\RestBundle\Service\RestServiceLocator;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\RqlParser\Node\LimitNode;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -38,8 +42,6 @@ class SolrQueryTest extends TestCase
         $literalBridge = 5
     ) {
         $className = '\Test\Class';
-        $classFields = 'fieldA^1 fieldB^2';
-
         $request = new Request();
 
         $requestStack = $this->getMockBuilder('\Symfony\Component\HttpFoundation\RequestStack')
@@ -58,17 +60,21 @@ class SolrQueryTest extends TestCase
         $edisMax
             ->expects($this->once())
             ->method('setQueryFields')
-            ->with($classFields);
+            ->with('fieldA^1 fieldB^2 fieldC^3'); // merged options and extra params!
 
         $solrQueryClass = $this->getMockBuilder('\Solarium\QueryType\Select\Query\Query')
             ->disableOriginalConstructor()
-            ->onlyMethods(['getEDisMax', 'setQuery'])
+            ->onlyMethods(['getEDisMax', 'setQuery', 'addParam'])
             ->getMock();
         $solrQueryClass->method('getEDisMax')->willReturn($edisMax);
         $solrQueryClass
             ->expects($this->once())
             ->method('setQuery')
             ->with($expectedQuery);
+        $solrQueryClass
+            ->expects($this->exactly(2))
+            ->method('addParam')
+            ->withAnyParameters();
 
         $searchResult = $this->getMockBuilder('\Solarium\QueryType\Select\Result\Result')
             ->disableOriginalConstructor()
@@ -102,19 +108,39 @@ class SolrQueryTest extends TestCase
 
         $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
+        $runtimeDef = new RuntimeDefinition();
+        $runtimeDef->setSolrFields([
+            [
+                'name' => 'fieldA',
+                'weight' => 1
+            ],
+            [
+                'name' => 'fieldB',
+                'weight' => 0.2
+            ]
+        ]);
+        $documentModel = $this->getMockBuilder(DocumentModel::class)->disableOriginalConstructor()->getMock();
+        $documentModel->method('getRuntimeDefinition')->willReturn($runtimeDef);
+
+        $serviceLocator = $this->getMockBuilder(RestServiceLocator::class)->disableOriginalConstructor()->getMock();
+        $serviceLocator->method('getDocumentModel')->with($className)->willReturn($documentModel);
+
+        $cache = new ArrayAdapter();
+
         $solr = new SolrQuery(
             $logger,
+            $cache,
             'http://solr:3033',
             $fuzzyBridge,
             $wildcardBridge,
             $literalBridge,
             $andifyTerms,
+            $serviceLocator,
             [
-                $className => $classFields
-            ],
-            [
-                $className => [
-                    'sort' => 'sort asc'
+                'CLASS' => [
+                    'sort' => 'sort asc',
+                    'BOOST' => 'ifdef(booster)',
+                    'WEIGHTS' => 'fieldC^3 fieldB^2'
                 ]
             ],
             10,
