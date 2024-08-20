@@ -509,6 +509,50 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * test multipart request
+     *
+     * @return void
+     */
+    public function testMultipartRequestOnlyUpload()
+    {
+        $client = static::createRestClient();
+
+        $content = [
+            '--X-INSOMNIA-BOUNDARY',
+            'Content-Disposition: form-data; name="upload"; filename="logo.png"',
+            'Content-Type: image/png',
+            '',
+            file_get_contents(__DIR__.'/resources/logo.png'),
+            '--X-INSOMNIA-BOUNDARY--',
+        ];
+
+        $client->post(
+            "/file/",
+            implode("\r\n", $content),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'multipart/form-data; boundary=X-INSOMNIA-BOUNDARY'
+            ],
+            false
+        );
+
+        $response = $client->getResponse();
+        $location = $response->headers->get('location');
+
+        $client = static::createRestClient();
+        $client->request('GET', $location);
+
+        file_put_contents('/tmp/logo', $client->getResponse()->getContent(false));
+
+        // assert file content
+        $this->assertEquals(
+            file_get_contents(__DIR__.'/resources/logo.png'),
+            $client->getResponse()->getContent(false)
+        );
+    }
+
+    /**
      * test behavior when data sent was multipart/form-data
      *
      * @return void
