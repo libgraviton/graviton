@@ -5,12 +5,9 @@
 
 namespace Graviton\Tests\Rest\DependencyInjection\CompilerPass;
 
-use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -30,29 +27,17 @@ class SolrDefinitionCompilerPassTest extends TestCase
 
         $_ENV['SOLR_A_SORT'] = $customSorter;
         $_ENV['SOLR_A_BOOST'] = 'feld^2';
-
-        $documentMap = new DocumentMap(
-            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Extref']),
-            (new Finder())
-                ->in(__DIR__.'/Resources/serializer/extref')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/schema')
-                ->name('*.json')
-        );
+        $_ENV['SOLR_A_LITERAL_BRIDGE'] = '99';
+        $_ENV['SOLR_B_BOOST'] = 'feld^3';
+        $_ENV['SOLR_B_WILDCARD_BRIDGE'] = '999';
+        $_ENV['SOLR_B_ANDIFY_TERMS'] = 'true';
 
         $containerDouble = $this->createMock(ContainerBuilder::class);
-
-        $containerDouble
-            ->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('graviton.document.map'))
-            ->willReturn($documentMap);
 
         $double = new \ArrayObject();
 
         $containerDouble
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('setParameter')
             ->willReturnCallback(
                 function ($paramA, $paramB) use ($double) {
@@ -63,29 +48,29 @@ class SolrDefinitionCompilerPassTest extends TestCase
         $sut = new SolrDefinitionCompilerPass();
         $sut->process($containerDouble);
 
-        $expectedResult = [
-            'Graviton\Tests\Rest\DependencyInjection\CompilerPass\Resources\Document\Extref\A' =>
-                'fieldA^1 fieldB^15 fieldD^0.3'
-        ];
-
-        $expectedResultSort = [
-            'Graviton\Tests\Rest\DependencyInjection\CompilerPass\Resources\Document\Extref\A' => [
-                'sort' => $customSorter,
-                'boost' => 'feld^2'
+        $params = [
+            'A' => [
+                'sort' => 'if(def(field1,false),1, if( def(field2,false),2,3 )  ) asc, score desc',
+                'boost' => 'feld^2',
+                'LITERAL_BRIDGE' => 99
+            ],
+            'B' => [
+                'boost' => 'feld^3',
+                'WILDCARD_BRIDGE' => '999',
+                'ANDIFY_TERMS' => 'true'
             ]
         ];
 
         $this->assertEquals(
-            $expectedResult,
-            $double['graviton.document.solr.map']
-        );
-
-        $this->assertEquals(
-            $expectedResultSort,
+            $params,
             $double['graviton.document.solr.extra_params']
         );
 
         unset($_ENV['SOLR_A_SORT']);
         unset($_ENV['SOLR_A_BOOST']);
+        unset($_ENV['SOLR_A_LITERAL_BRIDGE']);
+        unset($_ENV['SOLR_B_BOOST']);
+        unset($_ENV['SOLR_B_WILDCARD_BRIDGE']);
+        unset($_ENV['SOLR_B_ANDIFY_TERMS']);
     }
 }
