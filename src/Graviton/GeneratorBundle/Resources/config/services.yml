@@ -254,6 +254,7 @@ services:
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\VersioningServiceBuilder: ~
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\EventNamesBuilder: ~
     Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder: ~
+    Graviton\GeneratorBundle\RuntimeDefinition\Builder\SolrFieldsBuilder: ~
 
     Graviton\GeneratorBundle\RuntimeDefinition\RuntimeDefinitionBuilder:
       calls:
@@ -273,3 +274,7 @@ services:
           method: addBuilder
           arguments:
             - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\ReadFromSecondaryBuilder'
+        -
+          method: addBuilder
+          arguments:
+            - '@Graviton\GeneratorBundle\RuntimeDefinition\Builder\SolrFieldsBuilder'
