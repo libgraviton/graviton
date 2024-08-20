@@ -15,16 +15,23 @@ use Graviton\MigrationBundle\GravitonMigrationBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use League\FlysystemBundle\FlysystemBundle;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
+
+
 class AppKernel extends Kernel
 {
+
+    use MicroKernelTrait;
 
     /**
      * project dir
@@ -32,6 +39,31 @@ class AppKernel extends Kernel
      * @var string
      */
     protected string $projectDir = __DIR__.'/../';
+
+    protected function configureContainer(ContainerConfigurator $container): void
+    {
+        $container->import('../config/{packages}/*.yaml');
+        $container->import('../config/{packages}/'.$this->environment.'/*.yaml');
+
+        if (is_file(\dirname(__DIR__).'/config/services.yaml')) {
+            $container->import('../config/services.yaml');
+            $container->import('../config/{services}_'.$this->environment.'.yaml');
+        } elseif (is_file($path = \dirname(__DIR__).'/config/services.php')) {
+            (require $path)($container->withPath($path), $this);
+        }
+    }
+
+    protected function configureRoutes(RoutingConfigurator $routes): void
+    {
+        $routes->import('../config/{routes}/'.$this->environment.'/*.yaml');
+        $routes->import('../config/{routes}/*.yaml');
+
+        if (is_file(\dirname(__DIR__).'/config/routes.yaml')) {
+            $routes->import('../config/routes.yaml');
+        } elseif (is_file($path = \dirname(__DIR__).'/config/routes.php')) {
+            (require $path)($routes->withPath($path), $this);
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -98,17 +130,5 @@ class AppKernel extends Kernel
 
         $bundleLoader = new BundleLoader(new GravitonBundleBundle());
         return $bundleLoader->load($bundles);
-    }
-
-    /**
-     * load env configs with loader
-     *
-     * @param LoaderInterface $loader loader
-     *
-     * @return void
-     */
-    public function registerContainerConfiguration(LoaderInterface $loader)
-    {
-        $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
     }
 }
