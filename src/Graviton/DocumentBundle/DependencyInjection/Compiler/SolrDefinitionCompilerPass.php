@@ -5,7 +5,6 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -76,53 +75,5 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
         }
 
         $container->setParameter('graviton.document.solr.extra_params', $extraParams);
-    }
-
-    /**
-     * gets the core name from the class
-     *
-     * @param string $className class name
-     *
-     * @return string core name
-     */
-    private function getCoreName(string $className) : string
-    {
-        $classnameParts = explode('\\', $className);
-        return array_pop($classnameParts);
-    }
-
-    /**
-     * Returns the solr weight string
-     *
-     * @param array  $solrFields fields
-     * @param string $className  class name
-     *
-     * @return string weight string
-     */
-    private function getSolrWeightString(array $solrFields, string $className)
-    {
-        $weights = [];
-        foreach ($solrFields as $field) {
-            if (is_numeric($field['weight']) && $field['weight'] != 0) {
-                $weights[$field['name']] = $field['name'].'^'.$field['weight'];
-            }
-        }
-
-        // any overrides via env?
-        $envName = sprintf("SOLR_%s_WEIGHTS", strtoupper($this->getCoreName($className)));
-        if (!empty($_ENV[$envName])) {
-            $overrides = explode(' ', $_ENV[$envName]);
-
-            foreach ($overrides as $override) {
-                $parts = explode('^', $override);
-                if (count($parts) != 2) {
-                    continue;
-                }
-
-                $weights[$parts[0]] = $override;
-            }
-        }
-
-        return implode(' ', $weights);
     }
 }
