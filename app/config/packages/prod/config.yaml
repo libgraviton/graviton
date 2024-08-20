@@ -1,6 +1,3 @@
-imports:
-    - { resource: security.yml }
-    - { resource: config.yml }
 
 monolog:
     handlers:

@@ -51,6 +51,22 @@ class AppKernel extends Kernel
         } elseif (is_file($path = \dirname(__DIR__).'/config/services.php')) {
             (require $path)($container->withPath($path), $this);
         }
+
+        // parameters!
+        if (is_file(\dirname(__DIR__).'/config/parameters.yml')) {
+            $container->import('../config/parameters.yml');
+            $container->import('../config/{parameters}_'.$this->environment.'.yml');
+        }
+
+        if (is_file($path = \dirname(__DIR__).'/config/parameters_buildtime.php')) {
+            (require $path)($container->withPath($path), $this);
+        }
+
+        if (is_file(\dirname(__DIR__).'/config/parameters_runtime.yml')) {
+            $container->import('../config/parameters.yaml');
+            $container->import('../config/{parameters}_'.$this->environment.'.yaml');
+        }
+
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void
