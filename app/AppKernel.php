@@ -21,13 +21,6 @@ class AppKernel extends Kernel
     use MicroKernelTrait;
 
     /**
-     * project dir
-     *
-     * @var string
-     */
-    //protected string $projectDir = __DIR__ . '/../';
-
-    /**
      * {@inheritDoc}
      *
      * @param string $environment The environment
@@ -82,17 +75,4 @@ class AppKernel extends Kernel
             (require $path)($routes->withPath($path), $this);
         }
     }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return array bundles
-     */
-    /*
-    public function registerBundles(): iterable
-    {
-        $bundleLoader = new BundleLoader(new GravitonBundleBundle());
-        return $bundleLoader->load($bundles);
-    }*/
 }

@@ -47,6 +47,9 @@ class Client
      */
     public function getResults()
     {
+        if ($this->client->getInternalResponse() !== null) {
+            return json_decode($this->client->getInternalResponse()->getContent());
+        }
         return json_decode($this->client->getResponse()->getContent());
     }
 
