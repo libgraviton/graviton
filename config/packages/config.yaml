@@ -5,6 +5,8 @@ parameters:
     graviton.sentry.dontReport: []
     graviton.version.ext_list: []
     graviton.generator.ensure_indexes: ~
+    graviton.generator.synthetic_fields_expose_on: ~
+    graviton.generator.synthetic_fields: ~
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
