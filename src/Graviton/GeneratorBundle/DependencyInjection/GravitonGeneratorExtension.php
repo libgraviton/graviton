@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\DependencyInjection;
 
-use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use Graviton\CoreBundle\DependencyInjection\GravitonBaseExtension;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -16,7 +16,7 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonGeneratorExtension extends GravitonBundleExtension
+class GravitonGeneratorExtension extends GravitonBaseExtension
 {
     /**
      * {@inheritDoc}

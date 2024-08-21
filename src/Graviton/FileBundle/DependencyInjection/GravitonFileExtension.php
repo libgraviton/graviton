@@ -5,14 +5,14 @@
 
 namespace Graviton\FileBundle\DependencyInjection;
 
-use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use Graviton\CoreBundle\DependencyInjection\GravitonBaseExtension;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonFileExtension extends GravitonBundleExtension
+class GravitonFileExtension extends GravitonBaseExtension
 {
     /**
      * {@inheritDoc}
