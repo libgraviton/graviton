@@ -48,18 +48,3 @@ services:
             event: "kernel.exception"
             method: "onKernelException"
 
-    # fixtures
-    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
-      public: true
-      tags:
-          - { name: 'doctrine.fixture.orm' }
-
-    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
-      public: true
-      tags:
-        - { name: 'doctrine.fixture.orm' }
-
-    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu:
-      public: true
-      tags:
-        - { name: 'doctrine.fixture.orm' }
