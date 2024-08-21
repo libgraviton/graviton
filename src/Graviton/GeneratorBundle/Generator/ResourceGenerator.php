@@ -12,9 +12,11 @@ use Graviton\GeneratorBundle\Definition\Schema\SymfonyService;
 use Graviton\GeneratorBundle\Definition\Schema\SymfonyServiceCall;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
+use Graviton\Graviton;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\I18nUtils;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -258,6 +260,23 @@ class ResourceGenerator extends AbstractGenerator
             $schemaClassName,
             [
                 'schemaFile' => $relativeSchemaPath
+            ]
+        );
+
+        // a file containing all 'routes.php'
+        $files = Finder::create()->files()->in(Graviton::getBundleScanDir())->path('config/routes_grv.yaml');
+
+        $grvRouteFiles = [];
+        foreach ($files as $file) {
+            $grvRouteFiles[] = $file->getPathname();
+        }
+        $routesClassName = $bundleDir.'/Entity/GravitonRoutes.php';
+
+        $this->renderFile(
+            'entity/Routes.php.twig',
+            $routesClassName,
+            [
+                'files' => $grvRouteFiles
             ]
         );
     }

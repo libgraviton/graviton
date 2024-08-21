@@ -5,7 +5,6 @@
 
 namespace Graviton\DocumentBundle;
 
-use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
 use Graviton\DocumentBundle\Types\TypeLoader;
@@ -22,7 +21,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\RqlFieldsCompilerPass;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
+class GravitonDocumentBundle extends Bundle
 {
 
     /**
@@ -31,17 +30,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     public function __construct()
     {
         TypeLoader::load();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return [];
     }
 
     /**

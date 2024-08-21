@@ -1,6 +1,4 @@
-
 security:
-
     providers:
         default:
             id: Graviton\SecurityBundle\Authentication\UserProvider

@@ -5,18 +5,10 @@
 
 namespace Graviton;
 
-use Graviton\BundleBundle\GravitonBundleBundle;
-use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\CoreBundle\GravitonCoreBundle;
-use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\FileBundle\GravitonFileBundle;
-use Graviton\GeneratorBundle\GravitonGeneratorBundle;
-use Graviton\MigrationBundle\GravitonMigrationBundle;
-use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\SecurityBundle\GravitonSecurityBundle;
-use League\FlysystemBundle\FlysystemBundle;
-use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,12 +18,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class AppKernel extends Kernel
 {
 
-    /**
-     * project dir
-     *
-     * @var string
-     */
-    protected string $projectDir = __DIR__.'/../';
+    use MicroKernelTrait;
 
     /**
      * {@inheritDoc}
@@ -51,64 +38,60 @@ class AppKernel extends Kernel
     }
 
     /**
-     * {@inheritDoc}
+     * configures container
      *
-     * @return array bundles
+     * @param ContainerConfigurator $container container
+     * @return void nothing
      */
-    public function registerBundles(): iterable
+    protected function configureContainer(ContainerConfigurator $container): void
     {
-        $bundles = [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new \Symfony\Bundle\TwigBundle\TwigBundle(),
-            new \Symfony\Bundle\MonologBundle\MonologBundle(),
-            new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-            new \JMS\SerializerBundle\JMSSerializerBundle(),
-            new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
-            new FlysystemBundle(),
-            new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
-            new \Graviton\CommonBundle\GravitonCommonBundle(),
-            new \Sentry\SentryBundle\SentryBundle()
-        ];
+        $container->import('../config/{packages}/*.yaml');
+        $container->import('../config/{packages}/' . $this->environment . '/*.yaml');
 
-        $nonProdEnv = ($this->getEnvironment() == 'dev' || str_contains($this->getEnvironment(), 'test'));
-
-        if ($nonProdEnv) {
-            $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
-            $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+        if (is_file(\dirname(__DIR__) . '/config/services.yaml')) {
+            $container->import('../config/services.yaml');
+            $container->import('../config/{services}_' . $this->environment . '.yaml');
+        } elseif (is_file($path = \dirname(__DIR__) . '/config/services.php')) {
+            (include $path)($container->withPath($path), $this);
         }
 
-        if (class_exists('Graviton\TestServicesBundle\GravitonTestServicesBundle')) {
-            $bundles[] = new \Graviton\TestServicesBundle\GravitonTestServicesBundle();
+        // parameters!
+        if (is_file(\dirname(__DIR__) . '/config/parameters.yaml')) {
+            $container->import('../config/parameters.yaml');
+            $container->import('../config/{parameters}_' . $this->environment . '.yaml');
         }
 
-        // our own bundles!
-        $bundles = array_merge(
-            $bundles,
-            [
-                new GravitonCoreBundle(),
-                new GravitonDocumentBundle(),
-                new GravitonRestBundle(),
-                new GravitonGeneratorBundle(),
-                new GravitonSecurityBundle(),
-                new GravitonFileBundle(),
-                new GravitonMigrationBundle()
-            ]
-        );
+        if (is_file($path = \dirname(__DIR__) . '/config/parameters_buildtime.php')) {
+            (include $path)($container->withPath($path), $this);
+        }
 
-        $bundleLoader = new BundleLoader(new GravitonBundleBundle());
-        return $bundleLoader->load($bundles);
+        if (is_file(\dirname(__DIR__) . '/config/parameters_runtime.yaml')) {
+            $container->import('../config/parameters_runtime.yaml');
+        }
     }
 
     /**
-     * load env configs with loader
+     * configures route
      *
-     * @param LoaderInterface $loader loader
-     *
-     * @return void
+     * @param RoutingConfigurator $routes routes
+     * @return void nothing
      */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
-        $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
+        $routes->import('../config/{routes}/' . $this->environment . '/*.yaml');
+        $routes->import('../config/{routes}/*.yaml');
+
+        if (is_file(\dirname(__DIR__) . '/config/routes.yaml')) {
+            $routes->import('../config/routes.yaml');
+        } elseif (is_file($path = \dirname(__DIR__) . '/config/routes.php')) {
+            (include $path)($routes->withPath($path), $this);
+        }
+
+        // grv routes file?
+        if (class_exists('GravitonDyn\EntityBundle\Entity\GravitonRoutes')) {
+            foreach (\GravitonDyn\EntityBundle\Entity\GravitonRoutes::ADDED_ROUTES as $route) {
+                $routes->import($route);
+            }
+        }
     }
 }

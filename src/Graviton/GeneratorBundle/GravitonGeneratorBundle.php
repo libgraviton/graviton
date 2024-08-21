@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle;
 
-use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\GeneratorBundle\DependencyInjection\Compiler\GeneratorHashCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,17 +17,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonGeneratorBundle extends Bundle implements GravitonBundleInterface
+class GravitonGeneratorBundle extends Bundle
 {
-    /**
-     * return array of new bunde instances
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return [];
-    }
 
     /**
      * load compiler pass

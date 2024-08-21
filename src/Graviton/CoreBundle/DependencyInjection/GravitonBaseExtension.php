@@ -3,18 +3,18 @@
  * Load and manage bundle configuration.
  */
 
-namespace Graviton\BundleBundle\DependencyInjection;
+namespace Graviton\CoreBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface as PrependInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
- * GravitonBundleExtension
+ * GravitonBaseExtension
  *
  * To learn more see {@link http://scm.to/004w}
  *
@@ -22,7 +22,7 @@ use Symfony\Component\Finder\SplFileInfo;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonBundleExtension extends Extension implements PrependInterface
+abstract class GravitonBaseExtension extends Extension implements PrependInterface
 {
     /**
      * {@inheritDoc}

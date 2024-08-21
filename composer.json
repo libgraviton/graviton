@@ -161,10 +161,10 @@
     "extra": {
         "symfony-app-dir": "./bin",
         "symfony-web-dir": "./public",
-        "graviton-runtime-file": "app/config/parameters_runtime.yml",
+        "graviton-runtime-file": "config/parameters_runtime.yaml",
         "incenteev-parameters": [
             {
-                "file": "app/config/parameters.yml",
+                "file": "config/parameters.yaml",
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
@@ -235,7 +235,7 @@
                 }
             },
             {
-                "file": "app/config/parameters_dev.yml",
+                "file": "config/parameters_dev.yaml",
                 "env-map": {
                 }
             }
