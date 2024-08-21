@@ -42,8 +42,6 @@ parameters:
     # if true, the requests to solr as restricted - if false, then not.
     graviton.rest.data_restriction.solr: true
 
-    graviton.rest.openapi.path: "%kernel.project_dir%/app/config/routing.yml"
-
     graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
 
     # security related parameters

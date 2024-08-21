@@ -1,3 +1,10 @@
+parameters:
+    graviton.generator.dynamicbundle.dir: "src/"
+    graviton.version.desired_versions: []
+    graviton.version.self_package_name: graviton/graviton
+    graviton.sentry.dontReport: []
+    graviton.version.ext_list: []
+    graviton.generator.ensure_indexes: ~
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
@@ -10,7 +17,8 @@ framework:
     php_errors:
         log: true
     router:
-        resource: "%kernel.project_dir%/app/config/routing.yml"
+        resource: "%kernel.project_dir%/config/routes.yaml"
+        type: yaml
         utf8: true
         strict_requirements: ~
     form:

@@ -11,10 +11,10 @@ mongodata/
 src/GravitonDyn/*
 src/Doctrine/*
 src/Graviton/DocumentBundle/Entity/*.defaultLanguage
-app/config/parameters.yml
-app/config/parameters_dev.yml
-app/config/parameters_runtime.yml
-app/config/parameters_local.xml
+config/parameters.yaml
+config/parameters_dev.yaml
+config/parameters_runtime.yaml
+config/parameters_local.xml
 app/files/
 app/config/deploy.yml
 app/swagger.*

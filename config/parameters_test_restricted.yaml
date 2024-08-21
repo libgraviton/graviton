@@ -1,0 +1,10 @@
+imports:
+  - { resource: parameters_test.yaml }
+
+# in this environment, data restrictions are enabled
+parameters:
+
+  graviton.translator.default.language: en
+
+  graviton.rest.data_restriction.map:
+    x-graviton-client: "int:clientId"

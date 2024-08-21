@@ -5,7 +5,6 @@
 
 namespace Graviton\SecurityBundle;
 
-use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\SecurityBundle\DependencyInjection\Compiler\RestrictionCompilerPass;
 use Graviton\SecurityBundle\DependencyInjection\Compiler\WhoamiModelCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,17 +17,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
+class GravitonSecurityBundle extends Bundle
 {
-    /**
-     * {@inheritDoc}
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return [];
-    }
 
     /**
      * load compiler pass

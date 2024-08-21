@@ -8,7 +8,6 @@ namespace Graviton\RestBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestrictionListenerCompilerPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
 
@@ -19,21 +18,8 @@ use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonRestBundle extends Bundle implements GravitonBundleInterface
+class GravitonRestBundle extends Bundle
 {
-    /**
-     * {@inheritDoc}
-     *
-     * set up basic bundles needed for being RESTful
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return array(
-            new JMSSerializerBundle(),
-        );
-    }
 
     /**
      * load compiler pass rest route loader

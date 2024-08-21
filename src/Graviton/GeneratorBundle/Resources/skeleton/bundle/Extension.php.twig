@@ -6,7 +6,7 @@
 namespace {{ namespace }}\DependencyInjection;
 
 {% block use_statements %}
-use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use Graviton\CoreBundle\DependencyInjection\GravitonBaseExtension;
 {% endblock use_statements %}
 
 /**
@@ -23,7 +23,7 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  * @link     http://swisscom.ch
  */
 {% block class_definition %}
-class {{ bundle_basename }}Extension extends GravitonBundleExtension
+class {{ bundle_basename }}Extension extends GravitonBaseExtension
 {% endblock class_definition %}
 {
 {% block class_body %}
