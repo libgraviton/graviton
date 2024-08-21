@@ -58,6 +58,8 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
+        env:
+          APP_ENV: test
 
       - name: Prepare tests
         run: |
@@ -67,9 +69,10 @@ jobs:
   
           composer configure
           bash prepare-for-tests.sh
-          cat app/config/parameters.yml
+          cat config/parameters.yml
         env:
           MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports['27017'] }}/db
+          APP_ENV: test
 
       - name: Run tests
         run: |
