@@ -69,7 +69,7 @@ jobs:
   
           composer configure
           bash prepare-for-tests.sh
-          cat config/parameters.yml
+          cat config/parameters.yaml
         env:
           MONGODB_URI: mongodb://127.0.0.1:${{ job.services.mongodb.ports['27017'] }}/db
           APP_ENV: test
