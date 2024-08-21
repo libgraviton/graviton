@@ -318,14 +318,6 @@ services:
         - method: addBodyCheck
           arguments: [ '@Graviton\RestBundle\Service\BodyChecks\VersionedServiceBodyCheck' ]
 
-    # fixtures
-    Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
-      public: true
-      calls:
-        - [ setRestUtils, [ '@Graviton\RestBundle\Service\RestUtils' ] ]
-      tags:
-        - { name: 'doctrine.fixture.orm' }
-
     psr17_factory:
       alias: Http\Discovery\Psr17Factory
 

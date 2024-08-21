@@ -8,3 +8,26 @@ services:
         event: kernel.response
         method: onKernelResponse
 
+  # fixtures
+  Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
+    public: true
+    tags:
+      - { name: 'doctrine.fixture.orm' }
+
+  Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
+    public: true
+    tags:
+      - { name: 'doctrine.fixture.orm' }
+
+  Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu:
+    public: true
+    tags:
+      - { name: 'doctrine.fixture.orm' }
+
+  # fixtures
+  Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
+    public: true
+    calls:
+      - [ setRestUtils, [ '@Graviton\RestBundle\Service\RestUtils' ] ]
+    tags:
+      - { name: 'doctrine.fixture.orm' }
