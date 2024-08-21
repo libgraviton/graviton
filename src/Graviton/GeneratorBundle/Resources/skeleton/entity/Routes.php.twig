@@ -14,7 +14,9 @@ namespace GravitonDyn\EntityBundle\Entity;
  */
 class GravitonRoutes
 {
-
-    public const array ADDED_ROUTES = {{ files|json_encode(constant('JSON_UNESCAPED_SLASHES')) }};
-
+    public const array ADDED_ROUTES = [
+{% for file in files %}
+        __DIR__.'/{{ file }}',
+{% endfor %}
+    ];
 }
