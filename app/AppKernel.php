@@ -24,7 +24,7 @@ class AppKernel extends Kernel
      * {@inheritDoc}
      *
      * @param string $environment The environment
-     * @param bool $debug Whether to enable debugging or not
+     * @param bool   $debug       Whether to enable debugging or not
      *
      * @return AppKernel
      */
@@ -37,6 +37,12 @@ class AppKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
+    /**
+     * configures container
+     *
+     * @param ContainerConfigurator $container container
+     * @return void nothing
+     */
     protected function configureContainer(ContainerConfigurator $container): void
     {
         $container->import('../config/{packages}/*.yaml');
@@ -46,7 +52,7 @@ class AppKernel extends Kernel
             $container->import('../config/services.yaml');
             $container->import('../config/{services}_' . $this->environment . '.yaml');
         } elseif (is_file($path = \dirname(__DIR__) . '/config/services.php')) {
-            (require $path)($container->withPath($path), $this);
+            (include $path)($container->withPath($path), $this);
         }
 
         // parameters!
@@ -56,7 +62,7 @@ class AppKernel extends Kernel
         }
 
         if (is_file($path = \dirname(__DIR__) . '/config/parameters_buildtime.php')) {
-            (require $path)($container->withPath($path), $this);
+            (include $path)($container->withPath($path), $this);
         }
 
         if (is_file(\dirname(__DIR__) . '/config/parameters_runtime.yaml')) {
@@ -64,6 +70,12 @@ class AppKernel extends Kernel
         }
     }
 
+    /**
+     * configures route
+     *
+     * @param RoutingConfigurator $routes routes
+     * @return void nothing
+     */
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $routes->import('../config/{routes}/' . $this->environment . '/*.yaml');
@@ -72,7 +84,14 @@ class AppKernel extends Kernel
         if (is_file(\dirname(__DIR__) . '/config/routes.yaml')) {
             $routes->import('../config/routes.yaml');
         } elseif (is_file($path = \dirname(__DIR__) . '/config/routes.php')) {
-            (require $path)($routes->withPath($path), $this);
+            (include $path)($routes->withPath($path), $this);
+        }
+
+        // grv routes file?
+        if (class_exists('GravitonDyn\EntityBundle\Entity\GravitonRoutes')) {
+            foreach (GravitonDyn\EntityBundle\Entity\GravitonRoutes::getRoutes() as $route) {
+                $routes->import($route);
+            }
         }
     }
 }
