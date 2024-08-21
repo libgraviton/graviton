@@ -76,7 +76,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'strarray'  => ['a', 'b'],
             'boolarray' => [true, false],
             'hasharray' => [(object) ['x' => 'y'], (object) []],
-            'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
+            'datearray' => ['2015-09-30T23:59:59Z', '2015-10-01T00:00:01+0300'],
 
             'hash'      => (object) [
                 'intarray'  => [10, 20],
