@@ -89,7 +89,7 @@ class AppKernel extends Kernel
 
         // grv routes file?
         if (class_exists('GravitonDyn\EntityBundle\Entity\GravitonRoutes')) {
-            foreach (GravitonDyn\EntityBundle\Entity\GravitonRoutes::getRoutes() as $route) {
+            foreach (\GravitonDyn\EntityBundle\Entity\GravitonRoutes::ADDED_ROUTES as $route) {
                 $routes->import($route);
             }
         }

@@ -18,11 +18,6 @@ framework:
     secret: "%secret%"
     php_errors:
         log: true
-    router:
-        resource: "%kernel.project_dir%/config/routes.yaml"
-        type: yaml
-        utf8: true
-        strict_requirements: ~
     form:
         enabled: false
     csrf_protection: false
