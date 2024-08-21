@@ -59,29 +59,56 @@ readonly class FileManager
         }
 
         if (str_contains($contentType, 'multipart')) {
-            $part = PSR7::convert($request);
+            // try first with psr7 parsing
+            try {
+                $part = PSR7::convert($request);
 
-            // json -> is body!
-            $metadata = $part->getPartsByName('metadata');
-            if (!empty($metadata[0])) {
-                $request = $request->withBody($this->psrFactory->createStream($metadata[0]->getBody()));
+                // json -> is body!
+                $metadata = $part->getPartsByName('metadata');
+                if (!empty($metadata[0])) {
+                    $request = $request
+                        ->withBody($this->psrFactory->createStream($metadata[0]->getBody()))
+                        ->withAttribute('metadataBody', true);
+                }
+
+                // file upload
+                $upload = $part->getPartsByName('upload');
+                if (!empty($upload[0])) {
+                    $request = $request->withUploadedFiles(
+                        [
+                            'upload' => $this->psrFactory->createUploadedFile(
+                                $this->psrFactory->createStream($upload[0]->getBody()),
+                                clientFilename: $upload[0]->getFileName(),
+                                clientMediaType: $upload[0]->getMimeType()
+                            )
+                        ]
+                    );
+                }
+
+                // remove the body now
+                $request = $request->withBody($this->psrFactory->createStream(''));
+            } catch (\Exception $e) {
+                // nothing it seems!
             }
 
-            // file upload
-            $upload = $part->getPartsByName('upload');
-            if (!empty($upload[0])) {
+            // do we have superglobal $FILES?
+            if (isset($_FILES['upload'])) {
                 $request = $request->withUploadedFiles(
                     [
                         'upload' => $this->psrFactory->createUploadedFile(
-                            $this->psrFactory->createStream($upload[0]->getBody()),
-                            clientFilename: $upload[0]->getFileName(),
-                            clientMediaType: $upload[0]->getMimeType()
+                            $this->psrFactory->createStreamFromFile($_FILES['upload']['tmp_name']),
+                            clientFilename: $_FILES['upload']['name'] ?? basename($_FILES['upload']['tmp_name']),
+                            clientMediaType: $_FILES['upload']['type']
                         )
                     ]
                 );
             }
-
-            $request = $request->withAttribute('metadataBody', true);
+            // metadata as POST field?
+            if (is_array($_POST) && isset($_POST['metadata'])) {
+                $request = $request
+                    ->withBody($this->psrFactory->createStream($_POST['metadata']))
+                    ->withAttribute('metadataBody', true);
+            }
         } else {
             // change body!
             $parsedBody = $request->getParsedBody();
