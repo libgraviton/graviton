@@ -265,12 +265,19 @@ class ResourceGenerator extends AbstractGenerator
 
         // a file containing all 'routes.php'
         $files = Finder::create()->files()->in(Graviton::getBundleScanDir())->path('config/routes_grv.yaml');
+        $routesClassName = $bundleDir.'/Entity/GravitonRoutes.php';
 
         $grvRouteFiles = [];
         foreach ($files as $file) {
-            $grvRouteFiles[] = $file->getPathname();
+            $fullPath = $file->getPathname();
+            // find relative path
+            $relativeSchemaPath = $fs->makePathRelative(
+                dirname($fullPath),
+                dirname($routesClassName)
+            ) . basename($fullPath);
+
+            $grvRouteFiles[] = $relativeSchemaPath;
         }
-        $routesClassName = $bundleDir.'/Entity/GravitonRoutes.php';
 
         $this->renderFile(
             'entity/Routes.php.twig',
