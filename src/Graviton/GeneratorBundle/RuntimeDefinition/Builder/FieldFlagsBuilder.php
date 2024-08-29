@@ -50,9 +50,40 @@ class FieldFlagsBuilder extends RuntimeDefinitionBuilderAbstract
             }
         }
 
-        $data->runtimeDefinition->setRecordOriginExceptionFields($recordOriginExceptionFields);
-        $data->runtimeDefinition->setReadOnlyFields($readOnlyFields);
-        $data->runtimeDefinition->setIncrementalDateFields($incrementalDateFields);
-        $data->runtimeDefinition->setExtRefFields($extRefFields);
+        // take top level fields also from json definiton again
+        $jsonFields = $data->definition->getFields();
+        foreach ($jsonFields as $jsonField) {
+            // only take simple fields!
+            if (str_contains($jsonField->getName(), '.')) {
+                continue;
+            }
+
+            $def = $jsonField->getDefAsArray();
+            if (isset($def['readOnly']) && $def['readOnly'] === true) {
+                $readOnlyFields[] = $jsonField->getName();
+            }
+            if (isset($def['recordOriginException']) && $def['recordOriginException'] === true) {
+                $recordOriginExceptionFields[] = $jsonField->getName();
+
+                // also subfields?
+                $allowSubFields = ($jsonField->getType() == 'object' || $def['isClassType'] == true);
+                if ($allowSubFields) {
+                    $recordOriginExceptionFields[] = $jsonField->getName().'.*';
+                }
+            }
+        }
+
+        $data->runtimeDefinition->setRecordOriginExceptionFields(
+            array_unique($recordOriginExceptionFields)
+        );
+        $data->runtimeDefinition->setReadOnlyFields(
+            array_unique($readOnlyFields)
+        );
+        $data->runtimeDefinition->setIncrementalDateFields(
+            array_unique($incrementalDateFields)
+        );
+        $data->runtimeDefinition->setExtRefFields(
+            array_unique($extRefFields)
+        );
     }
 }
