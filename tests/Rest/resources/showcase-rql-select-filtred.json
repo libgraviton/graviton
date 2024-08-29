@@ -31,7 +31,8 @@
         "name": "Hans",
         "$ref": "http:\/\/localhost\/core\/app\/admin",
         "id": "1234",
-        "subArray": []
+        "subArray": [],
+        "entities": []
       }
     ],
     "choices": ">=",

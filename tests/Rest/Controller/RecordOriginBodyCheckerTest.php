@@ -6,6 +6,7 @@
 namespace Graviton\Tests\Rest\Controller;
 
 use Graviton\Tests\RestTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -25,6 +26,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
     {
         $this->loadFixturesLocal(
             array(
+                'GravitonDyn\EmbedTestEntityBundle\DataFixtures\MongoDB\LoadEmbedTestEntityData',
                 'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
             )
         );
@@ -33,14 +35,13 @@ class RecordOriginBodyCheckerTest extends RestTestCase
     /**
      * test the validation of the RecordOriginConstraint
      *
-     * @dataProvider createDataProvider
-     *
      * @param object  $entity           The object to create
      * @param integer $expectedStatus   Header status code
      * @param string  $expectedResponse Post data result of post
      *
      * @return void
      */
+    #[DataProvider('createDataProvider')]
     public function testRecordOriginHandlingOnCreate($entity, $expectedStatus, $expectedResponse)
     {
         $client = static::createRestClient();
@@ -129,6 +130,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
      *
      * @param array   $ops            PATCH operations
      * @param integer $expectedStatus Header status code
+     * @param ?array $checkSomeFields field checks
      *
      * @dataProvider patchDataProvider
      *
@@ -136,7 +138,8 @@ class RecordOriginBodyCheckerTest extends RestTestCase
      */
     public function testRecordOriginHandlingOnPatch(
         $ops,
-        $expectedStatus
+        $expectedStatus,
+        ?array $checkSomeFields = null
     ) {
         $original = ini_get('date.timezone');
         ini_set('date.timezone', 'Asia/Kuala_Lumpur');
@@ -147,6 +150,20 @@ class RecordOriginBodyCheckerTest extends RestTestCase
 
         $response = $client->getResponse();
         $this->assertEquals($expectedStatus, $response->getStatusCode());
+
+        if (!is_null($checkSomeFields)) {
+            $client = static::createRestClient();
+            $client->request('GET', '/person/customer/100');
+            $results = $client->getResults();
+
+            foreach ($checkSomeFields as $name => $value) {
+                $this->assertEquals(
+                    $value,
+                    $results->{$name},
+                    "property {$value} should match."
+                );
+            }
+        }
 
         ini_set('date.timezone', $original);
     }
@@ -196,7 +213,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'recordOrigin' => 'hans'
                     ]
                 ),
-                'httpStatusExpected' => Response::HTTP_CREATED,
+                'expectedStatus' => Response::HTTP_CREATED,
                 'expectedResponse' => null
             ],
 
@@ -209,7 +226,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'recordOrigin' => 'core'
                     ]
                 ),
-                'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
+                'expectedStatus' => Response::HTTP_BAD_REQUEST,
                 'expectedResponse' => [
                     (object) [
                         'propertyPath' => 'recordOrigin',
@@ -230,6 +247,26 @@ class RecordOriginBodyCheckerTest extends RestTestCase
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
+            'embed-modification' => [
+                'fieldsToSet' => [
+                    'entity' => (object) [
+                        "id" => "two",
+                        "data" => "two"
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_NO_CONTENT
+            ],
+            'ref-array-modification' => [
+                'fieldsToSet' => [
+                    'entities' => [
+                        (object) [
+                            "id" => "three",
+                            "data" => "three"
+                        ]
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_NO_CONTENT
+            ],
             'create-allowed-object' => [
                 'fieldsToSet' => [
                     'addedField' => (object) [
@@ -237,7 +274,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'another' => 'one'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_NO_CONTENT
+                'expectedStatus' => Response::HTTP_NO_CONTENT
             ],
             'subproperty-modification' => [
                 'fieldsToSet' => [
@@ -246,7 +283,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'twoField' => 'twofield'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_NO_CONTENT
+                'expectedStatus' => Response::HTTP_NO_CONTENT
             ],
 
             /*** STUFF THAT NEEDS TO BE DENIED ***/
@@ -256,14 +293,14 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'oneField' => 'changed-value'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
+                'expectedStatus' => Response::HTTP_BAD_REQUEST,
                 'checkSavedEntry' => false
             ],
             'denied-try-change-recordorigin' => [
                 'fieldsToSet' => [
                     'recordOrigin' => 'hans'
                 ],
-                'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
+                'expectedStatus' => Response::HTTP_BAD_REQUEST,
                 'checkSavedEntry' => false
             ],
         ];
@@ -279,7 +316,67 @@ class RecordOriginBodyCheckerTest extends RestTestCase
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
-
+            'patch-embedded' => [
+                'ops' => [
+                    [
+                        'op' => 'replace',
+                        'path' => '/entity',
+                        'value' => [
+                            'id' => 'two',
+                            'data' => 'two'
+                        ]
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_OK
+            ],
+            'patch-embed-array' => [
+                'ops' => [
+                    [
+                        'op' => 'replace',
+                        'path' => '/entities',
+                        'value' => [
+                            (object) [
+                                'id' => 'three',
+                                'data' => 'three'
+                            ]
+                        ]
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_OK,
+                'checkSomeFields' => [
+                    'entities' => [
+                        (object) [
+                            'id' => 'three',
+                            'data' => 'three'
+                        ]
+                    ]
+                ]
+            ],
+            'patch-embed-array-element' => [
+                'ops' => [
+                    [
+                        'op' => 'replace',
+                        'path' => '/entities/1',
+                        'value' => (object) [
+                                'id' => 'three',
+                                'data' => 'three'
+                        ]
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_OK,
+                'checkSomeFields' => [
+                    'entities' => [
+                        (object) [
+                            'id' => 'one',
+                            'data' => 'one'
+                        ],
+                        (object) [
+                            'id' => 'three',
+                            'data' => 'three'
+                        ]
+                    ]
+                ]
+            ],
             'patch-allowed-attribute' => [
                 'ops' => [
                     [
@@ -288,8 +385,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'value' => 'myValue'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_OK,
-                'expectedResponse' => null
+                'expectedStatus' => Response::HTTP_OK
             ],
             'patch-add-object-data' => [
                 'ops' => [
@@ -302,8 +398,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         ]
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_OK,
-                'expectedResponse' => null
+                'expectedStatus' => Response::HTTP_OK
             ],
 
             /*** STUFF THAT NEEDS TO BE DENIED ***/
@@ -315,7 +410,7 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'value' => 'myValue'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_BAD_REQUEST
+                'expectedStatus' => Response::HTTP_BAD_REQUEST
             ],
             'patch-denied-recordorigin-change' => [
                 'ops' => [
@@ -325,9 +420,23 @@ class RecordOriginBodyCheckerTest extends RestTestCase
                         'value' => 'hans'
                     ]
                 ],
-                'httpStatusExpected' => Response::HTTP_BAD_REQUEST
+                'expectedStatus' => Response::HTTP_BAD_REQUEST
             ],
-
+            'patch-ref-array-with-dbref' => [
+                'ops' => [
+                    [
+                        'op' => 'replace',
+                        'path' => '/entities',
+                        'value' => [
+                            [
+                                '$ref' => 'EmbedTestEntity',
+                                '$id' => 'two'
+                            ]
+                        ]
+                    ]
+                ],
+                'expectedStatus' => Response::HTTP_BAD_REQUEST
+            ]
         ];
     }
 }
