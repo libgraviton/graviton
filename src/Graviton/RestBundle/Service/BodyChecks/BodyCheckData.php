@@ -127,11 +127,26 @@ readonly class BodyCheckData
             return $item;
         };
 
+        $getFieldAliases = function ($field) {
+            $allFieldNames = [$field];
+            if (str_starts_with($field, '/')) {
+                $field = substr($field, 1);
+            }
+            $parts = explode('/', $field);
+            $loopStr = "/";
+            foreach ($parts as $part) {
+                $loopStr .= $part . '/';
+                $allFieldNames[] = $loopStr.'*';
+            }
+            return $allFieldNames;
+        };
+
         $list = array_unique(array_map($normalizeField, $list));
         $subList = array_unique(array_map($normalizeField, $subList));
 
         foreach ($subList as $key => $item) {
-            if (in_array($item, $list)) {
+            $allFieldNames = $getFieldAliases($item);
+            if (!empty(array_intersect($list, $allFieldNames))) {
                 unset($subList[$key]);
             }
         }
