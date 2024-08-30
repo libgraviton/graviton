@@ -85,8 +85,10 @@ readonly class FileManager
                     );
                 }
 
-                // remove the body now
-                $request = $request->withBody($this->psrFactory->createStream(''));
+                // remove the body now if no metadata
+                if (!$request->getAttribute('metadataBody')) {
+                    $request = $request->withBody($this->psrFactory->createStream(''));
+                }
             } catch (\Exception $e) {
                 // nothing it seems!
             }
