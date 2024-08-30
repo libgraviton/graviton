@@ -10,6 +10,7 @@ use Graviton\Tests\RestTestCase;
 use GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData;
 use GravitonDyn\TestCaseRestListenerCondPersisterEntityBundle\DataFixtures\MongoDB\{
     LoadTestCaseRestListenerCondPersisterEntityData};
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -465,15 +466,41 @@ class FileControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testMultipartRequest()
+    #[DataProvider(methodName: "multipartDataProvider")]
+    public function testMultipartRequest(string $method, string $url)
     {
         $client = static::createRestClient();
+
+        $metadata = [];
+        $metadata['filename'] = 'argo-logo.png';
+        $addedProps = [
+            (object) [
+                'name' => 'a',
+                'value' => 'i bi a'
+            ],
+            (object) [
+                'name' => 'b',
+                'value' => 'i bi b'
+            ]
+        ];
+        $metadata['additionalProperties'] = $addedProps;
+
+        $links = [
+            (object) [
+                'type' => 'code',
+                '$ref' => 'http://localhost/person/customer/33'
+            ]
+        ];
+        $data = [
+            'metadata' => $metadata,
+            'links' => $links
+        ];
 
         $content = [
             '--------------------------2f4f7d5be86eaf34',
             'Content-Disposition: form-data; name="metadata"',
             '',
-            '{"metadata":{"filename": "argo-logo.png"}}',
+            json_encode($data, JSON_UNESCAPED_SLASHES),
             '--------------------------2f4f7d5be86eaf34',
             'Content-Disposition: form-data; name="upload"; filename="logo.png"',
             'Content-Type: image/png',
@@ -482,8 +509,8 @@ class FileControllerTest extends RestTestCase
             '--------------------------2f4f7d5be86eaf34--',
         ];
 
-        $client->post(
-            "/file/",
+        $client->{$method}(
+            $url,
             implode("\r\n", $content),
             [],
             [],
@@ -506,6 +533,35 @@ class FileControllerTest extends RestTestCase
             file_get_contents(__DIR__.'/resources/logo.png'),
             $client->getResponse()->getContent(false)
         );
+
+        // get metadata
+        $client = static::createRestClient();
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $metadata = $client->getResults();
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(41771, $metadata->metadata->size);
+        $this->assertEquals("image/png", $metadata->metadata->mime);
+        $this->assertNotEmpty($metadata->metadata->createDate);
+        $this->assertNotEmpty($metadata->metadata->modificationDate);
+        $this->assertEquals("logo.png", $metadata->metadata->filename);
+        $this->assertNotEmpty($metadata->metadata->hash);
+        $this->assertEquals($addedProps, $metadata->metadata->additionalProperties);
+        $this->assertEquals($links, $metadata->links);
+    }
+
+    public static function multipartDataProvider() : array
+    {
+        return [
+            'post' => [
+                'method' => 'post',
+                'url' => '/file/'
+            ],
+            'put' => [
+                'method' => 'put',
+                'url' => '/file/NEW-FILE-TEMP-NAME'
+            ]
+        ];
     }
 
     /**
