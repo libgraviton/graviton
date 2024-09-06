@@ -624,6 +624,48 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * when a file is created with an empty "upload" part, it should not be accepted.
+     *
+     * @return void
+     */
+    public function testMultipartEmptyUpload()
+    {
+        $client = static::createRestClient();
+
+        $data = [];
+        $data['metadata'] = ['filename' => 'logo.png'];
+
+        $content = [
+            '--X-INSOMNIA-BOUNDARY',
+            'Content-Disposition: form-data; name="upload"; filename="logo.png"',
+            ' ',
+            '--X-INSOMNIA-BOUNDARY',
+            'Content-Disposition: form-data; name="metadata"',
+            '',
+            json_encode($data, JSON_UNESCAPED_SLASHES),
+            '--X-INSOMNIA-BOUNDARY--',
+        ];
+
+        $client->post(
+            "/file/",
+            implode("\r\n", $content),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'multipart/form-data; boundary=X-INSOMNIA-BOUNDARY'
+            ],
+            false
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(
+            Response::HTTP_INTERNAL_SERVER_ERROR,
+            $response->getStatusCode()
+        );
+    }
+
+    /**
      * test behavior when data sent was multipart/form-data
      *
      * @return void
