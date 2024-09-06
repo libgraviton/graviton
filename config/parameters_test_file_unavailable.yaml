@@ -1,0 +1,10 @@
+imports:
+  - { resource: parameters_test.yaml }
+
+# in this environment, data restrictions are enabled
+parameters:
+  graviton.translator.default.language: en
+  graviton.file.backend: webdav
+  graviton.file.webdav.baseuri: http://DOES-NOT-EXIST
+  graviton.file.webdav.username: test
+  graviton.file.webdav.password: test
