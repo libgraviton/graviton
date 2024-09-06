@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileControllerTestRestricted extends FileControllerTest
+class FileControllerRestrictedTest extends FileControllerTest
 {
 
     /**

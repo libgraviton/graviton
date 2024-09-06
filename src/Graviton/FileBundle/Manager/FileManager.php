@@ -150,6 +150,10 @@ readonly class FileManager
             throw new InvalidArgumentException('Loaded file have no valid metadata');
         }
 
+        if (!$this->fileSystem->fileExists($file->getId())) {
+            return new Response(null, Response::HTTP_NOT_FOUND);
+        }
+
         $fileStream = $this->fileSystem->readStream($file->getId());
 
         // read metadata
@@ -329,7 +333,7 @@ readonly class FileManager
      */
     private function getRecordId() : string
     {
-        return str_repeat(str_replace('.', '', uniqid('', true)), 2);
+        return str_replace('.', '', uniqid('', true));
     }
 
     /**

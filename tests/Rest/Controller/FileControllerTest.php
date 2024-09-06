@@ -76,6 +76,21 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * non existing should be 404, bo
+     *
+     * @return void
+     */
+    public function testNonExistingFile()
+    {
+        // reset fixtures since we already have some from setUp
+        $client = static::createRestClient();
+        $client->request('GET', '/file/THIS-DOES-NOT-EXIST');
+
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    /**
      * validate that we can post a new file
      *
      * @return void
@@ -257,7 +272,7 @@ class FileControllerTest extends RestTestCase
         $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{22}>; rel="self"@', $linkHeader);
     }
 
     /**
@@ -343,7 +358,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{22}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -381,7 +396,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $linkHeader = $response->headers->get('Link');
-        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{44}>; rel="self"@', $linkHeader);
+        $this->assertMatchesRegularExpression('@/file/[a-z0-9]{22}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -605,6 +620,48 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(
             file_get_contents(__DIR__.'/resources/logo.png'),
             $client->getResponse()->getContent(false)
+        );
+    }
+
+    /**
+     * when a file is created with an empty "upload" part, it should not be accepted.
+     *
+     * @return void
+     */
+    public function testMultipartEmptyUpload()
+    {
+        $client = static::createRestClient();
+
+        $data = [];
+        $data['metadata'] = ['filename' => 'logo.png'];
+
+        $content = [
+            '--X-INSOMNIA-BOUNDARY',
+            'Content-Disposition: form-data; name="upload"; filename="logo.png"',
+            ' ',
+            '--X-INSOMNIA-BOUNDARY',
+            'Content-Disposition: form-data; name="metadata"',
+            '',
+            json_encode($data, JSON_UNESCAPED_SLASHES),
+            '--X-INSOMNIA-BOUNDARY--',
+        ];
+
+        $client->post(
+            "/file/",
+            implode("\r\n", $content),
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'multipart/form-data; boundary=X-INSOMNIA-BOUNDARY'
+            ],
+            false
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(
+            Response::HTTP_INTERNAL_SERVER_ERROR,
+            $response->getStatusCode()
         );
     }
 
