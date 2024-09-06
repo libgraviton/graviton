@@ -3,6 +3,10 @@ services:
         class: Graviton\AnalyticsBundle\Controller\DefaultController
         public: true
         tags: ['controller.service_arguments']
+        calls:
+          - method: setVersionInformation
+            arguments:
+              - '%graviton.core.version.data%'
         arguments:
             - "@graviton.analytics.service_manager"
 

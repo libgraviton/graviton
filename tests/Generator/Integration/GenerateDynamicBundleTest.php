@@ -70,7 +70,6 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $eventDispatcher->method('dispatch')->willReturn(new GenerateSchemaEvent());
 
         $schemaGenerator = new SchemaGenerator();
-        $schemaGenerator->setVersionInformation(['self' => 'testing']);
         $schemaGenerator->setSchemaBuilder($schemaBuilder);
         $schemaGenerator->setIntUtils($intUtils);
         $schemaGenerator->setEventDispatcher($eventDispatcher);

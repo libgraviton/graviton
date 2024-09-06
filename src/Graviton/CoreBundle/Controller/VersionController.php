@@ -15,14 +15,14 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-readonly class VersionController
+class VersionController
 {
     use SchemaTrait;
 
     /**
      * @param array $versionInformation version information
      */
-    public function __construct(private array $versionInformation)
+    public function __construct(private readonly array $versionInformation)
     {
     }
 
