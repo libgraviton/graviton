@@ -42,11 +42,6 @@ class SchemaGenerator extends AbstractGenerator
     private I18nUtils $intUtils;
 
     /**
-     * @var array
-     */
-    private array $versionInformation;
-
-    /**
      * set SchemaBuilder
      *
      * @param SchemaBuilder $schemaBuilder schema builder
@@ -79,18 +74,6 @@ class SchemaGenerator extends AbstractGenerator
     public function setIntUtils(I18nUtils $intUtils)
     {
         $this->intUtils = $intUtils;
-    }
-
-    /**
-     * set version information
-     *
-     * @param array $versionInformation info
-     *
-     * @return void
-     */
-    public function setVersionInformation(array $versionInformation)
-    {
-        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -658,8 +641,7 @@ class SchemaGenerator extends AbstractGenerator
         $base = [
             'openapi' => self::OPENAPI_VERSION,
             'info' => [
-                'title' => 'Endpoint for '.$docName.' entries.',
-                'version' => $this->versionInformation['self']
+                'title' => 'Endpoint for '.$docName.' entries.'
             ],
             'paths' => [],
             'components' => [

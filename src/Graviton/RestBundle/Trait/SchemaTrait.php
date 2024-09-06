@@ -19,6 +19,20 @@ use Symfony\Component\Yaml\Yaml;
 trait SchemaTrait
 {
 
+    private array $schemaVersionInformation = [];
+
+    /**
+     * set version info
+     *
+     * @param array $information information
+     *
+     * @return void
+     */
+    public function setVersionInformation(array $information) : void
+    {
+        $this->schemaVersionInformation = $information;
+    }
+
     /**
      * gets the response
      *
@@ -59,6 +73,12 @@ trait SchemaTrait
         ?string $excludePaths = null,
         ?string $includePaths = null
     ) : Response {
+
+        // inject version
+        if (!empty($this->schemaVersionInformation) && !empty($schema['info'])) {
+            $schema['info']['version'] = $this->schemaVersionInformation['self'];
+        }
+
         // excludes?
         if (!is_null($excludePaths)) {
             $definedSet = array_keys($schema['paths']);

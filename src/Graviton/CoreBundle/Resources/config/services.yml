@@ -10,6 +10,10 @@ services:
 
     Graviton\CoreBundle\Controller\MainController:
       tags: ['controller.service_arguments']
+      calls:
+        - method: setVersionInformation
+          arguments:
+            - '%graviton.core.version.data%'
       arguments:
         - "@router"
         - '@Graviton\RestBundle\Service\RestUtils'
@@ -30,6 +34,10 @@ services:
 
     Graviton\CoreBundle\Controller\VersionController:
       tags: ['controller.service_arguments']
+      calls:
+        - method: setVersionInformation
+          arguments:
+            - '%graviton.core.version.data%'
       arguments:
         - "%graviton.core.version.data%"
 

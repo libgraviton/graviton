@@ -143,9 +143,6 @@ services:
           - method: setIntUtils
             arguments:
               - '@Graviton\RestBundle\Service\I18nUtils'
-          - method: setVersionInformation
-            arguments:
-              - '%graviton.core.version.data%'
           - method: setEventDispatcher
             arguments:
               - '@event_dispatcher'

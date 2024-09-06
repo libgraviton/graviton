@@ -128,6 +128,9 @@ services:
             method: setLogger
             arguments:
               - "@logger"
+          - method: setVersionInformation
+            arguments:
+              - '%graviton.core.version.data%'
 
     Graviton\RestBundle\Model\DocumentModelFactory:
       arguments:
