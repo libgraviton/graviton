@@ -333,7 +333,7 @@ readonly class FileManager
      */
     private function getRecordId() : string
     {
-        return str_repeat(str_replace('.', '', uniqid('', true)), 2);
+        return str_replace('.', '', uniqid('', true));
     }
 
     /**
