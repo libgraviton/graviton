@@ -12,7 +12,7 @@ namespace Graviton\Tests\Rest\Controller;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileControllerTestRestrictedConditional extends FileControllerTestRestricted
+class FileControllerRestrictedConditionalTest extends FileControllerRestrictedTest
 {
 
     /**
