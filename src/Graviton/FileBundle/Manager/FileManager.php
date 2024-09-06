@@ -150,6 +150,10 @@ readonly class FileManager
             throw new InvalidArgumentException('Loaded file have no valid metadata');
         }
 
+        if (!$this->fileSystem->fileExists($file->getId())) {
+            return new Response(null, Response::HTTP_NOT_FOUND);
+        }
+
         $fileStream = $this->fileSystem->readStream($file->getId());
 
         // read metadata

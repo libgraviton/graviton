@@ -76,6 +76,21 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * non existing should be 404, bo
+     *
+     * @return void
+     */
+    public function testNonExistingFile()
+    {
+        // reset fixtures since we already have some from setUp
+        $client = static::createRestClient();
+        $client->request('GET', '/file/THIS-DOES-NOT-EXIST');
+
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    /**
      * validate that we can post a new file
      *
      * @return void
