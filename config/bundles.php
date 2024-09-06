@@ -1,7 +1,13 @@
 <?php
 
 $all = ['all' => true];
-$onlyTest = ['dev' => true, 'test' => true, 'test_restricted' => true, 'test_restricted_conditional' => true];
+$onlyTest = [
+    'dev' => true,
+    'test' => true,
+    'test_restricted' => true,
+    'test_restricted_conditional' => true,
+    'test_file_unavailable' => true
+];
 
 $bundles = [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => $all,
