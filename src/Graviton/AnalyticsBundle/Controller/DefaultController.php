@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-readonly class DefaultController
+class DefaultController
 {
     use SchemaTrait;
 
