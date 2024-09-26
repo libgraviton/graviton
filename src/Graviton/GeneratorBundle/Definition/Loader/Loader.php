@@ -74,11 +74,19 @@ class Loader implements LoaderInterface
      */
     protected function createJsonDefinition($json)
     {
-        $definition = $this->serializer->deserialize(
-            $json,
-            'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
-            'json'
-        );
+        try {
+            $definition = $this->serializer->deserialize(
+                $json,
+                'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+                'json'
+            );
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                'Could not deserialize definition: ' . $e->getMessage() . '. JSON = '.$json,
+                $e->getCode(),
+                $e
+            );
+        }
 
         return new JsonDefinition($definition);
     }
