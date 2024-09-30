@@ -332,12 +332,10 @@ class GenerateDynamicBundleCommand extends Command
                     );
                 }
             } catch (\Throwable $e) {
-                $output->writeln(
-                    sprintf(
-                        '<error>Error generating for id %s: %s</error>',
-                        $jsonDef->getId(),
-                        $e->getMessage()
-                    )
+                throw new \RuntimeException(
+                    sprintf('Error generating for id "%s": %s', $jsonDef->getId(), $e->getMessage()),
+                    $e->getCode(),
+                    $e
                 );
             }
         }
