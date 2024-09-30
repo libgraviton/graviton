@@ -285,49 +285,59 @@ class GenerateDynamicBundleCommand extends Command
          */
         foreach ($filesToWorkOn as $jsonDef) {
             $thisIdName = $jsonDef->getId();
-            $namespace = sprintf(self::BUNDLE_NAME_MASK, $thisIdName);
+            try {
+                $namespace = sprintf(self::BUNDLE_NAME_MASK, $thisIdName);
 
-            // make sure bundle is in bundlebundle
-            $this->bundleBundleList[] = $namespace;
+                // make sure bundle is in bundlebundle
+                $this->bundleBundleList[] = $namespace;
 
-            $jsonDef->setNamespace($namespace);
+                $jsonDef->setNamespace($namespace);
 
-            $bundleName = str_replace('/', '', $namespace);
-            $bundleDir = $input->getOption('srcDir').$namespace;
-            $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
+                $bundleName = str_replace('/', '', $namespace);
+                $bundleDir = $input->getOption('srcDir') . $namespace;
+                $bundleNamespace = str_replace('/', '\\', $namespace) . '\\';
 
-            $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
+                $thisHash = sha1($templateHash . PATH_SEPARATOR . serialize($jsonDef));
 
-            $needsGeneration = true;
-            if (isset($existingBundles[$bundleDir])) {
-                if ($existingBundles[$bundleDir] == $thisHash) {
-                    $needsGeneration = false;
+                $needsGeneration = true;
+                if (isset($existingBundles[$bundleDir])) {
+                    if ($existingBundles[$bundleDir] == $thisHash) {
+                        $needsGeneration = false;
+                    }
+                    unset($existingBundles[$bundleDir]);
                 }
-                unset($existingBundles[$bundleDir]);
-            }
 
-            if ($needsGeneration) {
-                $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
-                $this->generateGenerationHashFile($bundleDir, $thisHash);
-            }
+                if ($needsGeneration) {
+                    $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
+                    $this->generateGenerationHashFile($bundleDir, $thisHash);
+                }
 
-            $definedBundles[$bundleDir] = $jsonDef;
+                $definedBundles[$bundleDir] = $jsonDef;
 
-            if ($needsGeneration) {
-                $this->generateResources(
-                    $filesToWorkOn,
-                    $jsonDef,
-                    $bundleName,
-                    $bundleDir,
-                    $bundleNamespace
-                );
+                if ($needsGeneration) {
+                    $this->generateResources(
+                        $filesToWorkOn,
+                        $jsonDef,
+                        $bundleName,
+                        $bundleDir,
+                        $bundleNamespace
+                    );
 
+                    $output->writeln(
+                        sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
+                    );
+                } else {
+                    $output->writeln(
+                        sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
+                    );
+                }
+            } catch (\Exception $e) {
                 $output->writeln(
-                    sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
-                );
-            } else {
-                $output->writeln(
-                    sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
+                    sprintf(
+                        '<error>Error generating for id %s: %s</error>',
+                        $jsonDef->getId(),
+                        $e->getMessage()
+                    )
                 );
             }
         }
