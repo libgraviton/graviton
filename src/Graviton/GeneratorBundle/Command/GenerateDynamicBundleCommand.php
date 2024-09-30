@@ -331,7 +331,7 @@ class GenerateDynamicBundleCommand extends Command
                         sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
                     );
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $output->writeln(
                     sprintf(
                         '<error>Error generating for id %s: %s</error>',
